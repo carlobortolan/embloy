@@ -1,0 +1,4 @@
+<%= stylesheet_link_tag "style" %>
+<h1>New Application for job #<%= @job.job_id %></h1>
+<h2><%=@job.title %></h2>
+<%= render "form", application: @application %>

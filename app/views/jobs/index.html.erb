@@ -1,0 +1,24 @@
+<%= stylesheet_link_tag "style" %>
+<h1>Whats next?</h1>
+<h2><%= link_to "Search for jobs", jobs_find_path %></h2>
+<h2><%= link_to "New Job", new_job_path %></h2>
+<h1>All available Jobs</h1>
+
+<ul>
+  <% @jobs.each do |job| %>
+    <% if job.public? %>
+      <li>
+        <b><%= link_to job.title, job %></b>
+        <%= link_to "(apply)", new_job_application_path(job) %>
+      </li>
+    <% end %>
+  <% end %>
+</ul>
+
+
+<h2><%= link_to "go back", _back_url %></h2>
+
+--------------------------------------<br>
+<%= link_to "Carlo Bortolan", "https://github.com/carlobortolan" %><br>
+<%= link_to "Jan Hummel", "https://github.com/github4touchdouble" %><br>
+<br>

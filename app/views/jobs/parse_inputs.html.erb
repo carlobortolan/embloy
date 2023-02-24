@@ -1,0 +1,34 @@
+<%= stylesheet_link_tag "style" %>
+<h1>Find jobs</h1>
+<h3><%= link_to "Do you want to create a new job instead?", new_job_path %></h3>
+<h2>Your parameters </h2>
+<%= form_tag :action => 'parse_inputs' do %>
+  Your coordinates:
+  <%= @my_args["longitude"] %>
+  <%= number_field_tag :longitude, (@my_args["longitude"]) %>
+  <%= number_field_tag :latitude, (@my_args["latitude"]) %><br>
+  Search within radius:
+  <%= number_field_tag :radius, (@my_args["radius"]) %><br>
+  Search within timeslot:
+  <%= datetime_local_field_tag :time, (@my_args["time"].strftime("%Y-%m-%dT%H:%M")) %><br>
+  Set maximum number of jobs shown:
+  <%= number_field_tag :limit, (100) %><br>
+  <%= submit_tag "START SEARCH" %>
+<% end %>
+
+<h2>Matched jobs</h2>
+<% if @result.eql?([401]) || @result.empty? %>
+  <h3><%= "No job found for your search. Try again with different parameters!" %></h3>
+  <ul>
+<% else %>
+  <h3><%= "#{@result.length} #{@result.length >= 1 ? "jobs found" : "job found"}" %></h3>
+  <% @result.each do |job| %>
+    <li>
+      <b><%= link_to "#{job["title"]} [##{job["job_id"]}]", job_path(job["job_id"]) %></b>
+    </li>
+  <% end %>
+<% end %>
+</ul>
+
+<h2><%= link_to "go back", _back_url %></h2>
+

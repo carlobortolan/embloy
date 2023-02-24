@@ -1,0 +1,24 @@
+<%= stylesheet_link_tag "style" %>
+<%= form_with model: [@job, @job.applications.build] do |form| %>
+
+  <p>
+    <%= form.label :application_text %><br>
+    <%= form.text_area :application_text %>
+    <% @job.applications.build.errors.full_messages_for(:application_text).each do |message| %>
+    <div><%= message %></div>
+  <% end %>
+
+  <p>
+    <%= form.label :application_documents %><br>
+    <%= form.text_area :application_documents %>
+    <% @job.applications.build.errors.full_messages_for(:application_documents).each do |message| %>
+    <div><%= message %></div>
+  <% end %>
+  <!--  <p>-->
+  <!--    <%#= form.label :status %><br>-->
+  <%#= form.select :status, ['public', 'private', 'archived'], selected: 'public' %>
+  <!--  </p>-->
+  <p>
+    <%= form.submit %>
+  </p>
+<% end %>

@@ -130,4 +130,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_12_113311) do
     t.index ["email"], name: "account_email_UNIQUE", unique: true
   end
 
+  add_foreign_key "applications", "jobs", primary_key: "job_id"
+  add_foreign_key "applications", "users", column: "applicant_id"
+  add_foreign_key "company_users", "users", column: "id"
+  add_foreign_key "jobs", "users"
+  add_foreign_key "notifications", "jobs", primary_key: "job_id"
+  add_foreign_key "notifications", "users", column: "employer_id"
+  add_foreign_key "private_users", "users", column: "id"
+  add_foreign_key "reviews", "users", column: "created_by"
 end

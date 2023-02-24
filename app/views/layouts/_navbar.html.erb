@@ -1,0 +1,39 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbar">
+
+    <%= link_to "JobFinder", welcome_path, class: 'navbar-brand' %>
+
+    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+      <%= link_to "Profile", profile_index_path, class: 'nav-link' %>
+
+      <%= link_to "About", about_path, class: 'nav-link' %>
+
+      <%= link_to "API", api_path, class: 'nav-link' %>
+
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+          Jobs
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+          <%= link_to "Create Job", new_job_path, class: 'dropdown-item' %>
+          <%= link_to "Find Job", jobs_find_path, class: 'dropdown-item' %>
+          <%= link_to "All Jobs", jobs_path, class: 'dropdown-item' %>
+          <%= link_to "Your Jobs", own_jobs_path, class: 'dropdown-item' %>
+          <%= link_to "Your Applications", own_applications_path, class: 'dropdown-item' %>
+        </div>
+      </li>
+
+    </ul>
+
+
+    <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search for jobs near you " aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search#TODO</button>
+
+    </form>
+  </div>
+</nav>

@@ -1,0 +1,16 @@
+<h1><%= @job.title %></h1>
+<p><%= @job.description %></p>
+<p><%= @job.start_slot.localtime.ctime %></p>
+
+<%= button_to "Edit", edit_job_path(@job), method: :get %>
+<%= button_to "Show all applications", job_applications_path(@job), method: :get %>
+<%= button_to "Delete this job", job_path(@job), form: { data: { turbo_confirm: "Are you sure?" } }, method: :delete %>
+
+
+<h2>Applications</h2>
+<%= render @job.applications %>
+
+<h2>Add an application:</h2>
+<%= render 'applications/form' %>
+
+<h2><%= link_to "go back", _back_url %></h2>

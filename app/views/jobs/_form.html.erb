@@ -1,0 +1,55 @@
+<%= stylesheet_link_tag "style" %>
+<%= form_with model: job do |form| %>
+  <div>
+    <%= form.label :title %><br>
+    <%= form.text_field :title %>
+    <% job.errors.full_messages_for(:title).each do |message| %>
+      <div><%= message %></div>
+    <% end %>
+  </div>
+
+  <div>
+    <%= form.label :description %><br>
+    <%= form.text_area :description %><br>
+    <% job.errors.full_messages_for(:description).each do |message| %>
+      <div><%= message %></div>
+    <% end %>
+  </div>
+
+  <div>
+    <%= form.label :start_slot %><br>
+    <%= form.datetime_field :start_slot %><br>
+    <% job.errors.full_messages_for(:start_slot).each do |message| %>
+      <div><%= message %></div>
+    <% end %>
+  </div>
+
+  <div>
+    <%= form.label :longitude %><br>
+    <%= form.number_field :longitude %><br>
+    <% job.errors.full_messages_for(:longitude).each do |message| %>
+      <div><%= message %></div>
+    <% end %>
+    <%= form.label :latitude %><br>
+    <%= form.number_field :latitude %><br>
+    <% job.errors.full_messages_for(:latitude).each do |message| %>
+      <div><%= message %></div>
+    <% end %>
+  </div>
+  <div>
+    <%= form.label "Do you want to receive a notification when a new application is submitted?" %><br>
+    <%= form.check_box :notify %><br>
+    <% job.errors.full_messages_for(:notify).each do |message| %>
+      <div><%= message %></div>
+    <% end %>
+  </div>
+
+  <div>
+    <%= form.label :status %><br>
+    <%= form.select :status, ['public', 'private', 'archived'], selected: 'public' %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

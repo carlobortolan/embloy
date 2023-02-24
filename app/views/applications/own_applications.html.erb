@@ -1,0 +1,50 @@
+<%= stylesheet_link_tag "style" %>
+<h1>Your applications</h1>
+<h2>You have applied for <%= @applications.count %> jobs! - <%= link_to "Find new jobs", jobs_find_path %></h2>
+
+<ul>
+  <% @applications.each do |application| %>
+    <br>
+    <div style="padding: 10px; border: 1px solid lightgray; background-color: #333333">
+      <p>
+        <strong>Job ID:
+          <%= application[:job_id] %></strong>
+        ---
+        <%= application[:applied_at].localtime.ctime %>
+        ---
+        <%= link_to "go to job", job_path(Job.find(application[:job_id])) %>
+      </p>
+
+      <p>
+        <strong>Application:</strong>
+        <%= application[:application_text] %>
+      </p>
+
+      <p>
+        <strong>Documents:</strong>
+        <%= application[:application_documents] %>
+      </p>
+
+      <p>
+        <strong>Status:</strong>
+        <%= case application[:status]
+            when '-1'
+              "REJECTED"
+            when '1'
+              "ACCEPTED"
+            else
+              "No response yet ..."
+            end %>
+      </p>
+
+      <p>
+        <% if !application[:response].nil? && !application[:response].blank? %>
+          <strong>Response:</strong>
+          <%= application[:response].nil? ? "No response yet ..." : application[:response] %>
+          </p>
+        <% end %>
+        </div>
+  <% end %>
+</ul>
+<h2><%= link_to "go back", _back_url %></h2>
+

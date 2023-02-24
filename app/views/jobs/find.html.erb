@@ -1,0 +1,37 @@
+<%= stylesheet_link_tag "style" %>
+<h1>Find jobs</h1>
+<h3><%= link_to "Do you want to create a new job instead?", new_job_path %></h3>
+
+<% my_args = { "account_id" => 1, "latitude" => 1.0, "longitude" => 1.0, "radius" => 1.0, "time" => Time.new(2022, 11, 11, 0, 0, 0), "limit" => 5 } %>
+
+<h2>Your parameters </h2>
+<%= form_tag :action => 'parse_inputs' do %>
+  Your coordinates:
+  <%= number_field_tag :longitude, (0.0) %>
+  <%= number_field_tag :latitude, (0.0) %><br>
+  Search within radius:
+  <%= number_field_tag :radius, (50) %><br>
+  Search within timeslot:
+  <%= datetime_local_field_tag :time, (Time.zone.now.strftime("%Y-%m-%dT%H:%M")) %><br>
+  Set maximum number of jobs shown:
+  <%= number_field_tag :limit, (100) %><br>
+  <%= submit_tag "START SEARCH" %>
+<% end %>
+
+<h2>All available jobs</h2>
+<h3>We have <%= @jobs.all.count %> jobs and counting!</h3>
+<ul>
+  <% @jobs.each do |job| %>
+    <% if job.public? %>
+      <li>
+        <b><%= link_to job.title, job %></b>
+        <%= link_to "(apply)", new_job_application_path(job) %>
+      </li>
+    <% end %>
+  <% end %>
+</ul>
+
+<h2><%= link_to "go back", _back_url %></h2>
+--------------------------------------<br><br>
+<%= link_to "Carlo Bortolan", "https://github.com/carlobortolan" %><br>
+<%= link_to "Jan Hummel", "https://github.com/github4touchdouble" %><br>

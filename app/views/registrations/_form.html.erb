@@ -1,0 +1,88 @@
+<%= form_with model: @user, class: "was-validated", url: sign_up_path do |f| %>
+
+  <div class="form-row w-100">
+    <div class="col mb-3 ">
+      <label for="validationServer01">First name</label>
+      <%= f.text_field :first_name, type: "text", class: "form-control is-valid", id: 'validationServer01', placeholder: "First name", required: true %>
+    </div>
+
+    <div class="col mb-3">
+      <label for="validationServer02">Last name</label>
+      <%= f.text_field :last_name, type: "text", class: "form-control is-valid", id: 'validationServer01', placeholder: "First name", required: true %>
+    </div>
+
+    <div class="col mb-3">
+      <label for="validationServer03">Date of birth</label>
+      <%= f.date_field :date_of_birth, type: "date", class: "form-control is-valid", id: 'validationServer03', placeholder: "", required: true %>
+    </div>
+  </div>
+
+  <div class="form-row  w-100">
+    <div class="col mb-3">
+      <label for="validationServer04">Country code</label>
+      <%= f.text_field :country_code, type: "text", class: "form-control is-invalid", id: 'validationServer04', placeholder: "e.g.,: DE", required: true, pattern: "^(A(D|E|F|G|I|L|M|N|O|R|S|T|Q|U|W|X|Z)|B(A|B|D|E|F|G|H|I|J|L|M|N|O|R|S|T|V|W|Y|Z)|C(A|C|D|F|G|H|I|K|L|M|N|O|R|U|V|X|Y|Z)|D(E|J|K|M|O|Z)|E(C|E|G|H|R|S|T)|F(I|J|K|M|O|R)|G(A|B|D|E|F|G|H|I|L|M|N|P|Q|R|S|T|U|W|Y)|H(K|M|N|R|T|U)|I(D|E|Q|L|M|N|O|R|S|T)|J(E|M|O|P)|K(E|G|H|I|M|N|P|R|W|Y|Z)|L(A|B|C|I|K|R|S|T|U|V|Y)|M(A|C|D|E|F|G|H|K|L|M|N|O|Q|P|R|S|T|U|V|W|X|Y|Z)|N(A|C|E|F|G|I|L|O|P|R|U|Z)|OM|P(A|E|F|G|H|K|L|M|N|R|S|T|W|Y)|QA|R(E|O|S|U|W)|S(A|B|C|D|E|G|H|I|J|K|L|M|N|O|R|T|V|Y|Z)|T(C|D|F|G|H|J|K|L|M|N|O|R|T|V|W|Z)|U(A|G|M|S|Y|Z)|V(A|C|E|G|I|N|U)|W(F|S)|Y(E|T)|Z(A|M|W))$" %>
+    </div>
+    <div class="col mb-3">
+      <label for="validationServer05">City</label>
+      <%= f.text_field :city, type: "text", class: "form-control is-invalid", id: 'validationServer05', placeholder: "City", required: true %>
+    </div>
+    <div class="col mb-3">
+      <label for="validationServer06">Postal code</label>
+      <%= f.text_field :postal_code, type: "text", class: "form-control is-invalid", id: 'validationServer06', placeholder: "e.g.,: 80805", required: true, pattern: "[\\d]{5}(-[\\d]{4})?" %>
+    </div>
+    <div class="col mb-3">
+      <label for="validationServer07">Address (street)</label>
+      <%= f.text_field :address, type: "text", class: "form-control is-invalid", id: 'validationServer07', placeholder: "Address", required: true %>
+    </div>
+  </div>
+
+  <div class="form-row  w-100">
+    <div class="col-md-5 mb-3">
+      <label for="validationServer08">Email</label>
+      <%= f.email_field :email, type: "email", class: "form-control form-control-lg", id: 'validationServer08', placeholder: "Email", required: true %>
+    </div>
+    <div class="col-md-5 mb-3 mx-sm-3">
+      <label for="inputPassword">Password</label>
+      <%= f.password_field :password, type: "password", class: "form-control form-control-lg", id: 'inputPassword', placeholder: "", required: true, minlength: 8 %>
+      <small id="passwordHelpInline" class="text-muted">
+        Must be at least 8 characters long.
+      </small><br>
+      <label for="inputPassword_repeat">Repeat password</label>
+      <%= f.password_field :password_confirmation, type: "password", class: "form-control form-control-lg", id: 'inputPassword_repeat', placeholder: "", required: true, minlength: 8, oninput: "check()" %>
+      <script>
+          function check() {
+              var input = document.getElementById('inputPassword_repeat');
+              if (input.value !== document.getElementById('inputPassword').value) {
+                  input.setCustomValidity('Password must be matching.');
+              } else {
+                  // input is valid -- reset the error message
+                  input.setCustomValidity('');
+              }
+          }</script>
+
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="form-check">
+      <input class="form-check-input is-invalid" type="checkbox" value="" id="validCheck" required>
+      <label class="form-check-label" for="validCheck">
+        I agree to the <%= link_to 'terms and conditions', privacy_policy_path %>
+      </label>
+      <div>
+        <small id="invalid-feedback" class="text-muted">
+          You must agree before submitting.
+        </small>
+      </div>
+    </div>
+  </div>
+  <p>
+  <p>
+    <% f.label 'longitude' %><br>
+    <% f.number_field :longitude, default: 0.0 %>
+  </p>
+  <p>
+    <% f.label 'latitude' %><br>
+    <% f.number_field :latitude, default: 0.0 %>
+  </p>
+  <%= f.submit 'Register' %>
+<% end %>
