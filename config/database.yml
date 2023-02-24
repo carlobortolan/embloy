@@ -50,7 +50,7 @@ test:
 #
 production:
   <<: *default
-  database: embloy_production
+  database: jobdata
   username: <%= ENV["DATABASE_USER"] %>
   password: <%= ENV["DATABASE_PASSWORD"] %>
   url: <%= ENV["DATABASE_URL"] %>
