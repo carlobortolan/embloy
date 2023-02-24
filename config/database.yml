@@ -14,8 +14,11 @@ default: &default
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   username: render_user
-  password:
-  host: dpg-cfs2plsgqg43f68l0rg0-a
+  port: 5432
+  maintanence database: jobdata
+  password: DfaK4nvTwBfd4C6A8GXzpgPLxYx2snQS
+  host: dpg-cfs2plsgqg43f68l0rg0-a.frankfurt-postgres.render.com
+
 
 development:
   <<: *default
