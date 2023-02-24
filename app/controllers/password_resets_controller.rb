@@ -8,7 +8,7 @@ class PasswordResetsController < ApplicationController
       # send mail
       PasswordMailer.with(user: @user).reset.deliver_later
     end
-    redirect_to welcome_path, notice: 'Please check your email to reset the password'
+    redirect_to welcome_path, notice: 'Please check your email to reset the password.'
   end
 
   def edit

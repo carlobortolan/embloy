@@ -1,6 +1,6 @@
 class ApplicationsController < ApplicationController
   layout 'standard'
-
+  before_action :require_user_logged_in!
   attr_accessor(:application_service, :user_service)
 
   def initialize
