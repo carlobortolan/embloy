@@ -24,7 +24,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_12_113311) do
   create_table "applications", primary_key: ["job_id", "applicant_id"], force: :cascade do |t|
     t.integer "job_id", null: false
     t.integer "applicant_id", null: false
-    t.datetime "updated_at", default: "2023-02-24 17:07:50", null: false
+    t.datetime "updated_at", default: "2023-02-24 19:10:51", null: false
     t.enum "status", default: "0", null: false, enum_type: "application_status"
     t.string "application_text", limit: 1000
     t.string "application_documents", limit: 100
@@ -48,8 +48,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_12_113311) do
   end
 
   create_table "currents", force: :cascade do |t|
-    t.datetime "created_at", default: "2023-02-24 17:07:50", null: false
-    t.datetime "updated_at", default: "2023-02-24 17:07:50", null: false
+    t.datetime "created_at", default: "2023-02-24 19:10:52", null: false
+    t.datetime "updated_at", default: "2023-02-24 19:10:52", null: false
   end
 
   create_table "jobs", primary_key: "job_id", id: :serial, force: :cascade do |t|
@@ -130,12 +130,4 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_12_113311) do
     t.index ["email"], name: "account_email_UNIQUE", unique: true
   end
 
-  add_foreign_key "applications", "jobs", primary_key: "job_id"
-  add_foreign_key "applications", "users", column: "applicant_id"
-  add_foreign_key "company_users", "users", column: "id"
-  add_foreign_key "jobs", "users"
-  add_foreign_key "notifications", "jobs", primary_key: "job_id"
-  add_foreign_key "notifications", "users", column: "employer_id"
-  add_foreign_key "private_users", "users", column: "id"
-  add_foreign_key "reviews", "users", column: "created_by"
 end
