@@ -1,12 +1,14 @@
 #### <div style="text-align:right">P-XJH-0006 </div>
+
 ####
+
 # Basic API documentation
 
 ***
 
 ### 1. Overview
 
-> **URL**: http://localhost:3000/api/v0
+> **URL**: https://embloy.onrender.com/api/v0
 >
 ***
 
@@ -37,7 +39,7 @@
    **200: OK**
     ```   
             {
-                "message": "Account registered! Please activate your user account and claim your initial refresh token via GET http://localhost:3000/api/v0/user/verify."
+                "message": "Account registered! Please activate your user account and claim your initial refresh token via GET https://embloy.onrender.com/api/v0/user/verify."
             }
     ```
    ####
@@ -59,7 +61,7 @@
     + ``blank``: When the password attribute is blank
     + ``confirmation``: When password != password_confirmation
     + ``ERR_INVALID``: When a required attribute is malformed or unknown
-   ####    
+   ####      
    **422: Unprocessable entity**
     ```   
             {
@@ -116,7 +118,8 @@
     ```
    You may expect the following errors:
     + ``ERR_BLANK``: When a required attribute is blank or not given by the client.
-    + ``ERR_INVALID``: When a given attribute is malformed or unknown. Check for spelling and/or other formatting errors.
+    + ``ERR_INVALID``: When a given attribute is malformed or unknown. Check for spelling and/or other formatting
+      errors.
    ####
    **401: Unauthorized**
     ```   
@@ -131,7 +134,8 @@
             }
     ```
    You may expect the following errors:
-    + ``ERR_INVALID``: When a given attribute is malformed or unknown. Check for spelling and/or other formatting errors.
+    + ``ERR_INVALID``: When a given attribute is malformed or unknown. Check for spelling and/or other formatting
+      errors.
    ####
    **403: Forbidden**
     ```   
@@ -146,7 +150,9 @@
         }
     ```
    You may expect the following errors:
-    + ``ERR_UNNECESSARY``: When a requested task is unnecessary, the will system refuses to do the task. Often it helps to ask yourself what you wanted the system to do, and whether this method is the standard method for this specific task.  
+    + ``ERR_UNNECESSARY``: When a requested task is unnecessary, the will system refuses to do the task. Often it helps
+      to ask yourself what you wanted the system to do, and whether this method is the standard method for this specific
+      task.
    ####
    **500: Internal Server Error**
     ```   

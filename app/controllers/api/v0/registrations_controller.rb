@@ -7,7 +7,7 @@ module Api
         @user = User.new(user_params)
         begin
           if @user.save
-            render status: 200, json: { "message": "Account registered! Please activate your account and claim your refresh token via GET http://localhost:3000/api/v0/user/verify " }
+            render status: 200, json: { "message": "Account registered! Please activate your account and claim your refresh token via GET #{api_v0_user_verify_path} " }
 
           else
             taken = false
@@ -92,7 +92,8 @@ module Api
                   rescue # because the code above checked all attributes, there should not be any exceptions. if there are something strange happened (or a bug)
                     render status: 500, json: { "error": "Something went wrong while issuing your initial refresh token. Please try again later. If this error persists, we recommend to contact our support team." }
                   end
-                else # isis user already listed as active?
+                else
+                  # isis user already listed as active?
                   render status: 403, json: { "user": [
                     {
                       "error": "ERR_UNNECESSARY",
@@ -116,7 +117,6 @@ module Api
       def user_params
         params.require(:user).permit(:email, :first_name, :last_name, :password, :password_confirmation)
       end
-
 
     end
   end

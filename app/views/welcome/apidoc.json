@@ -1,11 +1,11 @@
 {
   "swagger": "2.0",
   "info": {
-    "description": "The API documentation of JobFinder.  You can find out more about it at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).  For this sample, you can use the api key `special-key` to test the authorization filters.",
+    "description": "The API documentation of Embloy.  You can find out more about it at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).  For this sample, you can use the api key `special-key` to test the authorization filters.",
     "version": "0.0.1",
     "openapi": "3.0.1",
-    "title": "JobFinder",
-    "termsOfService": "http://localhost:3000/about/privacy/policy",
+    "title": "Embloy",
+    "termsOfService": "https://embloy.onrender.com/about/privacy/policy",
     "contact": {
       "email": "noreply.versuchundirrtum@gmail.com"
     },
@@ -14,7 +14,7 @@
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
     }
   },
-  "host": "http://localhost:3000/api",
+  "host": "https://embloy.onrender.com/api",
   "basePath": "/v0",
   "tags": [
     {
