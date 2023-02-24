@@ -1,0 +1,2 @@
+class AuthBlacklist < ApplicationRecord
+end
