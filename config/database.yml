@@ -29,7 +29,7 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: jobdata
+  database: jobdata_test
   username: render_user
   password: <%= ENV["EMBLOY_DATABASE_PASSWORD"] %>
 
@@ -58,3 +58,4 @@ production:
   database: jobdata
   username: render_user
   password: <%= ENV["EMBLOY_DATABASE_PASSWORD"] %>
+     url: <%= ENV["EMBLOY_DATABASE_URL"] %>
