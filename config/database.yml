@@ -54,11 +54,11 @@ production:
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  username: render_user
-  password: DfaK4nvTwBfd4C6A8GXzpgPLxYx2snQS
-  host: dpg-cfs2plsgqg43f68l0rg0-a.frankfurt-postgres.render.com
-  DATABASE_URL: postgres://render_user:DfaK4nvTwBfd4C6A8GXzpgPLxYx2snQS@dpg-cfs2plsgqg43f68l0rg0-a/jobdata
-#  username: <%#= ENV["DATABASE_USER"] %>
-#  password: <%#= ENV["DATABASE_PASSWORD"] %>
-#  url: <%#= ENV["DATABASE_URL"] %>
-#  host: <%#= ENV["DATABASE_HOST"] %>
+#  username: render_user
+#  password: DfaK4nvTwBfd4C6A8GXzpgPLxYx2snQS
+#  host: dpg-cfs2plsgqg43f68l0rg0-a.frankfurt-postgres.render.com
+#  DATABASE_URL: postgres://render_user:DfaK4nvTwBfd4C6A8GXzpgPLxYx2snQS@dpg-cfs2plsgqg43f68l0rg0-a/jobdata
+  username: <%= ENV["DATABASE_USER"] %>
+  password: <%= ENV["DATABASE_PASSWORD"] %>
+  host: <%= ENV["DATABASE_HOST"] %>
+  url: <%= ENV["DATABASE_URL"] %>
