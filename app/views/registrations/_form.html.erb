@@ -40,6 +40,8 @@
     <div class="col-md-5 mb-3">
       <label for="validationServer08">Email</label>
       <%= f.email_field :email, type: "email", class: "form-control form-control-lg", id: 'validationServer08', placeholder: "Email", required: true %>
+      <label for="validationServer09">Avatar</label>
+      <%= f.file_field :avatar, type: "file", class: "form-control", placeholder: "TEST"%>
     </div>
     <div class="col-md-5 mb-3 mx-sm-3">
       <label for="inputPassword">Password</label>
@@ -85,4 +87,7 @@
     <% f.number_field :latitude, default: 0.0 %>
   </p>
   <%= f.submit 'Register' %>
+  <p class="text-center text-muted mt-5 mb-0">Already have an account?
+    <u>    <%= link_to "Login here", log_in_path, class: "fw-bold text-body" %></u>
+  </p>
 <% end %>

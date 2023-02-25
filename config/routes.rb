@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
-  # >>>>>> *API* <<<<<<
+  #= <<<<< *API* >>>>>>
   namespace :api, defaults: { format: 'json' } do
     namespace :v0 do
       post 'user', to: 'registrations#create'
@@ -11,9 +11,9 @@ Rails.application.routes.draw do
     end
   end
 
-  # <<<<< *Web-Application* >>>>>>
+  #= <<<<< *Web-Application* >>>>>>
   # -----> Homepage <-----
-  root 'welcome#index', as: :welcome
+  root 'welcome#index', as: :root
   get 'about', :to => 'welcome#about', as: :about
   get 'about/privacy/policy', :to => 'welcome#privacy_policy', as: :privacy_policy
   get 'about/privacy/cookies', :to => 'welcome#cookies', as: :cookies
@@ -22,8 +22,8 @@ Rails.application.routes.draw do
   get 'about/api/apidoc.json', :to => 'welcome#apidoc', as: :apidoc
   get 'about/faq', :to => 'welcome#faq', as: :faq
 
-  # namespace :admin do
-  # -----> Jobs & Applications (#TODO: Server / Admin-namespace only ) <-----
+  # -----> Jobs & Applications <-----
+  # TODO: Server / Admin-namespace only
   resources :jobs do
     resources :applications
   end
@@ -35,7 +35,7 @@ Rails.application.routes.draw do
   get 'reviews', :to => 'reviews#index', as: :reviews
   get 'reviews/(/:user_id)', :to => 'reviews#for_user', as: :reviews_user
   post 'reviews', :to => 'reviews#index'
-  # end
+
   # -----> Feed-Generator <-----
   get 'find_jobs', :to => 'jobs#find', as: :jobs_find
   post 'find_jobs', :to => 'jobs#parse_inputs'
@@ -47,6 +47,9 @@ Rails.application.routes.draw do
   post 'sign_in', to: 'sessions#create', as: :log_in
   delete 'logout', to: 'sessions#destroy'
 
+  get "/auth/github/callback", to: 'oauth_callbacks#github', as: :auth_github_callback
+  get "/auth/google_oauth2/callback", to: 'oauth_callbacks#google', as: :auth_google_callback
+
   get 'password', to: 'passwords#edit', as: :edit_password
   patch 'password', to: 'passwords#update'
   get 'password/reset', to: 'password_resets#new'
@@ -55,10 +58,10 @@ Rails.application.routes.draw do
   patch 'password/reset/edit', to: 'password_resets#update'
 
   # -----> User management <-----
-  get 'profile', :to => 'profile#index', as: :profile_index
-  get 'profile/settings', :to => 'profile#settings', as: :profile_settings
-  get 'profile/edit', :to => 'profile#edit', as: :profile_edit
-
-  get 'user/applications', :to => 'applications#own_applications', as: :own_applications
-  get 'user/jobs', :to => 'jobs#own_jobs', as: :own_jobs
+  # get 'user/', :to => 'user#index', as: :user_index
+  get 'user/profile', :to => 'user#index', as: :profile_index
+  get 'user/user/settings', :to => 'user#settings', as: :profile_settings
+  get 'user/user/edit', :to => 'user#edit', as: :profile_edit
+  get 'user/applications', :to => 'user#own_applications', as: :own_applications
+  get 'user/jobs', :to => 'user#own_jobs', as: :own_jobs
 end

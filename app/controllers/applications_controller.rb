@@ -73,13 +73,6 @@ class ApplicationsController < ApplicationController
     end
   end
 
-  def own_applications
-    if require_user_logged_in!
-      # @applications = Application.find_by_applicant_id(Current.user.id)
-      # @applications = @application_service.find_by_user(Current.user.id).as_json
-      @applications = Application.all.where("applicant_id = #{Current.user.id}")
-    end
-  end
 
   private
 

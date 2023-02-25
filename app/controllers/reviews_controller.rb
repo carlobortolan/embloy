@@ -1,21 +1,28 @@
 class ReviewsController < ApplicationController
+  layout 'standard'
+
   def index
+    require_user_be_owner!
+    @reviews = @user.reviews.all
+  end
+
+  def new
+    require_user_logged_in!
+    @review = Review.new
+  end
+
+  def create
     if require_user_logged_in!
-      puts "INDEXING"
-      @user = Current.user
-      @reviews = @user.reviews
+      if @review.save
+        redirect_to @review
+      else
+        render :new, status: :unprocessable_entity
+      end
+
     end
   end
 
-  def for_user
-    if require_user_logged_in!
-      @user = User.find(params[:user_id])
-      @reviews = @user.reviews
-    end
-  end
-
-  def review_params
-    params.require(:review).permit(:rating, :message, :created_by, :id)
+  def application_params
+    params.require(:review).permit(:rating, :message, :application_documents)
   end
 end
-

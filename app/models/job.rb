@@ -8,4 +8,8 @@ class Job < ApplicationRecord
   validates :start_slot, presence: true
   validates :longitude, presence: true
   validates :latitude, presence: true
+
+  def profile
+    @job.update(view_count: @job.view_count + 1)
+  end
 end

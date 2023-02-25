@@ -2,7 +2,7 @@
 # require 'net/smtp'
 # require 'erb'
 class NotificationGenerator
-  # This class sends notifications to users using SMTP Protocol
+  # This class sends notifications to user using SMTP Protocol
   # @author Jan Hummel, Carlo Bortolan
 
   # @param [String] employer_name Name des Arbeitgebers

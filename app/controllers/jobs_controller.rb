@@ -67,12 +67,6 @@ class JobsController < ApplicationController
     puts "HELLO "
   end
 
-  def own_jobs
-    if require_user_logged_in!
-      @jobs = Job.all.where("user_id = #{Current.user.id}")
-    end
-  end
-
   private
 
   def job_params

@@ -17,7 +17,7 @@ class RegistrationsController < ApplicationController
     if @user.save
       # WelcomeMailer.with(user: @user).welcome_email.deliver_now
       session[:user_id] = @user.id
-      redirect_to welcome_path, notice: 'Successfully created account'
+      redirect_to root_path, notice: 'Successfully created account'
     else
       render :new
     end
