@@ -21,7 +21,7 @@ default: &default
 
 development:
   <<: *default
-  database: jobdata-development
+  database: jobdata_development
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -52,7 +52,7 @@ test:
 #
 production:
   <<: *default
-  database: jobdata-render
+  database: embloy_db
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
