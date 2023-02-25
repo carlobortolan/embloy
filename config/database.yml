@@ -10,18 +10,18 @@
 #   https://dev.mysql.com/doc/refman/5.7/en/password-hashing.html
 #
 default: &default
-  database: jobdata_development
+  database: jobdata_development_2
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  username: # leave empty
-  host: # leave empty
-  password: # leave empty
-  port: # leave empty
+  username: render_user
+  password: DfaK4nvTwBfd4C6A8GXzpgPLxYx2snQS
+  host: dpg-cfs2plsgqg43f68l0rg0-a.frankfurt-postgres.render.com
+  DATABASE_URL: postgres://render_user:DfaK4nvTwBfd4C6A8GXzpgPLxYx2snQS@dpg-cfs2plsgqg43f68l0rg0-a/jobdata
 
 development:
   <<: *default
-  database: jobdata_development
+  database: jobdata
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -52,14 +52,15 @@ test:
 #
 production:
   <<: *default
-  database: jobdata
+  database: jobdata_development_2
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  #  username: render_user
-  #  password: DfaK4nvTwBfd4C6A8GXzpgPLxYx2snQS
-  #  host: dpg-cfs2plsgqg43f68l0rg0-a.frankfurt-postgres.render.com
-  #  DATABASE_URL: postgres://render_user:DfaK4nvTwBfd4C6A8GXzpgPLxYx2snQS@dpg-cfs2plsgqg43f68l0rg0-a/jobdata
+  #    username: render_user
+  #    password: DfaK4nvTwBfd4C6A8GXzpgPLxYx2snQS
+  #    host: dpg-cfs2plsgqg43f68l0rg0-a.frankfurt-postgres.render.com
+  #    DATABASE_URL: postgres://render_user:DfaK4nvTwBfd4C6A8GXzpgPLxYx2snQS@dpg-cfs2plsgqg43f68l0rg0-a/jobdata
+
   username: <%= ENV["DATABASE_USER"] %>
   password: <%= ENV["DATABASE_PASSWORD"] %>
   host: <%= ENV["DATABASE_HOST"] %>
