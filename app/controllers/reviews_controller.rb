@@ -2,8 +2,9 @@ class ReviewsController < ApplicationController
   layout 'standard'
 
   def index
-    require_user_be_owner!
-    @reviews = @user.reviews.all
+    if require_user_be_owner!
+      @reviews = @user.reviews.all
+    end
   end
 
   def new

@@ -3,6 +3,7 @@ require_relative '../../lib/feed_generator.rb'
 class JobsController < ApplicationController
 
   def initialize
+    super
     @job_service = JobService.new
   end
 

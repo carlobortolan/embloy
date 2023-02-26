@@ -27,20 +27,9 @@
         <p class="text-center fw-bold mx-3 mb-0 text-muted">OR</p>
       </div>
 
-<!--      <a class="btn btn-dark btn-lg btn-block" style="background-color: #393D47" href="#!"-->
-<!--         role="button">-->
-<!--        <i class="fab fa-github me-2"></i>Continue with Github-->
-<!--      </a>-->
-
-<!--           </a>-->-->
-<!--      <a class="btn btn-dark btn-lg btn-block" style="background-color: #e3757c" href="#!"-->
-<!--         role="button">-->
-<!--        <i class="fab fa-google me-2"></i>Continue with Google-->
-<!--      </a>-->
     </form>
     <br>
-    <%#= button_to 'Continue with Twitter', 'https://embloy.onrender.com/auth/twitter', method: :post, class: 'btn btn-primary btn-lg btn-block', style: 'background-color: #3b5998' %>
-    <%= button_to 'Continue with Twitter', '/auth/twitter', method: :post, class: 'btn btn-primary btn-lg btn-block', style: 'background-color: #3b5998' %>
+    <%= button_to 'Continue with Twitter', '/auth/twitter', method: :post, class: 'btn btn-primary btn-lg btn-block', style: 'background-color: #3b5998', disable: true %>
     <br>
     <%#= button_to 'Continue with Google', 'https://embloy.onrender.com/auth/google_oauth2', method: :post, class: 'btn btn-dark btn-lg btn-block', style: 'background-color: #e3757c' %>
     <%= button_to 'Continue with Google', '/auth/google_oauth2', method: :post, class: 'btn btn-dark btn-lg btn-block', style: 'background-color: #e3757c' %>

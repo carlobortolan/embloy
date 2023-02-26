@@ -1,3 +1,4 @@
+<!--<nav class="navbar navbar-expand-sm bg-light">-->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
@@ -28,12 +29,28 @@
       </li>
 
     </ul>
+<!--        <div class="input-group rounded col-4" >-->
+<!--          <input type="search" class="form-control rounded sm-2 ml-5" placeholder="Search for jobs near you" aria-label="Search"/>-->
+<!--          <button class="btn btn-outline-success my-2 my-sm-0 btn-primary mr-5 ml-1" type="submit">Search#TODO</button>-->
+<!--        </div>-->
 
 
-    <form class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="search" placeholder="Search for jobs near you " aria-label="Search">
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search#TODO</button>
 
-    </form>
+    <% if Current.user %>
+      <%= button_to 'Logout', logout_path, method: :delete, class: "btn btn-danger top-0 start-0 ml-5" %>
+    <% else %>
+      <%= link_to "Login", sign_in_path, class: 'btn btn-primary top-0 start-0 ml-5' %>
+    <% end %>
+
+<!--    <ul class="navbar-nav">-->
+      <%#= render 'search/form' %>
+      <%#= render 'layouts/notifications' %>
+      <%#= render 'user/session_manager' %>
+<!--    </ul>-->
+
+    <!--    <form class="form-inline my-2 my-lg-0 ">-->
+    <!--      <input class="form-control mr-sm-2" type="search" placeholder="Search for jobs near you " aria-label="Search">-->
+
+    <!--    </form>-->
   </div>
 </nav>

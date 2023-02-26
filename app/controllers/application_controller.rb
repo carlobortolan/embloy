@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
   end
 
   def require_user_be_owner!
-    if Current.user.nil? || @job.user_id != Current.user.id
+    if Current.user.nil? || @job.nil? || @job.user_id != Current.user.id
       redirect_back(fallback_location: jobs_path, alert: 'Not allowed!')
       # job_path(@job), status: :unauthorized, alert: 'Not allowed'
       return false

@@ -4,6 +4,7 @@ class ApplicationsController < ApplicationController
   attr_accessor(:application_service, :user_service)
 
   def initialize
+    super
     @application_service = ApplicationService.new(nil, nil)
     @user_service = UserService.new
   end
