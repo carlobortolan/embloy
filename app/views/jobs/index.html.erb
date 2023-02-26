@@ -1,26 +1,23 @@
-<h1>Whats next?</h1>
-<div class="container card mt-5">
+<section id="hero" class="hero d-flex align-items-center">
+  <div class="container"><h1>Whats next?</h1>
+    <form action="#" class="form-search d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="200">
+      <input type="text" class="form-control" placeholder="ZIP, city or keywords">
+      <%#= text_field :search_input, type: "text", class: "form-search d-flex align-items-stretch mb-3", placeholder: "ZIP code or City" %>
+      <h3><%= link_to "Search", jobs_find_path, class: 'btn btn-primary' %></h3>
+    </form>
+  </div>
+</section>
 
-<h2><%= link_to "Search for jobs", jobs_find_path %></h2>
-<h2><%= link_to "New Job", new_job_path %></h2>
-<h1>All available Jobs</h1>
-
-<ul>
-  <% @jobs.each do |job| %>
-    <% if job.public? %>
-      <li>
-        <b><%= link_to job.title, job %></b>
-        <%= link_to "(apply)", new_job_application_path(job) %>
-      </li>
-    <% end %>
-  <% end %>
-</ul>
-
-
-<h2><%= link_to "go back", _back_url %></h2>
-
---------------------------------------<br>
-<%= link_to "Carlo Bortolan", "https://github.com/carlobortolan" %><br>
-<%= link_to "Jan Hummel", "https://github.com/github4touchdouble" %><br>
-<br>
-</div>
+<!-- Section-->
+<section class="py-5">
+  <div class="container px-4 px-lg-5 mt-5">
+    <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+      <% @jobs.each do |job| %>
+        <% if job.public? %>
+          <%= render "posting", job: job %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</section>
+<!-- Footer-->
