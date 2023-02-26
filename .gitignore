@@ -29,3 +29,7 @@
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
+
+# Ignore environment variables to access db remotly and allow oauth2.
+/config/application.yml
+/config/env_var.rb
