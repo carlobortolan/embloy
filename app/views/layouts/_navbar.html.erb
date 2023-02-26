@@ -1,56 +1,47 @@
-<!--<nav class="navbar navbar-expand-sm bg-light">-->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+<!-- ======= Header ======= -->
+<header id="header" class="header d-flex align-items-center fixed-top">
+  <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
 
-  <div class="collapse navbar-collapse" id="navbar">
+    <a href="index.html" class="logo d-flex align-items-center">
+      <!-- Uncomment the line below if you also wish to use an image logo -->
+      <!-- <img src="assets/img/logo.png" alt=""> -->
+      <h1>Embloy</h1>
+    </a>
 
-    <%= link_to "JobFinder", root_path, class: 'navbar-brand' %>
-
-    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-      <%= link_to "Profile", profile_index_path, class: 'nav-link' %>
-
-      <%= link_to "About", about_path, class: 'nav-link' %>
-
-      <%= link_to "API", api_path, class: 'nav-link' %>
-
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-          Jobs
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-          <%= link_to "Create Job", new_job_path, class: 'dropdown-item' %>
-          <%= link_to "Find Job", jobs_find_path, class: 'dropdown-item' %>
-          <%= link_to "All Jobs", jobs_path, class: 'dropdown-item' %>
-          <%= link_to "Your Jobs", own_jobs_path, class: 'dropdown-item' %>
-          <%= link_to "Your Applications", own_applications_path, class: 'dropdown-item' %>
-        </div>
-      </li>
-
-    </ul>
-<!--        <div class="input-group rounded col-4" >-->
-<!--          <input type="search" class="form-control rounded sm-2 ml-5" placeholder="Search for jobs near you" aria-label="Search"/>-->
-<!--          <button class="btn btn-outline-success my-2 my-sm-0 btn-primary mr-5 ml-1" type="submit">Search#TODO</button>-->
-<!--        </div>-->
+    <i class="mobile-nav-toggle mobile-nav-show bi bi-list"></i>
+    <i class="mobile-nav-toggle mobile-nav-hide d-none bi bi-x"></i>
+    <nav id="navbar" class="navbar">
+      <ul>
+        <li><%= link_to "Home", root_path %></li>
+        <li><%= link_to "About", about_path %></li>
+        <li><%= link_to "API", api_path %></li>
+        <li class="dropdown"><a href="#"><span>Jobs</span> <i class="bi bi-chevron-down dropdown-indicator"></i></a>
+          <ul>
+<!--            <li class="dropdown">-->
+<!--              <a href="#"><span>Deep Drop Down</span> <i class="bi bi-chevron-down dropdown-indicator"></i></a>-->
+<!--              <ul>-->
+<!--              </ul>-->
+<!--            </li>-->
+            <li><%= link_to "Create new jobs", new_job_path %></li>
+            <li><%= link_to "Find jobs", jobs_find_path %></li>
+            <li><%= link_to "All available jobs", jobs_path %></li>
+            <li><%= link_to "Your jobs", own_jobs_path %></li>
+            <li><%= link_to "Your applications", own_applications_path %></li>
+          </ul>
+        </li>
+        <li><%= link_to "Contact", help_path %></li>
 
 
+        <% if Current.user %>
+          <li><%= link_to "My Profile", profile_index_path, class: 'get-a-quote' %></li>
+        <% else %>
+          <%= link_to "Login", sign_in_path, class: 'get-a-quote' %>
+        <% end %>
 
-    <% if Current.user %>
-      <%= button_to 'Logout', logout_path, method: :delete, class: "btn btn-danger top-0 start-0 ml-5" %>
-    <% else %>
-      <%= link_to "Login", sign_in_path, class: 'btn btn-primary top-0 start-0 ml-5' %>
-    <% end %>
+      </ul>
+    </nav><!-- .navbar -->
 
-<!--    <ul class="navbar-nav">-->
-      <%#= render 'search/form' %>
-      <%#= render 'layouts/notifications' %>
-      <%#= render 'user/session_manager' %>
-<!--    </ul>-->
-
-    <!--    <form class="form-inline my-2 my-lg-0 ">-->
-    <!--      <input class="form-control mr-sm-2" type="search" placeholder="Search for jobs near you " aria-label="Search">-->
-
-    <!--    </form>-->
   </div>
-</nav>
+</header><!-- End Header -->
+<!-- End Header -->
+
