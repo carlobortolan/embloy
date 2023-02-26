@@ -1,4 +1,7 @@
-<%= stylesheet_link_tag "style" %>
-<h1>New Job</h1>
-
-<%= render "form", job: @job %>
+<section id="hero" class="hero d-flex  align-items-center">
+  <div class="container">
+  <%= stylesheet_link_tag "style" %>
+    <h1>New Job</h1>
+    <%= render "form", job: @job %>
+  </div>
+</section>

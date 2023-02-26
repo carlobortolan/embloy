@@ -21,21 +21,27 @@
         </div>
         <%= link_to 'Forgot your password?', password_reset_path, class: 'nav-link px-2' %>
       </div>
-      <%= f.submit 'Log In', ID: "sign_in_button" %>
 
-      <div class="divider d-flex align-items-center my-4">
+      <%= f.submit 'Log in', class: 'btn btn-dark btn-lg btn-block', style: 'get-a-quote' %>
+
+<!--      <div class="divider d-flex align-items-center my-4">-->
+      <div class = "divider align-items-center my-4">
         <p class="text-center fw-bold mx-3 mb-0 text-muted">OR</p>
       </div>
 
     </form>
-    <br>
-    <%= button_to 'Continue with Twitter', '/auth/twitter', method: :post, class: 'btn btn-primary btn-lg btn-block', style: 'background-color: #3b5998', disable: true %>
-    <br>
+    <!--    <br>-->
+    <%#= button_to 'Continue with Twitter', '/auth/twitter', method: :post, class: 'btn btn-primary btn-lg btn-block', style: 'background-color: #3b5998', disable: true %>
+    <!--    <br>-->
     <%#= button_to 'Continue with Google', 'https://embloy.onrender.com/auth/google_oauth2', method: :post, class: 'btn btn-dark btn-lg btn-block', style: 'background-color: #e3757c' %>
-    <%= button_to 'Continue with Google', '/auth/google_oauth2', method: :post, class: 'btn btn-dark btn-lg btn-block', style: 'background-color: #e3757c' %>
+    <%= button_to 'Continue with Google', '/auth/google_oauth2', method: :post, class: 'btn btn-dark btn-lg btn-block', style: 'background-color: #393D47' %>
     <br>
     <%= button_to 'Continue with GitHub', 'https://embloy.onrender.com/auth/github', method: :post, class: 'btn btn-dark btn-lg btn-block', style: 'background-color: #393D47' %>
     <%#= button_to 'Continue with GitHub', '/auth/github', method: :post, class: 'btn btn-dark btn-lg btn-block', style: 'background-color: #393D47' %>
 
   </div>
+  <p class="text-center text-muted mt-5 mb-0">Don't have an account yet?
+    <u>    <%= link_to "Create new account", sign_up_path, class: "fw-bold text-body" %></u>
+  </p>
+
 <% end %>

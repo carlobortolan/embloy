@@ -1,12 +1,16 @@
-<h1>Forgot your password?</h1>
+<section id="hero" class="hero d-flex  align-items-center">
+  <div class="container">
+    <h1>Forgot your password?</h1>
+      <%= form_with url: password_reset_path, class: "form-check d-flex align-items mb-3 bg-transparent", data_aos: "fade-up", data_aos_delay: "100" do |f| %>
 
-<%= form_with url: password_reset_path do |f| %>
-  <div class="form-outline mb-4">
-    <label class="form-label" for="form1Example13">Email address</label>
-    <%= f.email_field :email, id: 'form1Example13', class: "form-control form-control-lg", required: true %>
+
+        <div class="form-outline mb-4 bg-light">
+          <%= f.email_field :email, id: 'form1Example13', class: "form-control form-control-lg",placeholder: "Email address", required: true %>
+        </div>
+
+        <p>
+          <%= f.submit 'Reset Password', class: "btn btn-primary" %>
+        </p>
+      <% end %>
   </div>
-
-  <p>
-    <%= f.submit 'Reset Password' %>
-  </p>
-<% end %>
+</section>
