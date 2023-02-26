@@ -1,0 +1,191 @@
+<%= render "home/index.depr.html.erb.erb" %>
+
+
+
+<!-- Navigation-->
+<header class="masthead  features-icons bg-light text-center" style="background-image: url('')">
+
+  <div class="container position-relative ">
+
+    <div class="row justify-content-center">
+      <div class="col-xl-6">
+        <div class="text-center text-black">
+          <!-- Page heading-->
+          <br><br>
+          <h1 class="mb-5">Embloy yourself!</h1>
+          <!-- Search input-->
+          <div class="row">
+            <div class="input-group rounded col">
+              <input type="search" class="form-control form-control-lg" placeholder="Search for jobs near you" aria-label="Search"/>
+            </div>
+
+            <div class="col-auto">
+              <button class="btn btn-primary btn-lg btn-primary" id="searchButton" type="submit">Search</button>
+              <br><br><br>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+
+<% if Current.user %>
+  <div class="jumbotron">
+    <h1 class="display-4">
+      <%= "Hello, #{Current.user[:first_name]}!" %>
+    </h1>
+    <p class="lead"><i>Tired of working at StarBucks?</i> - Here's your chance to find a new job!</p>
+    <hr class="my-4">
+    <p>The best application to quickly find a fitting job for you or spontaneously provide work-opportunities to
+      others</p>
+    <%= link_to "Learn more", about_path, class: 'btn btn-primary btn-lg' %>
+  </div>
+
+<% else %>
+  <section class="features-icons bg-light text-center">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4">
+          <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
+            <div class="features-icons-icon d-flex"><i class="bi-window m-auto text-primary"></i></div>
+            <h3><%= link_to "Create an account", sign_up_path, class: 'text-dark' %></h3>
+            <p class="lead mb-0">We just need your email, name and a password</p>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
+            <div class="features-icons-icon d-flex"><i class="bi-layers m-auto text-primary"></i></div>
+            <h3><%= link_to "Select your preferences", profile_settings_path, class: 'text-dark' %></h3>
+            <p class="lead mb-0">So that we can tailor your feed to your skills</p>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="features-icons-item mx-auto mb-0 mb-lg-3">
+            <div class="features-icons-icon d-flex"><i class="bi-terminal m-auto text-primary"></i></div>
+            <h3>That's it!</h3>
+            <p class="lead mb-0">You're ready to start looking for new career opportunities, good luck!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<% end %>
+
+<!-- Icons Grid-->
+<div id="carouselExampleIndicators" class="carousel slide mt-5" data-ride="carousel">
+  <ol class="carousel-indicators">
+    <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+    <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+    <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+  </ol>
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <div class="text-center bg-secondary text-white">
+        <br><br>
+        <h1>Start right away and<br>
+          <%= link_to "create a new job offering", new_job_path, class: 'secondary' %>!
+        </h1>
+        <br><br></div>
+    </div>
+    <div class="carousel-item">
+      <div class="text-center bg-secondary text-white">
+        <br><br>
+        <h2 class="mb-5">Ready to find out what's next?</h2>
+        <h2 class="mb-5">Head over to the
+          <%= link_to "job feed", jobs_find_path, class: 'dark' %>!</h2><br>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <div class="text-center text-black">
+        <div class="card bg-secondary text-white p-3">
+          <blockquote class="blockquote mb-0 card-body">
+            <h2> The best application to quickly find a fitting job for you or spontaneously provide work-opportunities
+              to others</h2>
+          </blockquote>
+        </div>
+      </div>
+    </div>
+    <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="sr-only">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="sr-only">Next</span>
+    </a>
+  </div>
+</div>
+
+
+
+
+<!-- Image Showcases-->
+<br>
+<br>
+<section class="showcase mt-5 mb-5">
+  <div class="container-fluid p-0">
+    <div class="row g-0">
+      <div class="col-lg-6 order-lg-2 text-white showcase-img" style="background-image: url('https://www.pixelstalk.net/wp-content/uploads/2016/04/Photos-download-abstract-minimalist-wallpaper-HD.jpg')"></div>
+      <div class="col-lg-6 order-lg-1 my-auto showcase-text">
+        <h2>Ultra accessible feed</h2>
+        <p class="lead mb-0">Log into your account and browse with ease through your personalized feed to find your next
+          job opportunity with one click. </p>
+      </div>
+    </div>
+    <div class="row g-0">
+      <div class="col-lg-6 text-white showcase-img" style="background-image: url('https://static.vecteezy.com/system/resources/previews/002/737/454/original/minimal-geometric-blue-background-dynamic-shapes-composition-with-orange-lines-abstract-background-modern-hipster-futuristic-graphic-abstract-background-texture-design-bright-poster-banner-free-vector.jpg')"></div>
+      <div class="col-lg-6 my-auto showcase-text">
+        <h2>Screen as many jobs as possible, as quickly as possible </h2>
+        <p class="lead mb-0">Newly improved, and full of handy functions, our <em>company dashboard</em> will assist you
+          to find the best employee for your business!
+          - Head over to your profile and finish the last configuration steps</p>
+      </div>
+    </div>
+    <div class="row g-0">
+      <div class="col-lg-6 order-lg-2 text-white showcase-img" style="background-image: url('https://static.vecteezy.com/system/resources/previews/000/676/995/original/modern-abstract-background.jpg')"></div>
+      <div class="col-lg-6 order-lg-1 my-auto showcase-text">
+        <h2>Easy to Use & Customize</h2>
+        <p class="lead mb-0">Landing Page is just HTML and CSS with a splash of SCSS for users who demand some deeper
+          customization options. Out of the box, just add your content and images, and your new landing page will be
+          ready to go!</p>
+      </div>
+    </div>
+  </div>
+</section>
+<!--   Testimonials-->
+<br>
+<br>
+<br>
+<section class="testimonials text-center bg-light">
+  <div class="container mt-5">
+    <h2 class="mb-5">What people are saying...</h2>
+    <div class="row">
+      <div class="col-lg-4">
+        <div class="testimonial-item mx-auto mb-5 mb-lg-0">
+          <img class="img-fluid rounded-circle mb-3" src="assets/img/testimonials-1.jpg" alt="..."/>
+          <h5>Margaret E.</h5>
+          <p class="font-weight-light mb-0">"This is fantastic! Thanks so much guys!"</p>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="testimonial-item mx-auto mb-5 mb-lg-0">
+          <img class="img-fluid rounded-circle mb-3" src="assets/img/testimonials-2.jpg" alt="..."/>
+          <h5>Fred S.</h5>
+          <p class="font-weight-light mb-0">"Bootstrap is amazing. I've been using it to create lots of super nice
+            landing pages."</p>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="testimonial-item mx-auto mb-5 mb-lg-0">
+          <img class="img-fluid rounded-circle mb-3" src="assets/img/testimonials-3.jpg" alt="..."/>
+          <h5>Sarah W.</h5>
+          <p class="font-weight-light mb-0">"Thanks so much for making these free resources available to us!"</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -2,7 +2,7 @@
 <header id="header" class="header d-flex align-items-center fixed-top">
   <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
 
-    <a href="index.html" class="logo d-flex align-items-center">
+    <a href="<% root_path %>" class="logo d-flex align-items-center">
       <!-- Uncomment the line below if you also wish to use an image logo -->
       <!-- <img src="assets/img/logo.png" alt=""> -->
       <h1>Embloy</h1>
@@ -17,11 +17,11 @@
         <li><%= link_to "API", api_path %></li>
         <li class="dropdown"><a href="#"><span>Jobs</span> <i class="bi bi-chevron-down dropdown-indicator"></i></a>
           <ul>
-<!--            <li class="dropdown">-->
-<!--              <a href="#"><span>Deep Drop Down</span> <i class="bi bi-chevron-down dropdown-indicator"></i></a>-->
-<!--              <ul>-->
-<!--              </ul>-->
-<!--            </li>-->
+            <!--            <li class="dropdown">-->
+            <!--              <a href="#"><span>Deep Drop Down</span> <i class="bi bi-chevron-down dropdown-indicator"></i></a>-->
+            <!--              <ul>-->
+            <!--              </ul>-->
+            <!--            </li>-->
             <li><%= link_to "Create new jobs", new_job_path %></li>
             <li><%= link_to "Find jobs", jobs_find_path %></li>
             <li><%= link_to "All available jobs", jobs_path %></li>

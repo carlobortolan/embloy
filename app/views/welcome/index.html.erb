@@ -1,187 +1,599 @@
-<!-- Navigation-->
-<header class="masthead  features-icons bg-light text-center" style="background-image: url('')">
+<!-- ======= Hero Section ======= -->
+<section id="hero" class="hero d-flex align-items-center">
+  <div class="container">
+    <div class="row gy-4 d-flex justify-content-between">
+      <div class="col-lg-6 order-2 order-lg-1 d-flex flex-column justify-content-center">
+        <h2 data-aos="fade-up">Embloy yourself!</h2>
+        <p data-aos="fade-up" data-aos-delay="100">The best application to quickly find a fitting job for you or
+          spontaneously provide work-opportunities to others.</p>
 
-  <div class="container position-relative ">
+        <form action="#" class="form-search d-flex align-items-stretch mb-3" data-aos="fade-up" data-aos-delay="200">
+          <input type="text" class="form-control" placeholder="ZIP code or CitY">
+          <%#= text_field :search_input, type: "text", class: "form-search d-flex align-items-stretch mb-3", placeholder: "ZIP code or City" %>
+          <h3><%= link_to "Search", jobs_find_path, class: 'btn btn-primary' %></h3>
+        </form>
 
-    <div class="row justify-content-center">
-      <div class="col-xl-6">
-        <div class="text-center text-black">
-          <!-- Page heading-->
-          <br><br>
-          <h1 class="mb-5">Embloy yourself!</h1>
-          <!-- Search input-->
-          <div class="row">
-            <div class="input-group rounded col">
-              <input type="search" class="form-control form-control-lg" placeholder="Search for jobs near you" aria-label="Search"/>
+        <div class="row gy-4" data-aos="fade-up" data-aos-delay="400">
+
+          <div class="col-lg-3 col-6">
+            <div class="stats-item text-center w-100 h-100">
+              <span data-purecounter-start="0" data-purecounter-end=<%= User.count %> data-purecounter-duration="1" class="purecounter"></span>
+              <p>Clients</p>
             </div>
+          </div><!-- End Stats Item -->
 
-            <div class="col-auto">
-              <button class="btn btn-primary btn-lg btn-primary" id="searchButton" type="submit">Search</button>
-              <br><br><br>
+          <div class="col-lg-3 col-6">
+            <div class="stats-item text-center w-100 h-100">
+              <span data-purecounter-start="0" data-purecounter-end=<%= Job.count %> data-purecounter-duration="1" class="purecounter"></span>
+              <p>Jobs</p>
             </div>
-          </div>
+          </div><!-- End Stats Item -->
+
+          <div class="col-lg-3 col-6">
+            <div class="stats-item text-center w-100 h-100">
+              <span data-purecounter-start="0" data-purecounter-end=<%= Application.count %> data-purecounter-duration="1" class="purecounter"></span>
+              <p>Applications</p>
+            </div>
+          </div><!-- End Stats Item -->
+
+          <div class="col-lg-3 col-6">
+            <div class="stats-item text-center w-100 h-100">
+              <span data-purecounter-start="0" data-purecounter-end=<%= CompanyUser.count %> data-purecounter-duration="1" class="purecounter"></span>
+              <p>Companies</p>
+            </div>
+          </div><!-- End Stats Item -->
+
         </div>
       </div>
+
+      <div class="col-lg-5 order-1 order-lg-2 hero-img" data-aos="zoom-out">
+        <img src="assets/img/hero-img.svg" class="img-fluid mb-3 mb-lg-0" alt="">
+      </div>
+
     </div>
   </div>
-</header>
+</section><!-- End Hero Section -->
 
+<main id="main">
 
-
-<% if Current.user %>
-  <div class="jumbotron">
-    <h1 class="display-4">
-      <%= "Hello, #{Current.user[:first_name]}!" %>
-    </h1>
-    <p class="lead"><i>Tired of working at StarBucks?</i> - Here's your chance to find a new job!</p>
-    <hr class="my-4">
-    <p>The best application to quickly find a fitting job for you or spontaneously provide work-opportunities to
-      others</p>
-    <%= link_to "Learn more", about_path, class: 'btn btn-primary btn-lg' %>
-  </div>
-
-<% else %>
-  <section class="features-icons bg-light text-center">
+  <!-- ======= Featured Services Section ======= -->
+  <section id="featured-services" class="featured-services">
     <div class="container">
-      <div class="row">
-        <div class="col-lg-4">
-          <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
-            <div class="features-icons-icon d-flex"><i class="bi-window m-auto text-primary"></i></div>
-            <h3><%= link_to "Create an account", sign_up_path, class: 'text-dark' %></h3>
-            <p class="lead mb-0">We just need your email, name and a password</p>
+
+      <div class="row gy-4">
+
+        <div class="col-lg-4 col-md-6 service-item d-flex" data-aos="fade-up">
+          <div class="icon flex-shrink-0"><i class="fa-solid fa-cart-flatbed"></i></div>
+          <div>
+            <h4 class="title">Create an account</h4>
+            <p class="description">We just need your email, name and a password</p>
+            <a href="<%= sign_up_path %>" class="readmore stretched-link">
+              <span>Start right away</span>
+              <i class="bi bi-arrow-right"></i></a>
           </div>
         </div>
-        <div class="col-lg-4">
-          <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
-            <div class="features-icons-icon d-flex"><i class="bi-layers m-auto text-primary"></i></div>
-            <h3><%= link_to "Select your preferences", profile_settings_path, class: 'text-dark' %></h3>
-            <p class="lead mb-0">So that we can tailor your feed to your skills</p>
+        <!-- End Service Item -->
+
+        <div class="col-lg-4 col-md-6 service-item d-flex" data-aos="fade-up" data-aos-delay="100">
+          <div class="icon flex-shrink-0"><i class="fa-solid fa-truck"></i></div>
+          <div>
+            <h4 class="title">Select your preferences</h4>
+            <p class="description">Give us a short overview of what you're looking for so that we can tailor your feed
+              to your skills.</p>
+            <a href="<%= sign_up_path %>" class="readmore stretched-link">
+              <span>Start right away</span>
+              <i class="bi bi-arrow-right"></i></a>
           </div>
-        </div>
-        <div class="col-lg-4">
-          <div class="features-icons-item mx-auto mb-0 mb-lg-3">
-            <div class="features-icons-icon d-flex"><i class="bi-terminal m-auto text-primary"></i></div>
-            <h3>That's it!</h3>
-            <p class="lead mb-0">You're ready to start looking for new career opportunities, good luck!</p>
+        </div><!-- End Service Item -->
+
+        <div class="col-lg-4 col-md-6 service-item d-flex" data-aos="fade-up" data-aos-delay="200">
+          <div class="icon flex-shrink-0"><i class="fa-solid fa-truck-ramp-box"></i></div>
+          <div>
+            <h4 class="title">That's it!</h4>
+            <p class="description">You're ready to start looking for new career opportunities, good luck!</p>
+            <a href="<%= jobs_find_path %>" class="readmore stretched-link">
+              <span>See all available jobs</span>
+              <i class="bi bi-arrow-right"></i></a>
           </div>
+        </div><!-- End Service Item -->
+
+      </div>
+
+    </div>
+  </section><!-- End Featured Services Section -->
+
+  <!-- ======= About Us Section ======= -->
+  <section id="about" class="about pt-0">
+    <div class="container" data-aos="fade-up">
+
+      <div class="row gy-4">
+        <div class="col-lg-6 position-relative align-self-start order-lg-last order-first">
+          <img src="assets/img/about.jpg" class="img-fluid" alt="">
+          <a href="https://www.youtube.com/watch?v=LXb3EKWsInQ" class="glightbox play-btn"></a>
+        </div>
+        <div class="col-lg-6 content order-last  order-lg-first">
+          <h3>About Us</h3>
+          <p>
+            Dolor iure expedita id fuga asperiores qui sunt consequatur minima. Quidem voluptas deleniti. Sit quia
+            molestiae quia quas qui magnam itaque veritatis dolores. Corrupti totam ut eius incidunt reiciendis
+            veritatis asperiores placeat.
+          </p>
+          <ul>
+            <li data-aos="fade-up" data-aos-delay="100">
+              <i class="bi bi-diagram-3"></i>
+              <div>
+                <h5>Ullamco laboris nisi ut aliquip consequat</h5>
+                <p>Magni facilis facilis repellendus cum excepturi quaerat praesentium libre trade</p>
+              </div>
+            </li>
+            <li data-aos="fade-up" data-aos-delay="200">
+              <i class="bi bi-fullscreen-exit"></i>
+              <div>
+                <h5>Magnam soluta odio exercitationem reprehenderi</h5>
+                <p>Quo totam dolorum at pariatur aut distinctio dolorum laudantium illo direna pasata redi</p>
+              </div>
+            </li>
+            <li data-aos="fade-up" data-aos-delay="300">
+              <i class="bi bi-broadcast"></i>
+              <div>
+                <h5>Voluptatem et qui exercitationem</h5>
+                <p>Et velit et eos maiores est tempora et quos dolorem autem tempora incidunt maxime veniam</p>
+              </div>
+            </li>
+          </ul>
         </div>
       </div>
-    </div>
-  </section>
 
-<% end %>
-
-<!-- Icons Grid-->
-<div id="carouselExampleIndicators" class="carousel slide mt-5" data-ride="carousel">
-  <ol class="carousel-indicators">
-    <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-    <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-    <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
-  </ol>
-  <div class="carousel-inner">
-    <div class="carousel-item active">
-      <div class="text-center bg-secondary text-white">
-        <br><br>
-        <h1>Start right away and<br>
-          <%= link_to "create a new job offering", new_job_path, class: 'secondary' %>!
-        </h1>
-        <br><br></div>
     </div>
-    <div class="carousel-item">
-      <div class="text-center bg-secondary text-white">
-        <br><br>
-        <h2 class="mb-5">Ready to find out what's next?</h2>
-        <h2 class="mb-5">Head over to the
-          <%= link_to "job feed", jobs_find_path, class: 'dark' %>!</h2><br>
+  </section><!-- End About Us Section -->
+
+  <!-- ======= Services Section ======= -->
+  <section id="service" class="services pt-0">
+    <div class="container" data-aos="fade-up">
+
+      <div class="section-header">
+        <span>Our Services</span>
+        <h2>Our Services</h2>
+
       </div>
+
+      <div class="row gy-4">
+
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+          <div class="card">
+            <div class="card-img">
+              <img src="assets/img/storage-service.jpg" alt="" class="img-fluid">
+            </div>
+            <h3><a href="<%= new_job_path %>" class="stretched-link">Easy job listing</a></h3>
+            <p>Cumque eos in qui numquam. Aut aspernatur perferendis sed atque quia voluptas quisquam repellendus
+              temporibus itaqueofficiis odit</p>
+          </div>
+        </div><!-- End Card Item -->
+
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+          <div class="card">
+            <div class="card-img">
+              <img src="assets/img/logistics-service.jpg" alt="" class="img-fluid">
+            </div>
+            <h3><a href="<%= own_applications_path %>" class="stretched-link">Uncomplicated application</a></h3>
+            <p>Asperiores provident dolor accusamus pariatur dolore nam id audantium ut et iure incidunt molestiae dolor
+              ipsam ducimus occaecati nisi</p>
+          </div>
+        </div><!-- End Card Item -->
+
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+          <div class="card">
+            <div class="card-img">
+              <img src="assets/img/cargo-service.jpg" alt="" class="img-fluid">
+            </div>
+            <h3><a href="<%= find_jobs_path %>" class="stretched-link">Intelligent feed</a></h3>
+            <p>Dicta quam similique quia architecto eos nisi aut ratione aut ipsum reiciendis sit doloremque oluptatem
+              aut et molestiae ut et nihil</p>
+          </div>
+        </div><!-- End Card Item -->
+
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
+          <div class="card">
+            <div class="card-img">
+              <img src="assets/img/trucking-service.jpg" alt="" class="img-fluid">
+            </div>
+            <h3><a href="
+              <% about_path %>" class="stretched-link">„Italian Uber Model“</a></h3>
+            <p>We are simply intermediaries and we do not get involved 100% in the employment relationship between the
+              employer and the employee. </p>
+          </div>
+        </div><!-- End Card Item -->
+
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="500">
+          <div class="card">
+            <div class="card-img">
+              <img src="assets/img/packaging-service.jpg" alt="" class="img-fluid">
+            </div>
+            <h3><a href="<%= about_path %>" class="stretched-link">Open source</a></h3>
+            <p>Worried about your data? We provide 100% transparency: Everybody is able to access our code and find out
+              for themselves how we use your data.</p>
+          </div>
+        </div><!-- End Card Item -->
+
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="600">
+          <div class="card">
+            <div class="card-img">
+              <img src="assets/img/warehousing-service.jpg" alt="" class="img-fluid">
+            </div>
+            <h3><a href="<%= about_path %>" class="stretched-link">Soon also as a mobile app</a></h3>
+            <p>Don't want to have to use your browser to find new opportunities? Don't worry, soon you'll be able to
+              browse through your feed and finding a new job while laying on your sofa using embloy-mobile.</p>
+          </div>
+        </div><!-- End Card Item -->
+
+      </div>
+
     </div>
-    <div class="carousel-item">
-      <div class="text-center text-black">
-        <div class="card bg-secondary text-white p-3">
-          <blockquote class="blockquote mb-0 card-body">
-            <h2> The best application to quickly find a fitting job for you or spontaneously provide work-opportunities
-              to others</h2>
-          </blockquote>
+  </section><!-- End Services Section -->
+
+  <!-- ======= Call To Action Section ======= -->
+  <section id="call-to-action" class="call-to-action">
+    <div class="container" data-aos="zoom-out">
+
+      <div class="row justify-content-center">
+        <div class="col-lg-8 text-center">
+          <h3>Create a new job posting</h3>
+          <p> Don't waste any time and start to find the best employee for your business. Just head over
+            to <%= link_to "Submit job offering", jobs_path, class: "cta-btn" %>
         </div>
       </div>
+
     </div>
-    <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="sr-only">Previous</span>
-    </a>
-    <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="sr-only">Next</span>
-    </a>
-  </div>
-</div>
+  </section><!-- End Call To Action Section -->
 
+  <!-- ======= Features Section ======= -->
+  <section id="features" class="features">
+    <div class="container">
 
+      <div class="row gy-4 align-items-center features-item" data-aos="fade-up">
 
+        <div class="col-md-5">
+          <img src="assets/img/features-1.jpg" class="img-fluid" alt="">
+        </div>
+        <div class="col-md-7">
+          <h3>Ultra accessible feed.</h3>
+          <p class="fst-italic">
+            Log into your account and browse with ease through your personalized feed to find your next job opportunity
+            with one click.
+          </p>
+          <ul>
+            <li><i class="bi bi-check"></i> Fast.</li>
+            <li><i class="bi bi-check"></i> Uncomplicated.</li>
+            <li><i class="bi bi-check"></i> Easy to use.</li>
+          </ul>
+        </div>
+      </div><!-- Features Item -->
 
-<!-- Image Showcases-->
-<br>
-<br>
-<section class="showcase mt-5 mb-5">
-  <div class="container-fluid p-0">
-    <div class="row g-0">
-      <div class="col-lg-6 order-lg-2 text-white showcase-img" style="background-image: url('https://www.pixelstalk.net/wp-content/uploads/2016/04/Photos-download-abstract-minimalist-wallpaper-HD.jpg')"></div>
-      <div class="col-lg-6 order-lg-1 my-auto showcase-text">
-        <h2>Ultra accessible feed</h2>
-        <p class="lead mb-0">Log into your account and browse with ease through your personalized feed to find your next
-          job opportunity with one click. </p>
+      <div class="row gy-4 align-items-center features-item" data-aos="fade-up">
+        <div class="col-md-5 order-1 order-md-2">
+          <img src="assets/img/features-2.jpg" class="img-fluid" alt="">
+        </div>
+        <div class="col-md-7 order-2 order-md-1">
+          <h3>Screen as many jobs as possible, as quickly as possible </h3>
+          <p class="fst-italic">
+            Newly improved, and full of handy functions, our company dashboard will assist you to find the best employee
+            for your business! - Head over to your profile and finish the last configuration steps </p>
+          <p>
+            #TODO: ADMIN DASHBOARD
+          </p>
+        </div>
+      </div><!-- Features Item -->
+
+      <div class="row gy-4 align-items-center features-item" data-aos="fade-up">
+        <div class="col-md-5">
+          <img src="assets/img/features-3.jpg" class="img-fluid" alt="">
+        </div>
+        <div class="col-md-7">
+          <h3>Easy to Use & Customize</h3>
+          <p>We want you to help you find a new job as soon as possible. But, To find jobs that match your preferences
+            we first need some information.</p>
+          <ul>
+            <li><i class="bi bi-check"></i> Start off by adding a profile image.</li>
+            <li><i class="bi bi-check"></i> Tell us about yourself.</li>
+            <li><i class="bi bi-check"></i> Upload additional documents (premium only).</li>
+          </ul>
+        </div>
+      </div><!-- Features Item -->
+
+      <div class="row gy-4 align-items-center features-item" data-aos="fade-up">
+        <div class="col-md-5 order-1 order-md-2">
+          <img src="assets/img/features-4.jpg" class="img-fluid" alt="">
+        </div>
+        <div class="col-md-7 order-2 order-md-1">
+          <h3>Contribute to our project</h3>
+          <p class="fst-italic">
+            Have a look at our <%= link_to "GitLab repository", "https://gitlab.com/carlobortolan/JobFinderOnRails" %> to sumbit issues and help us impove our services.
+          </p>
+          <p>
+            Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
+            velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+            culpa qui officia deserunt mollit anim id est laborum
+          </p>
+        </div>
+      </div><!-- Features Item -->
+
+    </div>
+  </section><!-- End Features Section -->
+
+  <!-- ======= Pricing Section ======= -->
+  <section id="pricing" class="pricing pt-0">
+    <div class="container" data-aos="fade-up">
+
+      <div class="section-header">
+        <span>Pricing</span>
+        <h2>Pricing</h2>
+
       </div>
-    </div>
-    <div class="row g-0">
-      <div class="col-lg-6 text-white showcase-img" style="background-image: url('https://static.vecteezy.com/system/resources/previews/002/737/454/original/minimal-geometric-blue-background-dynamic-shapes-composition-with-orange-lines-abstract-background-modern-hipster-futuristic-graphic-abstract-background-texture-design-bright-poster-banner-free-vector.jpg')"></div>
-      <div class="col-lg-6 my-auto showcase-text">
-        <h2>Screen as many jobs as possible, as quickly as possible </h2>
-        <p class="lead mb-0">Newly improved, and full of handy functions, our <em>company dashboard</em> will assist you
-          to find the best employee for your business!
-          - Head over to your profile and finish the last configuration steps</p>
+
+      <div class="row gy-4">
+
+        <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="pricing-item">
+            <h3>Free Plan</h3>
+            <h4><sup>$</sup>0<span> / month</span></h4>
+            <ul>
+              <li><i class="bi bi-check"></i> Full job-feed accessibility</li>
+              <li><i class="bi bi-check"></i> Unlimited number of applications</li>
+              <li><i class="bi bi-check"></i> Unlimited number of job-listings</li>
+              <li class="na"><i class="bi bi-x"></i> <span>No ads</span></li>
+              <li class="na"><i class="bi bi-x"></i> <span>Full customizable profile</span></li>
+            </ul>
+            <a href="https://paypal.me/carlobortolan" class="buy-btn">Buy Now</a>
+          </div>
+        </div><!-- End Pricing Item -->
+
+        <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+          <div class="pricing-item featured">
+            <h3>Business Plan</h3>
+            <h4><sup>$</sup>29<span> / month</span></h4>
+            <ul>
+              <li><i class="bi bi-check"></i> Full job-feed accessibility</li>
+              <li><i class="bi bi-check"></i> Unlimited number of applications</li>
+              <li><i class="bi bi-check"></i> Unlimited number of job-listings</li>
+              <li><i class="bi bi-check"></i> No ads</li>
+              <li class="na"><i class="bi bi-x"></i> <span>extended CVs</span></li>
+            </ul>
+            <a href="https://paypal.me/carlobortolan" class="buy-btn">Buy Now</a>
+          </div>
+        </div><!-- End Pricing Item -->
+
+        <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
+          <div class="pricing-item">
+            <h3>Premium Plan</h3>
+            <h4><sup>$</sup>49<span> / month</span></h4>
+            <ul>
+              <li><i class="bi bi-check"></i> Full job-feed accessibility</li>
+              <li><i class="bi bi-check"></i> Unlimited number of applications</li>
+              <li><i class="bi bi-check"></i> Unlimited number of job-listings</li>
+              <li><i class="bi bi-check"></i> No ads</li>
+              <li><i class="bi bi-check"></i> extended CVs</li>
+            </ul>
+            <a href="https://paypal.me/carlobortolan" class="buy-btn">Buy Now</a>
+          </div>
+        </div><!-- End Pricing Item -->
+
       </div>
+
     </div>
-    <div class="row g-0">
-      <div class="col-lg-6 order-lg-2 text-white showcase-img" style="background-image: url('https://static.vecteezy.com/system/resources/previews/000/676/995/original/modern-abstract-background.jpg')"></div>
-      <div class="col-lg-6 order-lg-1 my-auto showcase-text">
-        <h2>Easy to Use & Customize</h2>
-        <p class="lead mb-0">Landing Page is just HTML and CSS with a splash of SCSS for users who demand some deeper
-          customization options. Out of the box, just add your content and images, and your new landing page will be
-          ready to go!</p>
+  </section><!-- End Pricing Section -->
+
+  <!-- ======= Testimonials Section ======= -->
+  <section id="testimonials" class="testimonials">
+    <div class="container">
+
+      <div class="slides-1 swiper" data-aos="fade-up">
+        <div class="swiper-wrapper">
+
+          <div class="swiper-slide">
+            <div class="testimonial-item">
+              <img src="assets/img/testimonials/testimonials-1.jpg" class="testimonial-img" alt="">
+              <h3>Saul Goodman</h3>
+              <h4>Ceo &amp; Founder</h4>
+              <div class="stars">
+                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+              </div>
+              <p>
+                <i class="bi bi-quote quote-icon-left"></i>
+                Proin iaculis purus consequat sem cure digni ssim donec porttitora entum suscipit rhoncus. Accusantium
+                quam, ultricies eget id, aliquam eget nibh et. Maecen aliquam, risus at semper.
+                <i class="bi bi-quote quote-icon-right"></i>
+              </p>
+            </div>
+          </div><!-- End testimonial item -->
+
+          <div class="swiper-slide">
+            <div class="testimonial-item">
+              <img src="assets/img/testimonials/testimonials-2.jpg" class="testimonial-img" alt="">
+              <h3>Sara Wilsson</h3>
+              <h4>Designer</h4>
+              <div class="stars">
+                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+              </div>
+              <p>
+                <i class="bi bi-quote quote-icon-left"></i>
+                Export tempor illum tamen malis malis eram quae irure esse labore quem cillum quid cillum eram malis
+                quorum velit fore eram velit sunt aliqua noster fugiat irure amet legam anim culpa.
+                <i class="bi bi-quote quote-icon-right"></i>
+              </p>
+            </div>
+          </div><!-- End testimonial item -->
+
+          <div class="swiper-slide">
+            <div class="testimonial-item">
+              <img src="assets/img/testimonials/testimonials-3.jpg" class="testimonial-img" alt="">
+              <h3>Jena Karlis</h3>
+              <h4>Store Owner</h4>
+              <div class="stars">
+                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+              </div>
+              <p>
+                <i class="bi bi-quote quote-icon-left"></i>
+                Enim nisi quem export duis labore cillum quae magna enim sint quorum nulla quem veniam duis minim tempor
+                labore quem eram duis noster aute amet eram fore quis sint minim.
+                <i class="bi bi-quote quote-icon-right"></i>
+              </p>
+            </div>
+          </div><!-- End testimonial item -->
+
+          <div class="swiper-slide">
+            <div class="testimonial-item">
+              <img src="assets/img/testimonials/testimonials-4.jpg" class="testimonial-img" alt="">
+              <h3>Matt Brandon</h3>
+              <h4>Freelancer</h4>
+              <div class="stars">
+                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+              </div>
+              <p>
+                <i class="bi bi-quote quote-icon-left"></i>
+                Fugiat enim eram quae cillum dolore dolor amet nulla culpa multos export minim fugiat minim velit minim
+                dolor enim duis veniam ipsum anim magna sunt elit fore quem dolore labore illum veniam.
+                <i class="bi bi-quote quote-icon-right"></i>
+              </p>
+            </div>
+          </div><!-- End testimonial item -->
+
+          <div class="swiper-slide">
+            <div class="testimonial-item">
+              <img src="assets/img/testimonials/testimonials-5.jpg" class="testimonial-img" alt="">
+              <h3>John Larson</h3>
+              <h4>Entrepreneur</h4>
+              <div class="stars">
+                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+              </div>
+              <p>
+                <i class="bi bi-quote quote-icon-left"></i>
+                Quis quorum aliqua sint quem legam fore sunt eram irure aliqua veniam tempor noster veniam enim culpa
+                labore duis sunt culpa nulla illum cillum fugiat legam esse veniam culpa fore nisi cillum quid.
+                <i class="bi bi-quote quote-icon-right"></i>
+              </p>
+            </div>
+          </div><!-- End testimonial item -->
+
+        </div>
+        <div class="swiper-pagination"></div>
       </div>
+
     </div>
-  </div>
-</section>
-<!--   Testimonials-->
-<br>
-<br>
-<br>
-<section class="testimonials text-center bg-light">
-  <div class="container mt-5">
-    <h2 class="mb-5">What people are saying...</h2>
-    <div class="row">
-      <div class="col-lg-4">
-        <div class="testimonial-item mx-auto mb-5 mb-lg-0">
-          <img class="img-fluid rounded-circle mb-3" src="assets/img/testimonials-1.jpg" alt="..."/>
-          <h5>Margaret E.</h5>
-          <p class="font-weight-light mb-0">"This is fantastic! Thanks so much guys!"</p>
+  </section><!-- End Testimonials Section -->
+
+  <!-- ======= Frequently Asked Questions Section ======= -->
+  <section id="faq" class="faq">
+    <div class="container" data-aos="fade-up">
+
+      <div class="section-header">
+        <span>Frequently Asked Questions</span>
+        <h2>Frequently Asked Questions</h2>
+
+      </div>
+
+      <div class="row justify-content-center" data-aos="fade-up" data-aos-delay="200">
+        <div class="col-lg-10">
+
+          <div class="accordion accordion-flush" id="faqlist">
+
+            <div class="accordion-item">
+              <h3 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq-content-1">
+                  <i class="bi bi-question-circle question-icon"></i>
+                  What happens with my data?
+                </button>
+              </h3>
+              <div id="faq-content-1" class="accordion-collapse collapse" data-bs-parent="#faqlist">
+                <div class="accordion-body">
+                  We sell it.
+                </div>
+              </div>
+            </div><!-- # Faq item-->
+
+            <div class="accordion-item">
+              <h3 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq-content-2">
+                  <i class="bi bi-question-circle question-icon"></i>
+                  Do I need to create a new account?
+                </button>
+              </h3>
+              <div id="faq-content-2" class="accordion-collapse collapse" data-bs-parent="#faqlist">
+                <div class="accordion-body">
+                  To access your profile and apply for new jobs you can choose
+                  between <%= link_to "creating a new account", sign_up_path %> or
+                  <%= link_to "sign in with your Google or GitHub account", sign_in_path %>.
+                </div>
+              </div>
+            </div><!-- # Faq item-->
+
+            <div class="accordion-item">
+              <h3 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq-content-3">
+                  <i class="bi bi-question-circle question-icon"></i>
+                  How is the feed generated?
+                </button>
+              </h3>
+              <div id="faq-content-3" class="accordion-collapse collapse" data-bs-parent="#faqlist">
+                <div class="accordion-body">
+                  Eleifend mi in nulla posuere sollicitudin aliquam ultrices sagittis orci. Faucibus pulvinar elementum
+                  integer enim. Sem nulla pharetra diam sit amet nisl suscipit. Rutrum tellus pellentesque eu tincidunt.
+                  Lectus urna duis convallis convallis tellus. Urna molestie at elementum eu facilisis sed odio morbi
+                  quis
+                </div>
+              </div>
+            </div><!-- # Faq item-->
+
+            <div class="accordion-item">
+              <h3 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq-content-4">
+                  <i class="bi bi-question-circle question-icon"></i>
+                  Where can I report Issues?
+                </button>
+              </h3>
+              <div id="faq-content-4" class="accordion-collapse collapse" data-bs-parent="#faqlist">
+                <div class="accordion-body">
+                  Have a look at our <%= link_to "GitLab repository", "https://gitlab.com/carlobortolan/JobFinderOnRails" %>.
+                </div>
+              </div>
+            </div><!-- # Faq item-->
+
+            <div class="accordion-item">
+              <h3 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq-content-5">
+                  <i class="bi bi-question-circle question-icon"></i>
+                  How can I contribute to the project?
+                </button>
+              </h3>
+              <div id="faq-content-5" class="accordion-collapse collapse" data-bs-parent="#faqlist">
+                <div class="accordion-body">
+                  Have a look at our <%= link_to "GitLab repository", "https://gitlab.com/carlobortolan/JobFinderOnRails" %>.
+                </div>
+              </div>
+            </div><!-- # Faq item-->
+
+          </div>
+
         </div>
       </div>
-      <div class="col-lg-4">
-        <div class="testimonial-item mx-auto mb-5 mb-lg-0">
-          <img class="img-fluid rounded-circle mb-3" src="assets/img/testimonials-2.jpg" alt="..."/>
-          <h5>Fred S.</h5>
-          <p class="font-weight-light mb-0">"Bootstrap is amazing. I've been using it to create lots of super nice
-            landing pages."</p>
-        </div>
-      </div>
-      <div class="col-lg-4">
-        <div class="testimonial-item mx-auto mb-5 mb-lg-0">
-          <img class="img-fluid rounded-circle mb-3" src="assets/img/testimonials-3.jpg" alt="..."/>
-          <h5>Sarah W.</h5>
-          <p class="font-weight-light mb-0">"Thanks so much for making these free resources available to us!"</p>
-        </div>
-      </div>
+
     </div>
-  </div>
-</section>
+  </section><!-- End Frequently Asked Questions Section -->
+
+</main><!-- End #main -->
+
+
+<a href="#" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+<div id="preloader"></div>
+
+<!-- Vendor JS Files -->
+<script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
+<script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+<script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+<script src="assets/vendor/aos/aos.js"></script>
+<script src="assets/vendor/php-email-form/validate.js"></script>
+
+<!-- Template Main JS File -->
+<script src="assets/js/main.js"></script>
+
