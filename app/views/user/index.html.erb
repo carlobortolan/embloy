@@ -1,31 +1,98 @@
-<h1>Your Profile</h1>Logged in as: <%= @user.email %><br>
-<div class="container card mt-5">
-  <div class="row">
-    <div class="col-4">
-      <% if @user %>
-        <% if !@user.nil? && !@user.image_url.nil? %>
-          <%= image_tag @user.image_url, style: "width: 200px; height: 200px; border-radius:100%", class: "card-img-top" %>
-        <% end %>
-        </div>
-        <div class="col-8">
-          <h1><%= @user.first_name %> <%= @user.last_name %></h1>
-          <h6><%= pluralize(@user.jobs.size, "job") %> | <%= pluralize(@user.reviews.size, "review") %>
-            | <%= pluralize(@total_job_views, "total job view") %></h6>
-          <!--          | <%#= pluralize(@user.view_count, "profile view") %>-->
+<main id="main">
 
+  <!-- ======= Breadcrumbs ======= -->
+  <div class="breadcrumbs">
+    <div class="page-header d-flex align-items-center" style="background-image: url('assets/img/page-header.jpg');">
+      <div class="container position-relative">
+        <div class="row d-flex justify-content-center">
+          <div class="col-lg-6 text-center">
+            <h2><%= @user.first_name %> <%= @user.last_name %></h2>
+            <h3><p><%= @user.email %></p></h3>
+          </div>
         </div>
-        <div class="d-flex justify-content-end pt-3">
-          <%= link_to 'Your jobs', own_jobs_path, method: :get, class: "btn btn-dark btn-lg mr-1" %>
-          <%= link_to 'Your applications', own_applications_path, method: :get, class: "btn btn-dark btn-lg mr-1" %>
-          <%= link_to 'Edit Password', edit_password_path, method: :get, class: "btn btn-light btn-lg mr-1" %>
-          <%= button_to 'Logout', logout_path, method: :delete, class: "btn btn-light btn-lg mr-1" %>
-          <%= link_to 'Settings', profile_settings_path, method: :get, class: "btn btn-warning btn-lg ms-2" %>
-        </div>
-      <% else %>
-        <%= link_to 'Sign Up', sign_up_path %>
-        or
-        <%= link_to 'Login', sign_in_path %>
-      <% end %>
       </div>
-</div>
+    </div>
+    <nav>
+      <div class="container">
+        <ol>
+          <li><a href="<%= root_path %>">Home</a></li>
+          <li>Profile</li>
+        </ol>
+      </div>
+    </nav>
+  </div><!-- End Breadcrumbs -->
 
+  <section class="sample-page">
+    <div class="container" data-aos="fade-up">
+      <h6><%= pluralize(@user.jobs.size, "job") %> | <%= pluralize(@user.reviews.size, "review") %>
+        | <%= pluralize(@total_job_views, "total job view") %></h6>
+      <p>
+        You can duplicate this sample page and create any number of inner pages you like!
+      </p>
+    </div>
+  </section>
+
+  <!-- ======= About Section ======= -->
+  <section id="about" class="about">
+    <div class="container">
+      <div class="section-title">
+        <h2>Your Profile</h2>
+        <p>Tell us a little bit about yourself so we can find the best jobs to match your skills.</p>
+      </div>
+      <div class="row">
+        <div class="col-lg-4" data-aos="fade-right">
+          <%# if !@user.nil? && !@user.image_url.nil? %>
+          <%#= image_tag @user.image_url, style: "width: 200px; height: 200px; border-radius:100%", class: "card-img-top" %>
+          <br><%= image_tag "https://avatars.githubusercontent.com/u/106114526?v=4", style: "width: 400px; height: 400px; border-radius:100%", class: "card-img-top" %>
+          <%# end %>
+        </div>
+        <div class="col-lg-8 pt-4 pt-lg-0 content" data-aos="fade-left">
+          <div class="row">
+            <div class="col-lg-6">
+              <ul>
+                <li><i class="bi bi-chevron-right"></i>
+                  <strong>Birthday: </strong><span><%= @user.date_of_birth unless @user.date_of_birth.nil? %></span></li>
+                <li><i class="bi bi-chevron-right"></i> <strong>Age: </strong> <span>
+                  <% now = Time.now.utc.to_date %>
+                  <%= now.year - @user.date_of_birth.year - ((now.month > @user.date_of_birth.month || (now.month == @user.date_of_birth.month && now.day >= @user.date_of_birth.day)) ? 0 : 1) unless @user.date_of_birth.nil?%>
+                </span>
+                </li>
+                <li><i class="bi bi-chevron-right"></i> <strong>Degree:</strong> <span>Master</span></li>
+                <li><i class="bi bi-chevron-right"></i> <strong>Email: </strong> <span><%= @user.email %></span></li>
+              </ul>
+            </div>
+            <div class="col-lg-6">
+              <ul>
+                <li><i class="bi bi-chevron-right"></i> <strong>Country Code: </strong>
+                  <span><%= @user.country_code %></span></li>
+                <li><i class="bi bi-chevron-right"></i> <strong>City: </strong> <span><%= @user.city %></span></li>
+                <li><i class="bi bi-chevron-right"></i> <strong>Postal Code: </strong>
+                  <span><%= @user.postal_code %></span></li>
+                <li><i class="bi bi-chevron-right"></i> <strong>Address: </strong> <span><%= @user.address %></span>
+                </li>
+              </ul>
+            </div>
+
+          </div>
+          <p class="fst-italic">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+            dolore magna aliqua.
+          </p>
+        </div>
+        <h3><%= link_to "Settings", password_reset_path, class: 'btn btn-primary btn-lg mr-1' %></h3>
+        <h3><%= link_to "Edit password", edit_password_path, class: 'btn btn-primary btn-lg mr-1' %></h3>
+        <h3><%= link_to "My applications", own_jobs_path, class: 'btn btn-primary btn-lg mr-1' %></h3>
+        <h3><%= link_to "My jobs", own_applications_path, class: 'btn btn-primary btn-lg mr-1' %></h3>
+        <%= button_to 'Logout', logout_path, method: :delete, class: "btn btn-dark btn-lg mr-1" %>
+
+      </div>
+
+    </div>
+  </section><!-- End About Section -->
+
+
+</main><!-- End #main -->
+
+<a href="#" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+<div id="preloader"></div>

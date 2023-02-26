@@ -1,58 +1,189 @@
-<!-- ======= Hero Section ======= -->
-<section id="hero" class="hero d-flex align-items-center">
-  <div class="container">
-    <div class="row gy-4 d-flex justify-content-between">
-      <div class="col-lg-6 order-2 order-lg-1 d-flex flex-column justify-content-center">
-        <h2 data-aos="fade-up">Embloy yourself!</h2>
-        <p data-aos="fade-up" data-aos-delay="100">The best application to quickly find a fitting job for you or
-          spontaneously provide work-opportunities to others.</p>
+<% if Current.user %>
+  <!-- ======= Hero Section ======= -->
+  <section id="hero" class="hero d-flex align-items-center">
+    <div class="container">
+      <div class="row gy-4 d-flex justify-content-between">
+        <div class="col-lg-6 order-2 order-lg-1 d-flex flex-column justify-content-center">
+          <h2 data-aos="fade-up">Embloy yourself!</h2>
+          <p data-aos="fade-up" data-aos-delay="100">The best application to quickly find a fitting job for you or
+            spontaneously provide work-opportunities to others.</p>
 
-        <form action="#" class="form-search d-flex align-items-stretch mb-3" data-aos="fade-up" data-aos-delay="200">
-          <input type="text" class="form-control" placeholder="ZIP code or CitY">
-          <%#= text_field :search_input, type: "text", class: "form-search d-flex align-items-stretch mb-3", placeholder: "ZIP code or City" %>
-          <h3><%= link_to "Search", jobs_find_path, class: 'btn btn-primary' %></h3>
-        </form>
+          <form action="#" class="form-search d-flex align-items-stretch mb-3" data-aos="fade-up" data-aos-delay="200">
+            <input type="text" class="form-control" placeholder="ZIP, city or keywords">
+            <%#= text_field :search_input, type: "text", class: "form-search d-flex align-items-stretch mb-3", placeholder: "ZIP code or City" %>
+            <h3><%= link_to "Search", jobs_find_path, class: 'btn btn-primary' %></h3>
+          </form>
 
-        <div class="row gy-4" data-aos="fade-up" data-aos-delay="400">
+          <div class="row gy-4" data-aos="fade-up" data-aos-delay="400">
 
-          <div class="col-lg-3 col-6">
-            <div class="stats-item text-center w-100 h-100">
-              <span data-purecounter-start="0" data-purecounter-end=<%= User.count %> data-purecounter-duration="1" class="purecounter"></span>
-              <p>Clients</p>
+            <div class="col-lg-3 col-6">
+              <div class="stats-item text-center w-100 h-100">
+                <span data-purecounter-start="0" data-purecounter-end=<%= User.count %> data-purecounter-duration="1" class="purecounter"></span>
+                <p>Clients</p>
+              </div>
+            </div><!-- End Stats Item -->
+
+            <div class="col-lg-3 col-6">
+              <div class="stats-item text-center w-100 h-100">
+                <span data-purecounter-start="0" data-purecounter-end=<%= Job.count %> data-purecounter-duration="1" class="purecounter"></span>
+                <p>Jobs</p>
+              </div>
+            </div><!-- End Stats Item -->
+
+            <div class="col-lg-3 col-6">
+              <div class="stats-item text-center w-100 h-100">
+                <span data-purecounter-start="0" data-purecounter-end=<%= Application.count %> data-purecounter-duration="1" class="purecounter"></span>
+                <p>Applications</p>
+              </div>
+            </div><!-- End Stats Item -->
+
+            <div class="col-lg-3 col-6">
+              <div class="stats-item text-center w-100 h-100">
+                <span data-purecounter-start="0" data-purecounter-end=<%= CompanyUser.count %> data-purecounter-duration="1" class="purecounter"></span>
+                <p>Companies</p>
+              </div>
+            </div><!-- End Stats Item -->
+
+          </div>
+        </div>
+
+        <div class="col-lg-5 order-1 order-lg-2 hero-img" data-aos="zoom-out">
+          <img src="assets/img/hero-img.svg" class="img-fluid mb-3 mb-lg-0" alt="">
+        </div>
+
+      </div>
+    </div>
+  </section><!-- End Hero Section -->
+
+<% else %>
+  <!-- ======= Hero Section ======= -->
+  <section id="hero" class="hero d-flex align-items-center">
+
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6 d-flex flex-column justify-content-center">
+          <h1 data-aos="fade-up">EMBLOY</h1>
+          <h2 data-aos="fade-up" data-aos-delay="400">We broker casual jobs creating a fun way for people to make money
+            spontaneously.</h2>
+          <div data-aos="fade-up" data-aos-delay="600">
+            <div class="text-center text-lg-start">
+              <a href="<%= sign_up_path %>" class="btn-get-started scrollto d-inline-flex align-items-center justify-content-center align-self-center">
+                <span>Get Started</span>
+                <i class="bi bi-arrow-right"></i>
+              </a>
             </div>
-          </div><!-- End Stats Item -->
-
-          <div class="col-lg-3 col-6">
-            <div class="stats-item text-center w-100 h-100">
-              <span data-purecounter-start="0" data-purecounter-end=<%= Job.count %> data-purecounter-duration="1" class="purecounter"></span>
-              <p>Jobs</p>
-            </div>
-          </div><!-- End Stats Item -->
-
-          <div class="col-lg-3 col-6">
-            <div class="stats-item text-center w-100 h-100">
-              <span data-purecounter-start="0" data-purecounter-end=<%= Application.count %> data-purecounter-duration="1" class="purecounter"></span>
-              <p>Applications</p>
-            </div>
-          </div><!-- End Stats Item -->
-
-          <div class="col-lg-3 col-6">
-            <div class="stats-item text-center w-100 h-100">
-              <span data-purecounter-start="0" data-purecounter-end=<%= CompanyUser.count %> data-purecounter-duration="1" class="purecounter"></span>
-              <p>Companies</p>
-            </div>
-          </div><!-- End Stats Item -->
-
+          </div>
+        </div>
+        <div class="col-lg-6 hero-logout-img" data-aos="zoom-out" data-aos-delay="200">
+          <img src="assets/img/hero-logout-img.png" class="img-fluid" alt="">
         </div>
       </div>
-
-      <div class="col-lg-5 order-1 order-lg-2 hero-img" data-aos="zoom-out">
-        <img src="assets/img/hero-img.svg" class="img-fluid mb-3 mb-lg-0" alt="">
-      </div>
-
     </div>
-  </div>
-</section><!-- End Hero Section -->
+
+  </section><!-- End Hero -->
+
+  <style>
+
+      /*--------------------------------------------------------------
+  # Hero Section
+  --------------------------------------------------------------*/
+      .hero {
+          width: 100%;
+          height: 100vh;
+          background: url(../img/hero-bg.png) top center no-repeat;
+          background-size: cover;
+      }
+
+      .hero h1 {
+          margin: 0;
+          font-size: 48px;
+          font-weight: 700;
+          color: #012970;
+      }
+
+      .hero h2 {
+          color: #444444;
+          margin: 15px 0 0 0;
+          font-size: 26px;
+      }
+
+      .hero .btn-get-started {
+          margin-top: 30px;
+          line-height: 0;
+          padding: 15px 40px;
+          border-radius: 4px;
+          transition: 0.5s;
+          color: #fff;
+          background: #4154f1;
+          box-shadow: 0px 5px 30px rgba(65, 84, 241, 0.4);
+      }
+
+      .hero .btn-get-started span {
+          font-family: "Nunito", sans-serif;
+          font-weight: 600;
+          font-size: 16px;
+          letter-spacing: 1px;
+      }
+
+      .hero .btn-get-started i {
+          margin-left: 5px;
+          font-size: 18px;
+          transition: 0.3s;
+      }
+
+      .hero .btn-get-started:hover i {
+          transform: translateX(5px);
+      }
+
+      .hero .hero-img {
+          text-align: right;
+      }
+
+      @media (min-width: 1024px) {
+          .hero {
+              background-attachment: fixed;
+          }
+      }
+
+      @media (max-width: 991px) {
+          .hero {
+              height: auto;
+              padding: 120px 0 60px 0;
+          }
+
+          .hero .hero-img {
+              text-align: center;
+              margin-top: 80px;
+          }
+
+          .hero .hero-img img {
+              width: 80%;
+          }
+      }
+
+      @media (max-width: 768px) {
+          .hero {
+              text-align: center;
+          }
+
+          .hero h1 {
+              font-size: 32px;
+          }
+
+          .hero h2 {
+              font-size: 24px;
+          }
+
+          .hero .hero-img img {
+              width: 100%;
+          }
+      }
+
+
+  </style>
+
+<% end %>
+
 
 <main id="main">
 
@@ -117,7 +248,7 @@
         <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
           <div class="card">
             <div class="card-img">
-              <img src="assets/img/storage-service.jpg" alt="" class="img-fluid">
+              <img src="assets/img/service_1.png" alt="" class="img-fluid">
             </div>
             <h3><a href="<%= new_job_path %>" class="stretched-link">Easy job listing</a></h3>
             <p>Cumque eos in qui numquam. Aut aspernatur perferendis sed atque quia voluptas quisquam repellendus
@@ -128,7 +259,7 @@
         <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
           <div class="card">
             <div class="card-img">
-              <img src="assets/img/logistics-service.jpg" alt="" class="img-fluid">
+              <img src="assets/img/service_2.png" alt="" class="img-fluid">
             </div>
             <h3><a href="<%= own_applications_path %>" class="stretched-link">Uncomplicated application</a></h3>
             <p>Asperiores provident dolor accusamus pariatur dolore nam id audantium ut et iure incidunt molestiae dolor
@@ -139,7 +270,7 @@
         <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
           <div class="card">
             <div class="card-img">
-              <img src="assets/img/cargo-service.jpg" alt="" class="img-fluid">
+              <img src="assets/img/service_3.png" alt="" class="img-fluid">
             </div>
             <h3><a href="<%= find_jobs_path %>" class="stretched-link">Intelligent feed</a></h3>
             <p>Dicta quam similique quia architecto eos nisi aut ratione aut ipsum reiciendis sit doloremque oluptatem
@@ -150,7 +281,7 @@
         <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
           <div class="card">
             <div class="card-img">
-              <img src="assets/img/trucking-service.jpg" alt="" class="img-fluid">
+              <img src="assets/img/service_4.png" alt="" class="img-fluid">
             </div>
             <h3><a href="
               <% about_path %>" class="stretched-link">„Italian Uber Model“</a></h3>
@@ -208,7 +339,7 @@
       <div class="row gy-4 align-items-center features-item" data-aos="fade-up">
 
         <div class="col-md-5">
-          <img src="assets/img/features-1.jpg" class="img-fluid" alt="">
+          <img src="assets/img/features_1.png" class="img-fluid" alt="">
         </div>
         <div class="col-md-7">
           <h3>Ultra accessible feed.</h3>
@@ -226,7 +357,7 @@
 
       <div class="row gy-4 align-items-center features-item" data-aos="fade-up">
         <div class="col-md-5 order-1 order-md-2">
-          <img src="assets/img/features-2.jpg" class="img-fluid" alt="">
+          <img src="assets/img/features_2.png" class="img-fluid" alt="">
         </div>
         <div class="col-md-7 order-2 order-md-1">
           <h3>Screen as many jobs as possible, as quickly as possible </h3>
@@ -241,7 +372,7 @@
 
       <div class="row gy-4 align-items-center features-item" data-aos="fade-up">
         <div class="col-md-5">
-          <img src="assets/img/features-3.jpg" class="img-fluid" alt="">
+          <img src="assets/img/features_3.png" class="img-fluid" alt="">
         </div>
         <div class="col-md-7">
           <h3>Easy to Use & Customize</h3>
@@ -257,7 +388,7 @@
 
       <div class="row gy-4 align-items-center features-item" data-aos="fade-up">
         <div class="col-md-5 order-1 order-md-2">
-          <img src="assets/img/features-4.jpg" class="img-fluid" alt="">
+          <img src="assets/img/features_4.png" class="img-fluid" alt="">
         </div>
         <div class="col-md-7 order-2 order-md-1">
           <h3>Contribute to our project</h3>
