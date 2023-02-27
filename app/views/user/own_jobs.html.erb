@@ -1,49 +1,40 @@
-<%= stylesheet_link_tag "style" %>
-<h1>Your jobs</h1>
-<% if !@jobs.nil? %>
+<section id="hero" class="hero d-flex align-items-center">
 
-  <h2>You have created <%= @jobs.count %> jobs! - <%= link_to "Create new job", new_job_path %></h2>
-
-  <ul>
-    <% @jobs.each do |job| %>
-      <br>
-      <div style="padding: 10px; border: 1px solid lightgray; background-color: #333333">
-        <p>
-          <strong>Job ID:
-            <%= job[:job_id] %></strong>
-          ---
-          <%= job[:start_slot].localtime.ctime %>
-          ---
-          <%= link_to "go to job", job_path(job) %>
-        </p>
-
-        <p>
-          <strong>Title:</strong>
-          <%= job[:title] %>
-        </p>
-
-        <p>
-          <strong>Status:</strong>
-          <%= job[:status] %>
-        </p>
-
-        <p>
-          <%
-            if job.applications.nil? || job.applications.empty? %>
-            <%= "No applications yet ..." %>
-          <% else %>
-            <%= job.applications.count == 1 ? "1 application" : "#{job.applications.count} applications" %>
-            </p>
-          <% end %>
-          </div>
-
+  <div class="container">
+    <h2>Your Jobs</h2>
+    <% if !@jobs.nil? %>
+      <h3>You have created <%= @jobs.count %> jobs! - <%= link_to "Create new job", new_job_path %></h3>
+    <% else %>
+      <h3>You have not created any jobs yet! - <%= link_to "Create new job here!", new_job_path %></h3>
     <% end %>
-  </ul>
 
-<% else %>
-  <h2>You have not created any jobs yet! - <%= link_to "Create new job here!", new_job_path %></h2>
-<% end %>
+  </div>
+</section>
 
-<!--<h2><%#= link_to "go back", _back_url %></h2>-->
+<!-- Section-->
+<!-- ======= Breadcrumbs ======= -->
+<div class="breadcrumbs">
+  <nav>
+    <div class="container">
+      <ol>
+        <li><a href="<%= root_path %>">Home</a></li>
+        <li><a href="<%= profile_index_path %>">My Profile</a></li>
+        <li>My Jobs</li>
+      </ol>
+    </div>
+  </nav>
+</div><!-- End Breadcrumbs -->
+
+
+<!-- Section-->
+<div class="container px-3 px-lg-5 mt-5 text-dark">
+  <div class="row gx-3 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-3 justify-content-center ">
+    <% @jobs.each do |job| %>
+      <% if job.public? %>
+        <%= render "jobs/own_posting", job: job %>
+      <% end %>
+    <% end %>
+  </div>
+</div>
 
 

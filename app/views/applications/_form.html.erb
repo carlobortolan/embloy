@@ -1,107 +1,94 @@
 <%= form_with model: [@job, @job.applications.build] do |form| %>
 
-  <p>
-    <%= form.label :application_text %><br>
-    <%= form.text_area :application_text %>
-    <% @job.applications.build.errors.full_messages_for(:application_text).each do |message| %>
-    <div><%= message %></div>
-  <% end %>
+  <main id="main">
 
-  <p>
-    <%= form.label :application_documents %><br>
-    <%= form.text_area :application_documents %>
-    <% @job.applications.build.errors.full_messages_for(:application_documents).each do |message| %>
-    <div><%= message %></div>
-  <% end %>
+    <!-- ======= Breadcrumbs ======= -->
+    <div class="breadcrumbs">
+      <div class="page-header d-flex align-items-center" style="background-image: url('assets/img/page-header.jpg');">
+        <div class="container position-relative">
+          <div class="row d-flex justify-content-center">
+            <div class="col-lg-6 text-center">
+              <h2>Apply for
+                <%= @job.title %></h2>
+              <p><%= @job.description %></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <nav>
+        <div class="container">
+          <ol>
+            <li><a href="index.html">Home</a></li>
+            <li>Contact</li>
+          </ol>
+        </div>
+      </nav>
+    </div><!-- End Breadcrumbs -->
+
+    <!-- ======= Contact Section ======= -->
+    <section id="contact" class="contact">
+      <div class="container" data-aos="fade-up">
+
+        <div>
+          <iframe style="border:0; width: 100%; height: 340px;" src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d12097.433213460943!2d-74.0062269!3d40.7101282!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0xb89d1fe6bc499443!2sDowntown+Conference+Center!5e0!3m2!1smk!2sbg!4v1539943755621" frameborder="0" allowfullscreen></iframe>
+        </div><!-- End Google Maps -->
+      </div>
+    </section><!-- End Contact Section -->
+
+  </main><!-- End #main -->
+
+
+  <section class="vh-100" style="background-color: #2779e2;">
+    <div class="container h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-xl-9">
+          <div class="card" style="border-radius: 15px;">
+            <div class="card-body">
+              <hr class="mx-n3">
+              <div class="row align-items-center py-3">
+                <div class="col-md-3 ps-5">
+                  <h6 class="mb-0">Email address confirmation</h6>
+                </div>
+                <div class="col-md-9 pe-5">
+                  <input type="email" class="form-control form-control-lg" placeholder="example@example.com"/>
+                </div>
+              </div>
+              <hr class="mx-n3">
+              <div class="row align-items-center py-3">
+                <div class="col-md-3 ps-5">
+                  <h6 class="mb-0">Application text</h6>
+                </div>
+                <div class="col-md-9 pe-5">
+                  <%= form.text_area :application_text, rows: "5", class: "form-control", placeholder: "Message sent to the employer" %>
+                </div>
+              </div>
+              <hr class="mx-n3">
+              <div class="row align-items-center py-3">
+                <div class="col-md-3 ps-5">
+                  <h6 class="mb-0">Upload CV</h6>
+                </div>
+                <div class="col-md-9 pe-5">
+                  <input class="form-control form-control-lg" id="formFileLg" type="file"/>
+                  <div class="small text-muted mt-2">Upload your CV/Resume or any other relevant file. Max file
+                    size 50 MB
+                  </div>
+                </div>
+              </div>
+              <hr class="mx-n3">
+              <div class="px-5 py-4">
+                <%= form.submit "Send application", class: "btn btn-primary btn-lg", type: "submit" %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!--  <p>-->
   <!--    <%#= form.label :status %><br>-->
   <%#= form.select :status, ['public', 'private', 'archived'], selected: 'public' %>
   <!--  </p>-->
   <p>
-    <%= form.submit %>
   </p>
 <% end %>
-
-<section class="vh-100" style="background-color: #2779e2;">
-  <div class="container h-100">
-    <div class="row d-flex justify-content-center align-items-center h-100">
-      <div class="col-xl-9">
-
-        <h1 class="text-white mb-4">Apply for a job</h1>
-
-        <div class="card" style="border-radius: 15px;">
-          <div class="card-body">
-
-            <div class="row align-items-center pt-4 pb-3">
-              <div class="col-md-3 ps-5">
-
-                <h6 class="mb-0">Full name</h6>
-
-              </div>
-              <div class="col-md-9 pe-5">
-
-                <input type="text" class="form-control form-control-lg" />
-
-              </div>
-            </div>
-
-            <hr class="mx-n3">
-
-            <div class="row align-items-center py-3">
-              <div class="col-md-3 ps-5">
-
-                <h6 class="mb-0">Email address</h6>
-
-              </div>
-              <div class="col-md-9 pe-5">
-
-                <input type="email" class="form-control form-control-lg" placeholder="example@example.com" />
-
-              </div>
-            </div>
-
-            <hr class="mx-n3">
-
-            <div class="row align-items-center py-3">
-              <div class="col-md-3 ps-5">
-
-                <h6 class="mb-0">Full name</h6>
-
-              </div>
-              <div class="col-md-9 pe-5">
-
-                <textarea class="form-control" rows="3" placeholder="Message sent to the employer"></textarea>
-
-              </div>
-            </div>
-
-            <hr class="mx-n3">
-
-            <div class="row align-items-center py-3">
-              <div class="col-md-3 ps-5">
-
-                <h6 class="mb-0">Upload CV</h6>
-
-              </div>
-              <div class="col-md-9 pe-5">
-
-                <input class="form-control form-control-lg" id="formFileLg" type="file" />
-                <div class="small text-muted mt-2">Upload your CV/Resume or any other relevant file. Max file
-                  size 50 MB</div>
-
-              </div>
-            </div>
-
-            <hr class="mx-n3">
-
-            <div class="px-5 py-4">
-              <button type="submit" class="btn btn-primary btn-lg">Send application</button>
-            </div>
-
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </div>
-</section>

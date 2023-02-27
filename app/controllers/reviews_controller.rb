@@ -1,5 +1,5 @@
 class ReviewsController < ApplicationController
-  layout 'standard'
+  layout 'application'
 
   def index
     if require_user_be_owner!

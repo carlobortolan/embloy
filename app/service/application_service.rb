@@ -39,23 +39,24 @@ class ApplicationService
     end
     puts "T2"
     @application_repository.create_application(job_id, applicant_id, content, documents)
-    employer_id = @application_repository.find_employer_id(job_id)
     puts "T3"
-    if employer_id.nil? || !employer_id.is_a?(Integer) || employer_id <= 0
-      return
-    end
-    puts "T4"
-    if [true].include? @application_repository.get_notification(job_id, employer_id)
-      employer = @application_repository.find_user(employer_id)
-      applicant = @application_repository.find_user(applicant_id)
-      puts "T5"
-      if employer.nil? || applicant.nil? || employer[:name].nil? || employer[:email].nil? || applicant[:name].nil? || applicant[:email].nil?
-        return
-      end
-      puts "T6"
-      @notification_generator.send_notification_employer(employer[:name], employer[:email], applicant[:name], applicant[:email], applicant_id, job_id, Time.now.getutc.ceil, content.nil? ? "" : content, documents.nil? ? "" : documents)
-      puts "T7"
-    end
+    # employer_id = @application_repository.find_employer_id(job_id)
+    # puts "T3"
+    # if employer_id.nil? || !employer_id.is_a?(Integer) || employer_id <= 0
+    #   return
+    # end
+    # puts "T4"
+    # if [true].include? @application_repository.get_notification(job_id, employer_id)
+    #   employer = @application_repository.find_user(employer_id)
+    #   applicant = @application_repository.find_user(applicant_id)
+    #   puts "T5"
+    #   if employer.nil? || applicant.nil? || employer[:name].nil? || employer[:email].nil? || applicant[:name].nil? || applicant[:email].nil?
+    #     return
+    #   end
+    #   puts "T6"
+    #   @notification_generator.send_notification_employer(employer[:name], employer[:email], applicant[:name], applicant[:email], applicant_id, job_id, Time.now.getutc.ceil, content.nil? ? "" : content, documents.nil? ? "" : documents)
+    #   puts "T7"
+    # end
   end
 
   # @deprecated Eigentlich unnötig, da es reicht die Jobs zu löschen, wobei dann durch 'ON DELETE CASCADE' auch die Bewerbungen gelöscht werden

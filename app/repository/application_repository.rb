@@ -49,12 +49,13 @@ class ApplicationRepository
 
   def create_application (job_id, id, text, documents)
     # create new application as Application: {(job_id, id), text, status, response}
-    query = "INSERT INTO applications(job_id, applicant_id, application_text, application_documents) VALUES (#{job_id}, #{id}, '#{text}', '#{documents}')"
-    binds = [ActiveRecord::Relation::QueryAttribute.new('job_id', job_id, ActiveRecord::Type::Integer.new),
-             ActiveRecord::Relation::QueryAttribute.new('id', id, ActiveRecord::Type::Integer.new),
-             ActiveRecord::Relation::QueryAttribute.new('text', text, ActiveRecord::Type::Text.new),
-             ActiveRecord::Relation::QueryAttribute.new('documents', documents, ActiveRecord::Type::String.new)]
-    ApplicationRecord.connection.exec_query(query, 'SQL', binds, prepare: true).rows[0]
+    ApplicationRecord.connection.query("INSERT INTO applications(job_id, applicant_id, application_text, application_documents, updated_at) VALUES (#{job_id}, #{id}, '#{text}', '#{documents}', '#{Time.now}')")
+    # query = "INSERT INTO applications(job_id, applicant_id, application_text, application_documents) VALUES (#{job_id}, #{id}, '#{text}', '#{documents}')"
+    # binds = [ActiveRecord::Relation::QueryAttribute.new('job_id', job_id, ActiveRecord::Type::Integer.new),
+    #          ActiveRecord::Relation::QueryAttribute.new('id', id, ActiveRecord::Type::Integer.new),
+    #          ActiveRecord::Relation::QueryAttribute.new('text', text, ActiveRecord::Type::Text.new),
+    #          ActiveRecord::Relation::QueryAttribute.new('documents', documents, ActiveRecord::Type::String.new)]
+    # ApplicationRecord.connection.exec_query(query, 'SQL', binds, prepare: true).rows[0]
   end
 
   def change_status (job_id, id, new_status, response)

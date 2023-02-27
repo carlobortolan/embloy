@@ -1,50 +1,36 @@
-<%= stylesheet_link_tag "style" %>
-<h1>Your applications</h1>
-<h2>You have applied for <%= @applications.count %> jobs! - <%= link_to "Find new jobs", jobs_find_path %></h2>
+<section id="hero" class="hero d-flex align-items-center">
 
-<ul>
-  <% @applications.each do |application| %>
-    <br>
-    <div style="padding: 10px; border: 1px solid lightgray; background-color: #333333">
-      <p>
-        <strong>Job ID:
-          <%= application[:job_id] %></strong>
-        ---
-        <%= application[:applied_at].localtime.ctime %>
-        ---
-        <%= link_to "go to job", job_path(Job.find(application[:job_id])) %>
-      </p>
+  <div class="container">
+    <h2>Your Applications</h2>
+    <% if !@applications.nil? %>
+      <h3>You have applied for <%= @applications.count %> jobs! - <%= link_to "Find new jobs", find_jobs_path %></h3>
+    <% else %>
+      <h3>You have not applied for any jobs yet! - <%= link_to "Find new jobs here!", find_jobs_path %></h3>
+    <% end %>
 
-      <p>
-        <strong>Application:</strong>
-        <%= application[:application_text] %>
-      </p>
+  </div>
+</section>
 
-      <p>
-        <strong>Documents:</strong>
-        <%= application[:application_documents] %>
-      </p>
+<!-- Section-->
+<!-- ======= Breadcrumbs ======= -->
+<div class="breadcrumbs">
+  <nav>
+    <div class="container">
+      <ol>
+        <li><a href="<%= root_path %>">Home</a></li>
+        <li><a href="<%= profile_index_path %>">My Profile</a></li>
+        <li>My Applications</li>
+      </ol>
+    </div>
+  </nav>
+</div><!-- End Breadcrumbs -->
 
-      <p>
-        <strong>Status:</strong>
-        <%= case application[:status]
-            when '-1'
-              "REJECTED"
-            when '1'
-              "ACCEPTED"
-            else
-              "No response yet ..."
-            end %>
-      </p>
 
-      <p>
-        <% if !application[:response].nil? && !application[:response].blank? %>
-          <strong>Response:</strong>
-          <%= application[:response].nil? ? "No response yet ..." : application[:response] %>
-          </p>
-        <% end %>
-        </div>
-  <% end %>
-</ul>
-<!--<h2><%#= link_to "go back", _back_url %></h2>-->
-
+<!-- Section-->
+<div class="container px-3 px-lg-5 mt-5 text-dark">
+  <div class="row gx-3 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-3 justify-content-center ">
+    <% @applications.each do |application| %>
+        <%= render "applications/own_application", application: application %>
+    <% end %>
+  </div>
+</div>

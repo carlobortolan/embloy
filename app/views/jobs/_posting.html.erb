@@ -1,7 +1,7 @@
-<div class="col mb-5">
+<div class="col mb-5" data-aos="fade-up">
   <div class="card h-100">
     <!-- Job image-->
-    <img class="card-img-top" src="app/views/jobs/joblogo.png"/>
+    <!--    <img class="card-img-top" src="app/views/jobs/joblogo.png"/>-->
     <!-- Job details-->
     <div class="card-body p-4">
       <div class="text-center">
@@ -9,13 +9,29 @@
         <h5 class="fw-bolder"><%= job.title %></h5>
         <!-- Salary-->
         <%= "#{job.salary} #{job.currency}" %>
+        <div class="card-body">
+          <!-- Description-->
+          <p class="card-text"><%=job.description %></p>
+          <div class="d-flex justify-content-between align-items-center">
+<!--            <div class="btn-group">-->
+<!--              <button type="button" class="btn btn-sm btn-outline-secondary">View</button>-->
+<!--              <button type="button" href="<%#= job_path(job) %>" class="btn btn-sm btn-outline-secondary">Edit</button>-->
+<!--            </div>-->
+            <!-- Start slot-->
+            <small class="text-muted"><%= job.start_slot.getlocal.asctime %></small>
+          </div>
+        </div>
       </div>
     </div>
-    <!-- Product actions-->
     <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
       <div class="text-center">
-        <%= link_to "apply", new_job_application_path(job), class: "btn btn-outline-dark mt-auto" %>
+        <a href="<%= new_job_application_path(job) %>" class="readmore">
+          <span>apply</span>
+          <i class="bi bi-arrow-right"></i></a>
+        <%#= link_to "apply", new_job_application_path(job), class: "btn btn-outline-dark mt-auto" %>
       </div>
     </div>
   </div>
 </div>
+
+

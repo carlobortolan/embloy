@@ -22,8 +22,16 @@ Rails.application.routes.draw do
   get 'about/api/apidoc.json', :to => 'welcome#apidoc', as: :apidoc
   get 'about/faq', :to => 'welcome#faq', as: :faq
 
+  # -----> Admin <-----
+  # authenticated :user, ->(user) { user.admin? } do
+  #   get 'admin', to: 'admin#index'
+  #   get 'admin/jobs', to: 'admin#jobs'
+  #   get 'admin/applications', to: 'admin#applications'
+  #   get 'admin/users', to: 'admin#users'
+  #   get 'admin/reviews', to: 'admin#reviews'
+  # end
+
   # -----> Jobs & Applications <-----
-  # TODO: Server / Admin-namespace only
   resources :jobs do
     resources :applications
   end
@@ -60,8 +68,8 @@ Rails.application.routes.draw do
   # -----> User management <-----
   # get 'user/', :to => 'user#index', as: :user_index
   get 'user/profile', :to => 'user#index', as: :profile_index
-  get 'user/user/settings', :to => 'user#settings', as: :profile_settings
-  get 'user/user/edit', :to => 'user#edit', as: :profile_edit
+  get 'user/settings', :to => 'user#settings', as: :profile_settings
+  get 'user/edit', :to => 'user#edit', as: :profile_edit
   get 'user/applications', :to => 'user#own_applications', as: :own_applications
   get 'user/jobs', :to => 'user#own_jobs', as: :own_jobs
 end
