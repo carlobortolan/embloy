@@ -10,6 +10,7 @@ class User < ApplicationRecord
 
   has_many :jobs, dependent: :delete_all
   has_many :reviews, dependent: :delete_all
+  has_many :notifications, as: :recipient, dependent: :destroy
 =begin
   class Blocked < StandardError
   end

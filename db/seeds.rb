@@ -6,7 +6,7 @@
 require 'faker'
 
 #=> CREATE USERS
-135.times do
+1.times do
   begin
     name_f = Faker::Name.first_name
     name_l = Faker::Name.last_name
@@ -35,7 +35,7 @@ end
 puts "FINISHED CREATING USERS"
 
 #=> CREATE JOBS POSTGRESQL
-1000.times do
+1.times do
   begin
     name_f = Faker::Name.first_name
     name_l = Faker::Name.last_name
@@ -88,14 +88,14 @@ puts "FINISHED CREATING JOBS"
 # end
 
 # #=> APPLICATIONS
-167.times do
+1.times do
   begin
     response = [Faker::Quote.yoda, nil].sample
     a_id = (Faker::Number.number % User.count) + 3
     j_id = (Faker::Number.number % Job.count) + 4
-    if Application.find_by(applicant_id: a_id, job_id: j_id).nil?
+    if Application.find_by(user_id: a_id, job_id: j_id).nil?
       Application.create!(
-        applicant_id: a_id,
+        user_id: a_id,
         job_id: j_id,
         application_text: "Dear #{Faker::GreekPhilosophers.name}, I am writing to express my interest in #{Faker::Job.position} that was advertised on embloy.com. I am a highly #{Faker::Adjective.positive} and #{Faker::Adjective.positive} with #{rand(max = 30)} years of experience in #{Faker::Job.field}. As you will see from my attached resume, I have a strong track record of #{Faker::Marketing.buzzwords}, #{Faker::Marketing.buzzwords} as well as #{Faker::Marketing.buzzwords}. I believe that my skills and experience make me an ideal candidate for the position and I am excited about the opportunity to contribute to your company and its goals. #{Faker::GreekPhilosophers.quote}. Thank you for considering my application. I look forward to hearing from you soon.",
         application_documents: Faker::Internet.url,

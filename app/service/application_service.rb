@@ -23,22 +23,22 @@ class ApplicationService
   # @param [int] applicant_id Id des Bewerbers
   # @param [String] content Bewerbungsschreiben
   # @param [String] documents Link zu den Bewerbungsunterlagen
-  def add_application (job_id, applicant_id, content, documents)
+  def add_application (job_id, user_id, content, documents)
     puts "T1"
     puts "job_id = #{job_id}"
-    puts applicant_id
+    puts user_id
     puts content
     puts documents
     puts job_id.nil?
-    puts applicant_id.nil?
+    puts user_id.nil?
     puts !job_id.is_a?(Integer)
-    puts !applicant_id.is_a?(Integer)
+    puts !user_id.is_a?(Integer)
 
-    if job_id.nil? || applicant_id.nil? || !job_id.is_a?(Integer) || !applicant_id.is_a?(Integer) || job_id <= 0 || applicant_id <= 0
+    if job_id.nil? || user_id.nil? || !job_id.is_a?(Integer) || !user_id.is_a?(Integer) || job_id <= 0 || applicant_id <= 0
       return
     end
     puts "T2"
-    @application_repository.create_application(job_id, applicant_id, content, documents)
+    return @application_repository.create_application(job_id, user_id, content, documents)
     puts "T3"
     # employer_id = @application_repository.find_employer_id(job_id)
     # puts "T3"
