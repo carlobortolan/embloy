@@ -1,7 +1,7 @@
 class CreateUsers < ActiveRecord::Migration[7.0]
   def change
     create_enum :user_type, ["company", "private"]
-    create_table :user, id: :integer, charset: "unicode", force: :cascade do |t|
+    create_table :users, id: :integer, charset: "unicode", force: :cascade do |t|
       t.string :email, null: false
       t.string :password_digest
       t.integer :activity_status, limit: 1, default: 0, null: false

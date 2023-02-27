@@ -8,7 +8,7 @@ class CreateApplications < ActiveRecord::Migration[7.0]
       #      t.column(:applied_at, :datetime)
       t.integer "user_id", null: false
       t.datetime "updated_at", default: DateTime.now, null: false
-      t.datetime "applied_at", default: -> { DateTime.now }, null: false
+      t.datetime "applied_at", default: DateTime.now, null: false
       t.enum "status", enum_type: "application_status", default: '0', null: false
       t.string "application_text", limit: 1000
       t.string "application_documents", limit: 100
