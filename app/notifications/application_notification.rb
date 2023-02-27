@@ -10,16 +10,14 @@ class ApplicationNotification < Noticed::Base
   # deliver_by :action_cable, format: :to_action_cable
   # deliver_by :email, mailer: "UserMailer"
   # deliver_by :slack
-  # deliver_by :custom, class: "MyDeliveryMethod"
+  # deliver_by DeliveryMethods::Discord
 
   def to_database
-    puts "T-5"
     {
       type: self.class.name,
       params: params,
       account: Current.account,
     }
-    puts "T-6"
   end
 
   # Add required params
