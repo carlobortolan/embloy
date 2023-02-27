@@ -30,6 +30,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_12_113311) do
     t.string "application_text", limit: 1000
     t.string "application_documents", limit: 100
     t.string "response", limit: 500
+    t.datetime "applied_at", precision: nil, null: false
     t.index ["applicant_id"], name: "account_id_idx"
     t.index ["job_id", "applicant_id"], name: "index_applications_on_job_id_and_applicant_id", unique: true
   end
