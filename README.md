@@ -15,7 +15,7 @@ defined in the Apache-2.0 license, shall be dual licensed as above, without any 
 
 ## Functionality
 
-> ___Note: This file is about the web-application. If you are looking for the API documentation instead, go to___
+> __NOTE__: _This file covers the web-application. If you are looking for the API documentation instead, go to_
 ___[api.md](app/controllers/api/v0/api.md)___
 
 ### Managing of applications for available jobs
@@ -100,19 +100,20 @@ server.**
 
 *(TODO)*
 
-## TODO
+## What's next
 
 > ___Note: See GitHub issues for more information___
 
 - Update profile section UI
-
+- Update job UI
+- Update application UI
+- Update search UI
 - ~~Update sign up UI~~
 - Update Job & Application UI
-- Deploy test version
-- ~~Complete API doc (related to different issue)~~
+- ~~Deploy test version~~
 - Implement basic search function
 - ~~Create seeds for jobs, users and applications~~
-- see TODOs issued in GitLab
+- ...
 
 ---
 > Carlo Bortolan &nbsp;&middot;&nbsp;
