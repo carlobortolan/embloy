@@ -126,7 +126,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_28_021741) do
     t.integer "view_count", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "application_count"
+    t.integer "applications_count"
     t.index ["country_code"], name: " job_country_code_index "
     t.index ["job_id"], name: "job_job_id_index"
     t.index ["postal_code"], name: " job_postal_code_index "
@@ -186,8 +186,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_28_021741) do
     t.integer "view_count", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "application_count"
-    t.integer "job_count"
+    t.integer "applications_count", default: 0
+    t.integer "jobs_count", default: 0
     t.index ["email"], name: "user_email_index", unique: true
     t.index ["first_name", "last_name"], name: "user_name_index"
     t.index ["user_type"], name: "user_user_type_index"

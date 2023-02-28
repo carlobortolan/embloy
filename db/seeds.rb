@@ -12,7 +12,7 @@ applications = []
 
 #=> CREATE USERS
 elapsed_user = Benchmark.measure do
-  10.times do
+  100.times do
     begin
       name_f = Faker::Name.first_name
       name_l = Faker::Name.last_name
@@ -53,7 +53,7 @@ elapsed_job = Benchmark.measure do
         job_type: Faker::Job.field,
         job_status: 0,
         status: 'public',
-        user_id: (Faker::Number.number % 800) + 1,
+        user_id: (Faker::Number.number % User.count) + 1,
         duration: Faker::Number.number(digits: 4),
         code_lang: address_full.country_code,
         title: Faker::Job.title,
@@ -89,8 +89,8 @@ Job.import(jobs)
 #   1000.times do
 #     begin
 #       response = [Faker::Quote.yoda, nil].sample
-#       a_id = (Faker::Number.number % 800) + 1
-#       j_id = (Faker::Number.number % 800) + 1
+#       a_id = (Faker::Number.number % User.count) + 1
+#       j_id = (Faker::Number.number % Job.count) + 1
 #       if Application.find_by(user_id: a_id, job_id: j_id).nil?
 #         application = Application.new(
 #           user_id: a_id,

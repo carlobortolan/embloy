@@ -7,7 +7,7 @@ class Application < ApplicationRecord
   # has_rich_text :application_text
 
   belongs_to :job, counter_cache: true
-  belongs_to :user, :dependent => :destroy, counter_cache: true
+  belongs_to :user, counter_cache: true, :dependent => :destroy
 
   # validates :applicant_id, presence: true
   validates :user_id, presence: true
