@@ -41,9 +41,9 @@ class ApplicationsController < ApplicationController
         )
         @application.user = User.find(Current.user.id.to_i)
         @application.save!
-        redirect_to job_path(@job), notice: 'Comment has been submitted'
+        redirect_to job_path(@job), notice: 'Application has been submitted'
       rescue
-        redirect_to job_path(@job)
+        redirect_to job_path(@job), alert: 'Application could not be submitted'
       end
     end
   end

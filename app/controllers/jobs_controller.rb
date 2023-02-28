@@ -13,6 +13,7 @@ class JobsController < ApplicationController
 
   def show
     @job = Job.find(params[:id])
+    mark_notifications_as_read
   end
 
   def new
@@ -72,5 +73,12 @@ class JobsController < ApplicationController
 
   def job_params
     params.require(:job).permit(:title, :description, :start_slot, :status, :user_id, :longitude, :latitude)
+  end
+
+  def mark_notifications_as_read
+    if Current.user
+      notifications_to_mark_as_read = @job.notifications_as_job.where(recipient: Current.user)
+      notifications_to_mark_as_read.update_all(read_at: Time.zone.now)
+    end
   end
 end

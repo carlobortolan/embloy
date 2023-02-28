@@ -22,7 +22,7 @@ class ApplicationNotification < Noticed::Base
 
   # Add required params
   #
-  param :application, :job, :user
+  param :application, :job
 
   # Define helper methods to make rendering easier.
   #
@@ -30,13 +30,11 @@ class ApplicationNotification < Noticed::Base
     @job = params[:job]
     @application = params[:application]
     @user = User.find(params[:job].user_id)
-    "#{@user.email} applied for #{@job.title.truncate(10)}"
+    "#{@user.first_name} applied for #{@job.title.truncate(10)}"
   end
 
   #
   def url
-    puts "PARAMS = #{params}"
-    # job_path(params[:job])
-    # job_path(Job.find(params[:application][:job_id]))
+    job_path(params[:job])
   end
 end
