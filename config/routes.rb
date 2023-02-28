@@ -72,4 +72,5 @@ Rails.application.routes.draw do
   get 'user/edit', :to => 'user#edit', as: :profile_edit
   get 'user/applications', :to => 'user#own_applications', as: :own_applications
   get 'user/jobs', :to => 'user#own_jobs', as: :own_jobs
+  get 'user/preferences', to: 'user#preferences', as: :preferences
 end

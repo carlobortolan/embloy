@@ -211,7 +211,7 @@
             <h4 class="title">Select your preferences</h4>
             <p class="description">Give us a short overview of what you're looking for so that we can tailor your feed
               to your skills.</p>
-            <a href="<%= sign_up_path %>" class="readmore stretched-link">
+            <a href="<%= preferences_path %>" class="readmore stretched-link">
               <span>Start right away</span>
               <i class="bi bi-arrow-right"></i></a>
           </div>
@@ -380,7 +380,9 @@
             we first need some information.</p>
           <ul>
             <li><i class="bi bi-check"></i> Start off by adding a profile image.</li>
-            <li><i class="bi bi-check"></i> Tell us about yourself.</li>
+            <li><i class="bi bi-check"></i> Tell us about yourself by completing
+              the <%= link_to "individualization process", preferences_path %>.
+            </li>
             <li><i class="bi bi-check"></i> Upload additional documents (premium only).</li>
           </ul>
         </div>
@@ -393,7 +395,7 @@
         <div class="col-md-7 order-2 order-md-1">
           <h3>Contribute to our project</h3>
           <p class="fst-italic">
-            Have a look at our <%= link_to "GitLab repository", "https://gitlab.com/carlobortolan/JobFinderOnRails" %>
+            Have a look at our <%= link_to "GitHub repository", "https://github.com/carlobortolan/Embloy" %>
             to sumbit issues and help us impove our services.
           </p>
           <p>
@@ -639,8 +641,8 @@
               </h3>
               <div id="faq-content-4" class="accordion-collapse collapse" data-bs-parent="#faqlist">
                 <div class="accordion-body">
-                  Have a look at
-                  our <%= link_to "GitLab repository", "https://gitlab.com/carlobortolan/JobFinderOnRails" %>.
+                  Simply <%= link_to "submit a new issue", "https://github.com/carlobortolan/Embloy/issues/new" %> to
+                  the project.
                 </div>
               </div>
             </div><!-- # Faq item-->
@@ -655,7 +657,7 @@
               <div id="faq-content-5" class="accordion-collapse collapse" data-bs-parent="#faqlist">
                 <div class="accordion-body">
                   Have a look at
-                  our <%= link_to "GitLab repository", "https://gitlab.com/carlobortolan/JobFinderOnRails" %>.
+                  our <%= link_to "GitHub repository", "https://github.com/carlobortolan/Embloy" %>.
                 </div>
               </div>
             </div><!-- # Faq item-->

@@ -27,6 +27,12 @@ class UserController < ApplicationController
     end
   end
 
+  def preferences
+    if require_user_logged_in!
+      @user = Current.user
+    end
+  end
+
   def own_jobs
     if require_user_logged_in!
       # @jobs = @user.jobs.includes(:rich_text_body).order(created_at: :desc)
