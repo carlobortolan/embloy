@@ -2,7 +2,7 @@ class ApplicationsController < ApplicationController
   before_action :require_user_logged_in!
   before_action :set_job
   attr_accessor(:application_service, :user_service)
-  # layout 'application'
+  layout 'job_applic_layout'
 
   # def initialize
   #   super
