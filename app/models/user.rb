@@ -30,5 +30,8 @@ class User < ApplicationRecord
   validates :user_type, presence: false
   validates :image_url, presence: false
 
+  def full_name
+    "#{first_name} #{last_name}"
+  end
 
 end

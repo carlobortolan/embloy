@@ -2,24 +2,25 @@ class ApplicationsController < ApplicationController
   before_action :require_user_logged_in!
   before_action :set_job
   attr_accessor(:application_service, :user_service)
-  layout 'application'
+  # layout 'application'
 
-  def initialize
-    super
-    @application_service = ApplicationService.new(nil, nil)
-    @user_service = UserService.new
-  end
+  # def initialize
+  #   super
+  #   @application_service = ApplicationService.new(nil, nil)
+  #   @user_service = UserService.new
+  # end
 
   def index
     @job = Job.find(params[:job_id])
     require_user_be_owner!
-    @applications = @job.applications.all
+    @applications = @job.applications.includes(:user).all
   end
 
   def show
-    require_user_be_owner!
+    # require_user_be_owner!
     @job = Job.find(params[:job_id])
-    @application = @job.applications.find_by_sql("SELECT * FROM applications a WHERE a.user_id = #{params[:id]} and a.job_id = #{params[:job_id]}")
+    # @application = @job.applications.find_by_sql("SELECT * FROM applications a WHERE a.user_id = #{params[:id]} and a.job_id = #{params[:job_id]}")
+    @application = @job.applications.find_by_sql("SELECT * FROM applications a WHERE a.user_id = #{1} and a.job_id = #{1}")
   end
 
   def new

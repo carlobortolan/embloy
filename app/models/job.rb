@@ -1,6 +1,6 @@
 class Job < ApplicationRecord
   include Visible
-  belongs_to :user
+  belongs_to :user, counter_cache: true
 
   has_many :applications, dependent: :delete_all
   has_many :notifications, dependent: :delete_all

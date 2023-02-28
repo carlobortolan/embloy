@@ -1,14 +1,14 @@
 require_relative '../../lib/feed_generator.rb'
 
 class JobsController < ApplicationController
-
-  def initialize
-    super
-    @job_service = JobService.new
-  end
+  # layout 'application'
+  # def initialize
+  #   super
+  #   @job_service = JobService.new
+  # end
 
   def index
-    @jobs = Job.all
+    @jobs = Job.all.order(created_at: :desc).first(100)
   end
 
   def show
@@ -60,13 +60,14 @@ class JobsController < ApplicationController
   end
 
   def find
-    @jobs = Job.all.where("status = 'public'")
+    @jobs = Job.all.where("status = 'public'").first(100)
+
   end
 
   def parse_inputs
     @my_args = { "longitude" => params[:longitude].to_f, "latitude" => params[:latitude].to_f, "radius" => params[:radius].to_f, "time" => Time.parse(params[:time]), "limit" => params[:limit].to_i }
-    @result = FeedGenerator.initialize_feed(Job.all.where("status = 'public'").as_json, @my_args)
-    puts "HELLO "
+    # TODO: REMOVE 'first(100)'
+    @result = FeedGenerator.initialize_feed(Job.all.where("status = 'public'").first(100).as_json, @my_args)
   end
 
   private
