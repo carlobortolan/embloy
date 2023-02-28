@@ -19,7 +19,11 @@ module Api
             #Todo: consider different access rights
             if decoded_token["typ"] == "company"
               jobs = User.find_by(id: decoded_token["sub"].to_i).jobs.order(created_at: :desc)
-              render status: 200, json: { "jobs": jobs }
+              if jobs.empty?
+                render status: 204, json: { "jobs": jobs }
+              else
+                render status: 200, json: { "jobs": jobs }
+              end
             else
               render status: 403, json: { "user": [
                 {
@@ -97,7 +101,12 @@ module Api
             #Todo: consider different access rights
             if decoded_token["typ"] == "company"
               applications = Application.all.where(user_id: decoded_token["sub"].to_i)
-              render status: 200, json: { "applications": applications }
+              if applications.empty?
+                render status: 204, json: { "applications": applications }
+              else
+                render status: 200, json: { "applications": applications }
+              end
+
             else
               render status: 403, json: { "user": [
                 {
