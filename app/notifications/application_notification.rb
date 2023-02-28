@@ -6,11 +6,16 @@
 class ApplicationNotification < Noticed::Base
   # Add your delivery methods
   #
-  deliver_by :database
+  deliver_by :database, debug: true
   # deliver_by :action_cable, format: :to_action_cable
-  # deliver_by :email, mailer: "UserMailer"
+  deliver_by :email, mailer: "ApplicationMailer", if: :email_notifications?, unless: :read?, debug: true
+  # deliver_by :email, mailer: "ApplicationMailer", if: :email_notifications?, delay: 15.minutes, unless: :read?, debug: true
   # deliver_by :slack
   # deliver_by DeliveryMethods::Discord
+
+  def email_notifications?
+    recipient.email_notifications?
+  end
 
   def to_database
     {

@@ -1,11 +1,6 @@
 require_relative '../../lib/feed_generator.rb'
 
 class JobsController < ApplicationController
-  # layout 'application'
-  # def initialize
-  #   super
-  #   @job_service = JobService.new
-  # end
 
   def index
     @jobs = Job.all.order(created_at: :desc).first(100)
@@ -27,7 +22,7 @@ class JobsController < ApplicationController
     @job.user_id = Current.user.id
     # @job.location_id = job_params[:location_id]
     if @job.save
-      @job_service.set_notification(@job[:id].to_i, @job[:user_id].to_i, params[:job][:notify].eql?("1"))
+      # @job_service.set_notification(@job[:id].to_i, @job[:user_id].to_i, params[:job][:notify].eql?("1"))
       redirect_to @job
     else
       render :new, status: :unprocessable_entity
@@ -43,7 +38,7 @@ class JobsController < ApplicationController
     @job = Job.find(params[:id])
     if require_user_be_owner!
       if @job.update(job_params)
-        @job_service.edit_notification(@job[:id].to_i, @job[:user_id].to_i, params[:job][:notify].eql?("1"))
+        # @job_service.edit_notification(@job[:id].to_i, @job[:user_id].to_i, params[:job][:notify].eql?("1"))
         redirect_to @job
       else
         render :edit, status: :unprocessable_entity
