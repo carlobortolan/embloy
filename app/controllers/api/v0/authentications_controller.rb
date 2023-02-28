@@ -8,6 +8,7 @@ module Api
         if user.present?
 
           if user.authenticate(refresh_token_params["password"])
+
             begin
               # ============ Token gets claimed ==============
               if refresh_token_params["validity"].present? # is a custom token validity interval requested
@@ -95,7 +96,8 @@ module Api
       def create_access
         # ============ Token gets claimed ==============
         begin
-          token = AuthenticationTokenService::Access::Encoder.call(access_token_params["refresh_token"])
+          token = AuthenticationTokenService::Access::Encoder.call(access_token_params)
+          #token = AuthenticationTokenService::Access::Encoder.call(access_token_params["refresh_token"])
           render status: 200, json: { "access_token" => token }
           # ========== Rescue normal Exceptions ==========
         rescue JWT::ExpiredSignature
@@ -175,7 +177,8 @@ module Api
       end
 
       def access_token_params
-        params.fetch(:access_token).permit(:refresh_token)
+        params.fetch(:refresh_token)
+        #params.fetch(:access_token).permit(:refresh_token)
       end
 
       def user
