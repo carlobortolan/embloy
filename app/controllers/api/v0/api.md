@@ -1,3 +1,6 @@
+
+
+
 #### <div style="text-align:right">P-XJH-0006 </div>
 
 ####
@@ -88,7 +91,7 @@
 
 2. Verify user credentials
    >  <span style="color:lawngreen"> GET </span> /user/verify
-   Test to make sure the registration worked and to claim the initial refresh token.
+   Test to make sure the registration worked and to claim the initial refresh token. Verification is mandatory to use any function of the plattform.
    ####
    ###### Data parameters
     1. **email** *<span style="color:crimson">REQUIRED </span>*
@@ -118,13 +121,11 @@
     ```
    You may expect the following errors:
     + ``ERR_BLANK``: When a required attribute is blank or not given by the client.
-    + ``ERR_INVALID``: When a given attribute is malformed or unknown. Check for spelling and/or other formatting
-      errors.
    ####
    **401: Unauthorized**
     ```   
             {
-                    "password": [
+                    "email||password": [
                         {
                             "error": "ERR_INVALID",
                             "description": "Attribute is malformed or unknown."
@@ -164,7 +165,3 @@
    ####
 
 ***
-
-
-
-

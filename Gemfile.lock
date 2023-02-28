@@ -1,11 +1,3 @@
-GIT
-  remote: https://github.com/faker-ruby/faker.git
-  revision: a67007ae0a1b638775f0b67ecc1e32ffa9f4d417
-  branch: main
-  specs:
-    faker (3.1.1)
-      i18n (>= 1.8.11, < 2)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -320,7 +312,6 @@ DEPENDENCIES
   bullet (~> 7.0)
   capybara
   debug
-  faker!
   image_processing (~> 1.2)
   importmap-rails
   jbuilder

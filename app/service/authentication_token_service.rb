@@ -1,3 +1,6 @@
+
+
+
 class AuthenticationTokenService
 
   # Todo: include some scope variable for handeling different waccess rights in access token
@@ -142,15 +145,15 @@ class AuthenticationTokenService
     ALGORITHM_TYPE = 'HS256'
     ISSUER = Socket.gethostname
 
-    def self.encode(sub, exp, roles = nil, scope = nil)
-      payload = { sub: sub, exp: exp }
+    def self.encode(sub, exp, typ, scope = nil)
+      payload = { sub: sub, exp: exp, typ:typ }
       return AuthenticationTokenService.call(HMAC_SECRET, ALGORITHM_TYPE, ISSUER, payload)
     end
 
     def self.decode(token)
       # token decoding for an access token
       # this method decodes a jwt token
-      decoded_token = JWT.decode(token, HMAC_SECRET, true, { iss: ISSUER, verify_iss: true, required_claims: ['iss', 'sub', 'exp'], algorithm: ALGORITHM_TYPE })
+      decoded_token = JWT.decode(token, HMAC_SECRET, true, { iss: ISSUER, verify_iss: true, required_claims: ['iss', 'sub', 'exp', 'typ'], algorithm: ALGORITHM_TYPE })
       return decoded_token
     end
 
@@ -159,11 +162,9 @@ class AuthenticationTokenService
       def self.call(refresh_token)
         decoded_token = AuthenticationTokenService::Refresh::Decoder.call(refresh_token)[0]
         sub = decoded_token["sub"] # who "owns" the token
-        # ADD roles and scope after db mitigation
-        # roles = ...
-        # scope = ...
+        typ = User.find_by(id: sub).user_type
         exp = Time.now.to_i + 1200 # standard validity interval;: 1200 sec == 20 min
-        return AuthenticationTokenService::Access.encode(sub, exp)
+        return AuthenticationTokenService::Access.encode(sub, exp, typ)
       end
     end
 

@@ -8,6 +8,8 @@ Rails.application.routes.draw do
       get 'user/verify', to: 'registrations#verify'
       post 'user/auth/token/refresh', to: 'authentications#create_refresh'
       post 'user/auth/token/access', to: 'authentications#create_access'
+      get 'user/jobs', to: 'user#own_jobs'
+      get 'user/applications', to: 'user#own_applications'
     end
   end
 
