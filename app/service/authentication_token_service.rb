@@ -1,6 +1,3 @@
-
-
-
 class AuthenticationTokenService
 
   # Todo: include some scope variable for handeling different waccess rights in access token
