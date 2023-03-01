@@ -1,7 +1,0 @@
-development:
-  :address: smtp.strato.com
-  :host: embloy.com
-  :authentication: login
-  :user_name: noreply@embloy.com
-  :password: qsc=*>!7E@=ht5uawF?7PVfQfP4y
-  :enable_starttls_auto: true
