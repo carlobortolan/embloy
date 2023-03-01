@@ -34,3 +34,5 @@
 /config/env_var.rb
 /config/puma.rb
 /config/email.yml
+Gemfile
+Gemfile.lock
