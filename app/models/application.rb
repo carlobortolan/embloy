@@ -20,8 +20,8 @@ class Application < ApplicationRecord
   end
 
   def notify_applicant
-    return if job.user.eql? user
-    ApplicationStatusNotification.with(application: [:user_id, :job_id], job: job).deliver_later(job.user)
+    return unless job.user.eql? user
+    ApplicationStatusNotification.with(application: [:user_id, :job_id], job: job).deliver_later(user)
   end
 
   private

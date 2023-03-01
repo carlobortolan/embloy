@@ -1,0 +1,7 @@
+production:
+  :address: <%= ENV["EMAIL_ADDRESS"] %>
+  :host: <%= ENV["EMAIL_HOST"] %>
+  :authentication: login
+  :user_name: <%= ENV["EMAIL_NOREPLY_USER"] %>
+  :password: <%= ENV["EMAIL_PASSWORD"] %>
+  :enable_starttls_auto: true
