@@ -159,7 +159,7 @@ class AuthenticationTokenService
       def self.call(refresh_token)
         decoded_token = AuthenticationTokenService::Refresh::Decoder.call(refresh_token)[0]
         sub = decoded_token["sub"] # who "owns" the token
-        typ = User.find_by(id: sub).user_type
+        typ = User.find_by(id: sub).user_role
         exp = Time.now.to_i + 1200 # standard validity interval;: 1200 sec == 20 min
         return AuthenticationTokenService::Access.encode(sub, exp, typ)
       end
