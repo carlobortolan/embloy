@@ -10,6 +10,7 @@ Rails.application.routes.draw do
       post 'user/auth/token/access', to: 'authentications#create_access'
       get 'user/jobs', to: 'user#own_jobs'
       get 'user/applications', to: 'user#own_applications'
+      patch 'password', to: 'passwords#update'
     end
   end
 

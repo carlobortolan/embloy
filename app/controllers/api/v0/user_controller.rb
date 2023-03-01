@@ -6,7 +6,7 @@ module Api
 
       def own_jobs
         begin
-          if params[:access_token].nil?
+          if request.headers["HTTP_ACCESS_TOKEN"].nil?
             render status: 400, json: { "access_token": [
               {
                 "error": "ERR_BLANK",
@@ -15,7 +15,7 @@ module Api
             ]
             }
           else
-            decoded_token = AuthenticationTokenService::Access::Decoder.call(params["access_token"])[0]
+            decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
             if UserRole.must_be_verified(decoded_token["typ"])
               jobs = User.find_by(id: decoded_token["sub"].to_i).jobs.order(created_at: :desc)
               if jobs.empty?
@@ -86,7 +86,7 @@ module Api
 
       def own_applications
         begin
-          if params[:access_token].nil?
+          if request.headers["HTTP_ACCESS_TOKEN"].nil?
             render status: 400, json: { "access_token": [
               {
                 "error": "ERR_BLANK",
@@ -95,7 +95,7 @@ module Api
             ]
             }
           else
-            decoded_token = AuthenticationTokenService::Access::Decoder.call(params["access_token"])[0]
+            decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
             if UserRole.must_be_verified(decoded_token["typ"])
               applications = Application.all.where(user_id: decoded_token["sub"].to_i)
               if applications.empty?
@@ -166,12 +166,6 @@ module Api
         end
 
       end
-
-
-      def own_jobs_params
-        params.require(:access_token)
-      end
-
     end
   end
 end
