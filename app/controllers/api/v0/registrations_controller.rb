@@ -60,46 +60,47 @@ module Api
           ]
           }
 
-        end
+        else
 
-        if !params[:email].nil? && !params[:password].nil?
-          @user = User.find_by(email: params[:email])
+          if !params[:email].nil? && !params[:password].nil?
+            @user = User.find_by(email: params[:email])
 
-          if !@user.present? || !@user.authenticate(params[:password])
-            render status: 401, json: { "email||password": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Attribute is malformed or unknown"
-              }
-            ]
-            }
-          else
-
-            if @user.activity_status == 0
-              p @user.password_digest
-              p "WLAN"
-              @user.update_column("activity_status", 1)
-              puts @user.errors.details
-
-              begin
-                token = AuthenticationTokenService::Refresh::Encoder.call(@user.id)
-                render status: 200, json: { "refresh_token": token }
-              rescue # because the code above checked all attributes, there should not be any exceptions. if there are something strange happened (or a bug)
-                render status: 500, json: { "error": "Something went wrong while issuing your initial refresh token. Please try again later. If this error persists, we recommend to contact our support team." }
-              end
-            else
-              # is user already listed as active/is user verified?
-              render status: 403, json: { "user": [
+            if !@user.present? || !@user.authenticate(params[:password])
+              render status: 401, json: { "email||password": [
                 {
-                  "error": "ERR_UNNECESSARY",
-                  "description": "Attribute is already verified."
+                  "error": "ERR_INVALID",
+                  "description": "Attribute is malformed or unknown"
                 }
               ]
               }
+            else
+
+              if @user.activity_status == 0
+                p @user.password_digest
+                p "WLAN"
+                @user.update_column("activity_status", 1)
+                puts @user.errors.details
+
+                begin
+                  token = AuthenticationTokenService::Refresh::Encoder.call(@user.id)
+                  render status: 200, json: { "refresh_token": token }
+                rescue # because the code above checked all attributes, there should not be any exceptions. if there are something strange happened (or a bug)
+                  render status: 500, json: { "error": "Something went wrong while issuing your initial refresh token. Please try again later. If this error persists, we recommend to contact our support team." }
+                end
+              else
+                # is user already listed as active/is user verified?
+                render status: 403, json: { "user": [
+                  {
+                    "error": "ERR_UNNECESSARY",
+                    "description": "Attribute is already verified."
+                  }
+                ]
+                }
+              end
+
             end
 
           end
-
         end
 
       end

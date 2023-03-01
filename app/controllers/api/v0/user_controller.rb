@@ -166,12 +166,6 @@ module Api
         end
 
       end
-
-
-      def own_jobs_params
-        params.require(:access_token)
-      end
-
     end
   end
 end
