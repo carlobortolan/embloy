@@ -1,9 +1,5 @@
-
-
-
 class AuthenticationTokenService
 
-  # Todo: include some scope variable for handeling different waccess rights in access token
   def self.call (secret, algorithm, issuer, payload)
     # generates a generic token (=> is used to generate refresh and access token)
     # CAUTION: NO INPUT VERIFICATION ETC. PROVIDED BY THIS METHOD
@@ -28,9 +24,14 @@ class AuthenticationTokenService
     def self.decode(token)
       # token decoding for a refresh token
       # this method decodes a jwt token
-      decoded_token = JWT.decode(token, HMAC_SECRET, true, { verify_jti: Proc.new { |jti| jti?(jti) }, iss: ISSUER, verify_iss: true, verify_iat: true, required_claims: ['iss', 'sub', 'exp', 'jti', 'iat'], algorithm: ALGORITHM_TYPE })
+      decoded_token = JWT.decode(token, HMAC_SECRET, true, { verify_jti: Proc.new { |jti| jti?(jti) }, verify_sub: Proc.new { |sub| UserRole.must_be_admin!(sub.to_i) }, iss: ISSUER, verify_iss: true, verify_iat: true, required_claims: ['iss', 'sub', 'exp', 'jti', 'iat'], algorithm: ALGORITHM_TYPE })
+
       if User.find_by(id: decoded_token[0]["sub"]).blank?
         raise JWT::InvalidSubError
+      end
+
+      unless UserRole.must_be_verified!(decoded_token[0]["sub"])
+        raise AuthenticationTokenService::InvalidUser::Inactive::NotVerified
       end
       return decoded_token
     end
@@ -81,7 +82,7 @@ class AuthenticationTokenService
         elsif User.find_by(id: user_id).blank? # is the given id referencing an non-existing user?
           raise AuthenticationTokenService::InvalidUser::Unknown
 
-        elsif User.find_by(id: user_id).activity_status == 0 # is the user for the given id deactivated?
+        elsif User.find_by(id: user_id).activity_status == 0 || !UserRole.must_be_verified!(user_id)# is the user for the given id deactivated?
           raise AuthenticationTokenService::InvalidUser::Inactive::NotVerified
 
         elsif UserBlacklist.find_by(user_id: user_id).present? # is the user for the given id blacklisted/actively blocked?
@@ -158,11 +159,10 @@ class AuthenticationTokenService
     end
 
     class Encoder
-      # Todo: Add Roles & Scope to the db (adapt from cb) & Update Specs accordingly
       def self.call(refresh_token)
         decoded_token = AuthenticationTokenService::Refresh::Decoder.call(refresh_token)[0]
         sub = decoded_token["sub"] # who "owns" the token
-        typ = User.find_by(id: sub).user_type
+        typ = User.find_by(id: sub).user_role
         exp = Time.now.to_i + 1200 # standard validity interval;: 1200 sec == 20 min
         return AuthenticationTokenService::Access.encode(sub, exp, typ)
       end

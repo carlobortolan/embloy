@@ -87,5 +87,3 @@ gem "bullet", "~> 7.0"
 gem "benchmark", "~> 0.2.1"
 
 gem "activerecord-import", "~> 1.4"
-
-gem "faker", "~> 3.1"

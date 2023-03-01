@@ -69,8 +69,17 @@ module Api
                 }
               ]
               }
-
+            rescue UserRole::InvalidUser::Unknown
+              # Invalid User (User.find_by(id: id) == nil) BUT user.present says true
+              render status: 500, json: { "user": [
+                {
+                  "error": "ERR_SERVER",
+                  "description": "Please try again later. If this error persists please contact the support team."
+                }
+              ]
+              }
             end
+
           else
             # user.authenticate(refresh_token_params["password"]) fails
             render status: 401, json: { "password": [
@@ -81,6 +90,7 @@ module Api
             ]
             }
           end
+
         else
           # User.find_by(email: refresh_token_params["email"]) fails
           render status: 400, json: { "user": [
@@ -97,7 +107,7 @@ module Api
         # ============ Token gets claimed ==============
         begin
           token = AuthenticationTokenService::Access::Encoder.call(access_token_params)
-          #token = AuthenticationTokenService::Access::Encoder.call(access_token_params["refresh_token"])
+          # token = AuthenticationTokenService::Access::Encoder.call(access_token_params["refresh_token"])
           render status: 200, json: { "access_token" => token }
           # ========== Rescue normal Exceptions ==========
         rescue JWT::ExpiredSignature
@@ -165,8 +175,14 @@ module Api
             }
           ]
           }
-
-
+        rescue AuthenticationTokenService::InvalidUser::Inactive::NotVerified # user_role is to low
+          render status: 403, json: { "user": [
+            {
+              "error": "ERR_INACTIVE",
+              "description": "Attribute is blocked."
+            }
+          ]
+          }
         end
       end
 
@@ -178,7 +194,7 @@ module Api
 
       def access_token_params
         params.fetch(:refresh_token)
-        #params.fetch(:access_token).permit(:refresh_token)
+        # params.fetch(:access_token).permit(:refresh_token)
       end
 
       def user
@@ -189,82 +205,3 @@ module Api
 
   end
 end
-
-=begin
-      def create
-        # Todo: Implement Error handling for errors dropped while call
-        # Todo: Update Doc
-        # Todo: An Registraton verify anbinden (abhängig von user_type scope festlegen etc.)
-        # Todo: implement refreshtoken & accesstoken approach
-
-        if user.authenticate(token_params["password"])
-          token = AuthenticationTokenService::Refresh.call(user.id)
-          if !token["token"].nil?
-            render status: 200, json: { "token": token["token"] }
-          elsif !token["error"].nil?
-            render status: token["error"]["status"].to_i, json: token["error"]["errors"]
-          else
-            render status: 500, json: { "system": [
-              {
-                "error": "ERR_CRAZY",
-                "description": "Note exactly what you did before this error occurred and contact our support team."
-              }
-            ]
-            }
-          end
-
-        else !user.authenticate(token_params["password"])
-          render status: 401, json: { "password": [
-            {
-              "error": "ERR_INVALID",
-              "description": "Attribute is malformed or unknown"
-            }
-          ]
-          }
-        end
-      end
-
-      def verify
-        puts "TOKEN"
-        p token
-        if !token["token"].nil?
-          # scope ausgeben
-          sub_id = token["token"][0]["sub"]
-          sub = User.find_by(id: sub_id)
-          if sub_id.present? && sub.present?
-            render status: 200, json: { "token": { "user": sub.id } }
-          else
-            render status: 500, json: { "error": "Please try again later. If this error persists, we recommend to contact our support team." }
-          end
-        elsif !token["error"].nil?
-          render status: token["error"]["status"].to_i, json: token["error"]["errors"]
-        else
-          render status: 500, json: { "system": [
-            {
-              "error": "ERR_CRAZY",
-              "description": "Note exactly what you did before this error occurred and contact our support team."
-            }
-          ]
-          }
-        end
-      end
-
-      private
-
-      def user
-        # enables to not explicitly define user by just calling this method
-        @user ||= User.find_by(email: token_params["email"])
-      end
-
-      def token
-        @token ||= AuthenticationTokenService::Refresh.content(verify_params)
-      end
-
-      def token_params
-        params.require(:token).permit(:email, :password)
-      end
-
-      def verify_params
-        params.require(:token)
-      end
-=end
