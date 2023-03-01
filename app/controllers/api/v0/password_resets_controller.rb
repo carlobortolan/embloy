@@ -2,6 +2,7 @@
 module Api
   module V0
     class PasswordResetsController < ApplicationController
+
       def create
         if request.headers["HTTP_ACCESS_TOKEN"].nil?
           render status: 400, json: { "access_token": [
@@ -79,21 +80,8 @@ module Api
           end
         end
       end
+      #edit/update methods are not implemented on purpose. this is due to the fact that a user must do the confirmation manually.
 
-      def edit
-        @user = User.find_signed!(params[:token], purpose: 'password_reset')
-      rescue ActiveSupport::MessageVerifier::InvalidSignature
-        redirect_to sign_in_path, alert: 'Your token has expired. Please try again.'
-      end
-
-      def update
-        @user = User.find_signed!(params[:token], purpose: 'password_reset')
-        if @user.update(password_params)
-          redirect_to sign_in_path, notice: 'Your password was reset successfully. Please sign in.'
-        else
-          render :edit
-        end
-      end
 
       private
 
