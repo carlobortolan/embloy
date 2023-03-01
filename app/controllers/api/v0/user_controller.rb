@@ -16,8 +16,6 @@ module Api
             }
           else
             decoded_token = AuthenticationTokenService::Access::Decoder.call(params["access_token"])[0]
-            #Todo: consider different access rights
-
             if UserRole.must_be_verified(decoded_token["typ"])
               jobs = User.find_by(id: decoded_token["sub"].to_i).jobs.order(created_at: :desc)
               if jobs.empty?
@@ -99,8 +97,7 @@ module Api
             }
           else
             decoded_token = AuthenticationTokenService::Access::Decoder.call(params["access_token"])[0]
-            #Todo: consider different access rights
-            if decoded_token["typ"] == "company"
+            if UserRole.must_be_verified(decoded_token["typ"])
               applications = Application.all.where(user_id: decoded_token["sub"].to_i)
               if applications.empty?
                 render status: 204, json: { "applications": applications }
@@ -111,7 +108,7 @@ module Api
             else
               render status: 403, json: { "user": [
                 {
-                  "error": "ERR_OUTOFYOURLEAGUE",
+                  "error": "ERR_INVALID",
                   "description": "Attribute is blocked."
                 }
               ]
