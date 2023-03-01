@@ -62,9 +62,13 @@ Rails.application.configure do
   # config.active_job.queue_adapter     = :resque
   # config.active_job.queue_name_prefix = "embloy_production"
 
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.default_options = { from: 'noreply@embloy.com' }
+
   config.action_mailer.perform_caching = false
 
-  config.action_mailer.default_url_options = { host: "https://embloy.onrender.com" }
+  config.action_mailer.default_url_options = { host: ENV['EMAIL_HOST'] }
 
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
