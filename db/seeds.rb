@@ -12,7 +12,7 @@ applications = []
 
 #=> CREATE USERS
 elapsed_user = Benchmark.measure do
-  100.times do
+  1.times do
     begin
       name_f = Faker::Name.first_name
       name_l = Faker::Name.last_name
@@ -41,12 +41,12 @@ elapsed_user = Benchmark.measure do
   end
   puts "FINISHED CREATING USERS"
 end
-puts "Created 10 Users in #{elapsed_user.real} seconds."
+puts "Finished in #{elapsed_user.real} seconds."
 User.import(users)
 
 #=> CREATE JOBS POSTGRESQL
 elapsed_job = Benchmark.measure do
-  5000.times do
+  1.times do
     begin
       address_full = Faker::Address
       job = Job.new(
@@ -81,33 +81,33 @@ elapsed_job = Benchmark.measure do
   end
   puts "FINISHED CREATING JOBS"
 end
-puts "Created 5000 Jobs in #{elapsed_job.real} seconds."
+puts "Finished in #{elapsed_job.real} seconds."
 Job.import(jobs)
 
 # => CREATE APPLICATIONS
-# elapsed_application = Benchmark.measure do
-#   1000.times do
-#     begin
-#       response = [Faker::Quote.yoda, nil].sample
-#       a_id = (Faker::Number.number % User.count) + 1
-#       j_id = (Faker::Number.number % Job.count) + 1
-#       if Application.find_by(user_id: a_id, job_id: j_id).nil?
-#         application = Application.new(
-#           user_id: a_id,
-#           job_id: j_id,
-#           application_text: "Dear #{Faker::GreekPhilosophers.name}, I am writing to express my interest in #{Faker::Job.position} that was advertised on embloy.com. I am a highly #{Faker::Adjective.positive} and #{Faker::Adjective.positive} with #{rand(max = 30)} years of experience in #{Faker::Job.field}. As you will see from my attached resume, I have a strong track record of #{Faker::Marketing.buzzwords}, #{Faker::Marketing.buzzwords} as well as #{Faker::Marketing.buzzwords}. I believe that my skills and experience make me an ideal candidate for the position and I am excited about the opportunity to contribute to your company and its goals. #{Faker::GreekPhilosophers.quote}. Thank you for considering my application. I look forward to hearing from you soon.",
-#           application_documents: Faker::Internet.url,
-#           response: response,
-#           applied_at: DateTime.now,
-#           status: response.nil? ? 0 : ([-1, 1].sample)
-#         )
-#         applications.push(application)
-#       end
-#     rescue Exception => exception
-#       puts exception.message
-#     end
-#   end
-#   puts "FINISHED CREATING APPLICATIONS"
-# end
-# Application.import(applications)
-# puts "Created 1000 Applications in #{elapsed_application.real} seconds."
+elapsed_application = Benchmark.measure do
+  1.times do
+    begin
+      response = [Faker::Quote.yoda, nil].sample
+      a_id = (Faker::Number.number % User.count) + 1
+      j_id = (Faker::Number.number % Job.count) + 1
+      if Application.find_by(user_id: a_id, job_id: j_id).nil?
+        application = Application.new(
+          user_id: a_id,
+          job_id: j_id,
+          application_text: "Dear #{Faker::GreekPhilosophers.name}, I am writing to express my interest in #{Faker::Job.position} that was advertised on embloy.com. I am a highly #{Faker::Adjective.positive} and #{Faker::Adjective.positive} with #{rand(max = 30)} years of experience in #{Faker::Job.field}. As you will see from my attached resume, I have a strong track record of #{Faker::Marketing.buzzwords}, #{Faker::Marketing.buzzwords} as well as #{Faker::Marketing.buzzwords}. I believe that my skills and experience make me an ideal candidate for the position and I am excited about the opportunity to contribute to your company and its goals. #{Faker::GreekPhilosophers.quote}. Thank you for considering my application. I look forward to hearing from you soon.",
+          application_documents: Faker::Internet.url,
+          response: response,
+          applied_at: DateTime.now,
+          status: response.nil? ? 0 : ([-1, 1].sample)
+        )
+        applications.push(application)
+      end
+    rescue Exception => exception
+      puts exception.message
+    end
+  end
+  puts "FINISHED CREATING APPLICATIONS"
+end
+Application.import(applications)
+puts "Finished in #{elapsed_application.real} seconds."

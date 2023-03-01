@@ -90,9 +90,9 @@ server.**
    ENV['RAILS_MASTER_KEY'] = <special authorization needed>
     ```
 
-1. Run `$ rails db:create` to create all necessary tables in your development database.
-2. Run `$ rails db:migrate` to migrate your changes to the database.
-5. Run `$ rails server` to start the server.
+1. Run ``$ rails db:create`` to create all necessary tables in your development database.
+2. Run ``$ rails db:migrate`` to migrate your changes to the database.
+5. Run ``$ rails server`` to start the server.
 
 ### Go to http://localhost:3000
 
@@ -106,7 +106,7 @@ server.**
 
 - Update profile section UI
 - Update job UI
-- Update application UI
+- ~~Update application UI~~
 - Update search UI
 - ~~Update sign up UI~~
 - Update Job & Application UI
@@ -116,10 +116,12 @@ server.**
 - ...
 
 ---
+© Carlo Bortolan, Jan Hummel
+
 > Carlo Bortolan &nbsp;&middot;&nbsp;
 > GitHub [@carlobortolan](https://github.com/carlobortolan) &nbsp;&middot;&nbsp;
-> e-mail [@carlo.bortolan@tum.de](carlo.bortolan@tum.de)
+> contact via [@bortolanoffice@embloy.com](bortolanoffice@embloy.com)
 >
 > Jan Hummel &nbsp;&middot;&nbsp;
 > GitHub [@github4touchdouble](https://github.com/github4touchdouble) &nbsp;&middot;&nbsp;
-> e-mail [@jan.hummel@tum.de](jan.hummel@tum.de)
+> contact via [@hummeloffice@embloy.com](hummeloffice@embloy.com)
