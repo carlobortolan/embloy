@@ -11,7 +11,7 @@ class AuthenticationTokenService
   ############### En-/Decoding Refresh token ##############
   #########################################################
   class Refresh
-    HMAC_SECRET = 'yTcW3y9&t<=2cYn=Qt*nYyj!+aFv^LMw&o`@'
+    HMAC_SECRET = ENV['REFRESH_TOKEN_SECRET']
     ALGORITHM_TYPE = 'HS256'
     ISSUER = Socket.gethostname
 
@@ -143,7 +143,7 @@ class AuthenticationTokenService
   #########################################################
 
   class Access
-    HMAC_SECRET = 'e&iZY9=k!D'
+    HMAC_SECRET = ENV['ACCESS_TOKEN_SECRET']
     ALGORITHM_TYPE = 'HS256'
     ISSUER = Socket.gethostname
 
