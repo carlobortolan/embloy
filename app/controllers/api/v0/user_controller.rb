@@ -5,16 +5,17 @@ module Api
       protect_from_forgery with: :null_session
 
       def own_jobs
-        begin
-          if request.headers["HTTP_ACCESS_TOKEN"].nil?
-            render status: 400, json: { "access_token": [
-              {
-                "error": "ERR_BLANK",
-                "description": "Attribute can't be blank"
-              }
-            ]
+
+        if request.headers["HTTP_ACCESS_TOKEN"].nil?
+          render status: 400, json: { "access_token": [
+            {
+              "error": "ERR_BLANK",
+              "description": "Attribute can't be blank"
             }
-          else
+          ]
+          }
+        else
+          begin
             decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
             if UserRole.must_be_verified(decoded_token["typ"])
               jobs = User.find_by(id: decoded_token["sub"].to_i).jobs.order(created_at: :desc)
@@ -32,55 +33,56 @@ module Api
               ]
               }
             end
+
+          rescue AuthenticationTokenService::InvalidInput::Token
+            render status: 400, json: { "access_token": [
+              {
+                "error": "ERR_INVALID",
+                "description": "Attribute is malformed or unknown."
+              }
+            ]
+            }
+          rescue JWT::ExpiredSignature
+            render status: 401, json: { "access_token": [
+              {
+                "error": "ERR_INVALID",
+                "description": "Attribute has expired."
+              }
+            ]
+            }
+          rescue JWT::InvalidIssuerError
+            render status: 401, json: { "access_token": [
+              {
+                "error": "ERR_INVALID",
+                "description": "Attribute was signed by an unknown issuer."
+              }
+            ]
+            }
+          rescue JWT::VerificationError
+            render status: 401, json: { "access_token": [
+              {
+                "error": "ERR_INVALID",
+                "description": "Token can't be verified."
+              }
+            ]
+            }
+          rescue JWT::IncorrectAlgorithm
+            render status: 401, json: { "access_token": [
+              {
+                "error": "ERR_INVALID",
+                "description": "Token was encoded with an unknown algorithm."
+              }
+            ]
+            }
+          rescue JWT::DecodeError
+            render status: 400, json: { "access_token": [
+              {
+                "error": "ERR_INVALID",
+                "description": "Attribute is malformed or unknown."
+              }
+            ]
+            }
           end
-        rescue AuthenticationTokenService::InvalidInput::Token
-          render status: 400, json: { "access_token": [
-            {
-              "error": "ERR_INVALID",
-              "description": "Attribute is malformed or unknown."
-            }
-          ]
-          }
-        rescue JWT::ExpiredSignature
-          render status: 401, json: { "access_token": [
-            {
-              "error": "ERR_INVALID",
-              "description": "Attribute has expired."
-            }
-          ]
-          }
-        rescue JWT::InvalidIssuerError
-          render status: 401, json: { "access_token": [
-            {
-              "error": "ERR_INVALID",
-              "description": "Attribute was signed by an unknown issuer."
-            }
-          ]
-          }
-        rescue JWT::VerificationError
-          render status: 401, json: { "access_token": [
-            {
-              "error": "ERR_INVALID",
-              "description": "Token can't be verified."
-            }
-          ]
-          }
-        rescue JWT::IncorrectAlgorithm
-          render status: 401, json: { "access_token": [
-            {
-              "error": "ERR_INVALID",
-              "description": "Token was encoded with an unknown algorithm."
-            }
-          ]
-          }
-        rescue JWT::DecodeError
-          render status: 400, json: { "access_token": [
-            {
-              "error": "ERR_INVALID",
-              "description": "Attribute is malformed or unknown."
-            }
-          ]
-          }
         end
       end
 
