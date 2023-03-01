@@ -81,7 +81,6 @@ module Api
             }
           ]
           }
-
         end
       end
 
