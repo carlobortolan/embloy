@@ -1,65 +1,12 @@
-<%#= form_with model: [@job, @job.applications.build] do |form| %>
-
-
-<!--  <section class="vh-100" style="background-color: #2779e2;">-->
-<!--    <div class="container h-100">-->
-<!--      <div class="row d-flex justify-content-center align-items-center h-100">-->
-<!--        <div class="col-xl-9">-->
-<!--          <div class="card" style="border-radius: 15px;">-->
-<!--            <div class="card-body">-->
-<!--              <hr class="mx-n3">-->
-<!--              <div class="row align-items-center py-3">-->
-<!--                <div class="col-md-3 ps-5">-->
-<!--                  <h6 class="mb-0">Email address confirmation</h6>-->
-<!--                </div>-->
-<!--                <div class="col-md-9 pe-5">-->
-<!--                  <input type="email" class="form-control form-control-lg" placeholder="example@example.com"/>-->
-<!--                </div>-->
-<!--              </div>-->
-<!--              <hr class="mx-n3">-->
-<!--              <div class="row align-items-center py-3">-->
-<!--                <div class="col-md-3 ps-5">-->
-<!--                  <h6 class="mb-0">Application text</h6>-->
-<!--                </div>-->
-<!--                <div class="col-md-9 pe-5">-->
-<%#= form.text_area :application_text, rows: "5", class: "form-control", placeholder: "Message sent to the employer" %>
-<!--                </div>-->
-<!--              </div>-->
-<!--              <hr class="mx-n3">-->
-<!--              <div class="row align-items-center py-3">-->
-<!--                <div class="col-md-3 ps-5">-->
-<!--                  <h6 class="mb-0">Upload CV</h6>-->
-<!--                </div>-->
-<!--                <div class="col-md-9 pe-5">-->
-<!--                  <input class="form-control form-control-lg" id="formFileLg" type="file"/>-->
-<!--                  <div class="small text-muted mt-2">Upload your CV/Resume or any other relevant file. Max file-->
-<!--                    size 50 MB-->
-<!--                  </div>-->
-<!--                </div>-->
-<!--              </div>-->
-<!--              <hr class="mx-n3">-->
-<!--              <div class="px-5 py-4">-->
-<%#= form.submit "Send application", class: "btn btn-primary btn-lg", type: "submit" %>
-<!--              </div>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </section>-->
-<!--  <p>-->
-<!--  </p>-->
-<%# end %>
-
 <!-- Template Main CSS File -->
 <link href="../../../assets/applications_assets/css/style.css" rel="stylesheet">
 
-<!-- ======= Contact Section ======= -->
+<!-- ======= Application Section ======= -->
 <section id="contact" class="contact">
   <div class="container" data-aos="fade-up">
 
     <div class="section-title">
-      <h2>Apply now</h2>
+      <h2>Apply now as <%= @job.position %></h2>
       <p>Unlock your full potential and take your career to the next level!
       </p>
     </div>
@@ -72,7 +19,6 @@
             <i class="bi bi-geo-alt"></i>
             <h4>Location:</h4>
             <p><%= @job.format_address %></p>
-            <!--            <p>A108 Adam Street, New York, NY 535022</p>-->
           </div>
 
           <div class="email">
@@ -91,9 +37,7 @@
         </div>
 
       </div>
-      <%#= form_with model: [@job, @job.applications.build] do |form| %>
       <div class="col-lg-7 mt-5 mt-lg-0 d-flex align-items-stretch">
-        <!--        <form action="forms/contact.php" method="post" role="form" class="php-email-form">-->
         <%= form_with model: [@job, @job.applications.build], class: "php-email-form" do |form| %>
 
           <div class="row">
@@ -131,14 +75,10 @@
           <div class="text-center">
             <button type="submit">Send Application</button>
           </div>
-          <!--        </form>-->
         <% end %>
       </div>
 
     </div>
 
   </div>
-</section><!-- End Contact Section -->
-
-
-
+</section><!-- End Application Section -->
