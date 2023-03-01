@@ -8,7 +8,7 @@ class ApplicationNotification < Noticed::Base
   #
   deliver_by :database, debug: true
   # deliver_by :action_cable, format: :to_action_cable
-  deliver_by :email, mailer: "ApplicationMailer", if: :email_notifications?, unless: :read?, debug: true
+  deliver_by :email, mailer: "EmployerApplicationMailer", if: :email_notifications?, unless: :read?, debug: true
   # deliver_by :email, mailer: "ApplicationMailer", if: :email_notifications?, delay: 15.minutes, unless: :read?, debug: true
   # deliver_by :slack
   # deliver_by DeliveryMethods::Discord
@@ -17,13 +17,13 @@ class ApplicationNotification < Noticed::Base
     recipient.email_notifications?
   end
 
-  def to_database
-    {
-      type: self.class.name,
-      params: params,
-      account: Current.account,
-    }
-  end
+  # def to_database
+  #   {
+  #     type: self.class.name,
+  #     params: params,
+  #     account: Current.account,
+  #   }
+  # end
 
   # Add required params
   #

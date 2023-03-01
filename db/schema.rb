@@ -64,8 +64,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_01_102526) do
   create_table "applications", primary_key: ["job_id", "user_id"], force: :cascade do |t|
     t.integer "job_id", null: false
     t.integer "user_id", null: false
-    t.datetime "updated_at", default: "2023-02-27 23:06:10", null: false
-    t.datetime "applied_at", default: "2023-02-27 23:06:10", null: false
+    t.datetime "updated_at", default: "2023-03-01 15:40:36", null: false
+    t.datetime "applied_at", default: "2023-03-01 15:40:36", null: false
     t.enum "status", default: "0", null: false, enum_type: "application_status"
     t.string "application_text", limit: 1000
     t.string "application_documents", limit: 100
@@ -90,8 +90,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_01_102526) do
   end
 
   create_table "currents", force: :cascade do |t|
-    t.datetime "created_at", default: "2023-02-27 23:06:11", null: false
-    t.datetime "updated_at", default: "2023-02-27 23:06:11", null: false
+    t.datetime "created_at", default: "2023-03-01 15:40:36", null: false
+    t.datetime "updated_at", default: "2023-03-01 15:40:36", null: false
   end
 
   create_table "job_notifications", primary_key: ["employer_id", "job_id"], force: :cascade do |t|
@@ -171,6 +171,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_01_102526) do
 
   create_table "users", id: :serial, force: :cascade do |t|
     t.string "email", null: false
+    t.integer "phone_number"
     t.string "password_digest"
     t.integer "activity_status", limit: 2, default: 0, null: false
     t.string "image_url", limit: 500
@@ -197,12 +198,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_01_102526) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "applications", "jobs", primary_key: "job_id", on_delete: :cascade
-  add_foreign_key "applications", "users", on_delete: :cascade
-  add_foreign_key "company_users", "users", column: "id", on_delete: :cascade
-  add_foreign_key "job_notifications", "jobs", primary_key: "job_id", on_delete: :cascade
-  add_foreign_key "job_notifications", "users", column: "employer_id", on_delete: :cascade
-  add_foreign_key "jobs", "users", on_delete: :cascade
-  add_foreign_key "private_users", "users", column: "id", on_delete: :cascade
-  add_foreign_key "reviews", "users", column: "created_by"
+  add_foreign_key "applications", "jobs", primary_key: "job_id", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "applications", "users", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "company_users", "users", column: "id", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "job_notifications", "jobs", primary_key: "job_id", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "job_notifications", "users", column: "employer_id", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "jobs", "users", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "private_users", "users", column: "id", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "reviews", "users", column: "created_by", on_update: :cascade, on_delete: :cascade
 end

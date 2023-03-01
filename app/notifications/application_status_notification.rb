@@ -1,27 +1,20 @@
-# To deliver this notification:
-#
-# ApplicationStatusNotification.with(post: @post).deliver_later(current_user)
-# ApplicationStatusNotification.with(post: @post).deliver(current_user)
-
 class ApplicationStatusNotification < Noticed::Base
-  # Add your delivery methods
-  #
   deliver_by :database
-  # deliver_by :email, mailer: "UserMailer"
-  # deliver_by :slack
-  # deliver_by :custom, class: "MyDeliveryMethod"
+  deliver_by :email, mailer: "EmployeeApplicationMailer", if: :email_notifications?, unless: :read?, debug: true
 
-  # Add required params
-  #
-  param :application, :job
+  param :application, :job, :user
 
-  # Define helper methods to make rendering easier.
-  #
-  def message
-    t(".message")
+  def email_notifications?
+    recipient.email_notifications?
   end
 
-  #
+  def message
+    @job = params[:job]
+    @application = params[:application]
+    @user = user
+    "The status of your application for job #{@job.title} has changed."
+  end
+
   def url
     job_path(params[:job])
   end

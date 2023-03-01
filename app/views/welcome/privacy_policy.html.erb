@@ -3,7 +3,7 @@
 </h1>
 <h6>
   This Privacy Policy ("Policy") sets out how we collect, use, and disclose personal information about you when you use
-  our job finder website (the "Website").
+  our website (the "Website").
 </h6>
 
 <div class="accordion" id="accordionExample">
@@ -17,10 +17,10 @@
     </div>
     <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
       <div class="card-body">
-        We are a Jobfinder, open-source project that operates the Website. Our contact
+        We are a Embloy, open-source project that operates the Website. Our contact
         details are as follows:
         <ul>
-          <li><a href="mailto:noreply.versuchundirrtum@gmail.com">noreply.versuchundirrtum@gmail.com</a>
+          <li><a href="mailto:<%= ENV["EMAIL_INFO_USER"] %>"><%= ENV["EMAIL_INFO_USER"] %></a>
         </ul>
       </div>
     </div>
@@ -244,7 +244,7 @@
     <div id="collapseEleven" class="collapse" aria-labelledby="headingEleven" data-parent="#accordionExample">
       <div class="card-body">
         If you have any questions or concerns about this Policy or our practices regarding your personal information,
-        please contact us at <a href="mailto:noreply.versuchundirrtum@gmail.com">noreply.versuchundirrtum@gmail.com</a>.
+        please contact us at <a href="mailto:<%= ENV["EMAIL_INFO_USER"] %>"><%= ENV["EMAIL_INFO_USER"] %></a>.
       </div>
     </div>
   </div>

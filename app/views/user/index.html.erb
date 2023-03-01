@@ -54,8 +54,7 @@
                   <strong>Birthday: </strong><span><%= @user.date_of_birth unless @user.date_of_birth.nil? %></span>
                 </li>
                 <li><i class="bi bi-chevron-right"></i> <strong>Age: </strong> <span>
-                  <% now = Time.now.utc.to_date %>
-                  <%= now.year - @user.date_of_birth.year - ((now.month > @user.date_of_birth.month || (now.month == @user.date_of_birth.month && now.day >= @user.date_of_birth.day)) ? 0 : 1) unless @user.date_of_birth.nil? %>
+                  <%= @user.age %>
                 </span>
                 </li>
                 <li><i class="bi bi-chevron-right"></i> <strong>Degree:</strong> <span>Master</span></li>

@@ -3,6 +3,7 @@ class CreateUsers < ActiveRecord::Migration[7.0]
     create_enum :user_type, ["company", "private"]
     create_table :users, id: :integer, charset: "unicode", force: :cascade do |t|
       t.string :email, null: false
+      t.integer :phone_number
       t.string :password_digest
       t.integer :activity_status, limit: 1, default: 0, null: false
       t.string :image_url, limit: 500
