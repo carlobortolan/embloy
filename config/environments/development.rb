@@ -46,11 +46,9 @@ Rails.application.configure do
   config.active_storage.service = :local
 
   # Don't care if the mailer can't send.
-  config.action_mailer.raise_delivery_errors = false
+  config.action_mailer.raise_delivery_errors = true
 
   config.action_mailer.perform_caching = false
-
-  config.action_mailer.default_url_options = { host: "localhost:3000" }
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
@@ -81,16 +79,18 @@ Rails.application.configure do
   # config.serve_static_files = true
 
   # config.assets.prefix = "/assets"
+  #
+  config.action_mailer.default_url_options = { host: ENV['EMAIL_HOST'] }
 
-  # config.action_mailer.delivery_method = :smtp
-  # config.action_mailer.smtp_settings = {
-  #   address: '',
-  #   port: '',
-  #   domain: '',
-  #   authentication: '',
-  #   enable_starttls_auto: ,
-  #   user_name: '',
-  #   password: ''
-  # }
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address: ENV['EMAIL_ADDRESS'],
+    port: 587,
+    domain: ENV['EMAIL_HOST'],
+    authentication: :login,
+    enable_starttls_auto: true,
+    user_name: ENV['EMAIL_NOREPLY_USER'],
+    password: ENV['EMAIL_PASSWORD']
+  }
 
 end
