@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_28_021741) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_01_102526) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -20,6 +20,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_28_021741) do
   create_enum "job_status", ["public", "private", "archieved"]
   create_enum "notify_type", ["0", "1"]
   create_enum "rating_type", ["1", "2", "3", "4", "5"]
+  create_enum "user_roles", ["admin", "editor", "developer", "moderator", "verified", "spectator"]
   create_enum "user_type", ["company", "private"]
 
   create_table "action_text_rich_texts", force: :cascade do |t|
@@ -126,7 +127,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_28_021741) do
     t.integer "view_count", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "applications_count"
+    t.integer "applications_count", default: 0
     t.index ["country_code"], name: " job_country_code_index "
     t.index ["job_id"], name: "job_job_id_index"
     t.index ["postal_code"], name: " job_postal_code_index "
@@ -188,6 +189,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_28_021741) do
     t.datetime "updated_at", null: false
     t.integer "applications_count", default: 0
     t.integer "jobs_count", default: 0
+    t.enum "user_role", default: "spectator", null: false, enum_type: "user_roles"
     t.index ["email"], name: "user_email_index", unique: true
     t.index ["first_name", "last_name"], name: "user_name_index"
     t.index ["user_type"], name: "user_user_type_index"
