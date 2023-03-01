@@ -1,6 +1,5 @@
 class AuthenticationTokenService
 
-  # Todo: include some scope variable for handeling different waccess rights in access token
   def self.call (secret, algorithm, issuer, payload)
     # generates a generic token (=> is used to generate refresh and access token)
     # CAUTION: NO INPUT VERIFICATION ETC. PROVIDED BY THIS METHOD
@@ -160,7 +159,6 @@ class AuthenticationTokenService
     end
 
     class Encoder
-      # Todo: Add Roles & Scope to the db (adapt from cb) & Update Specs accordingly
       def self.call(refresh_token)
         decoded_token = AuthenticationTokenService::Refresh::Decoder.call(refresh_token)[0]
         sub = decoded_token["sub"] # who "owns" the token
