@@ -1,6 +1,5 @@
 # frozen_string_literal: true
-
-class UserRoleService < ApplicationController
+class UserRole < ApplicationController
   # frozen_string_literal: true
 
   #########################################################
@@ -61,12 +60,12 @@ class UserRoleService < ApplicationController
   def self.set_current_id(id = nil)
     if id.nil?
       if Current.user.nil?
-        raise UserRoleService::InvalidUser::LoggedOut
+        raise UserRole::InvalidUser::LoggedOut
       end
     else
       Current.user = User.find_by(id: id)
       if Current.user.nil?
-        raise UserRoleService::InvalidUser::Unknown
+        raise UserRole::InvalidUser::Unknown
       end
     end
   end

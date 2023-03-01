@@ -18,7 +18,7 @@ module Api
             decoded_token = AuthenticationTokenService::Access::Decoder.call(params["access_token"])[0]
             #Todo: consider different access rights
 
-            if UserRoleService.must_be_verified(decoded_token["typ"])
+            if UserRole.must_be_verified(decoded_token["typ"])
               jobs = User.find_by(id: decoded_token["sub"].to_i).jobs.order(created_at: :desc)
               if jobs.empty?
                 render status: 204, json: { "jobs": jobs }
