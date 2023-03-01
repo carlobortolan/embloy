@@ -1,3 +1,7 @@
+<h1>BIG TODO</h1>
+<h1>VERY BIG TODO</h1>
+<h1>HERE COMES THE FEED LIKE SCREENING OF APPLICATIONS</h1>
+<h1>SOON</h1>
 <h1>Applications for job #<%= @job.job_id %></h1>
 <h3>There are <%= @job.applications.count %> applications and counting!</h3>
 <%=
@@ -20,6 +24,7 @@
         link_to "reject", job_application_reject_path(@job, application.user_id)
       %>
     </li>
+
   <% end %>
 </ul>
 

@@ -8,6 +8,8 @@ class JobsController < ApplicationController
 
   def show
     @job = Job.find(params[:id])
+    @owner = user_is_owner!
+    @application = Application.find_by(user_id: Current.user.id, job_id: params[:id])
     mark_notifications_as_read
   end
 
@@ -21,8 +23,9 @@ class JobsController < ApplicationController
     @job = Job.new(job_params)
     @job.user_id = Current.user.id
     # @job.location_id = job_params[:location_id]
-    if @job.save
+    if @job.save!
       # @job_service.set_notification(@job[:id].to_i, @job[:user_id].to_i, params[:job][:notify].eql?("1"))
+      puts "SUCCESSFULL"
       redirect_to @job
     else
       render :new, status: :unprocessable_entity
@@ -50,13 +53,12 @@ class JobsController < ApplicationController
     @job = Job.find(params[:id])
     if require_user_be_owner!
       @job.destroy
-      redirect_to jobs_path, status: :see_other
+      redirect_to own_jobs_path, status: :see_other, notice: "Job successfully deleted."
     end
   end
 
   def find
     @jobs = Job.all.where("status = 'public'").first(100)
-
   end
 
   def parse_inputs

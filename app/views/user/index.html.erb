@@ -24,7 +24,7 @@
 
   <section class="sample-page">
     <div class="container" data-aos="fade-up">
-      <h6><%= pluralize(@user.jobs.size, "job") %> | <%= pluralize(@user.reviews.size, "review") %>
+      <h6><%= pluralize(@user.jobs_count, "job") %> | <%= pluralize(@user.reviews.size, "review") %>
         | <%= pluralize(@total_job_views, "total job view") %></h6>
       <p>
         You can duplicate this sample page and create any number of inner pages you like!

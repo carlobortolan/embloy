@@ -1,16 +1,125 @@
-<h1><%= @job.title %></h1>
-<p><%= @job.description %></p>
-<p><%= @job.start_slot.localtime.ctime %></p>
+<section id="contact" class="contact">
+  <div class="container" data-aos="fade-up">
+    <!-- Page content-->
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col-lg-8">
+          <!-- Post content-->
+          <article>
+            <!-- Post header-->
+            <header class="mb-4">
+              <!-- Post title-->
+              <h1 class="fw-bolder mb-1"><%= @job.title %></h1>
+              <div class="text-muted fst-italic mb-2"> by <%= @job.user.full_name %></div>
+              <!-- Post categories-->
+              <a class="badge bg-secondary text-decoration-none link-light" href="#!"><%= @job.job_type %></a>
+            </header>
+            INSERT JOB IMAGE HERE
+            <!-- Preview image figure-->
+<!--            <figure class="mb-4">-->
+<!--              <img class="img-fluid rounded" src="<%#= @job.image_url %>" alt="INSERT JOB IMAGE HERE"/></figure>-->
+            <!-- Post content-->
+            <section class="mb-5">
+              <h4 class="fw-bolder mb-4 mt-5"> Position: <%= @job.position %></h4>
+              <h4 class="fw-bolder mb-4 mt-5"> Starts: <%= @job.start_slot.ctime %></h4>
+              <h4 class="fw-bolder mb-4 mt-5"> Description:</h4>
+              <p class="fs-5 mb-4"><%= @job.description %></p>
+              <h4 class="fw-bolder mb-4 mt-5"> Key Skills:</h4>
+              <p class="fs-5 mb-4"><%= @job.key_skills %></p>
+              <h4 class="fw-bolder mb-4 mt-5"> Duration:</h4>
+              <p class="fs-5 mb-4"><%= @job.duration %> Days</p>
+              <h4 class="fw-bolder mb-4 mt-5"> Salary:</h4>
+              <p class="fs-5 mb-4"><%= @job.salary %> <%= @job.currency %>
+            </section>
+            TODO: APPLY KNOPF NACH UNTEN </p>
+          </article>
+        </div>
+        <!-- Side widgets-->
+        <div class="col-lg-4">
+          <!-- Search widget-->
+          <div class="card mb-4">
+            <div class="card-header">Search</div>
+            <div class="card-body">
+              <div class="input-group">
+                <input class="form-control" type="text" placeholder="Enter search term..." aria-label="Enter search term..." aria-describedby="button-search"/>
+                <button class="btn btn-primary" id="button-search" type="button">Go!</button>
+              </div>
+            </div>
+          </div>
+          <!-- Categories widget-->
+          <!--      <div class="card mb-4">-->
+          <!--        <div class="card-header">Categories</div>-->
+          <!--        <div class="card-body">-->
+          <!--          <div class="row">-->
+          <!--            <div class="col-sm-6">-->
+          <!--              <ul class="list-unstyled mb-0">-->
+          <!--                <li><a href="#!">Web Design</a></li>-->
+          <!--                <li><a href="#!">HTML</a></li>-->
+          <!--                <li><a href="#!">Freebies</a></li>-->
+          <!--              </ul>-->
+          <!--            </div>-->
+          <!--            <div class="col-sm-6">-->
+          <!--              <ul class="list-unstyled mb-0">-->
+          <!--                <li><a href="#!">JavaScript</a></li>-->
+          <!--                <li><a href="#!">CSS</a></li>-->
+          <!--                <li><a href="#!">Tutorials</a></li>-->
+          <!--              </ul>-->
+          <!--            </div>-->
+          <!--          </div>-->
+          <!--        </div>-->
+          <!--      </div>-->
 
-<%= button_to "Edit", edit_job_path(@job), method: :get %>
-<%= button_to "Show all applications", job_applications_path(@job), method: :get %>
-<%= button_to "Delete this job", job_path(@job), form: { data: { turbo_confirm: "Are you sure?" } }, method: :delete %>
+          <!-- Categories widget-->
+          <% if @owner %>
+            <div class="card mb-4">
+              <div class="card-header">Actions</div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-sm-6">
+                    <ul class="list-unstyled mb-0">
+                      <%= button_to "Edit", edit_job_path(@job), method: :get %>
+                      <%= button_to "Delete this job", job_path(@job), form: { data: { turbo_confirm: "Are you sure?" } }, method: :delete %>
+                    </ul>
+                  </div>
+                  <div class="col-sm-6">
+                    <ul class="list-unstyled mb-0">
+                      <%= button_to "Show all applications", job_applications_path(@job), method: :get %>
+                      <%= button_to "Reject all applications", job_applications_reject_all_path(@job), method: :get %>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+
+          <!-- Side widget-->
+          <div class="card mb-4">
+            <div class="card-header">Side Widget</div>
+            <div class="card-body">
+              <div class="text-muted fst-italic mb-2">Posted on <%= @job.created_at.ctime %>
+              </div>
+              <div class="text-muted fst-italic mb-2">Last updated on <%= @job.updated_at.ctime %></div>
+              <div class="text-muted fst-italic mb-2">Viewed <%= pluralize(@job.view_count, "time") %> |
+                Currently <%= pluralize(@job.applications_count, "application") %></div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
 
-<!--<h2>Applications</h2>-->
-<%#= render @job.applications %>
+    <% if @application.nil? && !@owner %>
+      <%= render 'applications/show' %>
+    <% elsif @application.nil? && @owner %>
+      <h1>TODO: HIER KÖNNTEN ENTWEDER ALLE APPLICATIONS STEHEN (WODURCH DER "SHOW ALL APPLICATIONS" BUTTON ENTFERNT
+        WERDEN
+        KÖNNTE ODER MAN LÄSST SICH IRGENDETWAS KREATIVES EINFALLEN, UM DEN PLATZ ZU FÜLLEN ODER ZEIT NUR DEN JOB AN.
+      </h1><%#= render 'applications/show' %>
+    <% else %>
+      <%= render 'applications/form' %>
+    <% end %>
 
-<h2>Add an application:</h2>
-<%= render 'applications/form' %>
 
-<h2><%= link_to "go back", _back_url %></h2>
+  </div>
+</section>

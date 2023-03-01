@@ -26,18 +26,18 @@ class ApplicationsController < ApplicationController
     if require_user_logged_in!
       @job = Job.find(params[:job_id])
       # begin
-        @application = Application.create!(
-          user_id: Current.user.id.to_i,
-          job_id: params[:job_id].to_i,
-          application_text: application_params[:application_text],
-          application_documents: application_params[:application_documents],
-          applied_at: Time.now,
-          updated_at: Time.now,
-          response: "No response yet..."
-        )
-        @application.user = User.find(Current.user.id.to_i)
-        @application.save!
-        redirect_to job_path(@job), notice: 'Application has been submitted'
+      @application = Application.create!(
+        user_id: Current.user.id.to_i,
+        job_id: params[:job_id].to_i,
+        application_text: application_params[:application_text],
+        application_documents: application_params[:application_documents],
+        applied_at: Time.now,
+        updated_at: Time.now,
+        response: "No response yet..."
+      )
+      @application.user = User.find(Current.user.id.to_i)
+      @application.save!
+      redirect_to job_path(@job), notice: 'Application has been submitted'
       # rescue
       #   redirect_to job_path(@job), alert: 'Application could not be submitted'
       # end

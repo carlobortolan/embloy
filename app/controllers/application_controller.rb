@@ -14,10 +14,22 @@ class ApplicationController < ActionController::Base
     true
   end
 
+  # This method checks whether the currently signed in user is the owner of the job that is being requested.
+  # If this is not the case, the user will be redirected back and not gain access to the resource.
   def require_user_be_owner!
-    if Current.user.nil? || @job.nil? || @job.user_id != Current.user.id
+    if user_is_owner!
+      true
+    else
       redirect_back(fallback_location: jobs_path, alert: 'Not allowed!')
       # job_path(@job), status: :unauthorized, alert: 'Not allowed'
+      false
+    end
+  end
+
+  # This method only checks whether the currently signed in user is the owner of the job that is being requested
+  # and only returns a boolean.
+  def user_is_owner!
+    if Current.user.nil? || @job.nil? || @job.user_id != Current.user.id
       return false
     end
     true
