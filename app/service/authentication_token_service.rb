@@ -30,9 +30,9 @@ class AuthenticationTokenService
         raise JWT::InvalidSubError
       end
 
-      unless UserRole.must_be_verified!(decoded_token[0]["sub"])
-        raise AuthenticationTokenService::InvalidUser::Inactive::NotVerified
-      end
+      UserRole.must_be_verified!(decoded_token[0]["sub"]) # if not: UserRole::InvalidUser::Taboo is risen
+
+
       return decoded_token
     end
 
@@ -82,13 +82,14 @@ class AuthenticationTokenService
         elsif User.find_by(id: user_id).blank? # is the given id referencing an non-existing user?
           raise AuthenticationTokenService::InvalidUser::Unknown
 
-        elsif User.find_by(id: user_id).activity_status == 0 || !UserRole.must_be_verified!(user_id)# is the user for the given id deactivated?
+        elsif User.find_by(id: user_id).activity_status == 0 # is the user for the given id deactivated?
           raise AuthenticationTokenService::InvalidUser::Inactive::NotVerified
 
         elsif UserBlacklist.find_by(user_id: user_id).present? # is the user for the given id blacklisted/actively blocked?
           raise AuthenticationTokenService::InvalidUser::Inactive::Blocked
 
         else
+          UserRole.must_be_verified!(user_id) # if not: UserRole::InvalidUser::Taboo is risen
           # the given id references an existing user, who is active and not blacklisted
           iat = Time.now.to_i # timestamp
           sub = user_id # who "owns" the token

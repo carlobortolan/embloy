@@ -19,6 +19,8 @@ module Api
               render status: 200, json: { "refresh_token" => token }
 
               # ========== Rescue normal Exceptions ==========
+
+
             rescue AuthenticationTokenService::InvalidUser::Inactive::Blocked
               # The requested token subject (User) is blocked (blacklisted).
               render status: 403, json: { "user": [
@@ -75,6 +77,14 @@ module Api
                 {
                   "error": "ERR_SERVER",
                   "description": "Please try again later. If this error persists please contact the support team."
+                }
+              ]
+              }
+            rescue UserRole::InvalidUser::Taboo
+              render status: 403, json: { "user": [
+                {
+                  "error": "ERR_INACTIVE",
+                  "description": "Attribute is blocked."
                 }
               ]
               }
@@ -185,7 +195,7 @@ module Api
               }
             ]
             }
-          rescue AuthenticationTokenService::InvalidUser::Inactive::NotVerified # user_role is to low
+          rescue UserRole::InvalidUser::Taboo
             render status: 403, json: { "user": [
               {
                 "error": "ERR_INACTIVE",

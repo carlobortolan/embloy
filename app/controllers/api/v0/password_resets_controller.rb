@@ -15,19 +15,19 @@ module Api
         else
           begin
             decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
-            if UserRole.must_be_verified(decoded_token["typ"])
+             UserRole.must_be_verified(decoded_token["typ"])
               user = User.find_by(id: decoded_token["sub"].to_i)
               PasswordMailer.with(user: user).reset.deliver_later
               render status: 200, json: { "message": "Password reset process successfully initiated! Please check your mailbox." }
-            else
-              render status: 403, json: { "user": [
-                {
-                  "error": "ERR_INACTIVE",
-                  "description": "Attribute is blocked."
-                }
-              ]
+
+          rescue UserRole::InvalidUser::Taboo
+            render status: 403, json: { "user": [
+              {
+                "error": "ERR_INACTIVE",
+                "description": "Attribute is blocked."
               }
-            end
+            ]
+            }
           rescue AuthenticationTokenService::InvalidInput::Token
             render status: 400, json: { "access_token": [
               {

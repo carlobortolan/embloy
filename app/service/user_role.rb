@@ -55,6 +55,11 @@ class UserRole < ApplicationController
     return verified?(user_role)
   end
 
+  #########################################################
+  ################# NO DATABASE LOOKUP ####################
+  ########## USED FOR LOOKUP FREE TOKEN USAGE #############
+  #########################################################
+
   protected
 
   def self.set_current_id(id = nil)
@@ -70,11 +75,14 @@ class UserRole < ApplicationController
     end
   end
 
+  def self.taboo!
+    raise UserRole::InvalidUser::Taboo
+  end
   def self.admin?(user_role)
     if user_role == "admin"
       true
     else
-      false
+      taboo!
     end
   end
 
@@ -82,7 +90,7 @@ class UserRole < ApplicationController
     if user_role == "admin" || user_role == "editor"
       true
     else
-      false
+      taboo!
     end
   end
 
@@ -90,7 +98,7 @@ class UserRole < ApplicationController
     if user_role == "admin" || user_role == "developer"
       true
     else
-      false
+      taboo!
     end
   end
 
@@ -98,7 +106,7 @@ class UserRole < ApplicationController
     if user_role == "admin" || user_role == "editor" || user_role == "moderator"
       true
     else
-      false
+      taboo!
     end
   end
 
@@ -106,15 +114,19 @@ class UserRole < ApplicationController
     if user_role == "admin" || user_role == "editor" || user_role == "moderator" || user_role == "verified"
       true
     else
-      false
+      taboo!
     end
   end
+
 
   class InvalidUser < StandardError
     class Unknown < StandardError
     end
 
     class LoggedOut < StandardError
+    end
+
+    class Taboo < StandardError
     end
 
   end
