@@ -105,84 +105,103 @@ module Api
 
       def create_access
         # ============ Token gets claimed ==============
-        begin
-          token = AuthenticationTokenService::Access::Encoder.call(access_token_params)
-          # token = AuthenticationTokenService::Access::Encoder.call(access_token_params["refresh_token"])
-          render status: 200, json: { "access_token" => token }
-          # ========== Rescue normal Exceptions ==========
-        rescue JWT::ExpiredSignature
-          render status: 401, json: { "refresh_token": [
-            {
-              "error": "ERR_INVALID",
-              "description": "Attribute has expired."
-            }
-          ]
-          }
-        rescue JWT::InvalidJtiError
-          render status: 403, json: { "refresh_token": [
-            {
-              "error": "ERR_INACTIVE",
-              "description": "Attribute is blocked."
-            }
-          ]
-          }
-        rescue AuthenticationTokenService::InvalidInput
+        if request.headers["HTTP_REFRESH_TOKEN"].nil?
           render status: 400, json: { "refresh_token": [
             {
-              "error": "ERR_INVALID",
-              "description": "Attribute is malformed or unknown."
+              "error": "ERR_BLANK",
+              "description": "Attribute can't be blank"
             }
           ]
           }
-          # ========== Rescue severe Exceptions ==========
-        rescue JWT::InvalidIssuerError
-          render status: 401, json: { "refresh_token": [
-            {
-              "error": "ERR_INVALID",
-              "description": "Attribute was signed by an unknown issuer."
+        else
+          begin
+
+            token = AuthenticationTokenService::Access::Encoder.call(request.headers["HTTP_REFRESH_TOKEN"])
+            # token = AuthenticationTokenService::Access::Encoder.call(access_token_params["refresh_token"])
+            render status: 200, json: { "access_token" => token }
+            # ========== Rescue normal Exceptions ==========
+          rescue JWT::ExpiredSignature
+            render status: 401, json: { "refresh_token": [
+              {
+                "error": "ERR_INVALID",
+                "description": "Attribute has expired."
+              }
+            ]
             }
-          ]
-          }
-        rescue JWT::InvalidIatError
-          render status: 401, json: { "refresh_token": [
-            {
-              "error": "ERR_INVALID",
-              "description": "Attribute was timestamped incorrectly."
+          rescue JWT::InvalidJtiError
+            render status: 403, json: { "refresh_token": [
+              {
+                "error": "ERR_INACTIVE",
+                "description": "Attribute is blocked."
+              }
+            ]
             }
-          ]
-          }
-        rescue JWT::InvalidSubError
-          render status: 401, json: { "refresh_token": [
-            {
-              "error": "ERR_INVALID",
-              "description": "Attribute can't be allocated to an existing user."
+          rescue AuthenticationTokenService::InvalidInput::Token
+            render status: 400, json: { "refresh_token": [
+              {
+                "error": "ERR_INVALID",
+                "description": "Attribute is malformed or unknown."
+              }
+            ]
             }
-          ]
-          }
-        rescue JWT::VerificationError
-          render status: 401, json: { "refresh_token": [
-            {
-              "error": "ERR_INVALID",
-              "description": "Token can't be verified."
+            # ========== Rescue severe Exceptions ==========
+          rescue JWT::InvalidIssuerError
+            render status: 401, json: { "refresh_token": [
+              {
+                "error": "ERR_INVALID",
+                "description": "Attribute was signed by an unknown issuer."
+              }
+            ]
             }
-          ]
-          }
-        rescue JWT::IncorrectAlgorithm
-          render status: 401, json: { "refresh_token": [
-            {
-              "error": "ERR_INVALID",
-              "description": "Token was encoded with an unknown algorithm."
+          rescue JWT::InvalidIatError
+            render status: 401, json: { "refresh_token": [
+              {
+                "error": "ERR_INVALID",
+                "description": "Attribute was timestamped incorrectly."
+              }
+            ]
             }
-          ]
-          }
-        rescue AuthenticationTokenService::InvalidUser::Inactive::NotVerified # user_role is to low
-          render status: 403, json: { "user": [
-            {
-              "error": "ERR_INACTIVE",
-              "description": "Attribute is blocked."
+          rescue JWT::InvalidSubError
+            render status: 401, json: { "refresh_token": [
+              {
+                "error": "ERR_INVALID",
+                "description": "Attribute can't be allocated to an existing user."
+              }
+            ]
             }
-          ]
-          }
+          rescue JWT::VerificationError
+            render status: 401, json: { "refresh_token": [
+              {
+                "error": "ERR_INVALID",
+                "description": "Token can't be verified."
+              }
+            ]
+            }
+          rescue JWT::IncorrectAlgorithm
+            render status: 401, json: { "refresh_token": [
+              {
+                "error": "ERR_INVALID",
+                "description": "Token was encoded with an unknown algorithm."
+              }
+            ]
+            }
+          rescue AuthenticationTokenService::InvalidUser::Inactive::NotVerified # user_role is to low
+            render status: 403, json: { "user": [
+              {
+                "error": "ERR_INACTIVE",
+                "description": "Attribute is blocked."
+              }
+            ]
+            }
+          rescue JWT::DecodeError
+            render status: 400, json: { "refresh_token": [
+              {
+                "error": "ERR_INVALID",
+                "description": "Attribute is malformed or unknown."
+              }
+            ]
+            }
+          end
         end
       end
 
@@ -190,11 +209,6 @@ module Api
 
       def refresh_token_params
         params.fetch(:refresh_token).permit(:email, :password, :validity)
-      end
-
-      def access_token_params
-        params.fetch(:refresh_token)
-        # params.fetch(:access_token).permit(:refresh_token)
       end
 
       def user
