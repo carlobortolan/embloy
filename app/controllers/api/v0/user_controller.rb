@@ -26,7 +26,7 @@ module Api
             else
               render status: 403, json: { "user": [
                 {
-                  "error": "ERR_INVALID",
+                  "error": "ERR_INACTIVE",
                   "description": "Attribute is blocked."
                 }
               ]
@@ -107,7 +107,7 @@ module Api
             else
               render status: 403, json: { "user": [
                 {
-                  "error": "ERR_INVALID",
+                  "error": "ERR_INACTIVE",
                   "description": "Attribute is blocked."
                 }
               ]

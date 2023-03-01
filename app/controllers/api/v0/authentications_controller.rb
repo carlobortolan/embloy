@@ -186,7 +186,14 @@ module Api
             }
           ]
           }
-
+        rescue AuthenticationTokenService::InvalidUser::Inactive::NotVerified #user_role is to low
+          render status: 403, json: { "user": [
+            {
+              "error": "ERR_INACTIVE",
+              "description": "Attribute is blocked."
+            }
+          ]
+          }
         end
       end
 

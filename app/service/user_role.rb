@@ -116,6 +116,7 @@ class UserRole < ApplicationController
 
     class LoggedOut < StandardError
     end
+
   end
 
 end
