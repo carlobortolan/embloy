@@ -85,17 +85,15 @@ module Api
             else
 
               if @user.activity_status == 0
-                p @user.password_digest
-                p "WLAN"
+                #Todo Exception handling
+                @user.update_column("user_role", "verified")
                 @user.update_column("activity_status", 1)
-                puts @user.errors.details
 
-                begin
-                  token = AuthenticationTokenService::Refresh::Encoder.call(@user.id)
-                  render status: 200, json: { "refresh_token": token }
-                rescue # because the code above checked all attributes, there should not be any exceptions. if there are something strange happened (or a bug)
-                  render status: 500, json: { "error": "Something went wrong while issuing your initial refresh token. Please try again later. If this error persists, we recommend to contact our support team." }
-                end
+                token = AuthenticationTokenService::Refresh::Encoder.call(@user.id)
+
+                render status: 200, json: { "refresh_token": token }
+                # rescue # because the code above checked all attributes, there should not be any exceptions. if there are something strange happened (or a bug)
+                # render status: 500, json: { "error": "Something went wrong while issuing your initial refresh token. Please try again later. If this error persists, we recommend to contact our support team." }
               else
                 # is user already listed as active/is user verified?
                 render status: 403, json: { "user": [
