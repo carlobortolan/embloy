@@ -1,4 +1,4 @@
-# CustomExceptions INTERNAL Documentation
+# CustomExceptionss INTERNAL Documentation
 
 > This document provides further information for the [custom_exceptions.rb](./custom_exceptions.rb) class.
 ***

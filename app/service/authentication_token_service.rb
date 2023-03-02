@@ -76,16 +76,16 @@ class AuthenticationTokenService
       MIN_INTERVAL = 1800 # == 0.5 hours == 30 min
       def self.call(user_id, man_interval = nil)
         if user_id.class != Integer || !user_id.positive? # is user_id parameter not an integer?
-          raise CustomException::InvalidInput::SUB
+          raise CustomExceptions::InvalidInput::SUB
 
         elsif User.find_by(id: user_id).blank? # is the given id referencing an non-existing user?
-          raise CustomException::InvalidUser::Unknown
+          raise CustomExceptions::InvalidUser::Unknown
 
         elsif User.find_by(id: user_id).activity_status == 0 # is the user for the given id deactivated?
-          raise CustomException::InvalidUser::Inactive
+          raise CustomExceptions::InvalidUser::Inactive
 
         elsif UserBlacklist.find_by(user_id: user_id).present? # is the user for the given id blacklisted/actively blocked?
-          raise CustomException::Unauthorized::Blocked
+          raise CustomExceptions::Unauthorized::Blocked
 
         else
           UserRole.must_be_verified!(user_id) # if not: UserRole::InvalidUser::Taboo is risen
@@ -112,7 +112,7 @@ class AuthenticationTokenService
 
             else
               # man_interval is no integer or either negative or 0
-              raise CustomException::InvalidInput::CustomEXP
+              raise CustomExceptions::InvalidInput::CustomEXP
             end
 
           end
@@ -127,7 +127,7 @@ class AuthenticationTokenService
     class Decoder
       def self.call(token)
         if token.class != String || token.blank? # rough check whether
-          raise CustomException::InvalidInput::Token
+          raise CustomExceptions::InvalidInput::Token
 
         else
           return AuthenticationTokenService::Refresh.decode(token)
@@ -171,7 +171,7 @@ class AuthenticationTokenService
     class Decoder
       def self.call(token)
         if token.class != String || token.blank? # rough check whether input is malformed
-          raise CustomException::InvalidInput::Token
+          raise CustomExceptions::InvalidInput::Token
         else
           return AuthenticationTokenService::Access.decode(token)
         end

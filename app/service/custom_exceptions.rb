@@ -1,7 +1,7 @@
 #########################################################
 ################# CUSTOM EXCEPTIONS #####################
 #########################################################
-class CustomException < StandardError
+class CustomExceptions < StandardError
 
   # ============== Format and Authentication - Exceptions =============
   class InvalidUser < StandardError

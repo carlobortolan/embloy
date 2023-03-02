@@ -62,12 +62,12 @@ class UserRole < ApplicationController
   def self.set_current_id(id = nil)
     if id.nil?
       if Current.user.nil?
-        raise CustomException::InvalidUser::LoggedOut
+        raise CustomExceptions::InvalidUser::LoggedOut
       end
     else
       Current.user = User.find_by(id: id)
       if Current.user.nil?
-        raise CustomException::InvalidUser::Unknown
+        raise CustomExceptions::InvalidUser::Unknown
       end
     end
   end
@@ -75,7 +75,7 @@ class UserRole < ApplicationController
   # ============== Should be raised ===============
   # ===== when required user_role is to high  =====
   def self.taboo! #
-    raise CustomException::Unauthorized::InsufficientRole
+    raise CustomExceptions::Unauthorized::InsufficientRole
   end
 
 

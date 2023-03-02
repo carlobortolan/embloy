@@ -26,7 +26,7 @@ module Api
               render status: 400, json: { "error": @job.errors.details }
             end
 
-          rescue CustomException::Unauthorized::InsufficientRole
+          rescue CustomExceptions::Unauthorized::InsufficientRole
             render status: 403, json: { "user": [
               {
                 "error": "ERR_INACTIVE",
@@ -35,7 +35,7 @@ module Api
             ]
             }
 
-          rescue CustomException::InvalidInput::Token
+          rescue CustomExceptions::InvalidInput::Token
             render status: 400, json: { "access_token": [
               {
                 "error": "ERR_INVALID",
