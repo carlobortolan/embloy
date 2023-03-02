@@ -1,7 +1,6 @@
 #########################################################
 ################## SUPER CONTROLLER #####################
 #########################################################
-
 class ApplicationController < ActionController::Base
   before_action :set_current_user
   before_action :set_notifications, if: Current.user
