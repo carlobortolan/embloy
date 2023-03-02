@@ -95,11 +95,8 @@ The Authentication approach combines the benefits of long-term but weak refresh 
     ```
    ####
    ###### Exceptions
-   ```
-   AuthenticationTokenService::InvalidInput
-   ```
-   You should only expect the following subclasses:
-   + ``::Token``: When ``<refresh_token>`` is malformed
+   Have a look at the [documentation for custom exceptions](./custom_exceptions_doc.md) for more information.
+
    ####   
      ```
    JWT

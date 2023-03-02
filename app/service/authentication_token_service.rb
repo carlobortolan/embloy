@@ -32,7 +32,6 @@ class AuthenticationTokenService
 
       UserRole.must_be_verified!(decoded_token[0]["sub"]) # if not: UserRole::InvalidUser::Taboo is risen
 
-
       return decoded_token
     end
 
@@ -77,16 +76,16 @@ class AuthenticationTokenService
       MIN_INTERVAL = 1800 # == 0.5 hours == 30 min
       def self.call(user_id, man_interval = nil)
         if user_id.class != Integer || !user_id.positive? # is user_id parameter not an integer?
-          raise AuthenticationTokenService::InvalidInput::SUB
+          raise CustomException::InvalidInput::SUB
 
         elsif User.find_by(id: user_id).blank? # is the given id referencing an non-existing user?
-          raise AuthenticationTokenService::InvalidUser::Unknown
+          raise CustomException::InvalidUser::Unknown
 
         elsif User.find_by(id: user_id).activity_status == 0 # is the user for the given id deactivated?
-          raise AuthenticationTokenService::InvalidUser::Inactive::NotVerified
+          raise CustomException::InvalidUser::Inactive
 
         elsif UserBlacklist.find_by(user_id: user_id).present? # is the user for the given id blacklisted/actively blocked?
-          raise AuthenticationTokenService::InvalidUser::Inactive::Blocked
+          raise CustomException::Unauthorized::Blocked
 
         else
           UserRole.must_be_verified!(user_id) # if not: UserRole::InvalidUser::Taboo is risen
@@ -113,7 +112,7 @@ class AuthenticationTokenService
 
             else
               # man_interval is no integer or either negative or 0
-              raise AuthenticationTokenService::InvalidInput::CustomEXP
+              raise CustomException::InvalidInput::CustomEXP
             end
 
           end
@@ -128,7 +127,7 @@ class AuthenticationTokenService
     class Decoder
       def self.call(token)
         if token.class != String || token.blank? # rough check whether
-          raise AuthenticationTokenService::InvalidInput::Token
+          raise CustomException::InvalidInput::Token
 
         else
           return AuthenticationTokenService::Refresh.decode(token)
@@ -148,7 +147,7 @@ class AuthenticationTokenService
     ISSUER = Socket.gethostname
 
     def self.encode(sub, exp, typ, scope = nil)
-      payload = { sub: sub, exp: exp, typ:typ }
+      payload = { sub: sub, exp: exp, typ: typ }
       return AuthenticationTokenService.call(HMAC_SECRET, ALGORITHM_TYPE, ISSUER, payload)
     end
 
@@ -172,7 +171,7 @@ class AuthenticationTokenService
     class Decoder
       def self.call(token)
         if token.class != String || token.blank? # rough check whether input is malformed
-          raise AuthenticationTokenService::InvalidInput::Token
+          raise CustomException::InvalidInput::Token
         else
           return AuthenticationTokenService::Access.decode(token)
         end
@@ -186,30 +185,30 @@ class AuthenticationTokenService
   ################# CUSTOM EXCEPTIONS #####################
   #########################################################
 
-  class InvalidInput < StandardError
-    class SUB < StandardError
-    end
-
-    class CustomEXP < StandardError
-    end
-
-    class Token < StandardError
-    end
-
-  end
-
-  class InvalidUser < StandardError
-    class Unknown < StandardError
-    end
-
-    class Inactive < StandardError
-      class NotVerified < StandardError
-      end
-
-      class Blocked < StandardError
-      end
-    end
-
-  end
+  # class InvalidInput < StandardError
+  #   class SUB < StandardError
+  #   end
+  #
+  #   class CustomEXP < StandardError
+  #   end
+  #
+  #   class Token < StandardError
+  #   end
+  #
+  # end
+  #
+  # class InvalidUser < StandardError
+  #   class Unknown < StandardError
+  #   end
+  #
+  #   class Inactive < StandardError
+  #     class NotVerified < StandardError
+  #     end
+  #
+  #     class Blocked < StandardError
+  #     end
+  #   end
+  #
+  # end
 
 end

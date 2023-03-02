@@ -62,12 +62,12 @@ class UserRole < ApplicationController
   def self.set_current_id(id = nil)
     if id.nil?
       if Current.user.nil?
-        raise UserRole::InvalidUser::LoggedOut
+        raise CustomException::InvalidUser::LoggedOut
       end
     else
       Current.user = User.find_by(id: id)
       if Current.user.nil?
-        raise UserRole::InvalidUser::Unknown
+        raise CustomException::InvalidUser::Unknown
       end
     end
   end
@@ -75,7 +75,7 @@ class UserRole < ApplicationController
   # ============== Should be raised ===============
   # ===== when required user_role is to high  =====
   def self.taboo! #
-    raise UserRole::InvalidUser::Taboo
+    raise CustomException::Unauthorized::InsufficientRole
   end
 
 
@@ -123,16 +123,16 @@ class UserRole < ApplicationController
 
 
   # ============== Custom Exceptions  =============
-  class InvalidUser < StandardError
-    class Unknown < StandardError # Should be risen when there is no record in users for a given id
-    end
-
-    class LoggedOut < StandardError # (NON-API-ONLY) Should be risen when Current.user is nil (So session token expired)
-    end
-
-    class Taboo < StandardError
-    end
-
-  end
+  # class InvalidUser < StandardError
+  #   class Unknown < StandardError # Should be risen when there is no record in users for a given id
+  #   end
+  #
+  #   class LoggedOut < StandardError # (NON-API-ONLY) Should be risen when Current.user is nil (So session token expired)
+  #   end
+  #
+  #   class Taboo < StandardError
+  #   end
+  #
+  # end
 
 end

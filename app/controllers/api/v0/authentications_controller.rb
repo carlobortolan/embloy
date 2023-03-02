@@ -21,7 +21,7 @@ module Api
               # ========== Rescue normal Exceptions ==========
 
 
-            rescue AuthenticationTokenService::InvalidUser::Inactive::Blocked
+            rescue CustomException::Unauthorized::Blocked
               # The requested token subject (User) is blocked (blacklisted).
               render status: 403, json: { "user": [
                 {
@@ -31,7 +31,7 @@ module Api
               ]
               }
 
-            rescue AuthenticationTokenService::InvalidUser::Inactive::NotVerified
+            rescue CustomException::Unauthorized::InsufficientRole::NotVerified
               # The requested token subject (User) is unverified.
               render status: 403, json: { "user": [
                 {
@@ -41,7 +41,7 @@ module Api
               ]
               }
 
-            rescue AuthenticationTokenService::InvalidInput::CustomEXP
+            rescue CustomException::InvalidInput::CustomEXP
               # Invalid Input (Validity [man_interval] attribute is malformed)
               render status: 400, json: { "validity": [
                 {
@@ -52,7 +52,7 @@ module Api
               }
 
               # ========== Rescue severe Exceptions ==========
-            rescue AuthenticationTokenService::InvalidUser::Unknown
+            rescue CustomException::InvalidUser::Unknown
               # The requested token subject (User) doesn't exists BUT user.authenticate(refresh_token_params["password"]) says true
               render status: 500, json: { "user": [
                 {
@@ -62,7 +62,7 @@ module Api
               ]
               }
 
-            rescue AuthenticationTokenService::InvalidInput::SUB
+            rescue CustomException::InvalidInput::SUB
               # Invalid Input (User Attribute is malformed) BUT user.authenticate(refresh_token_params["password"]) says true
               render status: 500, json: { "user": [
                 {
@@ -71,7 +71,7 @@ module Api
                 }
               ]
               }
-            rescue UserRole::InvalidUser::Unknown
+            rescue CustomException::InvalidUser::Unknown
               # Invalid User (User.find_by(id: id) == nil) BUT user.present says true
               render status: 500, json: { "user": [
                 {
@@ -80,7 +80,7 @@ module Api
                 }
               ]
               }
-            rescue UserRole::InvalidUser::Taboo
+            rescue CustomException::Unauthorized::InsufficientRole
               render status: 403, json: { "user": [
                 {
                   "error": "ERR_INACTIVE",
@@ -146,7 +146,7 @@ module Api
               }
             ]
             }
-          rescue AuthenticationTokenService::InvalidInput::Token
+          rescue CustomException::InvalidInput::Token
             render status: 400, json: { "refresh_token": [
               {
                 "error": "ERR_INVALID",
@@ -195,7 +195,7 @@ module Api
               }
             ]
             }
-          rescue UserRole::InvalidUser::Taboo
+          rescue CustomException::Unauthorized::InsufficientRole
             render status: 403, json: { "user": [
               {
                 "error": "ERR_INACTIVE",
