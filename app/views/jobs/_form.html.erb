@@ -1,5 +1,6 @@
-<%= javascript_include_tag "application" %>
-<%= form_with model: job, class: "trix-content" do |form| %>
+<%= javascript_importmap_tags(entry_point = "application", shim: false) %>
+
+<%= form_with model: job do |form| %>
   <div>
     <%= form.label :title %><br>
     <%= form.text_field :title %>
@@ -10,15 +11,17 @@
 
   <div>
     <%= form.label :description %><br>
-    <!--    <%#= form.text_area :description %><br>-->
     <%= form.text_area :description %><br>
+    <% job.errors.full_messages_for(:description).each do |message| %>
+      <div><%= message %></div>
+    <% end %>
   </div>
 
   <div>
     <%= form.label :content %><br>
-    <%= form.rich_text_area :content, placeholder: "Enter the content..." %>
-    <% job.errors.full_messages_for(:content).each do |msg| %>
-      <div><%= msg %></div>
+    <%= form.rich_text_area :content %><br>
+    <% job.errors.full_messages_for(:content).each do |message| %>
+      <div><%= message %></div>
     <% end %>
   </div>
 
@@ -56,6 +59,6 @@
   </div>
 
   <div>
-    <%= form.submit "Create job", class: "btn btn-primary mt-1" %>
+    <%= form.submit %>
   </div>
 <% end %>

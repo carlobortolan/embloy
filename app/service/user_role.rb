@@ -2,9 +2,8 @@
 class UserRole < ApplicationController
   # frozen_string_literal: true
 
-  #########################################################
-  ################# WITH DATABASE LOOKUP ##################
-  #########################################################
+  # =============== User Role Check ===============
+  # ============ WITH DATABASE LOOKUP =============
   def self.must_be_admin!(id = nil)
     # method can be called for a specific id or using Current.user from Application Controller
     set_current_id(id)
@@ -31,10 +30,10 @@ class UserRole < ApplicationController
     return verified?(Current.user.user_role)
   end
 
-  #########################################################
-  ################# NO DATABASE LOOKUP ####################
-  ########## USED FOR LOOKUP FREE TOKEN USAGE #############
-  #########################################################
+
+
+  # =============== User Role Check ===============
+  # ========== WITHOUT DATABASE LOOKUP ============
   def self.must_be_admin(user_role)
     return admin?(user_role)
   end
@@ -55,13 +54,11 @@ class UserRole < ApplicationController
     return verified?(user_role)
   end
 
-  #########################################################
-  ################# NO DATABASE LOOKUP ####################
-  ########## USED FOR LOOKUP FREE TOKEN USAGE #############
-  #########################################################
+
 
   protected
 
+  # ======= Set Current to the user for id  =======
   def self.set_current_id(id = nil)
     if id.nil?
       if Current.user.nil?
@@ -75,9 +72,15 @@ class UserRole < ApplicationController
     end
   end
 
-  def self.taboo!
+  # ============== Should be raised ===============
+  # ===== when required user_role is to high  =====
+  def self.taboo! #
     raise UserRole::InvalidUser::Taboo
   end
+
+
+  # =============== Helper methods ================
+  # ======== that model the role hierarchy ========
   def self.admin?(user_role)
     if user_role == "admin"
       true
@@ -119,11 +122,12 @@ class UserRole < ApplicationController
   end
 
 
+  # ============== Custom Exceptions  =============
   class InvalidUser < StandardError
-    class Unknown < StandardError
+    class Unknown < StandardError # Should be risen when there is no record in users for a given id
     end
 
-    class LoggedOut < StandardError
+    class LoggedOut < StandardError # (NON-API-ONLY) Should be risen when Current.user is nil (So session token expired)
     end
 
     class Taboo < StandardError
