@@ -30,8 +30,6 @@ class UserRole < ApplicationController
     return verified?(Current.user.user_role)
   end
 
-
-
   # =============== User Role Check ===============
   # ========== WITHOUT DATABASE LOOKUP ============
   def self.must_be_admin(user_role)
@@ -54,8 +52,6 @@ class UserRole < ApplicationController
     return verified?(user_role)
   end
 
-
-
   protected
 
   # ======= Set Current to the user for id  =======
@@ -77,7 +73,6 @@ class UserRole < ApplicationController
   def self.taboo! #
     raise CustomExceptions::Unauthorized::InsufficientRole
   end
-
 
   # =============== Helper methods ================
   # ======== that model the role hierarchy ========
@@ -121,6 +116,43 @@ class UserRole < ApplicationController
     end
   end
 
+  class Jobs < JobsController
+    def self.must_be_owner!(job_id = nil, user_id = nil)
+      UserRole.set_current_id(user_id)
+      set_at_job(job_id)
+      return owner?
+    end
+
+    protected
+
+    def self.set_at_job(job_id = nil)
+      unless job_id.nil?
+        @job = Job.find_by(job_id: job_id)
+      end
+
+      if @job.nil?
+        raise CustomExceptions::InvalidJob::Unknown
+      end
+
+    end
+
+
+    def self.owner?
+      puts @job.job_id
+      puts Current.user.id
+      if @job.user_id == Current.user.id
+        true
+      else
+        begin
+          UserRole.taboo!
+        rescue CustomExceptions::Unauthorized::InsufficientRole
+          raise CustomExceptions::Unauthorized::InsufficientRole::NotOwner
+        end
+      end
+    end
+
+
+  end
 
   # ============== Custom Exceptions  =============
   # class InvalidUser < StandardError
