@@ -1,4 +1,5 @@
-<%= form_with model: job do |form| %>
+<%= javascript_include_tag "application" %>
+<%= form_with model: job, class: "trix-content" do |form| %>
   <div>
     <%= form.label :title %><br>
     <%= form.text_field :title %>
@@ -9,9 +10,15 @@
 
   <div>
     <%= form.label :description %><br>
+    <!--    <%#= form.text_area :description %><br>-->
     <%= form.text_area :description %><br>
-    <% job.errors.full_messages_for(:description).each do |message| %>
-      <div><%= message %></div>
+  </div>
+
+  <div>
+    <%= form.label :content %><br>
+    <%= form.rich_text_area :content, placeholder: "Enter the content..." %>
+    <% job.errors.full_messages_for(:content).each do |msg| %>
+      <div><%= msg %></div>
     <% end %>
   </div>
 
@@ -36,10 +43,10 @@
     <% end %>
   </div>
   <div>
-<!--    <%#= form.label "Do you want to receive a notification when a new application is submitted?" %><br>-->
-<!--    <%#= form.check_box :notify %><br>-->
+    <!--    <%#= form.label "Do you want to receive a notification when a new application is submitted?" %><br>-->
+    <!--    <%#= form.check_box :notify %><br>-->
     <%# job.errors.full_messages_for(:notify).each do |message| %>
-<!--      <div><%#= message %></div>-->
+    <!--      <div><%#= message %></div>-->
     <%# end %>
   </div>
 
@@ -49,6 +56,6 @@
   </div>
 
   <div>
-    <%= form.submit %>
+    <%= form.submit "Create job", class: "btn btn-primary mt-1" %>
   </div>
 <% end %>

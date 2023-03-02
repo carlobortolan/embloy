@@ -16,8 +16,8 @@
             </header>
             INSERT JOB IMAGE HERE
             <!-- Preview image figure-->
-<!--            <figure class="mb-4">-->
-<!--              <img class="img-fluid rounded" src="<%#= @job.image_url %>" alt="INSERT JOB IMAGE HERE"/></figure>-->
+            <!--            <figure class="mb-4">-->
+            <!--              <img class="img-fluid rounded" src="<%#= @job.image_url %>" alt="INSERT JOB IMAGE HERE"/></figure>-->
             <!-- Post content-->
             <section class="mb-5">
               <h4 class="fw-bolder mb-4 mt-5"> Position: <%= @job.position %></h4>
@@ -109,13 +109,14 @@
     </div>
 
 
-    <% if @application.nil? && !@owner %>
+    <% if @application.nil? && @owner %>
       <%= render 'applications/show' %>
-    <% elsif @application.nil? && @owner %>
       <h1>TODO: HIER KÖNNTEN ENTWEDER ALLE APPLICATIONS STEHEN (WODURCH DER "SHOW ALL APPLICATIONS" BUTTON ENTFERNT
         WERDEN
         KÖNNTE ODER MAN LÄSST SICH IRGENDETWAS KREATIVES EINFALLEN, UM DEN PLATZ ZU FÜLLEN ODER ZEIT NUR DEN JOB AN.
       </h1><%#= render 'applications/show' %>
+    <% elsif !@application.nil? && !@owner %>
+      <%= render 'applications/show_all' %>
     <% else %>
       <%= render 'applications/form' %>
     <% end %>
