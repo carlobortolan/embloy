@@ -3,7 +3,7 @@ class RegistrationsController < ApplicationController
     @user = User.new
   end
 
-  def findCoordinates
+  def find_coordinates
     if !user_params[:country_code].nil? && !user_params[:postal_code].nil? && !user_params[:city].nil? && !user_params[:address].nil?
       @user[:longitude] = 0.0
       @user[:latitude] = 0.0
@@ -12,7 +12,7 @@ class RegistrationsController < ApplicationController
 
   def create
     @user = User.new(user_params)
-    findCoordinates
+    find_coordinates
 
     if @user.save
       WelcomeMailer.with(user: @user).welcome_email.deliver_later

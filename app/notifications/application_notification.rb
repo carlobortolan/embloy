@@ -2,19 +2,22 @@
 #
 # ApplicationNotification.with(post: @post).deliver_later(current_user)
 # ApplicationNotification.with(post: @post).deliver(current_user)
-
 class ApplicationNotification < Noticed::Base
   # Add your delivery methods
   #
   deliver_by :database, debug: true
   # deliver_by :action_cable, format: :to_action_cable
-  deliver_by :email, mailer: "EmployerApplicationMailer", if: :email_notifications?, unless: :read?, debug: true
+  deliver_by :email, mailer: 'EmployerApplicationMailer', debug: true
+  # , method: :application_new_email
+  # , if: :email_notifications?, debug: true
+  # , unless: :read?,
   # deliver_by :email, mailer: "ApplicationMailer", if: :email_notifications?, delay: 15.minutes, unless: :read?, debug: true
   # deliver_by :slack
   # deliver_by DeliveryMethods::Discord
 
   def email_notifications?
-    recipient.email_notifications?
+    !!recipient.application_notifications?
+    puts "AAA #{recipient.application_notifications?}"
   end
 
   # def to_database
@@ -43,3 +46,4 @@ class ApplicationNotification < Noticed::Base
     job_path(params[:job])
   end
 end
+
