@@ -7,11 +7,11 @@ class Job < ApplicationRecord
   # has_many :notifications, through: :user, dependent: :delete_all
   has_noticed_notifications model_name: 'Notification'
 
-  validates :title, presence: true
-  validates :description, presence: true, length: { minimum: 10 }
-  validates :start_slot, presence: true
-  validates :longitude, presence: true
-  validates :latitude, presence: true
+  validates :title, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
+  validates :description, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, length: { minimum: 10 }
+  validates :start_slot, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
+  validates :longitude, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
+  validates :latitude, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
 
   def profile
     @job.update(view_count: @job.view_count + 1)
