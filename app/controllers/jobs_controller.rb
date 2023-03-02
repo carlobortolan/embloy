@@ -70,7 +70,7 @@ class JobsController < ApplicationController
   private
 
   def job_params
-    params.require(:job).permit(:title, :description, :start_slot, :status, :user_id, :longitude, :latitude)
+    params.require(:job).permit(:title, :description, :content, :start_slot, :status, :user_id, :longitude, :latitude)
   end
 
   def mark_notifications_as_read

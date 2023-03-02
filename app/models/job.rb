@@ -7,6 +7,7 @@ class Job < ApplicationRecord
   # has_many :notifications, through: :user, dependent: :delete_all
   has_noticed_notifications model_name: 'Notification'
 
+  has_rich_text :content
   validates :title, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validates :description, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, length: { minimum: 10 }
   validates :start_slot, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
