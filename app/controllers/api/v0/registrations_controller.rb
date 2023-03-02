@@ -8,7 +8,6 @@ module Api
 
           if @user.save
             render status: 200, json: { "message": "Account registered! Please activate your account and claim your refresh token via GET #{api_v0_user_verify_path} " }
-
           else
             taken = false
             @user.errors.details[:email].each do |e|

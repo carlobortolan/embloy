@@ -15,7 +15,7 @@ module Api
         else
           begin
             decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
-            UserRole.must_be_verified(decoded_token["typ"])
+            must_be_verified(decoded_token["typ"])
             @job = Job.new(job_params)
             @job.user_id = decoded_token["sub"]
 
@@ -107,8 +107,8 @@ module Api
         else
           begin
             decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
-            UserRole.must_be_verified(decoded_token["typ"])
-            UserRole::Jobs.must_be_owner!(params[:id], decoded_token["sub"])
+            must_be_verified(decoded_token["typ"])
+            must_be_owner!(params[:id], decoded_token["sub"])
             @job = Job.find_by(job_id: params[:id])
             @job.assign_attributes(job_params)
             if @job.save
@@ -143,7 +143,7 @@ module Api
             ]
             }
 
-          rescue CustomExceptions::Unauthorized::InsufficientRole # thrown from UserRole.must_be_verified
+          rescue CustomExceptions::Unauthorized::InsufficientRole # thrown from ApplicationController.must_be_verified
             render status: 403, json: { "user": [
               {
                 "error": "ERR_INACTIVE",
@@ -152,7 +152,7 @@ module Api
             ]
             }
 
-          rescue CustomExceptions::Unauthorized::InsufficientRole::NotOwner # thrown from UserRole::Job.must_be_owner!
+          rescue CustomExceptions::Unauthorized::InsufficientRole::NotOwner # thrown from ApplicationController::Job.must_be_owner!
             render status: 403, json: { "job": [
               {
                 "error": "ERR_INACTIVE",

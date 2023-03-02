@@ -24,13 +24,13 @@ class AuthenticationTokenService
     def self.decode(token)
       # token decoding for a refresh token
       # this method decodes a jwt token
-      decoded_token = JWT.decode(token, HMAC_SECRET, true, { verify_jti: Proc.new { |jti| jti?(jti) }, verify_sub: Proc.new { |sub| UserRole.must_be_admin!(sub.to_i) }, iss: ISSUER, verify_iss: true, verify_iat: true, required_claims: ['iss', 'sub', 'exp', 'jti', 'iat'], algorithm: ALGORITHM_TYPE })
+      decoded_token = JWT.decode(token, HMAC_SECRET, true, { verify_jti: Proc.new { |jti| jti?(jti) }, verify_sub: Proc.new { |sub| ApplicationController.must_be_admin!(sub.to_i) }, iss: ISSUER, verify_iss: true, verify_iat: true, required_claims: ['iss', 'sub', 'exp', 'jti', 'iat'], algorithm: ALGORITHM_TYPE })
 
       if User.find_by(id: decoded_token[0]["sub"]).blank?
         raise JWT::InvalidSubError
       end
 
-      UserRole.must_be_verified!(decoded_token[0]["sub"]) # if not: UserRole::InvalidUser::Taboo is risen
+      ApplicationController.must_be_verified!(decoded_token[0]["sub"]) # if not: ApplicationController::InvalidUser::Taboo is risen
 
       return decoded_token
     end
@@ -88,7 +88,7 @@ class AuthenticationTokenService
           raise CustomExceptions::Unauthorized::Blocked
 
         else
-          UserRole.must_be_verified!(user_id) # if not: UserRole::InvalidUser::Taboo is risen
+          ApplicationController.must_be_verified!(user_id) # if not: ApplicationController::InvalidUser::Taboo is risen
           # the given id references an existing user, who is active and not blacklisted
           iat = Time.now.to_i # timestamp
           sub = user_id # who "owns" the token

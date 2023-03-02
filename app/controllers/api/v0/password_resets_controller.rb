@@ -16,7 +16,7 @@ module Api
           else
 
             decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
-            UserRole.must_be_verified(decoded_token["typ"])
+            must_be_verified(decoded_token["typ"])
             user = User.find_by(id: decoded_token["sub"].to_i)
             PasswordMailer.with(user: user).reset.deliver_later
             render status: 200, json: { "message": "Password reset process successfully initiated! Please check your mailbox." }

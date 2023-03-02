@@ -122,7 +122,6 @@ module Api
 
         begin
 
-
           # ============ Token gets claimed ==============
           if request.headers["HTTP_REFRESH_TOKEN"].nil?
             render status: 400, json: { "refresh_token": [
@@ -138,8 +137,6 @@ module Api
             render status: 200, json: { "access_token" => token }
 
           end
-
-
 
           # ========== Rescue normal Exceptions ==========
         rescue JWT::ExpiredSignature
