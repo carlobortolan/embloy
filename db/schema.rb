@@ -197,12 +197,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_01_102526) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "applications", "jobs", primary_key: "job_id", on_delete: :cascade
-  add_foreign_key "applications", "users", on_delete: :cascade
-  add_foreign_key "company_users", "users", column: "id", on_delete: :cascade
-  add_foreign_key "job_notifications", "jobs", primary_key: "job_id", on_delete: :cascade
-  add_foreign_key "job_notifications", "users", column: "employer_id", on_delete: :cascade
-  add_foreign_key "jobs", "users", on_delete: :cascade
-  add_foreign_key "private_users", "users", column: "id", on_delete: :cascade
-  add_foreign_key "reviews", "users", column: "created_by"
+  add_foreign_key "applications", "jobs", primary_key: "job_id", on_delete: :cascade, on_update: :cascade
+  add_foreign_key "applications", "users", on_delete: :cascade, on_update: :cascade
+  add_foreign_key "company_users", "users", column: "id", on_delete: :cascade, on_update: :cascade
+  add_foreign_key "job_notifications", "jobs", primary_key: "job_id", on_delete: :cascade, on_update: :cascade
+  add_foreign_key "job_notifications", "users", column: "employer_id", on_delete: :cascade, on_update: :cascade
+  add_foreign_key "jobs", "users", on_delete: :cascade, on_update: :cascade
+  add_foreign_key "private_users", "users", column: "id", on_delete: :cascade, on_update: :cascade
+  add_foreign_key "reviews", "users", column: "created_by", on_delete: :cascade, on_update: :cascade
 end

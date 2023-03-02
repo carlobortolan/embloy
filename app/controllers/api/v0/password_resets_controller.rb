@@ -20,7 +20,7 @@ module Api
               PasswordMailer.with(user: user).reset.deliver_later
               render status: 200, json: { "message": "Password reset process successfully initiated! Please check your mailbox." }
 
-          rescue UserRole::InvalidUser::Taboo
+          rescue CustomException::Unauthorized::InsufficientRole
             render status: 403, json: { "user": [
               {
                 "error": "ERR_INACTIVE",
@@ -28,7 +28,7 @@ module Api
               }
             ]
             }
-          rescue AuthenticationTokenService::InvalidInput::Token
+          rescue CustomException::InvalidInput::Token
             render status: 400, json: { "access_token": [
               {
                 "error": "ERR_INVALID",

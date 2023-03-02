@@ -1,4 +1,4 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: "noreply@embloy.com"
+  default from: ENV['EMAIL_NOREPLY_USER']
   layout "mailer"
 end

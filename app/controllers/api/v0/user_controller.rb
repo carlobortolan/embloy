@@ -24,7 +24,7 @@ module Api
               render status: 200, json: { "jobs": jobs }
             end
 
-          rescue UserRole::InvalidUser::Taboo
+          rescue CustomException::Unauthorized::InsufficientRole
             render status: 403, json: { "user": [
               {
                 "error": "ERR_INACTIVE",
@@ -33,7 +33,7 @@ module Api
             ]
             }
 
-          rescue AuthenticationTokenService::InvalidInput::Token
+          rescue CustomException::InvalidInput::Token
             render status: 400, json: { "access_token": [
               {
                 "error": "ERR_INVALID",
@@ -105,7 +105,7 @@ module Api
               render status: 200, json: { "applications": applications }
             end
 
-            rescue UserRole::InvalidUser::Taboo
+            rescue CustomException::Unauthorized::InsufficientRole
               render status: 403, json: { "user": [
                 {
                   "error": "ERR_INACTIVE",
@@ -113,7 +113,7 @@ module Api
                 }
               ]
               }
-            rescue AuthenticationTokenService::InvalidInput::Token
+            rescue CustomException::InvalidInput::Token
             render status: 400, json: { "access_token": [
               {
                 "error": "ERR_INVALID",

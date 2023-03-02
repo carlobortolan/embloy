@@ -111,13 +111,14 @@
     </div>
 
 
-    <% if @application.nil? && !@owner %>
+    <% if @application.nil? && @owner %>
       <%= render 'applications/show' %>
-    <% elsif @application.nil? && @owner %>
       <h1>TODO: HIER KÖNNTEN ENTWEDER ALLE APPLICATIONS STEHEN (WODURCH DER "SHOW ALL APPLICATIONS" BUTTON ENTFERNT
         WERDEN
         KÖNNTE ODER MAN LÄSST SICH IRGENDETWAS KREATIVES EINFALLEN, UM DEN PLATZ ZU FÜLLEN ODER ZEIT NUR DEN JOB AN.
       </h1><%#= render 'applications/show' %>
+    <% elsif !@application.nil? && !@owner %>
+      <%= render 'applications/show_all' %>
     <% else %>
       <%= render 'applications/form' %>
     <% end %>
