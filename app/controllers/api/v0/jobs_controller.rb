@@ -1,11 +1,10 @@
-require_relative '../../lib/feed_generator.rb'
+require_relative '../../../../lib/feed_generator.rb'
 module Api
   module V0
     class JobsController < ApplicationController
 
-
       def create
-        #Todo: Testen
+        # Todo: Testen
         if request.headers["HTTP_ACCESS_TOKEN"].nil?
           render status: 400, json: { "access_token": [
             {
@@ -88,7 +87,7 @@ module Api
         end
       end
 
-      #Todo: Weiterschreiben
+      # Todo: Weiterschreiben
 =begin
       def edit
         @job = Job.find(params[:id])
