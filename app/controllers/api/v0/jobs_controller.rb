@@ -1,8 +1,8 @@
 require_relative '../../../../lib/feed_generator.rb'
 module Api
   module V0
-    class JobsController < APIController
-    def create
+    class JobsController < ApiController
+      def create
         # Todo: Testen
         if request.headers["HTTP_ACCESS_TOKEN"].nil?
           render status: 400, json: { "access_token": [
@@ -24,6 +24,15 @@ module Api
             else
               render status: 400, json: { "error": @job.errors.details }
             end
+
+          rescue ActionController::ParameterMissing
+            render status: 400, json: { "job": [
+              {
+                "error": "ERR_BLANK",
+                "description": "Attribute can't be blank"
+              }
+            ]
+            }
 
           rescue CustomExceptions::Unauthorized::InsufficientRole
             render status: 403, json: { "user": [
@@ -123,11 +132,13 @@ module Api
         @result = FeedGenerator.initialize_feed(Job.all.where("status = 'public'").first(100).as_json, @my_args)
       end
 =end
+
       private
 
       def job_params
-        params.require(:job).permit(:title, :description, :start_slot, :status, :user_id, :longitude, :latitude)
+        params.require(:job).permit(:title, :description, :start_slot, :status, :longitude, :latitude)
       end
+
 =begin
       def mark_notifications_as_read
         if Current.user

@@ -1,10 +1,11 @@
 module Api
   module V0
-    class RegistrationsController < APIController
+    class RegistrationsController < ApiController
 
       def create
-        @user = User.new(user_params)
         begin
+          @user = User.new(user_params)
+
           if @user.save
             render status: 200, json: { "message": "Account registered! Please activate your account and claim your refresh token via GET #{api_v0_user_verify_path} " }
 
@@ -21,8 +22,18 @@ module Api
               render status: 400, json: { "error": @user.errors.details }
             end
           end
+
+        rescue ActionController::ParameterMissing
+          render status: 400, json: { "user": [
+            {
+              "error": "ERR_BLANK",
+              "description": "Attribute can't be blank"
+            }
+          ]
+          }
         rescue
           render status: 500, json: { "error": "Please try again later. If this error persists, we recommend to contact our support team." }
+
         end
       end
 

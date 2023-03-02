@@ -1,5 +1,8 @@
 # frozen_string_literal: true
-
-class APIController < ApplicationController
-  protect_from_forgery with: :null_session
+module Api
+  module V0
+    class ApiController < ApplicationController
+      protect_from_forgery with: :null_session
+    end
+  end
 end

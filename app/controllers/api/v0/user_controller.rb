@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 module Api
   module V0
-    class UserController < APIController
+    class UserController < ApiController
 
       def own_jobs
         if request.headers["HTTP_ACCESS_TOKEN"].nil?
