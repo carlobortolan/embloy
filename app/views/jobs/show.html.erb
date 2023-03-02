@@ -119,7 +119,7 @@
       </h1><%#= render 'applications/show' %>
     <% elsif !@application.nil? && !@owner %>
       <%= render 'applications/show_all' %>
-    <% else %>
+    <% elsif Current.user %>
       <%= render 'applications/form' %>
     <% end %>
 

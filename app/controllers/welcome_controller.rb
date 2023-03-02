@@ -16,7 +16,6 @@ class WelcomeController < ApplicationController
   end
 
   def api
-
   end
 
   def apidoc

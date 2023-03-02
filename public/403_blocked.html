@@ -1,23 +1,3 @@
-<script>
-    var percentageElement = document.getElementById("percentage");
-    var percentage = 0;
-
-    function process() {
-        percentage += parseInt(Math.random() * 10);
-        if (percentage > 100) {
-            percentage = 100;
-        }
-        percentageElement.innerText = percentage;
-        processInterval();
-    }
-
-    function processInterval() {
-        setTimeout(process, Math.random() * (1000 - 500) + 500)
-    }
-
-    processInterval();
-</script>
-
 <style>
     body {
         font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
@@ -110,9 +90,8 @@
 <div id="page">
     <div id="container">
         <h1>:(</h1>
-        <h2>Your PC ran into a problem and needs to restart. We're just collecting some error info, and then we'll
-            restart for
-            you.</h2>
+        <h2>You have been banned from our services. We'll just collect some info, but there will be nothing else
+            here.</h2>
         <h2>
             <span id="percentage">0</span>% complete</h2>
         <div id="details">
@@ -122,7 +101,7 @@
                 </div>
             </div>
             <div id="stopcode">
-                <h4>For more information about this issue and possible fixes, visit
+                <h4>For more information about this and possible reasons, visit
                     <br/>https://embloy.com/WhyHaveIBeenBanned</h4>
                 <h5>If you call a support person, give them this info:
                     <br/>Stop Code: 403 NOT ALLOWED</h5>
@@ -130,3 +109,23 @@
         </div>
     </div>
 </div>
+
+<script>
+    var percentageElement = document.getElementById("percentage");
+    var percentage = 0;
+
+    function process() {
+        percentage += parseInt(Math.random() * 10);
+        if (percentage > 100) {
+            percentage = 100;
+        }
+        percentageElement.innerText = percentage;
+        processInterval();
+    }
+
+    function processInterval() {
+        setTimeout(process, Math.random() * (1000 - 500) + 500)
+    }
+
+    processInterval();
+</script>
