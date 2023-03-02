@@ -69,11 +69,11 @@ class ApplicationController < ActionController::Base
   end
 
   def require_user_admin!
-    if (Current.user.role = 'admin')
-      true
-    else
-      redirect_to sign_in_path, alert: 'Unauthorized!'
-    end
+    # if (Current.user.role = 'admin')
+    #   true
+    # else
+    #   redirect_to sign_in_path, alert: 'Unauthorized!'
+    # end
   end
 
   # ============== Standard error catching =============

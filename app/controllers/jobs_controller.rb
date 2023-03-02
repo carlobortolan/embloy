@@ -21,6 +21,7 @@ class JobsController < ApplicationController
   end
 
   def create
+    puts "PARAMS = #{job_params}"
     @job = Job.new(job_params)
     @job.user_id = Current.user.id
     # @job.location_id = job_params[:location_id]
@@ -67,7 +68,7 @@ class JobsController < ApplicationController
   private
 
   def job_params
-    params.require(:job).permit(:title, :description, :content, :start_slot, :status, :user_id, :longitude, :latitude)
+    params.require(:job).permit(:title, :description, :content, :job_notifications, :start_slot, :notify, :status, :user_id, :longitude, :latitude)
   end
 
   def mark_notifications_as_read

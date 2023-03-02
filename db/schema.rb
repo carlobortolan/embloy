@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_01_102526) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_02_165848) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -94,15 +94,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_01_102526) do
     t.datetime "updated_at", default: "2023-02-27 23:06:11", null: false
   end
 
-  create_table "job_notifications", primary_key: ["employer_id", "job_id"], force: :cascade do |t|
-    t.integer "employer_id", null: false
-    t.integer "job_id", null: false
-    t.enum "notify", default: "0", null: false, enum_type: "notify_type"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["job_id"], name: "notification_job_id_index"
-  end
-
   create_table "jobs", primary_key: "job_id", id: :serial, force: :cascade do |t|
     t.string "job_type"
     t.integer "job_status", limit: 2, default: 0
@@ -128,6 +119,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_01_102526) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "applications_count", default: 0
+    t.integer "job_notifications", default: 1, null: false
     t.index ["country_code"], name: " job_country_code_index "
     t.index ["job_id"], name: "job_job_id_index"
     t.index ["postal_code"], name: " job_postal_code_index "
@@ -190,6 +182,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_01_102526) do
     t.integer "applications_count", default: 0
     t.integer "jobs_count", default: 0
     t.enum "user_role", default: "spectator", null: false, enum_type: "user_roles"
+    t.integer "application_notifications", default: 1, null: false
     t.index ["email"], name: "user_email_index", unique: true
     t.index ["first_name", "last_name"], name: "user_name_index"
     t.index ["user_type"], name: "user_user_type_index"
@@ -197,12 +190,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_01_102526) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "applications", "jobs", primary_key: "job_id", on_delete: :cascade, on_update: :cascade
-  add_foreign_key "applications", "users", on_delete: :cascade, on_update: :cascade
-  add_foreign_key "company_users", "users", column: "id", on_delete: :cascade, on_update: :cascade
-  add_foreign_key "job_notifications", "jobs", primary_key: "job_id", on_delete: :cascade, on_update: :cascade
-  add_foreign_key "job_notifications", "users", column: "employer_id", on_delete: :cascade, on_update: :cascade
-  add_foreign_key "jobs", "users", on_delete: :cascade, on_update: :cascade
-  add_foreign_key "private_users", "users", column: "id", on_delete: :cascade, on_update: :cascade
-  add_foreign_key "reviews", "users", column: "created_by", on_delete: :cascade, on_update: :cascade
+  add_foreign_key "applications", "jobs", primary_key: "job_id", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "applications", "users", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "company_users", "users", column: "id", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "jobs", "users", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "private_users", "users", column: "id", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "reviews", "users", column: "created_by", on_update: :cascade, on_delete: :cascade
 end

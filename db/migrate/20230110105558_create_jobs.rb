@@ -23,6 +23,7 @@ class CreateJobs < ActiveRecord::Migration[7.0]
       t.string :city, limit: 45
       t.string :address, limit: 45
       t.integer :view_count, default: 0, null: false
+      t.integer :job_notifications, default: 1, null: false
       t.timestamps
       t.index [:job_id], name: "job_job_id_index"
       t.index [:user_id], name: "job_user_id_index "

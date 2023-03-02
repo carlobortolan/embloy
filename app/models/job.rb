@@ -13,6 +13,7 @@ class Job < ApplicationRecord
   validates :start_slot, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validates :longitude, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validates :latitude, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
+  validates :job_notifications, presence: true
 
   def profile
     @job.update(view_count: @job.view_count + 1)

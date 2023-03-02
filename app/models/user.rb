@@ -8,7 +8,7 @@ class User < ApplicationRecord
   validates :first_name, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, uniqueness: false
   validates :last_name, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, uniqueness: false
   validates :password, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, uniqueness: false, length: { minimum: 8, maximum: 72 }
-  validates :email_notifications, presence: false
+  validates :application_notifications, presence: true
   validates :longitude, presence: false
   validates :latitude, presence: false
   validates :country_code, presence: false

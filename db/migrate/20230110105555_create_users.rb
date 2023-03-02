@@ -16,6 +16,7 @@ class CreateUsers < ActiveRecord::Migration[7.0]
       t.string :city, limit: 45
       t.string :address, limit: 45
       t.datetime :date_of_birth, null: true
+      t.integer :application_notifications, default: 1, null: false
       t.enum :user_type, enum_type: "user_type", default: "private", null: false
       t.integer :view_count, default: 0, null: false
       t.index [:email], name: "user_email_index", unique: true
