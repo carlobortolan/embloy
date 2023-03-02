@@ -1,3 +1,5 @@
+<%= javascript_importmap_tags(entry_point = "application", shim: false) %>
+
 <%= form_with model: job do |form| %>
   <div>
     <%= form.label :title %><br>
@@ -11,6 +13,14 @@
     <%= form.label :description %><br>
     <%= form.text_area :description %><br>
     <% job.errors.full_messages_for(:description).each do |message| %>
+      <div><%= message %></div>
+    <% end %>
+  </div>
+
+  <div>
+    <%= form.label :content %><br>
+    <%= form.rich_text_area :content %><br>
+    <% job.errors.full_messages_for(:content).each do |message| %>
       <div><%= message %></div>
     <% end %>
   </div>
@@ -36,10 +46,10 @@
     <% end %>
   </div>
   <div>
-<!--    <%#= form.label "Do you want to receive a notification when a new application is submitted?" %><br>-->
-<!--    <%#= form.check_box :notify %><br>-->
+    <!--    <%#= form.label "Do you want to receive a notification when a new application is submitted?" %><br>-->
+    <!--    <%#= form.check_box :notify %><br>-->
     <%# job.errors.full_messages_for(:notify).each do |message| %>
-<!--      <div><%#= message %></div>-->
+    <!--      <div><%#= message %></div>-->
     <%# end %>
   </div>
 

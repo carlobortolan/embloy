@@ -16,8 +16,8 @@
             </header>
             INSERT JOB IMAGE HERE
             <!-- Preview image figure-->
-<!--            <figure class="mb-4">-->
-<!--              <img class="img-fluid rounded" src="<%#= @job.image_url %>" alt="INSERT JOB IMAGE HERE"/></figure>-->
+            <!--            <figure class="mb-4">-->
+            <!--              <img class="img-fluid rounded" src="<%#= @job.image_url %>" alt="INSERT JOB IMAGE HERE"/></figure>-->
             <!-- Post content-->
             <section class="mb-5">
               <h4 class="fw-bolder mb-4 mt-5"> Position: <%= @job.position %></h4>
@@ -30,6 +30,8 @@
               <p class="fs-5 mb-4"><%= @job.duration %> Days</p>
               <h4 class="fw-bolder mb-4 mt-5"> Salary:</h4>
               <p class="fs-5 mb-4"><%= @job.salary %> <%= @job.currency %>
+              <h4 class="fw-bolder mb-4 mt-5"> Content:</h4>
+              <p class="fs-5 mb-4"><%= @job.content %>
             </section>
             TODO: APPLY KNOPF NACH UNTEN </p>
           </article>
