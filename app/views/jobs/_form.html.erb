@@ -45,10 +45,10 @@
       <div><%= message %></div>
     <% end %>
   </div>
-      <%= form.label "Do you want to receive a notification when a new application is submitted?" %>
-      <%= form.check_box :job_notifications %><br>
+  <%= form.label "Do you want to receive a notification when a new application is submitted?" %>
+  <%= form.check_box :job_notifications %><br>
   <% job.errors.full_messages_for(:job_notifications).each do |message| %>
-        <div><%= message %></div>
+    <div><%= message %></div>
   <% end %>
 
 
