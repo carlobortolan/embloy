@@ -12,6 +12,7 @@ Rails.application.routes.draw do
       get 'user/applications', to: 'user#own_applications'
       patch 'password', to: 'passwords#update'
       post 'password/reset', to: 'password_resets#create'
+      post 'jobs', to: 'jobs#create'
     end
   end
 

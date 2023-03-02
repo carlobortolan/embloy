@@ -1,9 +1,8 @@
 require_relative '../../../../lib/feed_generator.rb'
 module Api
   module V0
-    class JobsController < ApplicationController
-
-      def create
+    class JobsController < APIController
+    def create
         # Todo: Testen
         if request.headers["HTTP_ACCESS_TOKEN"].nil?
           render status: 400, json: { "access_token": [
@@ -123,13 +122,13 @@ module Api
         # TODO: REMOVE 'first(100)'
         @result = FeedGenerator.initialize_feed(Job.all.where("status = 'public'").first(100).as_json, @my_args)
       end
-
+=end
       private
 
       def job_params
         params.require(:job).permit(:title, :description, :start_slot, :status, :user_id, :longitude, :latitude)
       end
-
+=begin
       def mark_notifications_as_read
         if Current.user
           notifications_to_mark_as_read = @job.notifications_as_job.where(recipient: Current.user)

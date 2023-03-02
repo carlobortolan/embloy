@@ -1,7 +1,6 @@
 module Api
   module V0
-    class RegistrationsController < ApplicationController
-      protect_from_forgery with: :null_session
+    class RegistrationsController < APIController
 
       def create
         @user = User.new(user_params)

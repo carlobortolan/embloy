@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 module Api
   module V0
-    class PasswordsController < ApplicationController
-      protect_from_forgery with: :null_session
+    class PasswordsController < APIController
 
       def update
 

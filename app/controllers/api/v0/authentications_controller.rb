@@ -1,8 +1,6 @@
 module Api
   module V0
-    class AuthenticationsController < ApplicationController
-      # Controller for refresh token
-      protect_from_forgery with: :null_session
+    class AuthenticationsController < APIController
 
       def create_refresh
         if user.present?

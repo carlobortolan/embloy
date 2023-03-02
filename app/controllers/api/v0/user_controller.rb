@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 module Api
   module V0
-    class UserController < ApplicationController
-      protect_from_forgery with: :null_session
+    class UserController < APIController
 
       def own_jobs
         if request.headers["HTTP_ACCESS_TOKEN"].nil?
