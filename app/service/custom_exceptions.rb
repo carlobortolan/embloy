@@ -19,6 +19,11 @@ class CustomExceptions < StandardError
 
   end
 
+  class InvalidJob < StandardError
+    class Unknown < StandardError # Should be risen when there is no record in jobs for a given id
+    end
+  end
+
   # ============== Authorization - Exceptions =============
   class Unauthorized < StandardError
 
@@ -40,6 +45,9 @@ class CustomExceptions < StandardError
       end
 
       class NotVerified < StandardError # User is not 'verified' yet
+      end
+
+      class NotOwner < StandardError # User does not 'own' something
       end
 
     end

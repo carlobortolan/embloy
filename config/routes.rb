@@ -13,6 +13,7 @@ Rails.application.routes.draw do
       patch 'password', to: 'passwords#update'
       post 'password/reset', to: 'password_resets#create'
       post 'jobs', to: 'jobs#create'
+      patch 'jobs', to: 'jobs#update'
     end
   end
 

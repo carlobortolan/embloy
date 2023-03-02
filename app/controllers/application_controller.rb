@@ -68,6 +68,9 @@ class ApplicationController < ActionController::Base
     end
   end
 
+
+
+  #Todo: avoid redundancy
   def require_user_admin!
     if (Current.user.role = 'admin')
       true
@@ -124,3 +127,5 @@ class ApplicationController < ActionController::Base
   end
 
 end
+
+
