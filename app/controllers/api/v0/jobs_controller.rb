@@ -108,11 +108,11 @@ module Api
           begin
             decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
             UserRole.must_be_verified(decoded_token["typ"])
-            UserRole::Job.must_be_owner!(params[:id], decoded_token["sub"])
+            UserRole::Jobs.must_be_owner!(params[:id], decoded_token["sub"])
             @job = Job.find_by(job_id: params[:id])
             @job.assign_attributes(job_params)
             if @job.save
-              render status: 200, json: { "message": "Password successfully updated!" }
+              render status: 200, json: { "message": "Job updated!" }
             else
               render status: 400, json: { "error": @job.errors.details }
             end
@@ -124,7 +124,6 @@ module Api
               }
             ]
             }
-
 
           rescue CustomExceptions::InvalidJob::Unknown
             render status: 400, json: { "job": [

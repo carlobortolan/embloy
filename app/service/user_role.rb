@@ -116,9 +116,9 @@ class UserRole < ApplicationController
     end
   end
 
-  class Job < JobsController
+  class Jobs < JobsController
     def self.must_be_owner!(job_id = nil, user_id = nil)
-      set_current_id(user_id)
+      UserRole.set_current_id(user_id)
       set_at_job(job_id)
       return owner?
     end
@@ -138,11 +138,13 @@ class UserRole < ApplicationController
 
 
     def self.owner?
-      if @job.job_id == Current.user.id
+      puts @job.job_id
+      puts Current.user.id
+      if @job.user_id == Current.user.id
         true
       else
         begin
-          taboo!
+          UserRole.taboo!
         rescue CustomExceptions::Unauthorized::InsufficientRole
           raise CustomExceptions::Unauthorized::InsufficientRole::NotOwner
         end
