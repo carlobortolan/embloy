@@ -1,5 +1,5 @@
 class ApplicationsController < ApplicationController
-  before_action :require_user_logged_in!
+  before_action :require_user_logged_in
   before_action :set_job
   layout 'job_applic_layout'
 

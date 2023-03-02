@@ -40,5 +40,4 @@ class OauthCallbacksController < ApplicationController
       redirect_to log_in_path, alert: 'Invalid email or password'
     end
   end
-
 end
