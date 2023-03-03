@@ -42,7 +42,7 @@ module Api
             ]
             }
 
-          rescue CustomExceptions::Unauthorized::InsufficientRole # thrown from ApplicationController.verified!
+          rescue CustomExceptions::Unauthorized::InsufficientRole # thrown from ApplicationController.should_be_verified!
             render status: 403, json: { "user": [
               {
                 "error": "ERR_INACTIVE",
@@ -135,6 +135,7 @@ module Api
               updated_at: Time.now,
               response: "No response yet..."
             )
+            application.save!
             render status: 200, json: { "message": "Application submitted!" }
 
           rescue ActiveRecord::RecordNotUnique
@@ -183,7 +184,7 @@ module Api
             ]
             }
 
-          rescue CustomExceptions::Unauthorized::InsufficientRole # thrown from ApplicationController.verified!
+          rescue CustomExceptions::Unauthorized::InsufficientRole # thrown from ApplicationController.should_be_verified!
             render status: 403, json: { "user": [
               {
                 "error": "ERR_INACTIVE",
@@ -255,7 +256,7 @@ module Api
       end
 
 
-=begin
+
       def destroy
         if request.headers["HTTP_ACCESS_TOKEN"].nil?
           render status: 400, json: { "access_token": [
@@ -272,13 +273,11 @@ module Api
             job = Job.find(params[:id])
             #application = job.applications.find(decoded_token["sub"])
             application = Application.find_by_sql("SELECT * FROM applications a WHERE a.user_id = #{decoded_token["sub"]} and a.job_id = #{params[:id]}")[0]
-            Todo: hier stimmt was nicht
             application.destroy!
 
             render status: 200, json: { "message": "Application deleted!" }
 
           end
-=end
         end
         end
 
