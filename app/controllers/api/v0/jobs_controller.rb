@@ -15,7 +15,7 @@ module Api
         else
           begin
             decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
-            should_be_verified!(decoded_token["typ"])
+            verified!(decoded_token["typ"])
             @job = Job.new(job_params)
             @job.user_id = decoded_token["sub"]
 
@@ -107,7 +107,7 @@ module Api
         else
           begin
             decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
-            should_be_verified!(decoded_token["typ"])
+            verified!(decoded_token["typ"])
             must_be_owner!(params[:id], decoded_token["sub"])
             @job = Job.find_by(job_id: params[:id])
             @job.assign_attributes(job_params)
@@ -143,7 +143,7 @@ module Api
             ]
             }
 
-          rescue CustomExceptions::Unauthorized::InsufficientRole # thrown from ApplicationController.should_be_verified!
+          rescue CustomExceptions::Unauthorized::InsufficientRole # thrown from ApplicationController.verified!
             render status: 403, json: { "user": [
               {
                 "error": "ERR_INACTIVE",
@@ -235,7 +235,7 @@ module Api
         else
           begin
             decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
-            should_be_verified!(decoded_token["typ"])
+            verified!(decoded_token["typ"])
             must_be_owner!(params[:id], decoded_token["sub"])
             @job = Job.find_by(job_id: params[:id])
             if @job.destroy
@@ -259,7 +259,7 @@ module Api
             ]
             }
 
-          rescue CustomExceptions::Unauthorized::InsufficientRole # thrown from ApplicationController.should_be_verified!
+          rescue CustomExceptions::Unauthorized::InsufficientRole # thrown from ApplicationController.verified!
             render status: 403, json: { "user": [
               {
                 "error": "ERR_INACTIVE",

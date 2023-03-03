@@ -23,8 +23,8 @@ class ApplicationController < ActionController::Base
     # method can be called for a specific id or using Current.user from Application Controller
     set_current_id(id)
     admin(Current.user.user_role)
-  end  
-  
+  end
+
   def must_be_admin!(id = nil)
     # method can be called for a specific id or using Current.user from Application Controller
     set_current_id(id)
@@ -109,6 +109,7 @@ class ApplicationController < ActionController::Base
     set_current_id(id)
     verified(Current.user.user_role)
   end
+
   def self.must_be_verified(id = nil)
     set_current_id(id)
     verified(Current.user.user_role)
@@ -118,101 +119,11 @@ class ApplicationController < ActionController::Base
     set_current_id(id)
     verified!(Current.user.user_role)
   end
+
   def self.must_be_verified!(id = nil)
     set_current_id(id)
     verified!(Current.user.user_role)
   end
-
-
-
-  # =============== User Role Check ===============
-  # ========== WITHOUT DATABASE LOOKUP ============
-
-  def should_be_admin(user_role)
-    admin(user_role)
-  end
-
-  def self.should_be_admin(user_role)
-    admin(user_role)
-  end
-
-  def should_be_admin!(user_role)
-    admin!(user_role)
-  end
-
-  def self.should_be_admin!(user_role)
-    admin!(user_role)
-  end
-
-  #--------------------------------------
-
-  def should_be_editor(user_role)
-    editor(user_role)
-  end
-
-  def self.should_be_editor(user_role)
-    editor(user_role)
-  end
-
-  def should_be_editor!(user_role)
-    editor!(user_role)
-  end
-
-  def self.should_be_editor!(user_role)
-    editor!(user_role)
-  end
-
-  #--------------------------------------
-
-  def should_be_developer(user_role)
-    developer(user_role)
-  end
-
-  def self.should_be_developer(user_role)
-    developer(user_role)
-  end
-
-  def should_be_developer!(user_role)
-    developer!(user_role)
-  end
-
-  def self.should_be_developer!(user_role)
-    developer!(user_role)
-  end
-
-  #--------------------------------------
-
-  def should_be_moderator(user_role)
-    moderator(user_role)
-  end
-  def self.should_be_moderator(user_role)
-    moderator(user_role)
-  end
-
-  def should_be_moderator!(user_role)
-    moderator!(user_role)
-  end
-  def self.should_be_moderator!(user_role)
-    moderator!(user_role)
-  end
-
-  #--------------------------------------
-
-  def should_be_verified(user_role)
-    verified(user_role)
-  end
-  def self.should_be_verified(user_role)
-    verified(user_role)
-  end
-
-  def should_be_verified!(user_role)
-    verified!(user_role)
-  end
-  def self.should_be_verified!(user_role)
-    verified!(user_role)
-  end
-
-
 
   # ============== Helper methods =================
   # ===============================================
@@ -247,9 +158,8 @@ class ApplicationController < ActionController::Base
     end
   end
 
-
-
-  # ======== that model the role hierarchy ========
+  # =============== User Role Check ===============
+  # ========== WITHOUT DATABASE LOOKUP ============
 
   def admin(user_role)
     user_role == "admin" ? true : false
@@ -331,7 +241,6 @@ class ApplicationController < ActionController::Base
     user_role == "admin" || user_role == "editor" || user_role == "moderator" || user_role == "verified" ? true : false
   end
 
-
   def verified!(user_role)
     user_role == "admin" || user_role == "editor" || user_role == "moderator" || user_role == "verified" ? true : taboo!
   end
@@ -339,8 +248,6 @@ class ApplicationController < ActionController::Base
   def self.verified!(user_role)
     user_role == "admin" || user_role == "editor" || user_role == "moderator" || user_role == "verified" ? true : taboo!
   end
-
-
 
   # ============ that raise exceptions ============
 
@@ -351,8 +258,6 @@ class ApplicationController < ActionController::Base
   def self.taboo!
     raise CustomExceptions::Unauthorized::InsufficientRole
   end
-
-
 
   public
 
@@ -383,8 +288,6 @@ class ApplicationController < ActionController::Base
     owner!
   end
 
-
-
   # ============== Helper methods =================
   # ===============================================
 
@@ -412,8 +315,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-
-
   # ======== that model the role hierarchy ========
 
   def owner
@@ -434,24 +335,12 @@ class ApplicationController < ActionController::Base
 
   public
 
-
-
-
-
-
-
-
-
-
   ####################################################################################################
   # Todo: @carlobortolan:                                                                            #
   # Todo: tidy up beneath                                                                            #
   # Todo: look for redundancy with methods from above                                                #
   # Todo: if there are redundancies, change code using above methods and delete unnecessary methods  #
   ####################################################################################################
-
-
-
 
   # ============== Exceptions =============
   def require_user_logged_in
@@ -507,7 +396,6 @@ class ApplicationController < ActionController::Base
       true
     end
   end
-
 
   def require_user_admin!
     # if (Current.user.role = 'admin')
