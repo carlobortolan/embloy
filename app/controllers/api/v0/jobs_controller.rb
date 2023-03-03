@@ -237,10 +237,10 @@ module Api
             decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
             should_be_verified!(decoded_token["typ"])
             must_be_owner!(params[:id], decoded_token["sub"])
-            @job = Job.find_by(job_id: params[:id])
-            if @job.destroy
-              render status: 200, json: { "message": "Job deleted!" }
-            end
+            job = Job.find_by(job_id: params[:id])
+            job.destroy!
+            render status: 200, json: { "message": "Job deleted!" }
+
           rescue CustomExceptions::InvalidJob::Unknown
             render status: 400, json: { "job": [
               {

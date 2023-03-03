@@ -146,14 +146,33 @@ module Api
             ]
             }
 
+          rescue ActiveRecord::RecordNotFound
+            if params[:id].nil?
+              render status: 400, json: { "job": [
+                {
+                  "error": "ERR_BLANK",
+                  "description": "Attribute can't be blank."
+                }
+              ]
+              }
+            else
+              render status: 400, json: { "job": [
+                {
+                  "error": "ERR_INVALID",
+                  "description": "Attribute is malformed or unknown."
+                }
+              ]
+              }
+            end
+
           rescue ActiveRecord::RecordInvalid
             render status: 400, json: { "application": [
               {
                 "error": "ERR_INVALID",
                 "description": "Attribute is malformed or unknown."
               }
-            ] }
-
+            ]
+            }
 
           rescue CustomExceptions::InvalidUser::Unknown
             render status: 400, json: { "user": [
@@ -235,18 +254,35 @@ module Api
         end
       end
 
+
 =begin
       def destroy
-        @job = Job.find(params[:job_id])
-        if require_user_be_owner!
-          redirect_to job_path(@job), alert: 'Not allowed!' if Current.user.id != @job.user_id
-          @application = @job.applications.find(params[:user_id])
-          @application.destroy
+        if request.headers["HTTP_ACCESS_TOKEN"].nil?
+          render status: 400, json: { "access_token": [
+            {
+              "error": "ERR_BLANK",
+              "description": "Attribute can't be blank"
+            }
+          ]
+          }
+        else
+          begin
+            decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
+            should_be_verified!(decoded_token["typ"])
+            job = Job.find(params[:id])
+            #application = job.applications.find(decoded_token["sub"])
+            application = Application.find_by_sql("SELECT * FROM applications a WHERE a.user_id = #{decoded_token["sub"]} and a.job_id = #{params[:id]}")[0]
+            Todo: hier stimmt was nicht
+            application.destroy!
 
-          redirect_to job_path(@job), status: :see_other
+            render status: 200, json: { "message": "Application deleted!" }
+=end
+          end
         end
-      end
+        end
 
+
+=begin
       def accept
         @job = Job.find(params[:job_id])
         if require_user_be_owner!
