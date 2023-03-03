@@ -135,6 +135,7 @@ module Api
               updated_at: Time.now,
               response: "No response yet..."
             )
+            application.user = User.find_by(id:decoded_token["sub"])
             application.save!
             render status: 200, json: { "message": "Application submitted!" }
 
@@ -272,9 +273,9 @@ module Api
             verified!(decoded_token["typ"])
             job = Job.find(params[:id])
             #application = job.applications.find(decoded_token["sub"])
-            application = Application.find_by_sql("SELECT * FROM applications a WHERE a.user_id = #{decoded_token["sub"]} and a.job_id = #{params[:id]}")[0]
-            application.destroy!
-
+            #application = Application.find_by_sql("SELECT * FROM applications a WHERE a.user_id = #{decoded_token["sub"]} and a.job_id = #{params[:id]}")[0]
+            #application.destroy!
+            Application.where(job_id: params[:id]).destroy_all
             render status: 200, json: { "message": "Application deleted!" }
 
           end
