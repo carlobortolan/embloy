@@ -24,6 +24,19 @@ class Application < ApplicationRecord
     # ApplicationStatusNotification.with(application: [:user_id, :job_id], job: job).deliver_later(user)
   end
 
+  def accept
+    self[:status] = "1"
+    self[:response] = "ACCEPTED"
+    # update(:status => '1')
+    #    update!(status: '1', response: "ACCEPTED")
+  end
+
+  def reject
+    self[:status] = "-1"
+    self[:response] = "REJECTED"
+    #   update!(status: '-1', response: "REJECCCTED")
+  end
+
   private
 
   def cleanup_notifications
