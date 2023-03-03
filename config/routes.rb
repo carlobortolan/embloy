@@ -15,6 +15,8 @@ Rails.application.routes.draw do
       post 'jobs', to: 'jobs#create'
       patch 'jobs', to: 'jobs#update'
       delete 'jobs', to: 'jobs#destroy'
+      get 'jobs/(/:id)/applications', to: 'applications#show'
+      post 'jobs/(/:id)/applications', to: 'applications#create'
     end
   end
 
