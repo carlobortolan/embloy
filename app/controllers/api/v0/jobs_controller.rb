@@ -3,7 +3,6 @@ module Api
   module V0
     class JobsController < ApiController
       def create
-        # Todo: Testen
         if request.headers["HTTP_ACCESS_TOKEN"].nil?
           render status: 400, json: { "access_token": [
             {
