@@ -269,7 +269,7 @@ module Api
         else
           begin
             decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
-            should_be_verified!(decoded_token["typ"])
+            verified!(decoded_token["typ"])
             job = Job.find(params[:id])
             #application = job.applications.find(decoded_token["sub"])
             application = Application.find_by_sql("SELECT * FROM applications a WHERE a.user_id = #{decoded_token["sub"]} and a.job_id = #{params[:id]}")[0]
