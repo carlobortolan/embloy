@@ -401,7 +401,7 @@ class ApplicationController < ActionController::Base
   end
 
   def record_not_found(exception)
-    must_be_admin ? render json: { error: exception.message }.to_json, status: 404 : err_not_allowed
+    must_be_admin ? (render json: { error: exception.message }.to_json, status: 404) : err_not_allowed
   end
 
   def routing_error
