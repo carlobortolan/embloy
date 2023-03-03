@@ -276,8 +276,8 @@ module Api
 
 
 
-            #application = Application.find_by_sql("SELECT * FROM applications a WHERE a.user_id = #{decoded_token["sub"]} and a.job_id = #{params[:id]}")[0]
-
+            application = Application.find_by_sql("SELECT * FROM applications a WHERE a.user_id = #{decoded_token["sub"]} and a.job_id = #{params[:id]}")[0]
+            application.destroy!
 
 
 
@@ -289,7 +289,8 @@ module Api
         end
 =end
 
-
+      #Todo: Wait for main controller implementation and implement methods accordingly
+=begin
       def accept
         @job = Job.find(params[:job_id])
         if require_user_be_owner!
@@ -297,7 +298,7 @@ module Api
           redirect_to job_path(@job), status: :see_other, notice: 'Application has been accepted'
         end
       end
-=begin
+
       def reject
         @job = Job.find(params[:job_id])
         if require_user_be_owner!
