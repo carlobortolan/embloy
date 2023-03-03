@@ -276,8 +276,9 @@ module Api
             application.destroy!
 
             render status: 200, json: { "message": "Application deleted!" }
-=end
+
           end
+=end
         end
         end
 
