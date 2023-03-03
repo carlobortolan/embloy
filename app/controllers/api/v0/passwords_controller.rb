@@ -47,7 +47,7 @@ module Api
             else
 
               decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
-              must_be_verified(decoded_token["typ"])
+              should_be_verified!(decoded_token["typ"])
               if User.find_by(id: decoded_token["sub"]).update(password_params)
                 render status: 200, json: { "message": "Password successfully updated!" }
               else

@@ -15,7 +15,7 @@ module Api
         else
           begin
             decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
-            must_be_verified(decoded_token["typ"])
+            should_be_verified!(decoded_token["typ"])
             jobs = User.find_by(id: decoded_token["sub"].to_i).jobs.order(created_at: :desc)
             if jobs.empty?
               render status: 204, json: { "jobs": jobs }
@@ -96,7 +96,7 @@ module Api
           else
             begin
             decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
-            must_be_verified(decoded_token["typ"])
+            should_be_verified!(decoded_token["typ"])
             applications = Application.all.where(user_id: decoded_token["sub"].to_i)
             if applications.empty?
               render status: 204, json: { "applications": applications }
