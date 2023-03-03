@@ -36,7 +36,7 @@ class ApplicationController < ActionController::Base
     editor?(Current.user.user_role)
   end
 
-
+  #--------------------------------------
 
   def must_be_developer!(id = nil)
     set_current_id(id)
@@ -47,7 +47,7 @@ class ApplicationController < ActionController::Base
     must_be_developer!(id)
   end
 
-
+  #--------------------------------------
 
   def must_be_moderator!(id = nil)
     set_current_id(id)
@@ -58,7 +58,7 @@ class ApplicationController < ActionController::Base
     must_be_moderator!(id)
   end
 
-
+  #--------------------------------------
 
   def must_be_verified!(id = nil)
     set_current_id(id)
@@ -79,7 +79,7 @@ class ApplicationController < ActionController::Base
     admin?(user_role)
   end
 
-
+  #--------------------------------------
 
   def must_be_editor(user_role)
     editor?(user_role)
@@ -89,7 +89,7 @@ class ApplicationController < ActionController::Base
     editor?(user_role)
   end
 
-
+  #--------------------------------------
 
   def must_be_developer(user_role)
     developer?(user_role)
@@ -99,7 +99,7 @@ class ApplicationController < ActionController::Base
     developer?(user_role)
   end
 
-
+  #--------------------------------------
 
   def must_be_moderator(user_role)
     moderator?(user_role)
@@ -108,7 +108,7 @@ class ApplicationController < ActionController::Base
     moderator?(user_role)
   end
 
-
+  #--------------------------------------
 
   def must_be_verified(user_role)
     verified?(user_role)
@@ -117,21 +117,15 @@ class ApplicationController < ActionController::Base
     verified?(user_role)
   end
 
+
+
+  # ============== Helper methods =================
+  # ===============================================
+
   protected
 
-  # ======= Set Current to the user for id  =======
-  def self.set_current_id(id = nil)
-    if id.nil?
-      if Current.user.nil?
-        raise CustomExceptions::InvalidUser::LoggedOut
-      end
-    else
-      Current.user = User.find_by(id: id)
-      if Current.user.nil?
-        raise CustomExceptions::InvalidUser::Unknown
-      end
-    end
-  end
+  # ====== that set Current to user for id  =======
+
   def set_current_id(id = nil)
     if id.nil?
       if Current.user.nil?
@@ -144,8 +138,62 @@ class ApplicationController < ActionController::Base
       end
     end
   end
-  # ============== Should be raised ===============
-  # ===== when required user_role is to high  =====
+
+  def self.set_current_id(id = nil)
+    if id.nil?
+      if Current.user.nil?
+        raise CustomExceptions::InvalidUser::LoggedOut
+      end
+    else
+      Current.user = User.find_by(id: id)
+      if Current.user.nil?
+        raise CustomExceptions::InvalidUser::Unknown
+      end
+    end
+  end
+
+
+
+  # ======== that model the role hierarchy ========
+
+  def admin?(user_role)
+    user_role == "admin" ? true : taboo!
+  end
+
+  #--------------------------------------
+
+  def editor?(user_role)
+    user_role == "admin" || user_role == "editor" ? true : taboo!
+  end
+
+  #--------------------------------------
+
+  def developer?(user_role)
+    user_role == "admin" || user_role == "developer" ? true : taboo!
+  end
+
+  #--------------------------------------
+
+  def moderator?(user_role)
+    user_role == "admin" || user_role == "editor" || user_role == "moderator" ? true : taboo!
+  end
+
+  #--------------------------------------
+
+  def self.verified?(user_role)
+    user_role == "admin" || user_role == "editor" || user_role == "moderator" || user_role == "verified" ? true : taboo!
+  end
+
+  #--------------------------------------
+
+  def verified?(user_role)
+    user_role == "admin" || user_role == "editor" || user_role == "moderator" || user_role == "verified" ? true : taboo!
+  end
+
+
+
+  # ============ that raise exceptions ============
+
   def self.taboo!
     raise CustomExceptions::Unauthorized::InsufficientRole
   end
@@ -153,46 +201,33 @@ class ApplicationController < ActionController::Base
     raise CustomExceptions::Unauthorized::InsufficientRole
   end
 
-  # =============== Helper methods ================
-  # ======== that model the role hierarchy ========
-  def admin?(user_role)
-    user_role == "admin" ? true : taboo!
-  end
 
-  def editor?(user_role)
-    user_role == "admin" || user_role == "editor" ? true : taboo!
-  end
 
-  def developer?(user_role)
-    user_role == "admin" || user_role == "developer" ? true : taboo!
-  end
-
-  def moderator?(user_role)
-    user_role == "admin" || user_role == "editor" || user_role == "moderator" ? true : taboo!
-  end
-
-  def self.verified?(user_role)
-    user_role == "admin" || user_role == "editor" || user_role == "moderator" || user_role == "verified" ? true : taboo!
-  end
-
-  def verified?(user_role)
-    user_role == "admin" || user_role == "editor" || user_role == "moderator" || user_role == "verified" ? true : taboo!
-  end
+  public
+  # =============== Job Role Check ================
+  # ============ WITH DATABASE LOOKUP =============
 
   def must_be_owner!(job_id = nil, user_id = nil)
     set_current_id(user_id)
     set_at_job(job_id)
     owner?
   end
+
   def self.must_be_owner!(job_id = nil, user_id = nil)
     set_current_id(user_id)
     set_at_job(job_id)
     owner?
   end
 
+
+
+  # ============== Helper methods =================
+  # ===============================================
+
   protected
 
-  # ============== Jobs =============
+  # ======= that set "@job" to job for id  ========
+
   def set_at_job(job_id = nil)
     unless job_id.nil?
       @job = Job.find_by(job_id: job_id)
@@ -203,9 +238,34 @@ class ApplicationController < ActionController::Base
     end
   end
 
+
+
+  # ======== that model the role hierarchy ========
+
   def owner?
     @job.user_id == Current.user.id ? true : raise(CustomExceptions::Unauthorized::InsufficientRole::NotOwner)
   end
+
+  public
+
+
+
+
+
+
+
+
+
+
+  ####################################################################################################
+  # Todo: @carlobortolan:                                                                            #
+  # Todo: tidy up beneath                                                                            #
+  # Todo: look for redundancy with methods from above                                                #
+  # Todo: if there are redundancies, change code using above methods and delete unnecessary methods  #
+  ####################################################################################################
+
+
+
 
   # ============== Exceptions =============
   def require_user_logged_in
@@ -262,7 +322,7 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  # Todo: avoid redundancy
+
   def require_user_admin!
     # if (Current.user.role = 'admin')
     #   true
