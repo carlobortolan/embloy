@@ -1,7 +1,7 @@
 require_relative '../../lib/feed_generator.rb'
 
 class JobsController < ApplicationController
-  before_action :require_user_logged_in!, except: %w[index show find parse_inputs]
+  before_action :require_user_logged_in, except: %w[index show find parse_inputs]
 
   def index
     @jobs = Job.all.order(created_at: :desc).first(100)
@@ -9,7 +9,7 @@ class JobsController < ApplicationController
 
   def show
     @job = Job.find(params[:id])
-    @owner = user_is_owner!
+    @owner = owner
     if Current.user
       @application = Application.find_by(user_id: Current.user.id, job_id: params[:id])
       mark_notifications_as_read
@@ -35,12 +35,12 @@ class JobsController < ApplicationController
 
   def edit
     @job = Job.find(params[:id])
-    require_user_be_owner!
+    require_user_be_owner
   end
 
   def update
     @job = Job.find(params[:id])
-    require_user_be_owner!
+    require_user_be_owner
     if @job.update(job_params)
       redirect_to @job
     else
@@ -50,7 +50,7 @@ class JobsController < ApplicationController
 
   def destroy
     @job = Job.find(params[:id])
-    require_user_be_owner!
+    require_user_be_owner
     @job.destroy
     redirect_to own_jobs_path, status: :see_other, notice: "Job successfully deleted."
   end

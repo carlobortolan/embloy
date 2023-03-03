@@ -5,12 +5,12 @@ class ApplicationsController < ApplicationController
 
   def index
     @job = Job.find(params[:job_id])
-    require_user_be_owner!
+    require_user_be_owner
     @applications = @job.applications.includes(:user).all
   end
 
   def show
-    require_user_be_owner!
+    require_user_be_owner
     @job = Job.find(params[:job_id])
     # @application = @job.applications.find_by_sql("SELECT * FROM applications a WHERE a.user_id = #{params[:id]} and a.job_id = #{params[:job_id]}")
     # TODO: @carlobortolan: SQL in Ruby umschreiben
@@ -47,7 +47,7 @@ class ApplicationsController < ApplicationController
 
   def destroy
     @job = Job.find(params[:job_id])
-    if require_user_be_owner!
+    if require_user_be_owner
       redirect_to job_path(@job), alert: 'Not allowed!' if Current.user.id != @job.user_id
       @application = @job.applications.find(params[:user_id])
       @application.destroy
@@ -58,7 +58,7 @@ class ApplicationsController < ApplicationController
 
   def accept
     @job = Job.find(params[:job_id])
-    if require_user_be_owner!
+    if require_user_be_owner
       @application = @job.applications.find_by_sql("SELECT * FROM applications a WHERE a.user_id = #{1} and a.job_id = #{1}")
       @application.accept
       redirect_to job_path(@job), status: :see_other, notice: 'Application has been accepted'
@@ -67,7 +67,7 @@ class ApplicationsController < ApplicationController
 
   def reject
     @job = Job.find(params[:job_id])
-    if require_user_be_owner!
+    if require_user_be_owner
       @application = @job.applications.find_by_sql("SELECT * FROM applications a WHERE a.user_id = #{1} and a.job_id = #{1}")
       @application.reject
       redirect_to job_applications_path(params[:job_id]), status: :see_other, notice: 'Application has been rejected'
@@ -76,7 +76,7 @@ class ApplicationsController < ApplicationController
 
   def reject_all
     @job = Job.find(params[:job_id])
-    if require_user_be_owner!
+    if require_user_be_owner
       @job.reject_all
       redirect_to job_path(@job), status: :see_other, notice: 'All Applications have been rejected'
     end

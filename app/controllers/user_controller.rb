@@ -1,5 +1,5 @@
 class UserController < ApplicationController
-  before_action :require_user_logged_in!
+  before_action :require_user_logged_in
 
   def index
     @user = Current.user
