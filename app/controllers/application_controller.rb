@@ -33,6 +33,10 @@ class ApplicationController < ActionController::Base
     moderator?(Current.user.user_role)
   end
 
+  def must_be_verified!(id = nil)
+    set_current_id(id)
+    return verified?(Current.user.user_role)
+  end
   def self.must_be_verified!(id = nil)
     set_current_id(id)
     return verified?(Current.user.user_role)

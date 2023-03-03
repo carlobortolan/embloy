@@ -14,6 +14,7 @@ Rails.application.routes.draw do
       post 'password/reset', to: 'password_resets#create'
       post 'jobs', to: 'jobs#create'
       patch 'jobs', to: 'jobs#update'
+      delete 'jobs', to: 'jobs#destroy'
     end
   end
 
