@@ -1,9 +1,6 @@
 module Api
   module V0
     class ApplicationsController < ApiController
-      before_action :require_user_logged_in
-      before_action :set_job
-      layout 'job_applic_layout'
 =begin
       def index
         @job = Job.find(params[:job_id])
