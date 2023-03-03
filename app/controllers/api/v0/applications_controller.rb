@@ -135,7 +135,7 @@ module Api
               updated_at: Time.now,
               response: "No response yet..."
             )
-            application.user = User.find_by(id:decoded_token["sub"])
+            application.user = User.find(decoded_token["sub"])
             application.save!
             render status: 200, json: { "message": "Application submitted!" }
 
@@ -256,8 +256,8 @@ module Api
         end
       end
 
-
-
+      #destroy throws ActiveJob::SerializationError => until resolved there wont be application delete functionality via api
+=begin
       def destroy
         if request.headers["HTTP_ACCESS_TOKEN"].nil?
           render status: 400, json: { "access_token": [
@@ -272,17 +272,24 @@ module Api
             decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
             verified!(decoded_token["typ"])
             job = Job.find(params[:id])
-            #application = job.applications.find(decoded_token["sub"])
-            #application = Application.find_by_sql("SELECT * FROM applications a WHERE a.user_id = #{decoded_token["sub"]} and a.job_id = #{params[:id]}")[0]
-            #application.destroy!
-            Application.where(job_id: params[:id]).destroy_all
+            application = job.applications.find(decoded_token["sub"])
+
+
+
+            application = Application.find_by_sql("SELECT * FROM applications a WHERE a.user_id = #{decoded_token["sub"]} and a.job_id = #{params[:id]}")[0]
+            application.destroy!
+
+
+
+
             render status: 200, json: { "message": "Application deleted!" }
 
           end
         end
         end
+=end
 
-
+      #Todo: Wait for main controller implementation and implement methods accordingly
 =begin
       def accept
         @job = Job.find(params[:job_id])
