@@ -19,6 +19,10 @@ class Job < ApplicationRecord
     @job.update(view_count: @job.view_count + 1)
   end
 
+  def reject_all
+    self.applications.each { |application| application.reject }
+  end
+
   def format_address
     "#{self.address}, #{self.city}, #{self.postal_code}, #{self.country_code}"
     if self.address.nil? || self.city.nil? || self.postal_code.nil? || self.country_code.nil?
