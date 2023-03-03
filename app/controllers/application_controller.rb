@@ -15,32 +15,32 @@ class ApplicationController < ActionController::Base
   def must_be_admin!(id = nil)
     # method can be called for a specific id or using Current.user from Application Controller
     set_current_id(id)
-    return admin?(Current.user.user_role)
+    return admin!(Current.user.user_role)
   end
 
   def self.must_be_admin!(id = nil)
     # method can be called for a specific id or using Current.user from Application Controller
     set_current_id(id)
-    return admin?(Current.user.user_role)
+    return admin!(Current.user.user_role)
   end
 
 
 
   def must_be_editor!(id = nil)
     set_current_id(id)
-    editor?(Current.user.user_role)
+    editor!(Current.user.user_role)
   end
 
   def self.must_be_editor!(id = nil)
     set_current_id(id)
-    editor?(Current.user.user_role)
+    editor!(Current.user.user_role)
   end
 
   #--------------------------------------
 
   def must_be_developer!(id = nil)
     set_current_id(id)
-    developer?(Current.user.user_role)
+    developer!(Current.user.user_role)
   end
 
   def self.must_be_developer!(id = nil)
@@ -51,7 +51,7 @@ class ApplicationController < ActionController::Base
 
   def must_be_moderator!(id = nil)
     set_current_id(id)
-    moderator?(Current.user.user_role)
+    moderator!(Current.user.user_role)
   end
 
   def self.must_be_moderator!(id = nil)
@@ -62,59 +62,59 @@ class ApplicationController < ActionController::Base
 
   def must_be_verified!(id = nil)
     set_current_id(id)
-    return verified?(Current.user.user_role)
+    return verified!(Current.user.user_role)
   end
   def self.must_be_verified!(id = nil)
     set_current_id(id)
-    return verified?(Current.user.user_role)
+    return verified!(Current.user.user_role)
   end
 
   # =============== User Role Check ===============
   # ========== WITHOUT DATABASE LOOKUP ============
   def must_be_admin(user_role)
-    admin?(user_role)
+    admin!(user_role)
   end
 
   def self.must_be_admin(user_role)
-    admin?(user_role)
+    admin!(user_role)
   end
 
   #--------------------------------------
 
   def must_be_editor(user_role)
-    editor?(user_role)
+    editor!(user_role)
   end
 
   def self.must_be_editor(user_role)
-    editor?(user_role)
+    editor!(user_role)
   end
 
   #--------------------------------------
 
   def must_be_developer(user_role)
-    developer?(user_role)
+    developer!(user_role)
   end
 
   def self.must_be_developer(user_role)
-    developer?(user_role)
+    developer!(user_role)
   end
 
   #--------------------------------------
 
   def must_be_moderator(user_role)
-    moderator?(user_role)
+    moderator!(user_role)
   end
   def self.must_be_moderator(user_role)
-    moderator?(user_role)
+    moderator!(user_role)
   end
 
   #--------------------------------------
 
   def must_be_verified(user_role)
-    verified?(user_role)
+    verified!(user_role)
   end
   def self.must_be_verified(user_role)
-    verified?(user_role)
+    verified!(user_role)
   end
 
 
@@ -157,36 +157,58 @@ class ApplicationController < ActionController::Base
   # ======== that model the role hierarchy ========
 
   def admin?(user_role)
+    user_role == "admin" ? true : false
+  end
+
+  def admin!(user_role)
     user_role == "admin" ? true : taboo!
   end
 
   #--------------------------------------
 
   def editor?(user_role)
+    user_role == "admin" || user_role == "editor" ? true : false
+  end
+
+  def editor!(user_role)
     user_role == "admin" || user_role == "editor" ? true : taboo!
   end
 
   #--------------------------------------
 
   def developer?(user_role)
+    user_role == "admin" || user_role == "developer" ? true : false
+  end
+
+  def developer!(user_role)
     user_role == "admin" || user_role == "developer" ? true : taboo!
   end
 
   #--------------------------------------
 
   def moderator?(user_role)
+    user_role == "admin" || user_role == "editor" || user_role == "moderator" ? true : false
+  end
+
+  def moderator!(user_role)
     user_role == "admin" || user_role == "editor" || user_role == "moderator" ? true : taboo!
   end
 
   #--------------------------------------
 
   def self.verified?(user_role)
+    user_role == "admin" || user_role == "editor" || user_role == "moderator" || user_role == "verified" ? true : false
+  end
+
+  def verified?(user_role)
+    user_role == "admin" || user_role == "editor" || user_role == "moderator" || user_role == "verified" ? true : false
+  end
+
+  def self.verified!(user_role)
     user_role == "admin" || user_role == "editor" || user_role == "moderator" || user_role == "verified" ? true : taboo!
   end
 
-  #--------------------------------------
-
-  def verified?(user_role)
+  def verified!(user_role)
     user_role == "admin" || user_role == "editor" || user_role == "moderator" || user_role == "verified" ? true : taboo!
   end
 
