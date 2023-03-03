@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_03_215303) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_03_222439) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -144,13 +144,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_03_215303) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "reviews", primary_key: "user_id", id: :serial, force: :cascade do |t|
+  create_table "reviews", primary_key: "review_id", id: :serial, force: :cascade do |t|
     t.enum "rating", default: "1", null: false, enum_type: "rating_type"
     t.text "message"
     t.integer "created_by", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "job_id", null: false
+    t.integer "job_id"
+    t.integer "subject_id"
     t.index ["created_by"], name: "reviews_created_by_index"
   end
 
@@ -198,4 +199,5 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_03_215303) do
   add_foreign_key "private_users", "users", column: "id", on_update: :cascade, on_delete: :cascade
   add_foreign_key "reviews", "jobs", primary_key: "job_id"
   add_foreign_key "reviews", "users", column: "created_by", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "reviews", "users", column: "subject_id"
 end
