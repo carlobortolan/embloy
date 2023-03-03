@@ -206,14 +206,33 @@ class ApplicationController < ActionController::Base
   public
   # =============== Job Role Check ================
   # ============ WITH DATABASE LOOKUP =============
+  #  ========== that raises exceptions ============
 
   def must_be_owner!(job_id = nil, user_id = nil)
+    set_current_id(user_id)
+    set_at_job(job_id)
+    owner!
+  end
+
+  def self.must_be_owner!(job_id = nil, user_id = nil)
+    set_current_id(user_id)
+    set_at_job(job_id)
+    owner!
+  end
+
+
+
+  # =============== Job Role Check ================
+  # ============ WITH DATABASE LOOKUP =============
+  #  ======= that doesnt raise exceptions =========
+
+  def must_be_owner(job_id = nil, user_id = nil)
     set_current_id(user_id)
     set_at_job(job_id)
     owner?
   end
 
-  def self.must_be_owner!(job_id = nil, user_id = nil)
+  def self.must_be_owner(job_id = nil, user_id = nil)
     set_current_id(user_id)
     set_at_job(job_id)
     owner?
@@ -243,6 +262,10 @@ class ApplicationController < ActionController::Base
   # ======== that model the role hierarchy ========
 
   def owner?
+    @job.user_id == Current.user.id ? true : false
+  end
+
+  def owner!
     @job.user_id == Current.user.id ? true : raise(CustomExceptions::Unauthorized::InsufficientRole::NotOwner)
   end
 
