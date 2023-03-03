@@ -329,6 +329,9 @@ module Api
         end
       end
 
+
+      #parse_inputs isn't implemented because job_feed will be completly revised and then will this will be implemented accordingly
+
 =begin
       def find
         @jobs = Job.all.where("status = 'public'").first(100)
@@ -347,6 +350,8 @@ module Api
         params.require(:job).permit(:title, :description, :start_slot, :status, :longitude, :latitude)
       end
 
+
+      #mark_notifications_as_read is not implemented because i dont understand how it works
 =begin
       def mark_notifications_as_read
         if Current.user
