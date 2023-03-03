@@ -17,7 +17,7 @@ Rails.application.routes.draw do
       delete 'jobs', to: 'jobs#destroy'
       get 'jobs/(/:id)/applications', to: 'applications#show'
       post 'jobs/(/:id)/applications', to: 'applications#create'
-      #delete 'jobs/(/:id)/applications', to: 'applications#destroy'
+      # delete 'jobs/(/:id)/applications', to: 'applications#destroy'
     end
   end
 
@@ -31,15 +31,6 @@ Rails.application.routes.draw do
   get 'about/api', :to => 'welcome#api', as: :api
   get 'about/api/apidoc.json', :to => 'welcome#apidoc', as: :apidoc
   get 'about/faq', :to => 'welcome#faq', as: :faq
-
-  # -----> Admin <-----
-  # authenticated :user, ->(user) { user.admin? } do
-  #   get 'admin', to: 'admin#index'
-  #   get 'admin/jobs', to: 'admin#jobs'
-  #   get 'admin/applications', to: 'admin#applications'
-  #   get 'admin/users', to: 'admin#users'
-  #   get 'admin/reviews', to: 'admin#reviews'
-  # end
 
   # -----> Jobs & Applications <-----
   resources :jobs do
@@ -83,4 +74,17 @@ Rails.application.routes.draw do
   get 'user/applications', :to => 'user#own_applications', as: :own_applications
   get 'user/jobs', :to => 'user#own_jobs', as: :own_jobs
   get 'user/preferences', to: 'user#preferences', as: :preferences
+
+  #= <<<<< *Web-Application* >>>>>>
+  namespace :admin do
+    # authenticated :user, ->(user) { user.admin? } do
+    root 'admin#index', as: :root
+    get 'index'
+    get 'users'
+    get 'jobs'
+    get 'applications', to: 'admin#applications'
+    get 'reviews', to: 'admin#reviews'
+  end
+
 end
+
