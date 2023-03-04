@@ -11,6 +11,7 @@ Rails.application.routes.draw do
       get 'user/jobs', to: 'user#own_jobs'
       get 'user/applications', to: 'user#own_applications'
       post 'user/(/:id)/reviews', to: 'reviews#create'
+      get 'user/reviews', to: 'user#own_reviews'
       patch 'password', to: 'passwords#update'
       post 'password/reset', to: 'password_resets#create'
       post 'jobs', to: 'jobs#create'
