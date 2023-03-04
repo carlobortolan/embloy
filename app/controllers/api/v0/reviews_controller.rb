@@ -43,7 +43,7 @@ module Api
             end
           rescue ActiveRecord::RecordNotFound
             if params[:id].nil?
-              render status: 400, json: { "job": [
+              render status: 400, json: { "user": [
                 {
                   "error": "ERR_BLANK",
                   "description": "Attribute can't be blank."
@@ -51,7 +51,7 @@ module Api
               ]
               }
             else
-              render status: 400, json: { "job": [
+              render status: 400, json: { "user": [
                 {
                   "error": "ERR_INVALID",
                   "description": "Attribute is malformed or unknown."
