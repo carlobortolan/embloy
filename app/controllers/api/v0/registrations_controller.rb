@@ -96,7 +96,7 @@ module Api
                 # render status: 500, json: { "error": "Something went wrong while issuing your initial refresh token. Please try again later. If this error persists, we recommend to contact our support team." }
               else
                 # is user already listed as active/is user verified?
-                render status: 403, json: { "user": [
+                render status: 422, json: { "user": [
                   {
                     "error": "ERR_UNNECESSARY",
                     "description": "Attribute is already verified."

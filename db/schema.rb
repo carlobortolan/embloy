@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_03_222439) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_03_223735) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -151,7 +151,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_03_222439) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "job_id"
-    t.integer "subject_id"
+    t.integer "subject", null: false
     t.index ["created_by"], name: "reviews_created_by_index"
   end
 
@@ -199,5 +199,5 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_03_222439) do
   add_foreign_key "private_users", "users", column: "id", on_update: :cascade, on_delete: :cascade
   add_foreign_key "reviews", "jobs", primary_key: "job_id"
   add_foreign_key "reviews", "users", column: "created_by", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "reviews", "users", column: "subject_id"
+  add_foreign_key "reviews", "users", column: "subject"
 end

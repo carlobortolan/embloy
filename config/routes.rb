@@ -10,6 +10,7 @@ Rails.application.routes.draw do
       post 'user/auth/token/access', to: 'authentications#create_access'
       get 'user/jobs', to: 'user#own_jobs'
       get 'user/applications', to: 'user#own_applications'
+      post 'user/(/:id)/reviews', to: 'reviews#create'
       patch 'password', to: 'passwords#update'
       post 'password/reset', to: 'password_resets#create'
       post 'jobs', to: 'jobs#create'
@@ -18,6 +19,7 @@ Rails.application.routes.draw do
       get 'jobs/(/:id)/applications', to: 'applications#show'
       post 'jobs/(/:id)/applications', to: 'applications#create'
       #delete 'jobs/(/:id)/applications', to: 'applications#destroy'
+
     end
   end
 

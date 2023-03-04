@@ -140,7 +140,7 @@ module Api
             render status: 200, json: { "message": "Application submitted!" }
 
           rescue ActiveRecord::RecordNotUnique
-            render status: 400, json: { "application": [
+            render status: 422, json: { "application": [
               {
                 "error": "ERR_UNNECESSARY",
                 "description": "Attribute is already submitted."

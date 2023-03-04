@@ -25,20 +25,48 @@ module Api
           begin
             decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
             verified!(decoded_token["typ"])
-          end
-        end
-        if require_user_logged_in!
-          if @review.save
-            redirect_to @review
-          else
-            render :new, status: :unprocessable_entity
-          end
+            if Review.all.where(:created_by => decoded_token["sub"], :subject => params[:id]).present?
+              render status: 422, json: { "review": [
+                {
+                  "error": "ERR_UNNECESSARY",
+                  "description": "Attribute is already submitted."
+                }
+              ]
+              }
+            else
+              user_id = User.find(params[:id]).id
+              review = Review.new(review_params)
+              review.subject = user_id
+              review.created_by = decoded_token["sub"]
+              review.save!
+              render status: 200, json: { "message": "Review submitted!" }
+            end
+          rescue ActiveRecord::RecordNotFound
+            if params[:id].nil?
+              render status: 400, json: { "job": [
+                {
+                  "error": "ERR_BLANK",
+                  "description": "Attribute can't be blank."
+                }
+              ]
+              }
+            else
+              render status: 400, json: { "job": [
+                {
+                  "error": "ERR_INVALID",
+                  "description": "Attribute is malformed or unknown."
+                }
+              ]
+              }
+            end
 
+
+          end
         end
       end
 
       def review_params
-        params.require(:review).permit(:user_id, :rating, :message, :job_id)
+        params.require(:review).permit(:rating, :message, :job_id)
       end
     end
   end
