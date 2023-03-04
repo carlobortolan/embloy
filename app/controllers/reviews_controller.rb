@@ -2,18 +2,18 @@ class ReviewsController < ApplicationController
   layout 'application'
 
   def index
-    if require_user_be_owner!
+    if require_user_be_owner
       @reviews = @user.reviews.all
     end
   end
 
   def new
-    require_user_logged_in!
+    require_user_logged_in
     @review = Review.new
   end
 
   def create
-    if require_user_logged_in!
+    if require_user_logged_in
       if @review.save
         redirect_to @review
       else

@@ -4,11 +4,18 @@
 class ApplicationController < ActionController::Base
   before_action :set_current_user
   before_action :set_notifications, if: Current.user
-  before_action :require_user_not_blacklisted, if: Current.user
+  before_action :require_user_not_blacklisted!, if: Current.user
 
   def set_current_user
     Current.user = User.find_by(id: session[:user_id]) if session[:user_id]
   end
+
+  ####################################################################################################
+  # Todo: @janhummel:
+  # Todo: Will all must_be_ methods (static / non-static / boolean / exc) be needed for API-development?                                                 #
+  # Todo: If not, consider removing unused must_be methods
+  # TODO: (If we don't use them, there is no need to have them)
+  ####################################################################################################
 
   # =============== User Role Check ===============
   # ============ WITH DATABASE LOOKUP =============
@@ -318,52 +325,36 @@ class ApplicationController < ActionController::Base
   # ======== that model the role hierarchy ========
 
   def owner
-    @job.user_id == Current.user.id ? true : false
+    Current.user.nil? || @job.nil? || @job.user_id != Current.user.id ? false : true
   end
 
   def self.owner
-    @job.user_id == Current.user.id ? true : false
+    Current.user.nil? || @job.nil? || @job.user_id != Current.user.id ? false : true
   end
 
   def owner!
-    @job.user_id == Current.user.id ? true : raise(CustomExceptions::Unauthorized::InsufficientRole::NotOwner)
+    Current.user.nil? || @job.nil? || @job.user_id != Current.user.id ? raise(CustomExceptions::Unauthorized::InsufficientRole::NotOwner) : true
   end
 
   def self.owner!
-    @job.user_id == Current.user.id ? true : raise(CustomExceptions::Unauthorized::InsufficientRole::NotOwner)
+    Current.user.nil? || @job.nil? || @job.user_id != Current.user.id ? raise(CustomExceptions::Unauthorized::InsufficientRole::NotOwner) : true
   end
 
   public
 
-  ####################################################################################################
-  # Todo: @carlobortolan:                                                                            #
-  # Todo: tidy up beneath                                                                            #
-  # Todo: look for redundancy with methods from above                                                #
-  # Todo: if there are redundancies, change code using above methods and delete unnecessary methods  #
-  ####################################################################################################
-
   # ============== Exceptions =============
-  def require_user_logged_in
-    if Current.user.nil?
-      raise CustomExceptions::InvalidUser::LoggedOut
-    end
-  end
 
-  def require_user_be_owner
-    unless user_is_owner!
-      raise CustomExceptions::Unauthorized::NotOwner
-    end
-  end
-
-  def require_user_not_blacklisted
-    if user_is_blacklisted!
+  def require_user_not_blacklisted!
+    if user_is_blacklisted
       raise CustomExceptions::Unauthorized::Blocked
     end
   end
 
-  # ============== Validations =============
-
-  def require_user_logged_in!
+  ####################################################################################################
+  # Methods from above are used for the checks & exceptions
+  # 3 Methods below are needed for the redirects in the web-app
+  ####################################################################################################
+  def require_user_logged_in
     if Current.user.nil?
       redirect_to sign_in_path, alert: 'You must be logged in!'
       return false
@@ -373,36 +364,16 @@ class ApplicationController < ActionController::Base
 
   # This method checks whether the currently signed in user is the owner of the job that is being requested.
   # If this is not the case, the user will be redirected back and not gain access to the resource.
-  def require_user_be_owner!
-    if user_is_owner!
-      true
-    else
-      redirect_back(fallback_location: jobs_path, alert: 'Not allowed!')
-      # job_path(@job), status: :unauthorized, alert: 'Not allowed'
-      false
-    end
+  def require_user_be_owner
+    owner ? true : redirect_back(fallback_location: jobs_path, alert: 'Not allowed!')
   end
 
   # This method only checks whether the currently signed in user is the owner of the job that is being requested
   # and only returns a boolean.
-  def user_is_owner!
-    Current.user.nil? || @job.nil? || @job.user_id != Current.user.id ? false : true
-  end
-
-  # This method only checks whether the currently signed in user is the owner of the job that is being requested
-  # and only returns a boolean.
-  def user_is_blacklisted!
-    if !Current.user.nil? && !UserBlacklist.find_by_user_id(Current.user.id).nil?
+  def user_is_blacklisted
+    if require_user_logged_in && !UserBlacklist.find_by_user_id(Current.user.id).nil?
       true
     end
-  end
-
-  def require_user_admin!
-    # if (Current.user.role = 'admin')
-    #   true
-    # else
-    #   redirect_to sign_in_path, alert: 'Unauthorized!'
-    # end
   end
 
   # ============== Standard error catching =============
@@ -412,8 +383,8 @@ class ApplicationController < ActionController::Base
   # rescue_from ::NoMethodError, with: :err_server
   # rescue_from ::ActionController::InvalidAuthenticityToken, with: :err_not_allowed
   # rescue_from ::ActionController::RoutingError, with: :err_server
-  rescue_from ::AbstractController::DoubleRenderError, with: :err_server
-  rescue_from ::CustomExceptions::Unauthorized::Blocked, with: :err_blocked
+  # rescue_from ::AbstractController::DoubleRenderError, with: :err_server
+  # rescue_from ::CustomExceptions::Unauthorized::Blocked, with: :err_blocked
 
   protected
 
@@ -430,15 +401,10 @@ class ApplicationController < ActionController::Base
   end
 
   def record_not_found(exception)
-    if Current.user
-      # && Current.user.role == 'Admin'
-      render json: { error: exception.message }.to_json, status: 404
-    else
-      err_not_allowed
-    end
+    must_be_admin ? (render json: { error: exception.message }.to_json, status: 404) : err_not_allowed
   end
 
-  def routing_error(exception)
+  def routing_error
     render(:file => File.join(Rails.root, 'public/404.html'), :status => 404, :layout => false)
   end
 
