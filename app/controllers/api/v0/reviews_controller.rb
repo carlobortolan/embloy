@@ -166,7 +166,6 @@ module Api
 
 
       #Todo: Routes überlegen und reinnehmen, auskommentiern testen
-=begin
       def update
         if request.headers["HTTP_ACCESS_TOKEN"].nil?
           render status: 400, json: { "access_token": [
@@ -309,7 +308,7 @@ module Api
         end
 
       end
-=end
+
       def destroy
         if request.headers["HTTP_ACCESS_TOKEN"].nil?
           render status: 400, json: { "access_token": [
