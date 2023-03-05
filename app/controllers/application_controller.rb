@@ -371,7 +371,7 @@ class ApplicationController < ActionController::Base
   # This method only checks whether the currently signed in user is the owner of the job that is being requested
   # and only returns a boolean.
   def user_is_blacklisted
-    if require_user_logged_in && !UserBlacklist.find_by_user_id(Current.user.id).nil?
+    if !Current.user.nil? && !UserBlacklist.find_by_user_id(Current.user.id).nil?
       true
     end
   end
