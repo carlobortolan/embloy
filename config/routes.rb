@@ -19,6 +19,7 @@ Rails.application.routes.draw do
       delete 'jobs', to: 'jobs#destroy'
       get 'jobs/(/:id)/applications', to: 'applications#show'
       post 'jobs/(/:id)/applications', to: 'applications#create'
+      get 'jobs/(/:id)/applications/(/:user)/accept', to: 'applications#accept'
       # delete 'jobs/(/:id)/applications', to: 'applications#destroy'
       delete 'reviews/(/:id)', to: 'reviews#destroy'
       patch 'reviews/(/:id)', to: 'reviews#update'
