@@ -85,7 +85,13 @@ Rails.application.routes.draw do
     # authenticated :user, ->(user) { user.admin? } do
     root 'admin#index', as: :root
     get 'index'
+
     get 'users', to: 'admin#users'
+    get 'users/active', to: 'admin#users_active'
+    get 'users/admins', to: 'admin#users_admins'
+    get 'users/editors', to: 'admin#users_editors'
+    get 'users/moderators', to: 'admin#users_moderators'
+
     get 'jobs', to: 'admin#jobs'
     get 'applications', to: 'admin#applications'
     get 'reviews', to: 'admin#reviews'

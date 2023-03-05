@@ -1,23 +1,19 @@
 <main id="main" class="main">
-
-
   <div class="pagetitle">
-    <h1>All users</h1>
+    <h1>Active users</h1>
     <nav>
       <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="<%=admin_root_path %>">Home</a></li>
-        <li class="breadcrumb-item active">Users</li>
+        <li class="breadcrumb-item"><a href="<%= admin_root_path %>">Home</a></li>
+        <li class="breadcrumb-item"><a href="<%= admin_users_path %>">Users</a></li>
+        <li class="breadcrumb-item active">Active users</li>
       </ol>
     </nav>
   </div><!-- End Page Title -->
-
-
   <section>
     <div class="card">
       <div class="card-body">
-        <h5 class="card-title">All users</h5>
-        <p>A list of all current users and general information</p>
-        <!-- Small tables -->
+        <h5 class="card-title">All active user's job information</h5>
+        <p>A list of all current active users and job information</p>
         <table class="table table-sm table-hover">
           <thead>
           <tr>
@@ -25,36 +21,32 @@
             <th scope="col">Email</th>
             <th scope="col">First name</th>
             <th scope="col">Last name</th>
-            <th scope="col">Age</th>
-            <th scope="col">Created_at</th>
-            <th scope="col">Country code</th>
-            <th scope="col">Postal code</th>
-            <th scope="col">City</th>
-            <th scope="col">Address</th>
+            <th scope="col">Job count</th>
+            <th scope="col">Application count</th>
+            <th scope="col">View count</th>
             <th scope="col">User role</th>
           </tr>
           </thead>
           <tbody>
-          <% User.all.order("id").each do |u| %>
+          <% @users.each do |u| %>
+            <%# if UserBlacklist.find_by_user_id(u.id) %>
             <tr class=<%= "table-danger" if UserBlacklist.find_by_user_id(u.id) %>>
+              <%# else %>
+              <!--              <tr>-->
+              <%# end %>
               <th scope="row"><%= u.id %></th>
               <td><%= u.email %></td>
               <td><%= u.first_name %></td>
               <td><%= u.last_name %></td>
-              <td><%= u.age %></td>
-              <td><%= u.created_at %></td>
-              <td><%= u.country_code %></td>
-              <td><%= u.postal_code %></td>
-              <td><%= u.city %></td>
-              <td><%= u.address %></td>
+              <td><%= u.jobs_count %></td>
+              <td><%= u.applications_count %></td>
+              <td><%= u.view_count %></td>
               <td><%= u.user_role %></td>
             </tr>
           <% end %>
           </tbody>
         </table>
-        <!-- End small tables -->
-
       </div>
     </div>
   </section>
-</main><!-- End #main -->
+</main>

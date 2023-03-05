@@ -4,18 +4,50 @@
   <ul class="sidebar-nav" id="sidebar-nav">
 
     <li class="nav-item">
-      <a class="nav-link " href="<%= admin_index_path %>">
+      <a class="nav-link " href="<%= admin_root_path %>">
         <i class="bi bi-grid"></i>
         <span>Dashboard</span>
       </a>
     </li>
 
     <li class="nav-item">
-      <a class="nav-link " href="<%= admin_users_path %>">
-        <i class="bi bi-grid"></i>
-        <span>Users</span>
+      <a class="nav-link collapsed" data-bs-target="#tables-nav" data-bs-toggle="collapse" href="<%= admin_users_path %>">
+        <i class="bi bi-layout-text-window-reverse"></i><span>Users</span><i class="bi bi-chevron-down ms-auto"></i>
       </a>
-    </li>
+      <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+        <li>
+          <a href="<%= admin_users_path %>">
+            <i class="bi bi-circle"></i><span>All users</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="<%= admin_users_active_path %>">
+            <i class="bi bi-circle"></i><span>Active users</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="<%= admin_users_admins_path %>">
+            <i class="bi bi-circle"></i><span>Admins</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="<%= admin_users_editors_path %>">
+            <i class="bi bi-circle"></i><span>Editors</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="<%= admin_users_moderators_path %>">
+            <i class="bi bi-circle"></i><span>Moderators</span>
+          </a>
+        </li>
+
+      </ul>
+    </li><!-- End Tables Nav -->
+
     <li class="nav-item">
       <a class="nav-link " href="<%= admin_jobs_path %>">
         <i class="bi bi-grid"></i>
