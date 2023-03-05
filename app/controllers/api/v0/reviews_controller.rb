@@ -165,7 +165,6 @@ module Api
       end
 
 
-      #Todo: Routes überlegen und reinnehmen, auskommentiern testen
       def update
         if request.headers["HTTP_ACCESS_TOKEN"].nil?
           render status: 400, json: { "access_token": [
