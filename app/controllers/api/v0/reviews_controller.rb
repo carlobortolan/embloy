@@ -439,6 +439,7 @@ module Api
       def review_params
         params.require(:review).permit(:rating, :message, :job_id)
       end
+
     end
   end
 end
