@@ -289,7 +289,7 @@ module Api
         end
 =end
 
-      # Todo: Wait for .accept methodcontroller implementation and implement methods accordingly
+      # Todo: Wait for .accept in application.rb implementation and implement methods accordingly
 
       def accept
         end
