@@ -19,7 +19,7 @@ Rails.application.routes.draw do
       delete 'jobs', to: 'jobs#destroy'
       get 'jobs/(/:id)/applications', to: 'applications#show'
       post 'jobs/(/:id)/applications', to: 'applications#create'
-      #delete 'jobs/(/:id)/applications', to: 'applications#destroy'
+      # delete 'jobs/(/:id)/applications', to: 'applications#destroy'
       delete 'reviews/(/:id)', to: 'reviews#destroy'
 
       # delete 'jobs/(/:id)/applications', to: 'applications#destroy'
@@ -85,8 +85,8 @@ Rails.application.routes.draw do
     # authenticated :user, ->(user) { user.admin? } do
     root 'admin#index', as: :root
     get 'index'
-    get 'users'
-    get 'jobs'
+    get 'users', to: 'admin#users'
+    get 'jobs', to: 'admin#jobs'
     get 'applications', to: 'admin#applications'
     get 'reviews', to: 'admin#reviews'
   end
