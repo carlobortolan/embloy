@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Components / List Group - NiceAdmin Bootstrap Template</title>
+  <title>Pages / F.A.Q - NiceAdmin Bootstrap Template</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -43,7 +43,7 @@
   <header id="header" class="header fixed-top d-flex align-items-center">
 
     <div class="d-flex align-items-center justify-content-between">
-      <a href="index.html.erb" class="logo d-flex align-items-center">
+      <a href="index.html" class="logo d-flex align-items-center">
         <img src="assets/img/logo.png" alt="">
         <span class="d-none d-lg-block">NiceAdmin</span>
       </a>
@@ -224,7 +224,7 @@
             </li>
 
             <li>
-              <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+              <a class="dropdown-item d-flex align-items-center" href="users-profile.html.erb">
                 <i class="bi bi-person"></i>
                 <span>My Profile</span>
               </a>
@@ -234,7 +234,7 @@
             </li>
 
             <li>
-              <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+              <a class="dropdown-item d-flex align-items-center" href="users-profile.html.erb">
                 <i class="bi bi-gear"></i>
                 <span>Account Settings</span>
               </a>
@@ -274,17 +274,17 @@
     <ul class="sidebar-nav" id="sidebar-nav">
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="index.html.erb">
+        <a class="nav-link collapsed" href="index.html">
           <i class="bi bi-grid"></i>
           <span>Dashboard</span>
         </a>
       </li><!-- End Dashboard Nav -->
 
       <li class="nav-item">
-        <a class="nav-link " data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
+        <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
           <i class="bi bi-menu-button-wide"></i><span>Components</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
-        <ul id="components-nav" class="nav-content collapse show" data-bs-parent="#sidebar-nav">
+        <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
             <a href="components-alerts.html">
               <i class="bi bi-circle"></i><span>Alerts</span>
@@ -321,7 +321,7 @@
             </a>
           </li>
           <li>
-            <a href="components-list-group.html" class="active">
+            <a href="components-list-group.html">
               <i class="bi bi-circle"></i><span>List group</span>
             </a>
           </li>
@@ -453,49 +453,49 @@
       <li class="nav-heading">Pages</li>
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="users-profile.html">
+        <a class="nav-link collapsed" href="users-profile.html.erb">
           <i class="bi bi-person"></i>
           <span>Profile</span>
         </a>
       </li><!-- End Profile Page Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="pages-faq.html">
+        <a class="nav-link " href="pages-faq.html">
           <i class="bi bi-question-circle"></i>
           <span>F.A.Q</span>
         </a>
       </li><!-- End F.A.Q Page Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="pages-contact.html">
+        <a class="nav-link collapsed" href="pages-contact.html.erb">
           <i class="bi bi-envelope"></i>
           <span>Contact</span>
         </a>
       </li><!-- End Contact Page Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="pages-register.html">
+        <a class="nav-link collapsed" href="pages-register.html.erb">
           <i class="bi bi-card-list"></i>
           <span>Register</span>
         </a>
       </li><!-- End Register Page Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="pages-login.html">
+        <a class="nav-link collapsed" href="pages-login.html.erb">
           <i class="bi bi-box-arrow-in-right"></i>
           <span>Login</span>
         </a>
       </li><!-- End Login Page Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="pages-error-404.html">
+        <a class="nav-link collapsed" href="pages-error-404.html.erb">
           <i class="bi bi-dash-circle"></i>
           <span>Error 404</span>
         </a>
       </li><!-- End Error 404 Page Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="pages-blank.html">
+        <a class="nav-link collapsed" href="pages-blank.html.erb">
           <i class="bi bi-file-earmark"></i>
           <span>Blank</span>
         </a>
@@ -506,269 +506,9 @@
   </aside><!-- End Sidebar-->
 
   <main id="main" class="main">
-
-    <div class="pagetitle">
-      <h1>List Group</h1>
-      <nav>
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="index.html.erb">Home</a></li>
-          <li class="breadcrumb-item">Components</li>
-          <li class="breadcrumb-item active">List Group</li>
-        </ol>
-      </nav>
-    </div><!-- End Page Title -->
-
-    <section class="section">
-      <div class="row">
-        <div class="col-lg-6">
-
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Default List Group</h5>
-
-              <!-- Default List group -->
-              <ul class="list-group">
-                <li class="list-group-item">An item</li>
-                <li class="list-group-item">A second item</li>
-                <li class="list-group-item">A third item</li>
-                <li class="list-group-item">A fourth item</li>
-                <li class="list-group-item">And a fifth one</li>
-              </ul><!-- End Default List group -->
-
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Links and buttons</h5>
-
-              <!-- List group with Links and buttons -->
-              <div class="list-group">
-                <button type="button" class="list-group-item list-group-item-action active" aria-current="true">
-                  The current button
-                </button>
-                <button type="button" class="list-group-item list-group-item-action">A second item</button>
-                <button type="button" class="list-group-item list-group-item-action">A third button item</button>
-                <button type="button" class="list-group-item list-group-item-action">A fourth button item</button>
-                <button type="button" class="list-group-item list-group-item-action" disabled>A disabled button item</button>
-              </div><!-- End List group with Links and buttons -->
-
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">With Icons</h5>
-
-              <!-- List group With Icons -->
-              <ul class="list-group">
-                <li class="list-group-item"><i class="bi bi-star me-1 text-success"></i> An item</li>
-                <li class="list-group-item"><i class="bi bi-collection me-1 text-primary"></i> A second item</li>
-                <li class="list-group-item"><i class="bi bi-check-circle me-1 text-danger"></i> A third item</li>
-                <li class="list-group-item"><i class="bi bi-exclamation-octagon me-1 text-warning"></i> A fourth item</li>
-              </ul><!-- End List group With Icons -->
-
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Numbered</h5>
-
-              <!-- List group Numbered -->
-              <ol class="list-group list-group-numbered">
-                <li class="list-group-item">Cras justo odio</li>
-                <li class="list-group-item">Cras justo odio</li>
-                <li class="list-group-item">Cras justo odio</li>
-              </ol><!-- End List group Numbered -->
-
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">With badges</h5>
-
-              <!-- List group With badges -->
-              <ul class="list-group">
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                  A list item
-                  <span class="badge bg-primary rounded-pill">14</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                  A second list item
-                  <span class="badge bg-primary rounded-pill">2</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                  A third list item
-                  <span class="badge bg-primary rounded-pill">1</span>
-                </li>
-              </ul><!-- End List With badges -->
-
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">With Contextual Classes</h5>
-
-              <!-- List group With Contextual classes -->
-              <ul class="list-group">
-                <li class="list-group-item">A simple default list group item</li>
-
-                <li class="list-group-item list-group-item-primary">A simple primary list group item</li>
-                <li class="list-group-item list-group-item-secondary">A simple secondary list group item</li>
-                <li class="list-group-item list-group-item-success">A simple success list group item</li>
-                <li class="list-group-item list-group-item-danger">A simple danger list group item</li>
-                <li class="list-group-item list-group-item-warning">A simple warning list group item</li>
-                <li class="list-group-item list-group-item-info">A simple info list group item</li>
-                <li class="list-group-item list-group-item-light">A simple light list group item</li>
-                <li class="list-group-item list-group-item-dark">A simple dark list group item</li>
-              </ul><!-- End List Group With Contextual classes -->
-
-            </div>
-          </div>
-
-        </div>
-
-        <div class="col-lg-6">
-
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">With active and disabled items</h5>
-
-              <!-- List group with active and disabled items -->
-              <ul class="list-group">
-                <li class="list-group-item active" aria-current="true">An active item</li>
-                <li class="list-group-item">A second item</li>
-                <li class="list-group-item">A third item</li>
-                <li class="list-group-item">A fourth item</li>
-                <li class="list-group-item disabled" aria-disabled="true">A disabled item</li>
-              </ul><!-- End ist group with active and disabled items -->
-
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Clean list group</h5>
-              <p>Add <code>.list-group-flush</code> to remove some borders and rounded corners to render list group items edge-to-edge in a parent container (e.g., cards).</p>
-
-              <!-- List group with active and disabled items -->
-              <ul class="list-group list-group-flush">
-                <li class="list-group-item">An item</li>
-                <li class="list-group-item">A second item</li>
-                <li class="list-group-item">A third item</li>
-                <li class="list-group-item">A fourth item</li>
-                <li class="list-group-item disabled" aria-disabled="true">A disabled item</li>
-              </ul><!-- End Clean list group -->
-
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">With custom content</h5>
-
-              <!-- List group with custom content -->
-              <ol class="list-group list-group-numbered">
-                <li class="list-group-item d-flex justify-content-between align-items-start">
-                  <div class="ms-2 me-auto">
-                    <div class="fw-bold">Subheading</div>
-                    Cras justo odio
-                  </div>
-                  <span class="badge bg-primary rounded-pill">14</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-start">
-                  <div class="ms-2 me-auto">
-                    <div class="fw-bold">Subheading</div>
-                    Cras justo odio
-                  </div>
-                  <span class="badge bg-primary rounded-pill">14</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-start">
-                  <div class="ms-2 me-auto">
-                    <div class="fw-bold">Subheading</div>
-                    Cras justo odio
-                  </div>
-                  <span class="badge bg-primary rounded-pill">14</span>
-                </li>
-              </ol><!-- End with custom content -->
-
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Advanced Content</h5>
-
-              <!-- List group with Advanced Contents -->
-              <div class="list-group">
-                <a href="#" class="list-group-item list-group-item-action active" aria-current="true">
-                  <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">List group item heading</h5>
-                    <small>3 days ago</small>
-                  </div>
-                  <p class="mb-1">Some placeholder content in a paragraph.</p>
-                  <small>And some small print.</small>
-                </a>
-                <a href="#" class="list-group-item list-group-item-action">
-                  <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">List group item heading</h5>
-                    <small class="text-muted">3 days ago</small>
-                  </div>
-                  <p class="mb-1">Some placeholder content in a paragraph.</p>
-                  <small class="text-muted">And some muted small print.</small>
-                </a>
-                <a href="#" class="list-group-item list-group-item-action">
-                  <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">List group item heading</h5>
-                    <small class="text-muted">3 days ago</small>
-                  </div>
-                  <p class="mb-1">Some placeholder content in a paragraph.</p>
-                  <small class="text-muted">And some muted small print.</small>
-                </a>
-              </div><!-- End List group Advanced Content -->
-
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">With Checkboxes and radios</h5>
-
-              <!-- List group With Checkboxes and radios -->
-              <ul class="list-group">
-                <li class="list-group-item">
-                  <input class="form-check-input me-1" type="checkbox" value="" aria-label="...">
-                  First checkbox
-                </li>
-                <li class="list-group-item">
-                  <input class="form-check-input me-1" type="checkbox" value="" aria-label="...">
-                  Second checkbox
-                </li>
-                <li class="list-group-item">
-                  <input class="form-check-input me-1" type="checkbox" value="" aria-label="...">
-                  Third checkbox
-                </li>
-                <li class="list-group-item">
-                  <input class="form-check-input me-1" type="checkbox" value="" aria-label="...">
-                  Fourth checkbox
-                </li>
-                <li class="list-group-item">
-                  <input class="form-check-input me-1" type="checkbox" value="" aria-label="...">
-                  Fifth checkbox
-                </li>
-              </ul><!-- End List Checkboxes and radios -->
-
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-    </section>
-
+    <p class="text-center p-5">
+      This page is only available in the pro version! <a href="https://bootstrapmade.com/demo/templates/NiceAdmin/pages-faq.html" target="_blank">Preview the page online</a> | <a href="https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/#download" target="_blank">Buy the pro version</a>
+    </p>
   </main><!-- End #main -->
 
   <!-- ======= Footer ======= -->
