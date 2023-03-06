@@ -169,11 +169,11 @@ class ApplicationController < ActionController::Base
   # ========== WITHOUT DATABASE LOOKUP ============
 
   def admin(user_role)
-    user_role == "admin" ? true : false
+    user_role == "admin"
   end
 
   def self.admin(user_role)
-    user_role == "admin" ? true : false
+    user_role == "admin"
   end
 
   def admin!(user_role)
@@ -187,11 +187,11 @@ class ApplicationController < ActionController::Base
   #--------------------------------------
 
   def editor(user_role)
-    user_role == "admin" || user_role == "editor" ? true : false
+    user_role == "admin" || user_role == "editor"
   end
 
   def self.editor(user_role)
-    user_role == "admin" || user_role == "editor" ? true : false
+    user_role == "admin" || user_role == "editor"
   end
 
   def editor!(user_role)
@@ -205,11 +205,11 @@ class ApplicationController < ActionController::Base
   #--------------------------------------
 
   def developer(user_role)
-    user_role == "admin" || user_role == "developer" ? true : false
+    user_role == "admin" || user_role == "developer"
   end
 
   def self.developer(user_role)
-    user_role == "admin" || user_role == "developer" ? true : false
+    user_role == "admin" || user_role == "developer"
   end
 
   def developer!(user_role)
@@ -223,11 +223,11 @@ class ApplicationController < ActionController::Base
   #--------------------------------------
 
   def moderator(user_role)
-    user_role == "admin" || user_role == "editor" || user_role == "moderator" ? true : false
+    user_role == "admin" || user_role == "editor" || user_role == "moderator"
   end
 
   def self.moderator(user_role)
-    user_role == "admin" || user_role == "editor" || user_role == "moderator" ? true : false
+    user_role == "admin" || user_role == "editor" || user_role == "moderator"
   end
 
   def moderator!(user_role)
@@ -241,11 +241,11 @@ class ApplicationController < ActionController::Base
   #--------------------------------------
 
   def verified(user_role)
-    user_role == "admin" || user_role == "editor" || user_role == "moderator" || user_role == "verified" ? true : false
+    user_role == "admin" || user_role == "editor" || user_role == "moderator" || user_role == "verified"
   end
 
   def self.verified(user_role)
-    user_role == "admin" || user_role == "editor" || user_role == "moderator" || user_role == "verified" ? true : false
+    user_role == "admin" || user_role == "editor" || user_role == "moderator" || user_role == "verified"
   end
 
   def verified!(user_role)

@@ -119,7 +119,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_03_223735) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "applications_count", default: 0
-    t.integer "job_notifications", default: 1, null: false
+    t.text "job_notifications", default: "1", null: false
     t.index ["country_code"], name: " job_country_code_index "
     t.index ["job_id"], name: "job_job_id_index"
     t.index ["postal_code"], name: " job_postal_code_index "
@@ -151,6 +151,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_03_223735) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "job_id"
+    t.integer "reviewer_id"
     t.integer "subject", null: false
     t.index ["created_by"], name: "reviews_created_by_index"
   end
@@ -184,7 +185,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_03_223735) do
     t.integer "applications_count", default: 0
     t.integer "jobs_count", default: 0
     t.enum "user_role", default: "spectator", null: false, enum_type: "user_roles"
-    t.integer "application_notifications", default: 1, null: false
+    t.boolean "application_notifications", default: true, null: false
     t.index ["email"], name: "user_email_index", unique: true
     t.index ["first_name", "last_name"], name: "user_name_index"
     t.index ["user_type"], name: "user_user_type_index"
@@ -192,12 +193,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_03_223735) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "applications", "jobs", primary_key: "job_id", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "applications", "users", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "company_users", "users", column: "id", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "jobs", "users", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "private_users", "users", column: "id", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "applications", "jobs", primary_key: "job_id", on_delete: :cascade
+  add_foreign_key "applications", "users", on_delete: :cascade
+  add_foreign_key "company_users", "users", column: "id", on_delete: :cascade
+  add_foreign_key "jobs", "users", on_delete: :cascade
+  add_foreign_key "private_users", "users", column: "id", on_delete: :cascade
   add_foreign_key "reviews", "jobs", primary_key: "job_id"
-  add_foreign_key "reviews", "users", column: "created_by", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "reviews", "users", column: "subject"
+  add_foreign_key "reviews", "users", column: "created_by"
 end

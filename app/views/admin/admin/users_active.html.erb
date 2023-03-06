@@ -29,11 +29,7 @@
           </thead>
           <tbody>
           <% @users.each do |u| %>
-            <%# if UserBlacklist.find_by_user_id(u.id) %>
             <tr class=<%= "table-danger" if UserBlacklist.find_by_user_id(u.id) %>>
-              <%# else %>
-              <!--              <tr>-->
-              <%# end %>
               <th scope="row"><%= u.id %></th>
               <td><%= u.email %></td>
               <td><%= u.first_name %></td>
