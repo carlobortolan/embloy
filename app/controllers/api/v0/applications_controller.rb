@@ -256,7 +256,7 @@ module Api
         end
       end
 
-      #destroy throws ActiveJob::SerializationError => until resolved there wont be application delete functionality via api
+      # destroy throws ActiveJob::SerializationError => until resolved there wont be application delete functionality via api
 =begin
       def destroy
         if request.headers["HTTP_ACCESS_TOKEN"].nil?
@@ -289,15 +289,11 @@ module Api
         end
 =end
 
-      #Todo: Wait for main controller implementation and implement methods accordingly
-=begin
+      # Todo: Wait for .accept in application.rb implementation and implement methods accordingly
+
       def accept
-        @job = Job.find(params[:job_id])
-        if require_user_be_owner!
-          # @application_service.accept(params[:job_id].to_i, params[:application_id].to_i, "ACCEPTED")
-          redirect_to job_path(@job), status: :see_other, notice: 'Application has been accepted'
         end
-      end
+=begin
 
       def reject
         @job = Job.find(params[:job_id])
