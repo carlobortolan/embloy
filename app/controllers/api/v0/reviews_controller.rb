@@ -5,7 +5,6 @@ module Api
       before_action :verify_access_token
 
       def create
-        begin
           verified!(@decoded_token["typ"])
           if Review.all.where(:created_by => @decoded_token["sub"], :subject => params[:id]).present?
             unnecessary_error('review')
@@ -19,13 +18,6 @@ module Api
             render status: 200, json: { "message": "Review submitted!" }
           end
 
-        rescue ActionController::ParameterMissing
-          blank_error('review')
-
-        rescue ActiveRecord::StatementInvalid
-          malformed_error('review')
-
-        end
       end
 
       def update
