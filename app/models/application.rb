@@ -9,10 +9,10 @@ class Application < ApplicationRecord
   belongs_to :job, counter_cache: true
   belongs_to :user, counter_cache: true, :dependent => :destroy
 
-  # validates :applicant_id, presence: true
   validates :user_id, presence: true
   validates :job_id, presence: true
   validates :application_text, presence: true, length: { minimum: 10 }
+  validates :response, presence: false, length: { minimum: 10 }
 
   def notify_recipient
     return if job.user.eql? user
@@ -24,17 +24,12 @@ class Application < ApplicationRecord
     # ApplicationStatusNotification.with(application: [:user_id, :job_id], job: job).deliver_later(user)
   end
 
-  def accept
-    self[:status] = "1"
-    self[:response] = "ACCEPTED"
-    # update(:status => '1')
-    #    update!(status: '1', response: "ACCEPTED")
+  def accept (response)
+    ActiveRecord::Base.connection.execute("UPDATE applications SET status = '1', response = '#{response}' WHERE user_id = #{user_id} AND job_id = #{job_id}")
   end
 
-  def reject
-    self[:status] = "-1"
-    self[:response] = "REJECTED"
-    #   update!(status: '-1', response: "REJECCCTED")
+  def reject(response)
+    ActiveRecord::Base.connection.execute("UPDATE applications SET status = '-1', response = '#{response}' WHERE user_id = #{user_id} AND job_id = #{job_id}")
   end
 
   private

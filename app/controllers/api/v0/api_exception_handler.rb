@@ -7,7 +7,6 @@ module ApiExceptionHandler
                 with: :user_not_owner_error
     rescue_from CustomExceptions::Unauthorized::InsufficientRole,
                 with: :user_role_to_low_error
-
     rescue_from CustomExceptions::InvalidInput::Token,
                 with: :token_invalid_input_error
     rescue_from JWT::ExpiredSignature,
@@ -20,7 +19,6 @@ module ApiExceptionHandler
                 with: :token_verification_error
     rescue_from JWT::DecodeError,
                 with: :token_decode_error
-
   end
 
   private

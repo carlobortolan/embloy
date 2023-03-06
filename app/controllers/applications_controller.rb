@@ -18,13 +18,13 @@ class ApplicationsController < ApplicationController
   end
 
   def new
-    require_user_logged_in!
+    require_user_logged_in
     @job = Job.find(params[:job_id])
     @application = Application.new
   end
 
   def create
-    if require_user_logged_in!
+    if require_user_logged_in
       @job = Job.find(params[:job_id])
       # begin
       @application = Application.create!(
@@ -59,8 +59,8 @@ class ApplicationsController < ApplicationController
   def accept
     @job = Job.find(params[:job_id])
     if require_user_be_owner
-      @application = @job.applications.find_by_sql("SELECT * FROM applications a WHERE a.user_id = #{1} and a.job_id = #{1}")
-      @application.accept
+      @application = @job.applications.where(user_id: params[:application_id]).first
+      @application.accept(params[:response])
       redirect_to job_path(@job), status: :see_other, notice: 'Application has been accepted'
     end
   end
@@ -68,8 +68,9 @@ class ApplicationsController < ApplicationController
   def reject
     @job = Job.find(params[:job_id])
     if require_user_be_owner
-      @application = @job.applications.find_by_sql("SELECT * FROM applications a WHERE a.user_id = #{1} and a.job_id = #{1}")
-      @application.reject
+      puts "PARAMS = #{params}"
+      @application = @job.applications.where(user_id: params[:application_id]).first
+      @application.reject(params[:response])
       redirect_to job_applications_path(params[:job_id]), status: :see_other, notice: 'Application has been rejected'
     end
   end
@@ -89,6 +90,6 @@ class ApplicationsController < ApplicationController
   end
 
   def application_params
-    params.require(:application).permit(:user_id, :application_text, :application_documents)
+    params.require(:application).permit(:user_id, :application_text, :application_documents, :response)
   end
 end

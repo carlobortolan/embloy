@@ -65,7 +65,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_03_223735) do
     t.integer "job_id", null: false
     t.integer "user_id", null: false
     t.datetime "updated_at", default: "2023-02-27 23:06:10", null: false
-    t.datetime "applied_at", default: "2023-02-27 23:06:10", null: false
+    t.datetime "created_at", default: "2023-02-27 23:06:10", null: false
     t.enum "status", default: "0", null: false, enum_type: "application_status"
     t.string "application_text", limit: 1000
     t.string "application_documents", limit: 100

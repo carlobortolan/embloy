@@ -1,34 +1,12 @@
-<h1>BIG TODO</h1>
-<h1>VERY BIG TODO</h1>
-<h1>HERE COMES THE FEED LIKE SCREENING OF APPLICATIONS</h1>
-<h1>SOON</h1>
 <h1>Applications for job #<%= @job.job_id %></h1>
 <h3>There are <%= @job.applications.count %> applications and counting!</h3>
-<%=
-  #job_applications_reject_all_path(@job)
-  link_to "Reject all applications", job_applications_reject_all_path(@job), data: {
-    turbo_method: :reject_all,
-    turbo_confirm: "Are you sure?" } %>
-
-<ul>
-  <% unless @applications.nil?
-       @applications.each do |application| %>
-    <% application.user.full_name %>
-    <li>
-      <%=
-        link_to "#{application.user.full_name}", job_application_path(@job.job_id, application.user_id)
-      %> -
-      <%=
-        link_to "accept", job_application_accept_path(@job, application.user_id)
-      %> -
-      <%=
-        link_to "reject", job_application_reject_path(@job, application.user_id)
-      %>
-    </li>
-
-  <% end %>
-  <% end %>
-</ul>
-
-<li><%= link_to "New Application", new_job_application_path(@job) %></li>
-<h2><%= link_to "go back", _back_url %></h2>
+<section>
+  <ul>
+    <% unless @job.applications.nil?
+         @job.applications.each do |application|
+           @application = application %>
+        <%= render 'applications/show' %>
+      <% end %>
+    <% end %>
+  </ul>
+</section>
