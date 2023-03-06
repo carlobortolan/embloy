@@ -385,6 +385,7 @@ class ApplicationController < ActionController::Base
   # rescue_from ::ActionController::RoutingError, with: :err_server
   # rescue_from ::AbstractController::DoubleRenderError, with: :err_server
   # rescue_from ::CustomExceptions::Unauthorized::Blocked, with: :err_blocked
+  # rescue_from ::ActiveRecord::RecordNotUnique, with: :err_not_allowed
 
   protected
 

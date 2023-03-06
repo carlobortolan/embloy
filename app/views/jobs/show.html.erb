@@ -111,18 +111,21 @@
     </div>
 
 
-    <% if @application.nil? && @owner %>
-      <%= render 'applications/show' %>
-      <h1>TODO: HIER KÖNNTEN ENTWEDER ALLE APPLICATIONS STEHEN (WODURCH DER "SHOW ALL APPLICATIONS" BUTTON ENTFERNT
-        WERDEN
-        KÖNNTE ODER MAN LÄSST SICH IRGENDETWAS KREATIVES EINFALLEN, UM DEN PLATZ ZU FÜLLEN ODER ZEIT NUR DEN JOB AN.
-      </h1><%#= render 'applications/show' %>
-    <% elsif !@application.nil? && !@owner %>
+
+    <% if !@application.nil? && !@owner %>
+      <h1>My application</h1>
+      <%= render 'applications/show_raw' %>
+    <% elsif @application.nil? && @owner %>
       <%= render 'applications/show_all' %>
+      <%=
+        #job_applications_reject_all_path(@job)
+        link_to "Reject all applications", job_applications_reject_all_path(@job), data: {
+          turbo_method: :reject_all,
+          turbo_confirm: "Are you sure?" } %>
+
     <% elsif Current.user %>
       <%= render 'applications/form' %>
     <% end %>
-
 
   </div>
 </section>
