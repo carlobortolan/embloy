@@ -4,6 +4,7 @@ module Admin
     before_action :require_user_not_blacklisted!
     before_action :must_be_admin!
     layout 'admin_layouts/application'
+    http_basic_authenticate_with :name => "ENV['ADMIN_U']", :password => "ENV['ADMIN_PW']", :only => admin!("admin")
 
     def index
       @users_total = User.count
