@@ -96,6 +96,7 @@ module Api
               }
             ]
             }
+=begin
           rescue CustomExceptions::Unauthorized::InsufficientRole
             render status: 403, json: { "user": [
               {
@@ -104,7 +105,7 @@ module Api
               }
             ]
             }
-=begin
+
           rescue CustomExceptions::Unauthorized::InsufficientRole::NotOwner # thrown from ApplicationController::Job.must_be_owner!
             render status: 403, json: { "job": [
               {
