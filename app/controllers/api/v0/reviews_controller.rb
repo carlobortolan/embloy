@@ -104,6 +104,7 @@ module Api
               }
             ]
             }
+=begin
           rescue CustomExceptions::Unauthorized::InsufficientRole::NotOwner # thrown from ApplicationController::Job.must_be_owner!
             render status: 403, json: { "job": [
               {
@@ -112,6 +113,7 @@ module Api
               }
             ]
             }
+
           rescue CustomExceptions::InvalidInput::Token
             render status: 400, json: { "access_token": [
               {
@@ -120,6 +122,7 @@ module Api
               }
             ]
             }
+
           rescue JWT::ExpiredSignature
             render status: 401, json: { "access_token": [
               {
@@ -128,6 +131,7 @@ module Api
               }
             ]
             }
+
           rescue JWT::InvalidIssuerError
             render status: 401, json: { "access_token": [
               {
@@ -136,6 +140,7 @@ module Api
               }
             ]
             }
+
           rescue JWT::VerificationError
             render status: 401, json: { "access_token": [
               {
@@ -152,6 +157,7 @@ module Api
               }
             ]
             }
+
           rescue JWT::DecodeError
             render status: 400, json: { "access_token": [
               {
@@ -160,6 +166,7 @@ module Api
               }
             ]
             }
+=end
           end
         end
       end
@@ -374,6 +381,7 @@ module Api
               }
             ]
             }
+=begin
           rescue CustomExceptions::Unauthorized::InsufficientRole::NotOwner # thrown from ApplicationController::Job.must_be_owner!
             render status: 403, json: { "job": [
               {
@@ -382,6 +390,7 @@ module Api
               }
             ]
             }
+=end
           rescue CustomExceptions::InvalidInput::Token
             render status: 400, json: { "access_token": [
               {
