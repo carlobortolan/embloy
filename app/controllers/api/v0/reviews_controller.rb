@@ -2,6 +2,7 @@ module Api
   module V0
 
     class ReviewsController < ApiController
+      before_action :verify_access_token
 
 =begin
       def index
@@ -12,42 +13,28 @@ module Api
 =end
 
       def create
-
-        if request.headers["HTTP_ACCESS_TOKEN"].nil?
-          render status: 400, json: { "access_token": [
-            {
-              "error": "ERR_BLANK",
-              "description": "Attribute can't be blank"
-            }
-          ]
-          }
-        else
-          begin
-            decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
-            verified!(decoded_token["typ"])
-            if Review.all.where(:created_by => decoded_token["sub"], :subject => params[:id]).present?
-              unnecessary_error('review')
-            else
-              decoded_token["sub"].to_i == params[:id].to_i ? raise(CustomExceptions::InvalidUser::Unknown) : false
-              review_params["job_id"].present? ? must_be_owner!(review_params["job_id"], decoded_token["sub"]) : false
-              review = Review.new(review_params)
-              review.subject = params[:id]
-              review.created_by = decoded_token["sub"]
-              review.save!
-              render status: 200, json: { "message": "Review submitted!" }
-            end
-
-          rescue ActionController::ParameterMissing
-            blank_error('review')
-
-
-          rescue ActiveRecord::StatementInvalid
-            malformed_error('review')
-
+        begin
+          verified!(@decoded_token["typ"])
+          if Review.all.where(:created_by => @decoded_token["sub"], :subject => params[:id]).present?
+            unnecessary_error('review')
+          else
+            @decoded_token["sub"].to_i == params[:id].to_i ? raise(CustomExceptions::InvalidUser::Unknown) : false
+            review_params["job_id"].present? ? must_be_owner!(review_params["job_id"], @decoded_token["sub"]) : false
+            review = Review.new(review_params)
+            review.subject = params[:id]
+            review.created_by = @decoded_token["sub"]
+            review.save!
+            render status: 200, json: { "message": "Review submitted!" }
           end
+
+        rescue ActionController::ParameterMissing
+          blank_error('review')
+
+        rescue ActiveRecord::StatementInvalid
+          malformed_error('review')
+
         end
       end
-
 
       def update
         if request.headers["HTTP_ACCESS_TOKEN"].nil?
@@ -64,9 +51,9 @@ module Api
             verified!(decoded_token["typ"])
             review = Review.find(params[:id])
 
-            #Todo: Replace with general must_be_owner! method (if it then exist)
+            # Todo: Replace with general must_be_owner! method (if it then exist)
             ###############################################################################################################################
-            review.created_by.to_i == User.find(decoded_token["sub"].to_i).id ? true : raise(CustomExceptions::Unauthorized::InsufficientRole::NotOwner)#
+            review.created_by.to_i == User.find(decoded_token["sub"].to_i).id ? true : raise(CustomExceptions::Unauthorized::InsufficientRole::NotOwner) #
             ###############################################################################################################################
 
             review.assign_attributes(review_params)
@@ -207,9 +194,9 @@ module Api
             verified!(decoded_token["typ"])
             review = Review.find(params[:id])
 
-            #Todo: Replace with general must_be_owner! method (if it then exist)
+            # Todo: Replace with general must_be_owner! method (if it then exist)
             ###############################################################################################################################
-            review.created_by.to_i == User.find(decoded_token["sub"].to_i).id ? true : raise(CustomExceptions::Unauthorized::InsufficientRole::NotOwner)#
+            review.created_by.to_i == User.find(decoded_token["sub"].to_i).id ? true : raise(CustomExceptions::Unauthorized::InsufficientRole::NotOwner) #
             ###############################################################################################################################
 
             review.destroy!
