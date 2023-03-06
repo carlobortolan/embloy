@@ -35,7 +35,7 @@
           </tr>
           </thead>
           <tbody>
-          <% User.all.order("id").each do |u| %>
+          <% @users.each do |u| %>
             <tr class=<%= "table-danger" if UserBlacklist.find_by_user_id(u.id) %>>
               <th scope="row"><%= u.id %></th>
               <td><%= u.email %></td>

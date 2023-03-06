@@ -1,0 +1,64 @@
+<main id="main" class="main">
+
+
+  <div class="pagetitle">
+    <h1>All jobs</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="<%= admin_root_path %>">Home</a></li>
+        <li class="breadcrumb-item active">Jobs</li>
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+
+
+  <section>
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">All jobs</h5>
+        <p>A list of all current jobs and general information</p>
+        <!-- Small tables -->
+        <table class="table table-sm table-hover">
+          <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">User</th>
+            <th scope="col">Title</th>
+            <th scope="col">Description</th>
+            <th scope="col">Type</th>
+            <th scope="col">Position</th>
+            <th scope="col">Salary</th>
+            <th scope="col">Currency</th>
+            <th scope="col">Country code</th>
+            <th scope="col">Postal code</th>
+            <th scope="col">City</th>
+            <th scope="col">Address</th>
+            <th scope="col">Created_at</th>
+          </tr>
+          </thead>
+          <tbody>
+          <% @jobs.each do |u| %>
+            <tr data-field="snum" data-formatter="<%= job_path(u) %>">
+              <th scope="row" data-field="snum" data-formatter="<%= job_path(u) %>"><%= u.job_id %></th>
+              <td><%= u.user_id %></td>
+              <td><%= u.title %></td>
+              <td><%= u.description %></td>
+              <td><%= u.job_type %></td>
+              <td><%= u.position %></td>
+              <td><%= u.salary %></td>
+              <td><%= u.currency %></td>
+              <td><%= u.country_code %></td>
+              <td><%= u.postal_code %></td>
+              <td><%= u.city %></td>
+              <td><%= u.address %></td>
+              <td><%= u.created_at %></td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+        <!-- End small tables -->
+
+      </div>
+    </div>
+  </section>
+</main><!-- End #main -->

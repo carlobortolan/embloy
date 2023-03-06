@@ -34,6 +34,7 @@ module Admin
     end
 
     def users
+      @users = User.all.order("id").limit(100)
     end
 
     def users_active
@@ -53,12 +54,15 @@ module Admin
     end
 
     def jobs
+      @jobs = Job.all.order("created_at").limit(100)
     end
 
     def applications
+      @applications = Application.all.order("updated_at").limit(100)
     end
 
     def reviews
+      @reviews = Review.all.order("created_at").limit(100)
     end
 
   end
