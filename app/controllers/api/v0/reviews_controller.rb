@@ -4,14 +4,6 @@ module Api
     class ReviewsController < ApiController
       before_action :verify_access_token
 
-=begin
-      def index
-        if require_user_be_owner!
-          @reviews = @user.reviews.all
-        end
-      end
-=end
-
       def create
         begin
           verified!(@decoded_token["typ"])
