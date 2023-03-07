@@ -17,146 +17,34 @@ module Api
       end
 
       def create
-
-        if request.headers["HTTP_ACCESS_TOKEN"].nil?
-          render status: 400, json: { "access_token": [
-            {
-              "error": "ERR_BLANK",
-              "description": "Attribute can't be blank"
-            }
-          ]
-          }
-        else
           begin
-            decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
-            verified!(decoded_token["typ"])
+            verified!(@decoded_token["typ"])
             job = Job.find(params[:id])
             application = Application.create!(
-              user_id: decoded_token["sub"],
+              user_id: @decoded_token["sub"],
               job_id: job.job_id,
               application_text: "This application was submitted through the v.0 Embloy API",
               applied_at: Time.now,
               updated_at: Time.now,
               response: "No response yet..."
             )
-            application.user = User.find(decoded_token["sub"])
+            application.user = User.find(@decoded_token["sub"])
             application.save!
             render status: 200, json: { "message": "Application submitted!" }
 
           rescue ActiveRecord::RecordNotUnique
-            render status: 422, json: { "application": [
-              {
-                "error": "ERR_UNNECESSARY",
-                "description": "Attribute is already submitted."
-              }
-            ]
-            }
+            unnecessary_error('application')
 
           rescue ActiveRecord::RecordNotFound
             if params[:id].nil?
-              render status: 400, json: { "job": [
-                {
-                  "error": "ERR_BLANK",
-                  "description": "Attribute can't be blank."
-                }
-              ]
-              }
+              blank_error('job')
             else
-              render status: 400, json: { "job": [
-                {
-                  "error": "ERR_INVALID",
-                  "description": "Attribute is malformed or unknown."
-                }
-              ]
-              }
+              malformed_error('job')
             end
 
           rescue ActiveRecord::RecordInvalid
-            render status: 400, json: { "application": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Attribute is malformed or unknown."
-              }
-            ]
-            }
+            malformed_error('application')
 
-          rescue CustomExceptions::InvalidUser::Unknown
-            render status: 400, json: { "user": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Attribute is malformed or unknown."
-              }
-            ]
-            }
-
-          rescue CustomExceptions::Unauthorized::InsufficientRole # thrown from ApplicationController.should_be_verified!
-            render status: 403, json: { "user": [
-              {
-                "error": "ERR_INACTIVE",
-                "description": "Attribute is blocked."
-              }
-            ]
-            }
-
-          rescue CustomExceptions::Unauthorized::InsufficientRole::NotOwner # thrown from ApplicationController::Job.must_be_owner!
-            render status: 403, json: { "job": [
-              {
-                "error": "ERR_INACTIVE",
-                "description": "Attribute is blocked."
-              }
-            ]
-            }
-
-          rescue CustomExceptions::InvalidInput::Token
-            render status: 400, json: { "access_token": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Attribute is malformed or unknown."
-              }
-            ]
-            }
-          rescue JWT::ExpiredSignature
-            render status: 401, json: { "access_token": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Attribute has expired."
-              }
-            ]
-            }
-          rescue JWT::InvalidIssuerError
-            render status: 401, json: { "access_token": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Attribute was signed by an unknown issuer."
-              }
-            ]
-            }
-          rescue JWT::VerificationError
-            render status: 401, json: { "access_token": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Token can't be verified."
-              }
-            ]
-            }
-          rescue JWT::IncorrectAlgorithm
-            render status: 401, json: { "access_token": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Token was encoded with an unknown algorithm."
-              }
-            ]
-            }
-          rescue JWT::DecodeError
-            render status: 400, json: { "access_token": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Attribute is malformed or unknown."
-              }
-            ]
-            }
-
-          end
         end
       end
 
