@@ -29,7 +29,7 @@
               <p class="fs-5 mb-4"><%= @job.content %>
             </section>
 
-            <% if @owner || !@application.nil %>
+            <% if @owner || !@application.nil? %>
               <h1>
                 <a href="#applicationForm" class="scroll-bottom d-flex align-items-center justify-content-center">
                   see applications&nbsp;<i class="bi bi-arrow-down-circle-fill fs-10"></i>
