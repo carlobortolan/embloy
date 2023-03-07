@@ -31,7 +31,7 @@ class UserController < ApplicationController
   end
 
   def own_applications
-    @applications = Application.includes(:user).all.where("user_id = #{Current.user.id}")
+    @applications = Application.includes(:user).all.where("user_id = #{Current.user.id}").order("updated_at DESC")
   end
 
 end
