@@ -32,7 +32,7 @@ class ApplicationsController < ApplicationController
         job_id: params[:job_id].to_i,
         application_text: application_params[:application_text],
         application_documents: application_params[:application_documents],
-        applied_at: Time.now,
+        created_at: Time.now,
         updated_at: Time.now,
         response: "No response yet..."
       )

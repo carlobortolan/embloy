@@ -1,15 +1,25 @@
 <!DOCTYPE html>
 <html>
+<div class="preheader" style="font-size: 1px; display: none !important;">
+  <%= @applicant.first_name %> applied for <%= @job.title %>.
+</div>
 <head>
   <meta content='text/html; charset=UTF-8' http-equiv='Content-Type'/>
+  <title>New Job Application</title>
 </head>
 <body>
-<h1>Hello<%= @recipient.first_name %>, you received a new application for <%= @job.title %></h1>
-<p>
-  <%= @applicant.first_name %>applied for <%= @job.title %>
-</p>
-<p>
-  Stay tuned.
-</p>
+<h1>New Job Application Received</h1>
+<p>Hello <%= @recipient.first_name %>,</p>
+<p>We wanted to let you know that you received a new application for <%= link_to @job.title, job_url(@job) %>.</p>
+<p>The details of the applicant are as follows:</p>
+<ul>
+  <li>Name: <%= @applicant.full_name %></li>
+  <li>Email: <%= @applicant.email %></li>
+  <li>Phone: [not provided]</li>
+</ul>
+<p>You can contact the applicant directly using the email or phone number provided or accept/reject the
+  application <%= link_to "here", job_applications_url(@job) %>.</p>
+<p>Best regards,</p>
+<p>Embloy</p>
 </body>
 </html>

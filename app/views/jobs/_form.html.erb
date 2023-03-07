@@ -25,6 +25,26 @@
     <% end %>
   </div>
 
+  <%= %>
+
+  <div class="dropdown">
+    <select class="js-example-basic-single" name="state">
+      <option value="">Job Categories</option>
+      <% @categories_list.each do |item| %>
+        <option value="<%= item %>"><%= item %></option>
+      <% end %>
+    </select>
+    <div class="dropdown-menu" aria-labelledby="job-dropdown">
+      <% @categories_list.each do |item| %>
+        <a class='dropdown-item' href='#'><%= item %></a>
+      <% end %>
+    </div>
+  </div>
+  <script>
+      $(document).ready(function () {
+          $('.js-example-basic-single').select2();
+      });
+  </script>
   <div>
     <%= form.label :start_slot %><br>
     <%= form.datetime_field :start_slot %><br>

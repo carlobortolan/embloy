@@ -18,6 +18,7 @@ class JobsController < ApplicationController
 
   def new
     @job = Job.new
+    @categories_list = File.readlines("app/helpers/job_categories.txt").map(&:chomp)
   end
 
   def create
