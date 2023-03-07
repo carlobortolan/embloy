@@ -1,114 +1,18 @@
 module Api
   module V0
     class ApplicationsController < ApiController
+      before_action :verify_access_token
 
       def show
-        if request.headers["HTTP_ACCESS_TOKEN"].nil?
-          render status: 400, json: { "access_token": [
-            {
-              "error": "ERR_BLANK",
-              "description": "Attribute can't be blank"
-            }
-          ]
-          }
-        else
-          begin
-            decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
-            verified!(decoded_token["typ"])
-            must_be_owner!(params[:id], decoded_token["sub"])
-            job = Job.find(params[:id])
-            applications = job.applications.find_by_sql("SELECT * FROM applications a WHERE a.user_id = #{decoded_token["sub"]} and a.job_id = #{params[:id]}")
+        begin
+            verified!(@decoded_token["typ"])
+            must_be_owner!(params[:id], @decoded_token["sub"])
+            applications = @job.applications.find_by_sql("SELECT * FROM applications a WHERE a.user_id = #{@decoded_token["sub"]} and a.job_id = #{@job.job_idg}")
             if applications.empty?
               render status: 204, json: { "applications": applications }
             else
               render status: 200, json: { "applications": applications }
             end
-
-          rescue CustomExceptions::InvalidJob::Unknown
-            render status: 400, json: { "job": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Attribute is malformed or unknown."
-              }
-            ]
-            }
-
-          rescue CustomExceptions::InvalidUser::Unknown
-            render status: 400, json: { "user": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Attribute is malformed or unknown."
-              }
-            ]
-            }
-
-          rescue CustomExceptions::Unauthorized::InsufficientRole # thrown from ApplicationController.should_be_verified!
-            render status: 403, json: { "user": [
-              {
-                "error": "ERR_INACTIVE",
-                "description": "Attribute is blocked."
-              }
-            ]
-            }
-
-          rescue CustomExceptions::Unauthorized::InsufficientRole::NotOwner # thrown from ApplicationController::Job.must_be_owner!
-            render status: 403, json: { "job": [
-              {
-                "error": "ERR_INACTIVE",
-                "description": "Attribute is blocked."
-              }
-            ]
-            }
-
-          rescue CustomExceptions::InvalidInput::Token
-            render status: 400, json: { "access_token": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Attribute is malformed or unknown."
-              }
-            ]
-            }
-          rescue JWT::ExpiredSignature
-            render status: 401, json: { "access_token": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Attribute has expired."
-              }
-            ]
-            }
-          rescue JWT::InvalidIssuerError
-            render status: 401, json: { "access_token": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Attribute was signed by an unknown issuer."
-              }
-            ]
-            }
-          rescue JWT::VerificationError
-            render status: 401, json: { "access_token": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Token can't be verified."
-              }
-            ]
-            }
-          rescue JWT::IncorrectAlgorithm
-            render status: 401, json: { "access_token": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Token was encoded with an unknown algorithm."
-              }
-            ]
-            }
-          rescue JWT::DecodeError
-            render status: 400, json: { "access_token": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Attribute is malformed or unknown."
-              }
-            ]
-            }
-          end
         end
       end
 
