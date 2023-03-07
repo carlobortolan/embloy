@@ -1,51 +1,4 @@
-<div class="col mb-5 shadow-posting" data-aos="fade-up">
-  <div class="card h-100 bg-posting">
-    <!-- Job image-->
-    <!--    <img class="card-img-top" src="app/views/jobs/joblogo.png"/>-->
-    <!-- Job details-->
-
-    <div class="card-body p-4">
-      <div class="text-center stretched-link">
-        <small class="text-muted"><%= job.start_slot.getlocal.asctime %></small>
-        <!-- Title-->
-        <!--        <h5 class="fw-bolder"><%#= job.title %></h5>-->
-        <!-- Salary-->
-        <div class="card-body">
-          <h5 class="card-title"><%= job.title %></h5>
-          <cite>
-            <%= "#{job.salary} #{job.currency}" %>
-          </cite>
-          <!-- Description-->
-          <p class="card-text">
-            <%= job.job_type %> <br>
-            <%= job.job_type %><br>
-            <%= job.position %><br>
-
-            <!--          <p class="card-text"><%#= job.key_skills %></p>-->
-            <!--          <div class="d-flex justify-content-between align-items-center">-->
-            <!--            <div class="btn-group">-->
-            <!--              <button type="button" class="btn btn-sm btn-outline-secondary">View</button>-->
-            <!--              <button type="button" href="<%#= job_path(job) %>" class="btn btn-sm btn-outline-secondary">Edit</button>-->
-            <!--            </div>-->
-            <!-- Start slot-->
-            <!--          </div>-->
-        </div>
-      </div>
-    </div>
-
-    <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-      <div class="text-center">
-        <a href="<%= job_path(job) %>" class="readmore">
-          <span>apply</span>
-          <i class="bi bi-arrow-right stretched-link"></i></a>
-        <%#= link_to "apply", new_job_application_path(job), class: "btn btn-outline-dark mt-auto" %>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<div class="container-fluid px-sm-1 py-5 mx-auto">
+<div class="container-fluid px-sm-1 py-1 mx-auto">
   <style>
       body {
           background-color: #6200EA;
@@ -127,19 +80,23 @@
       }
   </style>
 
+
   <div class="row justify-content-center">
     <div class="d-flex">
       <div class="card card-1">
+        <div class="text-center stretched-link px-1">
+          <small class="text-muted"><%= job.start_slot.getlocal.asctime %></small>
+          <h5 class="card-title"><%= job.title %></h5>
+        </div>
         <div class="pr-3 row justify-content-end">
-          <div class="fa fa-heart-o like"></div>
         </div>
         <div class="product-pic">
-          <img class="pic1" src="https://i.imgur.com/fP3NOTX.png">
+          <img class="pic1" src="<%= job.image_url.nil? ? "https://picsum.photos/200/300?random=#{job.job_id}" : job.image_url %>" alt="">
         </div>
-        <small class="category">Backpacks</small>
-        <h5 class="product-name">TH Jeans City Backpack</h5>
-        <div class="row px-3 justify-content-between">
-          <p class="price">$79.<span class="sm-text">50</span></p>
+        <div class="row px-1 justify-content-between">
+          <small class="category"><%= job.job_type %></small>
+          <h5 class="product-name"><%= job.position %></h5>
+          <p class="price"><%= job.salary %> <span class="sm-text"><%= job.currency %></span></p>
           <div class="stars">
             <span class="fa fa-star star-active"></span>
             <span class="fa fa-star star-active"></span>
@@ -148,7 +105,15 @@
             <span class="fa fa-star-o"></span>
           </div>
         </div>
+        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+          <div class="text-center">
+            <a href="<%= job_path(job) %>" class="readmore">
+              <span>apply</span>
+              <i class="bi bi-arrow-right stretched-link"></i></a>
+          </div>
+        </div>
       </div>
+
     </div>
   </div>
 </div>

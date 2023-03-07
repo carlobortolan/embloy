@@ -12,7 +12,7 @@ applications = []
 
 #=> CREATE USERS
 elapsed_user = Benchmark.measure do
-  1.times do
+  1.times do |i|
     begin
       name_f = Faker::Name.first_name
       name_l = Faker::Name.last_name
@@ -32,6 +32,7 @@ elapsed_user = Benchmark.measure do
         created_at: Faker::Date.to_s,
         updated_at: Faker::Date.to_s,
         activity_status: [0, 1].sample,
+        image_url: "https://picsum.photos/200/300?random=#{i}",
         view_count: rand(1100)
       )
       users.push(user)
@@ -46,7 +47,7 @@ User.import(users)
 
 #=> CREATE JOBS POSTGRESQL
 elapsed_job = Benchmark.measure do
-  1.times do
+  1.times do |i|
     begin
       address_full = Faker::Address
       job = Job.new(
@@ -62,7 +63,7 @@ elapsed_job = Benchmark.measure do
         key_skills: Faker::Job.key_skill,
         salary: Faker::Number.decimal,
         currency: Faker::Currency.name,
-        image_url: "DE",
+        image_url: "https://picsum.photos/200/300?random=#{i}",
         start_slot: DateTime.parse(Time.at(rand * Time.now.to_i).to_s),
         longitude: Faker::Number.decimal,
         latitude: Faker::Number.decimal,
