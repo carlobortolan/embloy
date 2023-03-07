@@ -41,41 +41,6 @@ module ApiExceptionHandler
     rescue_from JWT::ExpiredSignature,
                 with: :token_expired_error
 
-    #--------------------------------------
-
-    rescue_from JWT::InvalidIssuerError,
-                with: :token_invalid_issuer_error
-
-    #--------------------------------------
-
-    rescue_from JWT::IncorrectAlgorithm,
-                with: :token_algorithm_error
-
-    #--------------------------------------
-
-    rescue_from JWT::VerificationError,
-                with: :token_verification_error
-
-    #--------------------------------------
-
-    rescue_from JWT::DecodeError,
-                with: :token_decode_error
-
-    #--------------------------------------
-
-    rescue_from JWT::InvalidJtiError,
-                with: :token_jti_error
-
-    #--------------------------------------
-
-    rescue_from JWT::InvalidIatError,
-                with: :token_iat_error
-
-    #--------------------------------------
-
-    rescue_from JWT::InvalidSubError,
-                with: :token_sub_error
-
 
 
   end
