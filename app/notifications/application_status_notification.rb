@@ -1,18 +1,20 @@
 class ApplicationStatusNotification < Noticed::Base
   deliver_by :database
-  deliver_by :email, mailer: "EmployeeApplicationMailer", if: :email_notifications?, unless: :read?, debug: true
+  deliver_by :email, mailer: 'EmployerApplicationMailer', debug: false, method: :application_status_notification, if: :email_notifications?
+  #  deliver_by :email, mailer: "EmployeeApplicationMailer", if: :email_notifications?, unless: :read?, debug: true
 
-  param :application, :job, :user
+  param :application, :user, :job, :status, :response
 
   def email_notifications?
-    recipient.email_notifications?
+    recipient.application_notifications?
   end
 
   def message
-    @job = params[:job]
+    @job = params[:application].job
     @application = params[:application]
-    @user = user
-    "The status of your application for job #{@job.title} has changed."
+    #@user = params[:application].user
+    @user = recipient
+    "The status of your application for #{@job.title} has changed."
   end
 
   def url

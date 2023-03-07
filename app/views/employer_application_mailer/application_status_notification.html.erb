@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<div class="preheader" style="font-size: 1px; display: none !important;">
+  Update on your application for <%= @job.title %>
+</div>
+<head>
+  <meta content='text/html; charset=UTF-8' http-equiv='Content-Type'/>
+  <title>Application <%= @status = "1" ? "accepted" : "rejected" %> </title>
+</head>
+<body>
+<h1>Application status changed</h1>
+<p>Hello <%= @user.first_name %>,</p>
+<p>We wanted to let you know that your application for <%= link_to @job.title, job_url(@job) %> has
+  been <%= @status = "1" ? "accepted" : "rejected" %>.</p>
+<p>Feedback from the employer:</p>
+<ul>
+  <i>
+    "<%= @response %>"
+  </i></ul>
+<p>Best regards,</p>
+<p>Embloy</p>
+</body>
+</html>

@@ -1,6 +1,6 @@
 class Application < ApplicationRecord
   after_create_commit :notify_recipient
-  after_update_commit :notify_applicant
+  # after_update_commit :notify_applicant
   before_destroy :cleanup_notifications
   has_noticed_notifications model_name: 'Notification'
 
@@ -20,15 +20,17 @@ class Application < ApplicationRecord
   end
 
   def notify_applicant
-    return unless job.user.eql? user
-    # ApplicationStatusNotification.with(application: [:user_id, :job_id], job: job).deliver_later(user)
+    #    return unless job.user.eql? user
+    ApplicationStatusNotification.with(application: [:user_id, :job_id], user: user, job: job, status: status, response: response).deliver_later(user)
   end
 
   def accept (response)
+    notify_applicant
     ActiveRecord::Base.connection.execute("UPDATE applications SET status = '1', response = '#{response}' WHERE user_id = #{user_id} AND job_id = #{job_id}")
   end
 
   def reject(response)
+    notify_applicant
     ActiveRecord::Base.connection.execute("UPDATE applications SET status = '-1', response = '#{response}' WHERE user_id = #{user_id} AND job_id = #{job_id}")
   end
 

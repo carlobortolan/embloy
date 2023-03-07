@@ -12,7 +12,6 @@ class ApplicationsController < ApplicationController
   def show
     require_user_be_owner
     @job = Job.find(params[:job_id])
-    # @application = @job.applications.find_by_sql("SELECT * FROM applications a WHERE a.user_id = #{params[:id]} and a.job_id = #{params[:job_id]}")
     # TODO: @carlobortolan: SQL in Ruby umschreiben
     @application = @job.applications.find_by_sql("SELECT * FROM applications a WHERE a.user_id = #{1} and a.job_id = #{1}")
   end
@@ -26,7 +25,6 @@ class ApplicationsController < ApplicationController
   def create
     if require_user_logged_in
       @job = Job.find(params[:job_id])
-      # begin
       @application = Application.create!(
         user_id: Current.user.id.to_i,
         job_id: params[:job_id].to_i,
@@ -39,9 +37,6 @@ class ApplicationsController < ApplicationController
       @application.user = User.find(Current.user.id.to_i)
       @application.save!
       redirect_to job_path(@job), notice: 'Application has been submitted'
-      # rescue
-      #   redirect_to job_path(@job), alert: 'Application could not be submitted'
-      # end
     end
   end
 
