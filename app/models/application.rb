@@ -19,18 +19,18 @@ class Application < ApplicationRecord
     ApplicationNotification.with(application: [:user_id, :job_id], job: job).deliver_later(job.user)
   end
 
-  def notify_applicant
+  def notify_applicant(new_status, new_response)
     #    return unless job.user.eql? user
-    ApplicationStatusNotification.with(application: [:user_id, :job_id], user: user, job: job, status: status, response: response).deliver_later(user)
+    ApplicationStatusNotification.with(application: [:user_id, :job_id], user: user, job: job, status: new_status, response: new_response).deliver_later(user)
   end
 
   def accept (response)
-    notify_applicant
+    notify_applicant(1, response)
     ActiveRecord::Base.connection.execute("UPDATE applications SET status = '1', response = '#{response}' WHERE user_id = #{user_id} AND job_id = #{job_id}")
   end
 
   def reject(response)
-    notify_applicant
+    notify_applicant(-1, response)
     ActiveRecord::Base.connection.execute("UPDATE applications SET status = '-1', response = '#{response}' WHERE user_id = #{user_id} AND job_id = #{job_id}")
   end
 

@@ -12,7 +12,6 @@ class ApplicationStatusNotification < Noticed::Base
   def message
     @job = params[:application].job
     @application = params[:application]
-    #@user = params[:application].user
     @user = recipient
     "The status of your application for #{@job.title} has changed."
   end
