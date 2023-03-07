@@ -46,7 +46,7 @@ Rails.application.routes.draw do
   end
   patch 'jobs/(/:job_id)/applications/(/:application_id)/accept', :to => 'applications#accept', as: :job_application_accept
   patch 'jobs/(/:job_id)/applications/(/:application_id)/reject', :to => 'applications#reject', as: :job_application_reject
-  get 'jobs/(/:job_id)/applications_reject_all', :to => 'applications#reject_all', as: :job_applications_reject_all
+  patch 'jobs/(/:job_id)/applications_reject_all', :to => 'applications#reject_all', as: :job_applications_reject_all
   delete 'jobs/(/:job_id)/applications/(/:application_id)' => 'applications#destroy'
 
   get 'reviews', :to => 'reviews#index', as: :reviews

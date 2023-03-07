@@ -79,14 +79,64 @@
                 <div class="row">
                   <div class="col-sm-6">
                     <ul class="list-unstyled mb-0">
-                      <%= button_to "Edit", edit_job_path(@job), method: :get %>
-                      <%= button_to "Delete this job", job_path(@job), form: { data: { turbo_confirm: "Are you sure?" } }, method: :delete %>
+                      <%= button_to "Promote", about_path, method: :get, class: "btn btn-info mb-1" %>
+                      <%= button_to "Edit", edit_job_path(@job), method: :get, class: "btn btn-secondary mb-1 " %>
+                      <!-- Button trigger modal -->
+                      <button type="button" class="btn btn-danger " data-toggle="modal" data-target="#deleteModal">
+                        Delete
+                      </button>
+
+                      <!-- Modal -->
+                      <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="deleteModalLabel">Delete job <%= @job.job_id %></h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <div class="modal-body">
+                              Are you sure that you want to delete this job?
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                              <%= button_to "Delete this job", job_path(@job), form: { data: { turbo_confirm: "Are you sure?" } }, method: :delete, class: "btn btn-danger mb-1" %>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </ul>
                   </div>
                   <div class="col-sm-6">
                     <ul class="list-unstyled mb-0">
-                      <%= button_to "Show all applications", job_applications_path(@job), method: :get %>
-                      <%= button_to "Reject all applications", job_applications_reject_all_path(@job), method: :get %>
+                      <%= button_to "Show all applications", job_applications_path(@job), method: :get, class: "btn btn-secondary mb-1" %>
+
+                      <!-- Button trigger modal -->
+                      <button type="button" class="btn btn-secondary " data-toggle="modal" data-target="#rejectAllModal">
+                        Reject all applications
+                      </button>
+
+                      <!-- Modal -->
+                      <div class="modal fade" id="rejectAllModal" tabindex="-1" role="dialog" aria-labelledby="rejectAllModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="rejectAllModalLabel">Reject all applications</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <div class="modal-body">
+                              Are you sure that you want to reject all pending applications for this job?
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                              <%= button_to "Reject all", job_applications_reject_all_path(@job), method: :patch, class: "btn btn-danger" %>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </ul>
                   </div>
                 </div>
@@ -111,18 +161,11 @@
     </div>
 
 
-
     <% if !@application.nil? && !@owner %>
       <h1>My application</h1>
       <%= render 'applications/show_raw' %>
     <% elsif @application.nil? && @owner %>
       <%= render 'applications/show_all' %>
-      <%=
-        #job_applications_reject_all_path(@job)
-        link_to "Reject all applications", job_applications_reject_all_path(@job), data: {
-          turbo_method: :reject_all,
-          turbo_confirm: "Are you sure?" } %>
-
     <% elsif Current.user %>
       <%= render 'applications/form' %>
     <% end %>
