@@ -23,236 +23,29 @@ module Api
       end
 
       def update
-        if request.headers["HTTP_ACCESS_TOKEN"].nil?
-          render status: 400, json: { "access_token": [
-            {
-              "error": "ERR_BLANK",
-              "description": "Attribute can't be blank"
-            }
-          ]
-          }
-        else
-          begin
-            decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
-            verified!(decoded_token["typ"])
-            must_be_owner!(params[:id], decoded_token["sub"])
-            @job = Job.find_by(job_id: params[:id])
-            @job.assign_attributes(job_params)
-            if @job.save
-              render status: 200, json: { "message": "Job updated!" }
-            else
-              render status: 400, json: { "error": @job.errors.details }
-            end
-          rescue ActionController::ParameterMissing # just relevant for strong parameters
-            render status: 400, json: { "job": [
-              {
-                "error": "ERR_BLANK",
-                "description": "Attribute can't be blank"
-              }
-            ]
-            }
-
-          rescue CustomExceptions::InvalidJob::Unknown
-            render status: 400, json: { "job": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Attribute is malformed or unknown."
-              }
-            ]
-            }
-
-          rescue CustomExceptions::InvalidUser::Unknown
-            render status: 400, json: { "user": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Attribute is malformed or unknown."
-              }
-            ]
-            }
-
-          rescue CustomExceptions::Unauthorized::InsufficientRole # thrown from ApplicationController.verified!
-            render status: 403, json: { "user": [
-              {
-                "error": "ERR_INACTIVE",
-                "description": "Attribute is blocked."
-              }
-            ]
-            }
-
-          rescue CustomExceptions::Unauthorized::NotOwner # thrown from ApplicationController::Job.must_be_owner!
-            render status: 403, json: { "job": [
-              {
-                "error": "ERR_INACTIVE",
-                "description": "Attribute is blocked."
-              }
-            ]
-            }
-
-          rescue CustomExceptions::InvalidInput::Token
-            render status: 400, json: { "access_token": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Attribute is malformed or unknown."
-              }
-            ]
-            }
-          rescue JWT::ExpiredSignature
-            render status: 401, json: { "access_token": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Attribute has expired."
-              }
-            ]
-            }
-          rescue JWT::InvalidIssuerError
-            render status: 401, json: { "access_token": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Attribute was signed by an unknown issuer."
-              }
-            ]
-            }
-          rescue JWT::VerificationError
-            render status: 401, json: { "access_token": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Token can't be verified."
-              }
-            ]
-            }
-          rescue JWT::IncorrectAlgorithm
-            render status: 401, json: { "access_token": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Token was encoded with an unknown algorithm."
-              }
-            ]
-            }
-          rescue JWT::DecodeError
-            render status: 400, json: { "access_token": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Attribute is malformed or unknown."
-              }
-            ]
-            }
-
+        begin
+          verified!(@decoded_token["typ"])
+          must_be_owner!(params[:id], @decoded_token["sub"])
+          @job.assign_attributes(job_params)
+          if @job.save
+            render status: 200, json: { "message": "Job updated!" }
+          else
+            render status: 400, json: { "error": @job.errors.details }
           end
+
+        rescue ActionController::ParameterMissing # just relevant for strong parameters
+          blank_error('job')
+
         end
 
       end
 
       def destroy
-        if request.headers["HTTP_ACCESS_TOKEN"].nil?
-          render status: 400, json: { "access_token": [
-            {
-              "error": "ERR_BLANK",
-              "description": "Attribute can't be blank"
-            }
-          ]
-          }
-        elsif params[:id].nil?
-          render status: 400, json: { "job": [
-            {
-              "error": "ERR_BLANK",
-              "description": "Attribute can't be blank"
-            }
-          ]
-          }
-        else
           begin
-            decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
-            verified!(decoded_token["typ"])
-            # must_be_owner!(params[:id], decoded_token["sub"])
-            job = Job.find_by(job_id: params[:id])
-            job.destroy!
+            verified!(@decoded_token["typ"])
+            must_be_owner!(params[:id], @decoded_token["sub"])
+            @job.destroy!
             render status: 200, json: { "message": "Job deleted!" }
-
-          rescue CustomExceptions::InvalidJob::Unknown
-            render status: 400, json: { "job": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Attribute is malformed or unknown."
-              }
-            ]
-            }
-
-          rescue CustomExceptions::InvalidUser::Unknown
-            render status: 400, json: { "user": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Attribute is malformed or unknown."
-              }
-            ]
-            }
-
-          rescue CustomExceptions::Unauthorized::InsufficientRole # thrown from ApplicationController.verified!
-            render status: 403, json: { "user": [
-              {
-                "error": "ERR_INACTIVE",
-                "description": "Attribute is blocked."
-              }
-            ]
-            }
-
-          rescue CustomExceptions::Unauthorized::NotOwner # thrown from ApplicationController::Job.must_be_owner!
-            render status: 403, json: { "job": [
-              {
-                "error": "ERR_INACTIVE",
-                "description": "Attribute is blocked."
-              }
-            ]
-            }
-
-          rescue CustomExceptions::InvalidInput::Token
-            render status: 400, json: { "access_token": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Attribute is malformed or unknown."
-              }
-            ]
-            }
-          rescue JWT::ExpiredSignature
-            render status: 401, json: { "access_token": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Attribute has expired."
-              }
-            ]
-            }
-          rescue JWT::InvalidIssuerError
-            render status: 401, json: { "access_token": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Attribute was signed by an unknown issuer."
-              }
-            ]
-            }
-          rescue JWT::VerificationError
-            render status: 401, json: { "access_token": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Token can't be verified."
-              }
-            ]
-            }
-          rescue JWT::IncorrectAlgorithm
-            render status: 401, json: { "access_token": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Token was encoded with an unknown algorithm."
-              }
-            ]
-            }
-          rescue JWT::DecodeError
-            render status: 400, json: { "access_token": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Attribute is malformed or unknown."
-              }
-            ]
-            }
-          end
         end
       end
 
