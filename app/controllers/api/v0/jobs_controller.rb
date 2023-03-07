@@ -2,95 +2,23 @@ require_relative '../../../../lib/feed_generator.rb'
 module Api
   module V0
     class JobsController < ApiController
+      before_action :verify_access_token
+
       def create
-        if request.headers["HTTP_ACCESS_TOKEN"].nil?
-          render status: 400, json: { "access_token": [
-            {
-              "error": "ERR_BLANK",
-              "description": "Attribute can't be blank"
-            }
-          ]
-          }
-        else
-          begin
-            decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
-            verified!(decoded_token["typ"])
-            @job = Job.new(job_params)
-            @job.user_id = decoded_token["sub"]
+        begin
+          verified!(@decoded_token["typ"])
+          @job = Job.new(job_params)
+          @job.user_id = @decoded_token["sub"]
 
-            if @job.save
-              render status: 200, json: { "message": "Job created!" }
-            else
-              render status: 400, json: { "error": @job.errors.details }
-            end
-
-          rescue ActionController::ParameterMissing
-            render status: 400, json: { "job": [
-              {
-                "error": "ERR_BLANK",
-                "description": "Attribute can't be blank"
-              }
-            ]
-            }
-
-          rescue CustomExceptions::Unauthorized::InsufficientRole
-            render status: 403, json: { "user": [
-              {
-                "error": "ERR_INACTIVE",
-                "description": "Attribute is blocked."
-              }
-            ]
-            }
-
-          rescue CustomExceptions::InvalidInput::Token
-            render status: 400, json: { "access_token": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Attribute is malformed or unknown."
-              }
-            ]
-            }
-          rescue JWT::ExpiredSignature
-            render status: 401, json: { "access_token": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Attribute has expired."
-              }
-            ]
-            }
-          rescue JWT::InvalidIssuerError
-            render status: 401, json: { "access_token": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Attribute was signed by an unknown issuer."
-              }
-            ]
-            }
-          rescue JWT::VerificationError
-            render status: 401, json: { "access_token": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Token can't be verified."
-              }
-            ]
-            }
-          rescue JWT::IncorrectAlgorithm
-            render status: 401, json: { "access_token": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Token was encoded with an unknown algorithm."
-              }
-            ]
-            }
-          rescue JWT::DecodeError
-            render status: 400, json: { "access_token": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Attribute is malformed or unknown."
-              }
-            ]
-            }
+          if @job.save
+            render status: 200, json: { "message": "Job created!" }
+          else
+            render status: 400, json: { "error": @job.errors.details }
           end
+
+        rescue ActionController::ParameterMissing
+          blank_error('job')
+
         end
       end
 
@@ -235,7 +163,7 @@ module Api
           begin
             decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
             verified!(decoded_token["typ"])
-            #must_be_owner!(params[:id], decoded_token["sub"])
+            # must_be_owner!(params[:id], decoded_token["sub"])
             job = Job.find_by(job_id: params[:id])
             job.destroy!
             render status: 200, json: { "message": "Job deleted!" }
