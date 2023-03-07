@@ -151,7 +151,7 @@ module Api
             ]
             }
 
-          rescue CustomExceptions::Unauthorized::InsufficientRole::NotOwner # thrown from ApplicationController::Job.must_be_owner!
+          rescue CustomExceptions::Unauthorized::NotOwner # thrown from ApplicationController::Job.must_be_owner!
             render status: 403, json: { "job": [
               {
                 "error": "ERR_INACTIVE",
@@ -267,7 +267,7 @@ module Api
             ]
             }
 
-          rescue CustomExceptions::Unauthorized::InsufficientRole::NotOwner # thrown from ApplicationController::Job.must_be_owner!
+          rescue CustomExceptions::Unauthorized::NotOwner # thrown from ApplicationController::Job.must_be_owner!
             render status: 403, json: { "job": [
               {
                 "error": "ERR_INACTIVE",

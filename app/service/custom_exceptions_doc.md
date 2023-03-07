@@ -42,4 +42,13 @@ You should only expect the following subclasses of ``::InvalidInput``
 
 ***
 
-### 4. Additional ideas ... 
+### 4. InvalidJob
+
+You should only expect the following subclasses of ``::InvalidJob``
+
++ ``::Unknown``: When there is no record in jobs for a given ``job_id``
+  ####
+
+***
+
+### 5. Additional ideas ... 

@@ -28,7 +28,7 @@ module Api
 
           # Todo: Replace with general must_be_owner! method (if it then exist)
           ###############################################################################################################################################
-          review.created_by.to_i == User.find(@decoded_token["sub"].to_i).id ? true : raise(CustomExceptions::Unauthorized::InsufficientRole::NotOwner) #
+          review.created_by.to_i == User.find(@decoded_token["sub"].to_i).id ? true : raise(CustomExceptions::Unauthorized::NotOwner) #
           ###############################################################################################################################################
 
           review.assign_attributes(review_params)
@@ -58,7 +58,7 @@ module Api
 
             # Todo: Replace with general must_be_owner! method (if it then exist)
             ###############################################################################################################################
-            review.created_by.to_i == User.find(@decoded_token["sub"].to_i).id ? true : raise(CustomExceptions::Unauthorized::InsufficientRole::NotOwner) #
+            review.created_by.to_i == User.find(@decoded_token["sub"].to_i).id ? true : raise(CustomExceptions::Unauthorized::NotOwner) #
             ###############################################################################################################################
 
             review.destroy!

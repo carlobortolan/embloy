@@ -12,7 +12,7 @@ applications = []
 
 #=> CREATE USERS
 elapsed_user = Benchmark.measure do
-  1.times do |i|
+  100.times do |i|
     begin
       name_f = Faker::Name.first_name
       name_l = Faker::Name.last_name
@@ -47,7 +47,7 @@ User.import(users)
 
 #=> CREATE JOBS POSTGRESQL
 elapsed_job = Benchmark.measure do
-  1.times do |i|
+  10000.times do |i|
     begin
       address_full = Faker::Address
       job = Job.new(
@@ -87,7 +87,7 @@ Job.import(jobs)
 
 # => CREATE APPLICATIONS
 elapsed_application = Benchmark.measure do
-  1.times do
+  0.times do
     begin
       response = [Faker::Quote.yoda, nil].sample
       a_id = (Faker::Number.number % User.count) + 1
@@ -99,7 +99,8 @@ elapsed_application = Benchmark.measure do
           application_text: "Dear #{Faker::GreekPhilosophers.name}, I am writing to express my interest in #{Faker::Job.position} that was advertised on embloy.com. I am a highly #{Faker::Adjective.positive} and #{Faker::Adjective.positive} with #{rand(max = 30)} years of experience in #{Faker::Job.field}. As you will see from my attached resume, I have a strong track record of #{Faker::Marketing.buzzwords}, #{Faker::Marketing.buzzwords} as well as #{Faker::Marketing.buzzwords}. I believe that my skills and experience make me an ideal candidate for the position and I am excited about the opportunity to contribute to your company and its goals. #{Faker::GreekPhilosophers.quote}. Thank you for considering my application. I look forward to hearing from you soon.",
           application_documents: Faker::Internet.url,
           response: response,
-          applied_at: DateTime.now,
+          created_at: DateTime.now,
+          updated_at: DateTime.now,
           status: response.nil? ? 0 : ([-1, 1].sample)
         )
         applications.push(application)

@@ -333,11 +333,11 @@ class ApplicationController < ActionController::Base
   end
 
   def owner!
-    Current.user.nil? || @job.nil? || @job.user_id != Current.user.id ? raise(CustomExceptions::Unauthorized::InsufficientRole::NotOwner) : true
+    Current.user.nil? || @job.nil? || @job.user_id != Current.user.id ? raise(CustomExceptions::Unauthorized::NotOwner) : true
   end
 
   def self.owner!
-    Current.user.nil? || @job.nil? || @job.user_id != Current.user.id ? raise(CustomExceptions::Unauthorized::InsufficientRole::NotOwner) : true
+    Current.user.nil? || @job.nil? || @job.user_id != Current.user.id ? raise(CustomExceptions::Unauthorized::NotOwner) : true
   end
 
   public
