@@ -10,13 +10,12 @@ class ApplicationStatusNotification < Noticed::Base
   end
 
   def message
-    @job = params[:application].job
-    @application = params[:application]
-    @user = recipient
-    "The status of your application for #{@job.title} has changed."
+    # TODO: FIX BUG
+    "Update on #{params[:job]}"
   end
 
   def url
-    job_path(params[:job])
+    # TODO: FIX BUG
+    # job_path(id)
   end
 end

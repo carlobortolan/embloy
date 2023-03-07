@@ -21,7 +21,7 @@ class Application < ApplicationRecord
 
   def notify_applicant(new_status, new_response)
     #    return unless job.user.eql? user
-    ApplicationStatusNotification.with(application: [:user_id, :job_id], user: user, job: job, status: new_status, response: new_response).deliver_later(user)
+    ApplicationStatusNotification.with(application: [:user_id, :job_id], user: user, job: self.job, status: new_status, response: new_response).deliver_later(user)
   end
 
   def accept (response)
