@@ -2,6 +2,7 @@ require_relative '../../lib/feed_generator.rb'
 
 class JobsController < ApplicationController
   before_action :require_user_logged_in, except: %w[index show find parse_inputs]
+  layout 'job_applic_layout', :only => "edit"
 
   def index
     @jobs = Job.all.order(created_at: :desc).first(100)
@@ -36,6 +37,7 @@ class JobsController < ApplicationController
 
   def edit
     @job = Job.find(params[:id])
+    @categories_list = File.readlines("app/helpers/job_categories.txt").map(&:chomp)
     require_user_be_owner
   end
 
@@ -69,7 +71,7 @@ class JobsController < ApplicationController
   private
 
   def job_params
-    params.require(:job).permit(:title, :description, :content, :job_notifications, :start_slot, :notify, :status, :user_id, :longitude, :latitude)
+    params.require(:job).permit(:title, :description, :content, :job_notifications, :start_slot, :notify, :status, :user_id, :longitude, :latitude, :job_type, :position, :currency, :salary, :key_skills, :duration)
   end
 
   def mark_notifications_as_read
