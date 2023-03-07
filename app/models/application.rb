@@ -12,7 +12,7 @@ class Application < ApplicationRecord
   validates :user_id, presence: true
   validates :job_id, presence: true
   validates :application_text, presence: true, length: { minimum: 10 }
-  validates :response, presence: false, length: { minimum: 10 }
+  validates :response, presence: false
 
   def notify_recipient
     return if job.user.eql? user

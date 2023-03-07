@@ -20,7 +20,7 @@ class Job < ApplicationRecord
   end
 
   def reject_all
-    self.applications.each { |application| application.reject }
+    self.applications.each { |application| application.reject("REJECTED") }
   end
 
   def format_address

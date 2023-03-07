@@ -3,7 +3,7 @@
 #########################################################
 class CustomExceptions < StandardError
 
-  # ============== Format and Authentication - Exceptions =============
+  # ============== User Format and Authentication - Exceptions =============
   class InvalidUser < StandardError
     class Unknown < StandardError # Should be risen when there is no record in users for a given id
     end
@@ -19,12 +19,7 @@ class CustomExceptions < StandardError
 
   end
 
-  class InvalidJob < StandardError
-    class Unknown < StandardError # Should be risen when there is no record in jobs for a given id
-    end
-  end
-
-  # ============== Authorization - Exceptions =============
+  # ============== User Authorization - Exceptions =============
   class Unauthorized < StandardError
 
     class NotOwner < StandardError # Current.user is not owner of resource that he is trying to access
@@ -47,9 +42,6 @@ class CustomExceptions < StandardError
       class NotVerified < StandardError # User is not 'verified' yet
       end
 
-      class NotOwner < StandardError # User does not 'own' something
-      end
-
     end
 
     class Blocked < StandardError # User is blacklisted
@@ -67,6 +59,12 @@ class CustomExceptions < StandardError
     class CustomEXP < StandardError # TODO: Token expired?
     end
 
+  end
+
+  # ============== Job - Exceptions =============
+  class InvalidJob < StandardError
+    class Unknown < StandardError # Should be risen when there is no record in jobs for a given job_id
+    end
   end
 
 end

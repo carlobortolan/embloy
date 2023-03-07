@@ -1,5 +1,5 @@
   <% if application.status == '-1' %>
-    <div class="col mb-5 mr-1 ml-1 primary bg-danger" style="padding: 5px; border: 10px solid white">
+    <div class="col mb-5 primary bg-danger" style="padding: 5px; border: 10px solid white">
   <% elsif application.status == '1' %>
     <div class="col mb-5 primary bg-success" style="padding: 5px; border: 10px solid white">
   <% else %>
@@ -20,7 +20,7 @@
         <p class="card-text"><b><i>  <%= application.response.nil? ? "No response yet ..." : application.response %></i></b></p>
         <div class="d-flex justify-content-between align-items-center">
           <!-- Start slot-->
-          <small class="text-muted"><%= application.updated_at %></small>
+          <small class="text-muted"><%= application.created_at %></small>
         </div>
       </div>
     </div>

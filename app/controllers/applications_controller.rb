@@ -57,10 +57,11 @@ class ApplicationsController < ApplicationController
   end
 
   def accept
+    puts "PARAMS = #{params}"
     @job = Job.find(params[:job_id])
     if require_user_be_owner
       @application = @job.applications.where(user_id: params[:application_id]).first
-      @application.accept(params[:response])
+      @application.accept(application_params[:response])
       redirect_to job_path(@job), status: :see_other, notice: 'Application has been accepted'
     end
   end
@@ -70,7 +71,7 @@ class ApplicationsController < ApplicationController
     if require_user_be_owner
       puts "PARAMS = #{params}"
       @application = @job.applications.where(user_id: params[:application_id]).first
-      @application.reject(params[:response])
+      @application.reject(application_params[:response])
       redirect_to job_applications_path(params[:job_id]), status: :see_other, notice: 'Application has been rejected'
     end
   end

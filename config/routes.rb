@@ -19,8 +19,8 @@ Rails.application.routes.draw do
       delete 'jobs', to: 'jobs#destroy'
       get 'jobs/(/:id)/applications', to: 'applications#show'
       post 'jobs/(/:id)/applications', to: 'applications#create'
-      get 'jobs/(/:id)/applications/(/:user)/accept', to: 'applications#accept'
-      patch 'jobs/(/:id)/applications/(/:user)/accept', to: 'applications#accept'
+      #      get 'jobs/(/:id)/applications/(/:user)/accept', to: 'applications#accept'
+      # patch 'jobs/(/:id)/applications/(/:user)/accept', to: 'applications#accept'
       # delete 'jobs/(/:id)/applications', to: 'applications#destroy'
       delete 'reviews/(/:id)', to: 'reviews#destroy'
       patch 'reviews/(/:id)', to: 'reviews#update'
@@ -44,9 +44,9 @@ Rails.application.routes.draw do
   resources :jobs do
     resources :applications
   end
-  get 'jobs/(/:job_id)/applications/(/:application_id)/accept', :to => 'applications#accept', as: :job_application_accept
-  get 'jobs/(/:job_id)/applications/(/:application_id)/reject', :to => 'applications#reject', as: :job_application_reject
-  get 'jobs/(/:job_id)/applications_reject_all', :to => 'applications#reject_all', as: :job_applications_reject_all
+  patch 'jobs/(/:job_id)/applications/(/:application_id)/accept', :to => 'applications#accept', as: :job_application_accept
+  patch 'jobs/(/:job_id)/applications/(/:application_id)/reject', :to => 'applications#reject', as: :job_application_reject
+  patch 'jobs/(/:job_id)/applications_reject_all', :to => 'applications#reject_all', as: :job_applications_reject_all
   delete 'jobs/(/:job_id)/applications/(/:application_id)' => 'applications#destroy'
 
   get 'reviews', :to => 'reviews#index', as: :reviews

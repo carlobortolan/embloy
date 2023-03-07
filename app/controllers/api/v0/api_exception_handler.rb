@@ -20,7 +20,7 @@ module ApiExceptionHandler
 
     #--------------------------------------
 
-    rescue_from CustomExceptions::Unauthorized::InsufficientRole::NotOwner,
+    rescue_from CustomExceptions::Unauthorized::NotOwner,
                 with: :user_not_owner_error
 
     #--------------------------------------

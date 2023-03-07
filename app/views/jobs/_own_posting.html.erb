@@ -7,14 +7,16 @@
       <div class="text-center ">
         <!-- Title-->
         <h5 class="fw-bolder"><%= job.title %></h5>
+        <small class="text-muted"><%= pluralize(job.applications_count, "application") %> </small>
+        <small class="text-muted">| <%= pluralize(job.view_count, "views") %> </small>
         <!-- Salary-->
         <%= "#{job.salary} #{job.currency}" %>
-          <!-- Description-->
-          <p class="card-text"><%= job.description %></p>
-          <div class="d-flex justify-content-between align-items-center">
-            <!-- Start slot-->
-            <small class="text-muted  "><%= job.start_slot.getlocal.asctime %></small>
-          </div>
+        <!-- Description-->
+        <p class="card-text"><%= job.description %></p>
+        <div class="d-flex justify-content-between align-items-center">
+          <!-- Start slot-->
+          <small class="text-muted  "><%= job.start_slot.getlocal.asctime %></small>
+        </div>
       </div>
     </div>
     <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
