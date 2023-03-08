@@ -209,113 +209,113 @@
                 <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
 
                   <!-- Profile Edit Form -->
-                    <%= form_with model: @user do |f| %>
+                  <%= form_with model: @user do |f| %>
 
-                      <div class="row mb-3">
-                        <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Profile Image</label>
-                        <div class="col-md-8 col-lg-9">
-                          <img src="assets/img/profile-img.jpg" alt="Profile">
-                          <div class="pt-2">
-                            <a href="#" class="btn btn-primary btn-sm" title="Upload new profile image"><i class="bi bi-upload"></i></a>
-                            <a href="#" class="btn btn-danger btn-sm" title="Remove my profile image"><i class="bi bi-trash"></i></a>
-                          </div>
+                    <div class="row mb-3">
+                      <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Profile Image</label>
+                      <div class="col-md-8 col-lg-9">
+                        <img src="assets/img/profile-img.jpg" alt="Profile">
+                        <div class="pt-2">
+                          <a href="#" class="btn btn-primary btn-sm" title="Upload new profile image"><i class="bi bi-upload"></i></a>
+                          <a href="#" class="btn btn-danger btn-sm" title="Remove my profile image"><i class="bi bi-trash"></i></a>
                         </div>
                       </div>
+                    </div>
 
-                      <div class="row mb-3">
-                        <label for="validationServer01" class="col-md-4 col-lg-3 col-form-label">Full Name</label>
-                        <div class="col-md-8 col-lg-9">
-                          <%= f.text_field :first_name, type: "text", class: "form-control is-valid", id: 'validationServer01', placeholder: "First name", required: true %>
-                        </div>
+                    <div class="row mb-3">
+                      <label for="validationServer01" class="col-md-4 col-lg-3 col-form-label">Full Name</label>
+                      <div class="col-md-8 col-lg-9">
+                        <%= f.text_field :first_name, type: "text", class: "form-control is-valid", id: 'validationServer01', placeholder: "First name", required: true %>
                       </div>
+                    </div>
 
-                      <div class="row mb-3">
-                        <label for="validationServer02" class="col-md-4 col-lg-3 col-form-label">Full Name</label>
-                        <div class="col-md-8 col-lg-9">
-                          <%= f.text_field :last_name, type: "text", class: "form-control is-valid", id: 'validationServer02', placeholder: "Last name", required: true %>
-                        </div>
+                    <div class="row mb-3">
+                      <label for="validationServer02" class="col-md-4 col-lg-3 col-form-label">Full Name</label>
+                      <div class="col-md-8 col-lg-9">
+                        <%= f.text_field :last_name, type: "text", class: "form-control is-valid", id: 'validationServer02', placeholder: "Last name", required: true %>
                       </div>
+                    </div>
 
-                      <div class="row mb-3">
-                        <label for="validationServer03" class="col-md-4 col-lg-3 col-form-label">Email</label>
-                        <div class="col-md-8 col-lg-9">
-                          <%= f.email_field :email, type: "text", class: "form-control is-valid", id: 'validationServer03', placeholder: "Your email", required: true %>
-                        </div>
+                    <div class="row mb-3">
+                      <label for="validationServer03" class="col-md-4 col-lg-3 col-form-label">Email</label>
+                      <div class="col-md-8 col-lg-9">
+                        <%= f.email_field :email, type: "text", class: "form-control is-valid", id: 'validationServer03', placeholder: "Your email", required: true %>
                       </div>
+                    </div>
 
-                      <div class="row mb-3">
-                        <label for="validationServer04" class="col-md-4 col-lg-3 col-form-label">Phone</label>
-                        <div class="col-md-8 col-lg-9">
-                        </div>
+                    <div class="row mb-3">
+                      <label for="validationServer04" class="col-md-4 col-lg-3 col-form-label">Phone</label>
+                      <div class="col-md-8 col-lg-9">
                       </div>
+                    </div>
 
-                      <div class="row mb-3">
-                        <label for="validationServer05" class="col-md-4 col-lg-3 col-form-label">Birthday</label>
-                        <div class="col-md-8 col-lg-9">
-                          <%= f.date_field :date_of_birth, type: "text", class: "form-control is-valid", id: 'validationServer05', placeholder: "Your date of birth", required: false %>
-                        </div>
+                    <div class="row mb-3">
+                      <label for="validationServer05" class="col-md-4 col-lg-3 col-form-label">Birthday</label>
+                      <div class="col-md-8 col-lg-9">
+                        <%= f.date_field :date_of_birth, type: "text", class: "form-control is-valid", id: 'validationServer05', placeholder: "Your date of birth", required: false %>
                       </div>
+                    </div>
 
-                      <div class="row mb-3">
-                        <label for="validationServer06" class="col-md-4 col-lg-3 col-form-label">Country Code</label>
-                        <div class="col-md-8 col-lg-9">
-                          <%= f.text_field :country_code, type: "text", class: "form-control is-valid", id: 'validationServer06', placeholder: "e.g.,: DE", required: false, pattern: "^(A(D|E|F|G|I|L|M|N|O|R|S|T|Q|U|W|X|Z)|B(A|B|D|E|F|G|H|I|J|L|M|N|O|R|S|T|V|W|Y|Z)|C(A|C|D|F|G|H|I|K|L|M|N|O|R|U|V|X|Y|Z)|D(E|J|K|M|O|Z)|E(C|E|G|H|R|S|T)|F(I|J|K|M|O|R)|G(A|B|D|E|F|G|H|I|L|M|N|P|Q|R|S|T|U|W|Y)|H(K|M|N|R|T|U)|I(D|E|Q|L|M|N|O|R|S|T)|J(E|M|O|P)|K(E|G|H|I|M|N|P|R|W|Y|Z)|L(A|B|C|I|K|R|S|T|U|V|Y)|M(A|C|D|E|F|G|H|K|L|M|N|O|Q|P|R|S|T|U|V|W|X|Y|Z)|N(A|C|E|F|G|I|L|O|P|R|U|Z)|OM|P(A|E|F|G|H|K|L|M|N|R|S|T|W|Y)|QA|R(E|O|S|U|W)|S(A|B|C|D|E|G|H|I|J|K|L|M|N|O|R|T|V|Y|Z)|T(C|D|F|G|H|J|K|L|M|N|O|R|T|V|W|Z)|U(A|G|M|S|Y|Z)|V(A|C|E|G|I|N|U)|W(F|S)|Y(E|T)|Z(A|M|W))$" %>
-                        </div>
+                    <div class="row mb-3">
+                      <label for="validationServer06" class="col-md-4 col-lg-3 col-form-label">Country Code</label>
+                      <div class="col-md-8 col-lg-9">
+                        <%= f.text_field :country_code, type: "text", class: "form-control is-valid", id: 'validationServer06', placeholder: "e.g.,: DE", required: false, pattern: "^(A(D|E|F|G|I|L|M|N|O|R|S|T|Q|U|W|X|Z)|B(A|B|D|E|F|G|H|I|J|L|M|N|O|R|S|T|V|W|Y|Z)|C(A|C|D|F|G|H|I|K|L|M|N|O|R|U|V|X|Y|Z)|D(E|J|K|M|O|Z)|E(C|E|G|H|R|S|T)|F(I|J|K|M|O|R)|G(A|B|D|E|F|G|H|I|L|M|N|P|Q|R|S|T|U|W|Y)|H(K|M|N|R|T|U)|I(D|E|Q|L|M|N|O|R|S|T)|J(E|M|O|P)|K(E|G|H|I|M|N|P|R|W|Y|Z)|L(A|B|C|I|K|R|S|T|U|V|Y)|M(A|C|D|E|F|G|H|K|L|M|N|O|Q|P|R|S|T|U|V|W|X|Y|Z)|N(A|C|E|F|G|I|L|O|P|R|U|Z)|OM|P(A|E|F|G|H|K|L|M|N|R|S|T|W|Y)|QA|R(E|O|S|U|W)|S(A|B|C|D|E|G|H|I|J|K|L|M|N|O|R|T|V|Y|Z)|T(C|D|F|G|H|J|K|L|M|N|O|R|T|V|W|Z)|U(A|G|M|S|Y|Z)|V(A|C|E|G|I|N|U)|W(F|S)|Y(E|T)|Z(A|M|W))$" %>
                       </div>
-                      <div class="row mb-3">
-                        <label for="validationServer07" class="col-md-4 col-lg-3 col-form-label">City</label>
-                        <div class="col-md-8 col-lg-9">
-                          <%= f.text_field :city, type: "text", class: "form-control is-valid", id: 'validationServer07', placeholder: "City", required: false %>
-                        </div>
+                    </div>
+                    <div class="row mb-3">
+                      <label for="validationServer07" class="col-md-4 col-lg-3 col-form-label">City</label>
+                      <div class="col-md-8 col-lg-9">
+                        <%= f.text_field :city, type: "text", class: "form-control is-valid", id: 'validationServer07', placeholder: "City", required: false %>
                       </div>
-                      <div class="row mb-3">
-                        <label for="validationServer08" class="col-md-4 col-lg-3 col-form-label">Postal Code</label>
-                        <div class="col-md-8 col-lg-9">
-                          <%= f.text_field :postal_code, type: "text", class: "form-control is-valid", id: 'validationServer08', placeholder: "e.g.,: 80805", required: false, pattern: "[\\d]{5}(-[\\d]{4})?" %>
-                        </div>
+                    </div>
+                    <div class="row mb-3">
+                      <label for="validationServer08" class="col-md-4 col-lg-3 col-form-label">Postal Code</label>
+                      <div class="col-md-8 col-lg-9">
+                        <%= f.text_field :postal_code, type: "text", class: "form-control is-valid", id: 'validationServer08', placeholder: "e.g.,: 80805", required: false, pattern: "[\\d]{5}(-[\\d]{4})?" %>
                       </div>
+                    </div>
 
-                      <div class="row mb-3">
-                        <label for="validationServer09" class="col-md-4 col-lg-3 col-form-label">Address
-                          (street)</label>
-                        <div class="col-md-8 col-lg-9">
-                          <%= f.text_field :address, type: "text", class: "form-control is-valid", id: 'validationServer09', placeholder: "Address", required: false %>
-                        </div>
+                    <div class="row mb-3">
+                      <label for="validationServer09" class="col-md-4 col-lg-3 col-form-label">Address
+                        (street)</label>
+                      <div class="col-md-8 col-lg-9">
+                        <%= f.text_field :address, type: "text", class: "form-control is-valid", id: 'validationServer09', placeholder: "Address", required: false %>
                       </div>
+                    </div>
 
-                      <div class="row mb-3">
-                        <label for="Twitter" class="col-md-4 col-lg-3 col-form-label">Twitter Profile</label>
-                        <div class="col-md-8 col-lg-9">
-                          <input name="twitter" type="text" class="form-control" id="Twitter" value="https://twitter.com/#">
-                        </div>
+                    <div class="row mb-3">
+                      <label for="Twitter" class="col-md-4 col-lg-3 col-form-label">Twitter Profile</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="twitter" type="text" class="form-control" id="Twitter" value="https://twitter.com/#">
                       </div>
+                    </div>
 
-                      <div class="row mb-3">
-                        <label for="Facebook" class="col-md-4 col-lg-3 col-form-label">Facebook Profile</label>
-                        <div class="col-md-8 col-lg-9">
-                          <input name="facebook" type="text" class="form-control" id="Facebook" value="https://facebook.com/#">
-                        </div>
+                    <div class="row mb-3">
+                      <label for="Facebook" class="col-md-4 col-lg-3 col-form-label">Facebook Profile</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="facebook" type="text" class="form-control" id="Facebook" value="https://facebook.com/#">
                       </div>
+                    </div>
 
-                      <div class="row mb-3">
-                        <label for="Instagram" class="col-md-4 col-lg-3 col-form-label">Instagram Profile</label>
-                        <div class="col-md-8 col-lg-9">
-                          <input name="instagram" type="text" class="form-control" id="Instagram" value="https://instagram.com/#">
-                        </div>
+                    <div class="row mb-3">
+                      <label for="Instagram" class="col-md-4 col-lg-3 col-form-label">Instagram Profile</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="instagram" type="text" class="form-control" id="Instagram" value="https://instagram.com/#">
                       </div>
+                    </div>
 
-                      <div class="row mb-3">
-                        <label for="Linkedin" class="col-md-4 col-lg-3 col-form-label">Linkedin Profile</label>
-                        <div class="col-md-8 col-lg-9">
-                          <input name="linkedin" type="text" class="form-control" id="Linkedin" value="https://linkedin.com/#">
-                        </div>
+                    <div class="row mb-3">
+                      <label for="Linkedin" class="col-md-4 col-lg-3 col-form-label">Linkedin Profile</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="linkedin" type="text" class="form-control" id="Linkedin" value="https://linkedin.com/#">
                       </div>
+                    </div>
 
-                      <div class="text-center">
-                        <%= f.submit 'Save', method: :patch %>
-                        <% f.submit 'Save Changes', class: "btn btn-primary w-100" %>
-                      </div>
-                    <% end %>
+                    <div class="text-center">
+                      <%= f.submit 'Save', method: :patch %>
+                      <% f.submit 'Save Changes', class: "btn btn-primary w-100" %>
+                    </div>
+                  <% end %>
 
                 </div>
 

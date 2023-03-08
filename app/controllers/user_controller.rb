@@ -23,13 +23,15 @@ class UserController < ApplicationController
   end
 
   def update
-    puts "STARTED UPDATE"
+    puts "STARTED UPDATE 1 #{params}"
+    puts "STARTED UPDATE 2 #{user_params}"
     @user = Current.user
     require_user_logged_in
+
     if @user.update(user_params)
       redirect_to @user
     else
-      render :edit, status: :unprocessable_entity
+      render :index, status: :unprocessable_entity
     end
   end
 
@@ -50,7 +52,6 @@ class UserController < ApplicationController
 
   def user_params
     params.require(:user).permit(:first_name, :last_name, :email, :date_of_birth, :country_code, :city, :postal_code, :address)
-    # TODO: expand
   end
 
   # PHONE
