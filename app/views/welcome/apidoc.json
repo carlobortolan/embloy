@@ -126,16 +126,19 @@
                   "properties": {
                     "email": {
                       "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `email`\n- `first_name`\n- `last_name`\n- `password`\n- `password_confirmation`",
                       "items": {
                         "type": "object",
                         "properties": {
                           "error": {
                             "type": "string",
-                            "example": "ERR_INVALID"
+                            "example": "ERR_INVALID",
+                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_BLANK`: When a required attribute is blank.\n- `blank`: When specifically the password attribute is blank.\n- `ERR_INVALID`: When a required attribute is required is malformed or unknown."
                           },
                           "description": {
                             "type": "string",
-                            "example": "Attribute is malformed or unknown"
+                            "example": "Attribute is malformed or unknown",
+                            "description": "A brief context specific classification of the error that occured"
                           }
                         }
                       }
