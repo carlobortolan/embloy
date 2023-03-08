@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_03_223735) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_08_011051) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -186,6 +186,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_03_223735) do
     t.integer "jobs_count", default: 0
     t.enum "user_role", default: "spectator", null: false, enum_type: "user_roles"
     t.boolean "application_notifications", default: true, null: false
+    t.string "twitter_url", limit: 500
+    t.string "facebook_url", limit: 500
+    t.string "instagram_url", limit: 500
+    t.decimal "phone"
+    t.string "degree", limit: 50
+    t.string "linkedin_url", limit: 500
     t.index ["email"], name: "user_email_index", unique: true
     t.index ["first_name", "last_name"], name: "user_name_index"
     t.index ["user_type"], name: "user_user_type_index"

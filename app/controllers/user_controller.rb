@@ -18,16 +18,12 @@ class UserController < ApplicationController
   end
 
   def edit
-    puts "STARTED EDIT"
     @user = Current.user
   end
 
   def update
-    puts "STARTED UPDATE 1 #{params}"
-    puts "STARTED UPDATE 2 #{user_params}"
     @user = Current.user
     require_user_logged_in
-
     if @user.update(user_params)
       redirect_to @user
     else
@@ -51,7 +47,7 @@ class UserController < ApplicationController
   private
 
   def user_params
-    params.require(:user).permit(:first_name, :last_name, :email, :date_of_birth, :country_code, :city, :postal_code, :address)
+    params.require(:user).permit(:first_name, :last_name, :email, :phone, :degree, :date_of_birth, :country_code, :city, :postal_code, :address, :twitter_url, :facebook_url, :linkedin_url, :instagram_url)
   end
 
   # PHONE
