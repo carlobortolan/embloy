@@ -2,16 +2,15 @@
 
 ## License
 
-### Licensed under either of
+### Licensed under
 
-> Apache License, Version 2.0, ([LICENSE-APACHE](http://www.apache.org/licenses/LICENSE-2.0))
-
-> MIT license ([LICENSE-MIT](http://opensource.org/licenses/MIT))
+> GNU AFFERO GENERAL PUBLIC LICENSE v3.0 ([gpl-3](https://www.gnu.org/licenses/gpl-3.0.en.html))
 
 ## Contribution
 
 Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by anyone, as
-defined in the Apache-2.0 license, shall be dual licensed as above, without any additional terms or conditions.
+defined in the GNU AFFERO GENERAL PUBLIC LICENSE v3.0 license, shall be licensed as above, without any additional terms
+or conditions.
 
 ## Functionality
 
