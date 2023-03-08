@@ -332,45 +332,54 @@
 
                 <div class="tab-pane fade pt-3" id="profile-change-password">
                   <!-- Change Password Form -->
-                  <form>
+                  <h1>Edit Password</h1>
+
+                  <%= form_with model: Current.user, url: edit_password_path do |f| %>
 
                     <div class="row mb-3">
-                      <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label">Current
-                        Password</label>
+                      <label for="newPassword" class="col-md-4 col-lg-3 col-form-label">New Password</label>
                       <div class="col-md-8 col-lg-9">
-                        <input name="password" type="password" class="form-control" id="currentPassword">
+                        <%= f.password_field :password, type: "password", class: "form-control form-control-lg", id: 'inputPassword', placeholder: "password", required: true, minlength: 8 %>
+                        <small id="passwordHelpInline" class="text-muted">
+                          Must be at least 8 characters long.
+                        </small><br>
                       </div>
                     </div>
 
                     <div class="row mb-3">
                       <label for="newPassword" class="col-md-4 col-lg-3 col-form-label">New Password</label>
                       <div class="col-md-8 col-lg-9">
-                        <input name="newpassword" type="password" class="form-control" id="newPassword">
-                      </div>
-                    </div>
-
-                    <div class="row mb-3">
-                      <label for="renewPassword" class="col-md-4 col-lg-3 col-form-label">Re-enter New
-                        Password</label>
-                      <div class="col-md-8 col-lg-9">
-                        <input name="renewpassword" type="password" class="form-control" id="renewPassword">
+                        <%= f.password_field :password_confirmation, type: "password", class: "form-control form-control-lg", id: 'inputPassword_repeat', placeholder: "password confirmation", required: true, minlength: 8, oninput: "check()" %>
+                        <script>
+                            function check() {
+                                var input = document.getElementById('inputPassword_repeat');
+                                if (input.value !== document.getElementById('inputPassword').value) {
+                                    input.setCustomValidity('Password must be matching.');
+                                } else {
+                                    // input is valid -- reset the error message
+                                    input.setCustomValidity('');
+                                }
+                            }</script>
                       </div>
                     </div>
 
                     <div class="text-center">
-                      <button type="submit" class="btn btn-primary">Change Password</button>
+                      <%= f.submit 'Update Password' %>
                     </div>
-                  </form><!-- End Change Password Form -->
+                    </div>
 
-                </div>
+                  <% end %>
 
-              </div><!-- End Bordered Tabs -->
 
-            </div>
+                  </div>
+
+            </div><!-- End Bordered Tabs -->
+
           </div>
-
         </div>
+
       </div>
+    </div>
 
     </div>
   </section><!-- End About Section -->

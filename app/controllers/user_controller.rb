@@ -25,9 +25,9 @@ class UserController < ApplicationController
     @user = Current.user
     require_user_logged_in
     if @user.update(user_params)
-      redirect_to @user
+      redirect_to @user, notice: "Updated profile"
     else
-      render :index, status: :unprocessable_entity
+      render :index, status: :unprocessable_entity, alert: "Could not save changes"
     end
   end
 
