@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-require_relative 'api_exception_handler.rb'
+require_relative '../../../service/api_exception_handler.rb'
 module Api
   module V0
     class ApiController < ApplicationController
