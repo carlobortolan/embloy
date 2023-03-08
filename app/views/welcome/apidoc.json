@@ -1,10 +1,10 @@
 {
   "swagger": "2.0",
   "info": {
-    "description": "The API documentation of Embloy.  You can find out more about it at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).  For this sample, you can use the api key `special-key` to test the authorization filters.",
+    "description": "The Embloy API is meant to extract Embloy's value off from the web browser onto external devices. More information about the Embloy project can be found at [https://about.embloy.com/](https://about.embloy.com/). The open sourced parts of the Embloy codebase can be found on [https://github.com/carlobortolan/Embloy](https://github.com/carlobortolan/Embloy). For any questions regarding the Embloy API or this documentation please write a mail to hummeloffice@embloy.com",
     "version": "0.0.1",
     "openapi": "3.0.1",
-    "title": "Embloy",
+    "title": "Embloy API 0.1",
     "termsOfService": "https://embloy.onrender.com/about/privacy/policy",
     "contact": {
       "email": "info@embloy.com"
