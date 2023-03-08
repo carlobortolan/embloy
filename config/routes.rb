@@ -77,11 +77,14 @@ Rails.application.routes.draw do
   # -----> User management <-----
   # get 'user/', :to => 'user#index', as: :user_index
   get 'user/profile', :to => 'user#index', as: :profile_index
-  get 'user/settings', :to => 'user#settings', as: :profile_settings
+  patch 'user/profile', :to => 'user#update', as: :user
+  patch 'user/profile', to: 'user#update', as: :profile_update
   get 'user/edit', :to => 'user#edit', as: :profile_edit
+  get 'user/settings', :to => 'user#settings', as: :profile_settings
   get 'user/applications', :to => 'user#own_applications', as: :own_applications
   get 'user/jobs', :to => 'user#own_jobs', as: :own_jobs
   get 'user/preferences', to: 'user#preferences', as: :preferences
+
 
   #= <<<<< *Web-Application* >>>>>>
   namespace :admin do

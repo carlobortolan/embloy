@@ -18,7 +18,19 @@ class UserController < ApplicationController
   end
 
   def edit
+    puts "STARTED EDIT"
     @user = Current.user
+  end
+
+  def update
+    puts "STARTED UPDATE"
+    @user = Current.user
+    require_user_logged_in
+    if @user.update(user_params)
+      redirect_to @user
+    else
+      render :edit, status: :unprocessable_entity
+    end
   end
 
   def preferences
@@ -33,6 +45,16 @@ class UserController < ApplicationController
   def own_applications
     @applications = Application.includes(:user).all.where("user_id = #{Current.user.id}").order("updated_at DESC")
   end
+
+  private
+
+  def user_params
+    params.require(:user).permit(:first_name, :last_name, :email, :date_of_birth, :country_code, :city, :postal_code, :address)
+    # TODO: expand
+  end
+
+  # PHONE
+  # DEGREE
 
 end
 

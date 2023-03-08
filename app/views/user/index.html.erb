@@ -32,6 +32,7 @@
     </div>
   </section>
 
+
   <!-- ======= About Section ======= -->
   <section id="about" class="about">
     <div class="container">
@@ -39,6 +40,8 @@
         <h2>Your Profile</h2>
         <p>Tell us a little bit about yourself so we can find the best jobs to match your skills.</p>
       </div>
+
+
       <div class="row">
         <div class="col-lg-4" data-aos="fade-right">
           <% if !@user.nil? && !@user.image_url.nil? %>
@@ -86,12 +89,326 @@
         <%= button_to 'Logout', logout_path, method: :delete, class: "btn btn-dark btn-lg mr-1" %>
 
       </div>
+      <div class="row">
+        <div class="col-xl-4">
+
+          <div class="card">
+            <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+
+              <% if !@user.nil? && !@user.image_url.nil? %>
+                <%= image_tag @user.image_url, style: "width: 400px; height: 400px; border-radius:100%", class: "card-img-top" %>
+                <!--          <br><%#= image_tag "https://avatars.githubusercontent.com/u/106114526?v=4", style: "width: 400px; height: 400px; border-radius:100%", class: "card-img-top" %>-->
+              <% end %>
+
+              <h2><%= @user.full_name %></h2>
+              <h3>Web Designer</h3>
+              <div class="social-links mt-2">
+                <a href="<%= @user.image_url %>" class="twitter"><i class="bi bi-twitter"></i></a>
+                <a href="<%= @user.image_url %>" class="facebook"><i class="bi bi-facebook"></i></a>
+                <a href="<%= @user.image_url %>" class="instagram"><i class="bi bi-instagram"></i></a>
+                <a href="<%= @user.image_url %>" class="linkedin"><i class="bi bi-linkedin"></i></a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="col-xl-8">
+
+          <div class="card">
+            <div class="card-body pt-3">
+              <!-- Bordered Tabs -->
+              <ul class="nav nav-tabs nav-tabs-bordered">
+
+                <li class="nav-item">
+                  <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">Overview</button>
+                </li>
+
+                <li class="nav-item">
+                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Edit Profile</button>
+                </li>
+
+                <li class="nav-item">
+                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-settings">Settings</button>
+                </li>
+
+                <li class="nav-item">
+                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">Change
+                    Password
+                  </button>
+                </li>
+
+              </ul>
+              <div class="tab-content pt-2">
+
+                <div class="tab-pane fade show active profile-overview" id="profile-overview">
+                  <h5 class="card-title">About</h5>
+                  <p class="small fst-italic">Sunt est soluta temporibus accusantium neque nam maiores cumque
+                    temporibus.
+                    Tempora libero non est unde veniam est qui dolor. Ut sunt iure rerum quae quisquam autem eveniet
+                    perspiciatis odit. Fuga sequi sed ea saepe at unde.</p>
+
+                  <h5 class="card-title">Profile Details</h5>
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label "><strong>Full Name</strong></div>
+                    <div class="col-lg-9 col-md-8"><%= @user.full_name %></div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label"><strong>Email</strong></div>
+                    <div class="col-lg-9 col-md-8"><%= @user.email %></div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label"><strong>Phone</strong></div>
+                    <div class="col-lg-9 col-md-8"><%= "123456789" %></div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label"><strong>Degree</strong></div>
+                    <div class="col-lg-9 col-md-8"><%= "Master" %></div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label"><strong>Age</strong></div>
+                    <div class="col-lg-9 col-md-8"><%= @user.age %></div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label"><strong>Birthday</strong></div>
+                    <div class="col-lg-9 col-md-8"><%= @user.date_of_birth.strftime("%d/%m/%Y") %></div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label"><strong>CountryCode</strong></div>
+                    <div class="col-lg-9 col-md-8"><%= @user.country_code %></div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label"><strong>City</strong></div>
+                    <div class="col-lg-9 col-md-8"><%= @user.city %></div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label"><strong>PostalCode</strong></div>
+                    <div class="col-lg-9 col-md-8"><%= @user.postal_code %></div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label"><strong>Address</strong></div>
+                    <div class="col-lg-9 col-md-8"><%= @user.address %></div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label"><strong>Role</strong></div>
+                    <div class="col-lg-9 col-md-8"><%= @user.user_role %></div>
+                  </div>
+
+                </div>
+
+                <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
+
+                  <!-- Profile Edit Form -->
+                    <%= form_with model: @user do |f| %>
+
+                      <div class="row mb-3">
+                        <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Profile Image</label>
+                        <div class="col-md-8 col-lg-9">
+                          <img src="assets/img/profile-img.jpg" alt="Profile">
+                          <div class="pt-2">
+                            <a href="#" class="btn btn-primary btn-sm" title="Upload new profile image"><i class="bi bi-upload"></i></a>
+                            <a href="#" class="btn btn-danger btn-sm" title="Remove my profile image"><i class="bi bi-trash"></i></a>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="row mb-3">
+                        <label for="validationServer01" class="col-md-4 col-lg-3 col-form-label">Full Name</label>
+                        <div class="col-md-8 col-lg-9">
+                          <%= f.text_field :first_name, type: "text", class: "form-control is-valid", id: 'validationServer01', placeholder: "First name", required: true %>
+                        </div>
+                      </div>
+
+                      <div class="row mb-3">
+                        <label for="validationServer02" class="col-md-4 col-lg-3 col-form-label">Full Name</label>
+                        <div class="col-md-8 col-lg-9">
+                          <%= f.text_field :last_name, type: "text", class: "form-control is-valid", id: 'validationServer02', placeholder: "Last name", required: true %>
+                        </div>
+                      </div>
+
+                      <div class="row mb-3">
+                        <label for="validationServer03" class="col-md-4 col-lg-3 col-form-label">Email</label>
+                        <div class="col-md-8 col-lg-9">
+                          <%= f.email_field :email, type: "text", class: "form-control is-valid", id: 'validationServer03', placeholder: "Your email", required: true %>
+                        </div>
+                      </div>
+
+                      <div class="row mb-3">
+                        <label for="validationServer04" class="col-md-4 col-lg-3 col-form-label">Phone</label>
+                        <div class="col-md-8 col-lg-9">
+                        </div>
+                      </div>
+
+                      <div class="row mb-3">
+                        <label for="validationServer05" class="col-md-4 col-lg-3 col-form-label">Birthday</label>
+                        <div class="col-md-8 col-lg-9">
+                          <%= f.date_field :date_of_birth, type: "text", class: "form-control is-valid", id: 'validationServer05', placeholder: "Your date of birth", required: false %>
+                        </div>
+                      </div>
+
+                      <div class="row mb-3">
+                        <label for="validationServer06" class="col-md-4 col-lg-3 col-form-label">Country Code</label>
+                        <div class="col-md-8 col-lg-9">
+                          <%= f.text_field :country_code, type: "text", class: "form-control is-valid", id: 'validationServer06', placeholder: "e.g.,: DE", required: false, pattern: "^(A(D|E|F|G|I|L|M|N|O|R|S|T|Q|U|W|X|Z)|B(A|B|D|E|F|G|H|I|J|L|M|N|O|R|S|T|V|W|Y|Z)|C(A|C|D|F|G|H|I|K|L|M|N|O|R|U|V|X|Y|Z)|D(E|J|K|M|O|Z)|E(C|E|G|H|R|S|T)|F(I|J|K|M|O|R)|G(A|B|D|E|F|G|H|I|L|M|N|P|Q|R|S|T|U|W|Y)|H(K|M|N|R|T|U)|I(D|E|Q|L|M|N|O|R|S|T)|J(E|M|O|P)|K(E|G|H|I|M|N|P|R|W|Y|Z)|L(A|B|C|I|K|R|S|T|U|V|Y)|M(A|C|D|E|F|G|H|K|L|M|N|O|Q|P|R|S|T|U|V|W|X|Y|Z)|N(A|C|E|F|G|I|L|O|P|R|U|Z)|OM|P(A|E|F|G|H|K|L|M|N|R|S|T|W|Y)|QA|R(E|O|S|U|W)|S(A|B|C|D|E|G|H|I|J|K|L|M|N|O|R|T|V|Y|Z)|T(C|D|F|G|H|J|K|L|M|N|O|R|T|V|W|Z)|U(A|G|M|S|Y|Z)|V(A|C|E|G|I|N|U)|W(F|S)|Y(E|T)|Z(A|M|W))$" %>
+                        </div>
+                      </div>
+                      <div class="row mb-3">
+                        <label for="validationServer07" class="col-md-4 col-lg-3 col-form-label">City</label>
+                        <div class="col-md-8 col-lg-9">
+                          <%= f.text_field :city, type: "text", class: "form-control is-valid", id: 'validationServer07', placeholder: "City", required: false %>
+                        </div>
+                      </div>
+                      <div class="row mb-3">
+                        <label for="validationServer08" class="col-md-4 col-lg-3 col-form-label">Postal Code</label>
+                        <div class="col-md-8 col-lg-9">
+                          <%= f.text_field :postal_code, type: "text", class: "form-control is-valid", id: 'validationServer08', placeholder: "e.g.,: 80805", required: false, pattern: "[\\d]{5}(-[\\d]{4})?" %>
+                        </div>
+                      </div>
+
+                      <div class="row mb-3">
+                        <label for="validationServer09" class="col-md-4 col-lg-3 col-form-label">Address
+                          (street)</label>
+                        <div class="col-md-8 col-lg-9">
+                          <%= f.text_field :address, type: "text", class: "form-control is-valid", id: 'validationServer09', placeholder: "Address", required: false %>
+                        </div>
+                      </div>
+
+                      <div class="row mb-3">
+                        <label for="Twitter" class="col-md-4 col-lg-3 col-form-label">Twitter Profile</label>
+                        <div class="col-md-8 col-lg-9">
+                          <input name="twitter" type="text" class="form-control" id="Twitter" value="https://twitter.com/#">
+                        </div>
+                      </div>
+
+                      <div class="row mb-3">
+                        <label for="Facebook" class="col-md-4 col-lg-3 col-form-label">Facebook Profile</label>
+                        <div class="col-md-8 col-lg-9">
+                          <input name="facebook" type="text" class="form-control" id="Facebook" value="https://facebook.com/#">
+                        </div>
+                      </div>
+
+                      <div class="row mb-3">
+                        <label for="Instagram" class="col-md-4 col-lg-3 col-form-label">Instagram Profile</label>
+                        <div class="col-md-8 col-lg-9">
+                          <input name="instagram" type="text" class="form-control" id="Instagram" value="https://instagram.com/#">
+                        </div>
+                      </div>
+
+                      <div class="row mb-3">
+                        <label for="Linkedin" class="col-md-4 col-lg-3 col-form-label">Linkedin Profile</label>
+                        <div class="col-md-8 col-lg-9">
+                          <input name="linkedin" type="text" class="form-control" id="Linkedin" value="https://linkedin.com/#">
+                        </div>
+                      </div>
+
+                      <div class="text-center">
+                        <%= f.submit 'Save', method: :patch %>
+                        <% f.submit 'Save Changes', class: "btn btn-primary w-100" %>
+                      </div>
+                    <% end %>
+
+                </div>
+
+                <div class="tab-pane fade pt-3" id="profile-settings">
+
+                  <!-- Settings Form -->
+                  <form>
+
+                    <div class="row mb-3">
+                      <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Email Notifications</label>
+                      <div class="col-md-8 col-lg-9">
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="changesMade" checked>
+                          <label class="form-check-label" for="changesMade">
+                            Changes made to your account
+                          </label>
+                        </div>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="newProducts" checked>
+                          <label class="form-check-label" for="newProducts">
+                            Information on new products and services
+                          </label>
+                        </div>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="proOffers">
+                          <label class="form-check-label" for="proOffers">
+                            Marketing and promo offers
+                          </label>
+                        </div>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="securityNotify" checked disabled>
+                          <label class="form-check-label" for="securityNotify">
+                            Security alerts
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="text-center">
+                      <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                  </form><!-- End settings Form -->
+
+                </div>
+
+                <div class="tab-pane fade pt-3" id="profile-change-password">
+                  <!-- Change Password Form -->
+                  <form>
+
+                    <div class="row mb-3">
+                      <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label">Current
+                        Password</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="password" type="password" class="form-control" id="currentPassword">
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label for="newPassword" class="col-md-4 col-lg-3 col-form-label">New Password</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="newpassword" type="password" class="form-control" id="newPassword">
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label for="renewPassword" class="col-md-4 col-lg-3 col-form-label">Re-enter New
+                        Password</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="renewpassword" type="password" class="form-control" id="renewPassword">
+                      </div>
+                    </div>
+
+                    <div class="text-center">
+                      <button type="submit" class="btn btn-primary">Change Password</button>
+                    </div>
+                  </form><!-- End Change Password Form -->
+
+                </div>
+
+              </div><!-- End Bordered Tabs -->
+
+            </div>
+          </div>
+
+        </div>
+      </div>
 
     </div>
   </section><!-- End About Section -->
 
-
 </main><!-- End #main -->
+
 
 <a href="#" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 <div id="preloader"></div>
+
