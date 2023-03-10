@@ -99,7 +99,7 @@ module Api
                 render status: 422, json: { "user": [
                   {
                     "error": "ERR_UNNECESSARY",
-                    "description": "Attribute is already verified."
+                    "description": "Attribute is already verified"
                   }
                 ]
                 }

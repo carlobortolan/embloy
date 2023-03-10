@@ -101,7 +101,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful operation",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -164,7 +164,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_TAKEN",
-                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_BLANK`: When a required attribute must be unique and already exists in the database."
+                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_TAKEN`: When a required attribute must be unique and already exists in the database."
                           },
                           "description": {
                             "type": "string",
@@ -190,6 +190,150 @@
                       "type": "string",
                       "format": "int64",
                       "example": "Please try again later. If this error persists, we recommend to contact our support team"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/verify": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Verify Embloy account credentials",
+        "description": "This makes sure that the Embloy account was registerd successfully and automatically claims the initial refresh token. Verifying an account is mandatory before using any function of Embloy's plattform.",
+        "operationId": "verifyUser",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "description": "The email address to be used for login",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "winston.smith@embloy.com"
+            }
+          },
+          {
+            "name": "password",
+            "in": "path",
+            "description": "The password to be used for login",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "doublethink"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "refresh_token": {
+                      "type": "string",
+                      "format": "int64",
+                      "example": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOjExMDIsImV4cCI6MTY3ODQ4Mjk5MSwianRpIjoiOWRiMDkzODZlYTZjZTQ1MTQxMWY1MjdhYTIzYjhkODEiLCJpYXQiOjE2Nzg0Njg1OTEsImlzcyI6Imh1bW1lbEotU0ZDOCJ9.-fMsb8YlK7eNXGM9VrElHWFMWH4fVIv4CFebkwS9Ge0"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `email`\n- `password`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_BLANK",
+                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_BLANK`: When a required attribute is blank or not given by the client."
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Attribute can't be blank",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email||password": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `email||password`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_INVALID",
+                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_INVALID`: When a given attribute is malformed or unknown. Check for spelling or other formatting errors"
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Attribute is malformed or unknown",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `user`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_UNNECESSARY",
+                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_UNNECESSARY`: When a requested task is unnecessary, the system refusess to process it. Often it helps to ask the system what your exact intentions are and wheter the specific call to the Embloy API is the standard method for it."
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Attribute is already verified",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
                     }
                   }
                 }
@@ -552,26 +696,31 @@
       "User": {
         "type": "object",
         "properties": {
-          "email": {
-            "type": "string",
-            "format": "int64",
-            "example": "winston.smith@embloy.com"
-          },
-          "first_name": {
-            "type": "string",
-            "example": "Winston"
-          },
-          "last_name": {
-            "type": "string",
-            "example": "Smith"
-          },
-          "password": {
-            "type": "string",
-            "example": "doublethink"
-          },
-          "password_confirmation": {
-            "type": "string",
-            "example": "doublethink"
+          "user": {
+            "type": "object",
+            "properties": {
+              "email": {
+                "type": "string",
+                "format": "int64",
+                "example": "winston.smith@embloy.com"
+              },
+              "first_name": {
+                "type": "string",
+                "example": "Winston"
+              },
+              "last_name": {
+                "type": "string",
+                "example": "Smith"
+              },
+              "password": {
+                "type": "string",
+                "example": "doublethink"
+              },
+              "password_confirmation": {
+                "type": "string",
+                "example": "doublethink"
+              }
+            }
           }
         }
       },
