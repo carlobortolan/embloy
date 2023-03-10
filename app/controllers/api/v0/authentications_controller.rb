@@ -18,7 +18,7 @@ module Api
 
             else
               # user.authenticate(refresh_token_params["password"]) fails
-              render status: 401, json: { "password": [
+              render status: 401, json: { "email||password": [
                 {
                   "error": "ERR_INVALID",
                   "description": "Attribute is malformed or unknown."
@@ -29,7 +29,7 @@ module Api
 
           else
             # User.find_by(email: refresh_token_params["email"]) fails
-            render status: 400, json: { "user": [
+            render status: 400, json: { "email||password": [
               {
                 "error": "ERR_INVALID",
                 "description": "Attribute is malformed or unknown."
@@ -54,8 +54,8 @@ module Api
           # The requested token subject (User) is unverified.
           render status: 403, json: { "user": [
             {
-              "error": "ERR_INACTIVE",
-              "description": "Attribute is not verified."
+              "error": "ERR_RAC",
+              "description": "Proceeding is inhibited by an access restriction"
             }
           ]
           }
@@ -81,37 +81,19 @@ module Api
           }
         rescue CustomExceptions::InvalidUser::Unknown
           # The requested token subject (User) doesn't exists BUT user.authenticate(refresh_token_params["password"]) says true
-          render status: 500, json: { "user": [
-            {
-              "error": "ERR_SERVER",
-              "description": "Please try again later. If this error persists please contact the support team."
-            }
-          ]
-          }
+          render status: 500, json: { "error": "Please try again later. If this error persists, we recommend to contact our support team." }
 
         rescue CustomExceptions::InvalidInput::SUB
           # Invalid Input (User Attribute is malformed) BUT user.authenticate(refresh_token_params["password"]) says true
-          render status: 500, json: { "user": [
-            {
-              "error": "ERR_SERVER",
-              "description": "Please try again later. If this error persists please contact the support team."
-            }
-          ]
-          }
+          render status: 500, json: { "error": "Please try again later. If this error persists, we recommend to contact our support team." }
         rescue CustomExceptions::InvalidUser::Unknown
           # Invalid User (User.find_by(id: id) == nil) BUT user.present says true
-          render status: 500, json: { "user": [
-            {
-              "error": "ERR_SERVER",
-              "description": "Please try again later. If this error persists please contact the support team."
-            }
-          ]
-          }
+          render status: 500, json: { "error": "Please try again later. If this error persists, we recommend to contact our support team." }
         rescue CustomExceptions::Unauthorized::InsufficientRole
           render status: 403, json: { "user": [
             {
-              "error": "ERR_INACTIVE",
-              "description": "Attribute is blocked."
+              "error": "ERR_RAC",
+              "description": "Proceeding is inhibited by an access restriction"
             }
           ]
           }

@@ -133,7 +133,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_BLANK`: When a required attribute is blank.\n- `blank`: When specifically the password attribute is blank.\n- `ERR_INVALID`: When a required attribute is required is malformed or unknown."
+                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_BLANK`: When a required attribute is blank. All required parameters are denoted above. If all required attributes were indeed given but this error gets raised it could be that the attributs are provided falsely (e.g. via header or via path instead of body ...)\n- `ERR_INVALID`: When a given attribute is malformed or unknown. Check for spelling or other formatting errors. This specific error indicates that no database records could be retrieved for the given inputs. So double check whether the email is correct or an corresponding Embloy account truly exists.\n- `blank`: When specifically the password attribute is blank."
                           },
                           "description": {
                             "type": "string",
@@ -164,7 +164,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_TAKEN",
-                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_TAKEN`: When a required attribute must be unique and already exists in the database."
+                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_TAKEN`: When a required attribute must be unique and already exists in the database. This specific error indicates that another Embloy account with the exact same email already exists."
                           },
                           "description": {
                             "type": "string",
@@ -263,7 +263,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_BLANK",
-                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_BLANK`: When a required attribute is blank or not given by the client."
+                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_BLANK`: When a required attribute is blank. All required parameters are denoted above. If all required attributes were indeed given but this error gets raised it could be that the attributs are provided falsely (e.g. via header or via path instead of body ...)"
                           },
                           "description": {
                             "type": "string",
@@ -294,7 +294,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_INVALID`: When a given attribute is malformed or unknown. Check for spelling or other formatting errors"
+                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_INVALID`: When a given attribute is malformed or unknown. Check for spelling or other formatting errors. This specific error indicates that the provided password is incorrect."
                           },
                           "description": {
                             "type": "string",
@@ -325,7 +325,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_UNNECESSARY",
-                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_UNNECESSARY`: When a requested task is unnecessary, the system refusess to process it. Often it helps to ask the system what your exact intentions are and wheter the specific call to the Embloy API is the standard method for it."
+                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_UNNECESSARY`: When a requested task is unnecessary, the system refusess to process it. Often it helps to ask the system what your exact intentions are and wheter the specific call to the Embloy API is the standard method for it. This specific error implies that the Embloy account is aleady verified."
                           },
                           "description": {
                             "type": "string",
@@ -334,6 +334,178 @@
                           }
                         }
                       }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/auth/token/refresh": {
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Claim a refresh token",
+        "description": "This first verifies Embloy account credentials and then issues a refresh token for this specific account. Refresh tokens only possess a time-limited validity.",
+        "operationId": "createRefreshToken",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "body",
+            "description": "The email address to be used for login",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "winston.smith@embloy.com"
+            }
+          },
+          {
+            "name": "password",
+            "in": "body",
+            "description": "The password to be used for login",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "doublethink"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Create refresh token",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshToken"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "refresh_token": {
+                      "type": "string",
+                      "format": "int64",
+                      "example": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOjExMDIsImV4cCI6MTY3ODQ4NTQ4OSwianRpIjoiMmI0MmQwNTViYTY1ZTgxNDhiYTQxOGY4M2E4NmE5NTYiLCJpYXQiOjE2Nzg0NzEwODksImlzcyI6Imh1bW1lbEotU0ZDOCJ9.uQa37OkZj_v7G5vTfRwXGlXg_12ywsyZru5RuCAC-xg"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email||password": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `refresh_token`\n- `email`\n- `password`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_INVALID",
+                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_BLANK`: When a required attribute is blank. All required parameters are denoted above. If all required attributes were indeed given but this error gets raised it could be that the attributs are provided falsely (e.g. via header or via path instead of body ...)\n- `ERR_INVALID`: When a given attribute is malformed or unknown. Check for spelling or other formatting errors. This specific error indicates that no database records could be retrieved for the given inputs. So double check whether the email is correct or an corresponding Embloy account truly exists."
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Attribute is malformed or unknown",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email||password": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `email||password`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_INVALID",
+                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_INVALID`: When a given attribute is malformed or unknown. Check for spelling or other formatting errors. This specific error indicates that the provided password is incorrect."
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Attribute is malformed or unknown",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `user`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_RAC",
+                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_RAC`: This error code is returned when the requested resource cannot be accessed due to access restrictions. The server understood the request but refuses to authorize it, in this case becausehe request violates security policies. This can be caused by either A: The Embloy account is not verified, or B: the Embloy account is currentl blackisted and therefore temporarily banned."
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Proceeding is inhibited by an access restriction",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "format": "int64",
+                      "example": "Please try again later. If this error persists, we recommend to contact our support team",
+                      "description": "A message indicating that an internal server error has occurred. This specific error only occurs in case of an severe bug in the codebase."
                     }
                   }
                 }
@@ -717,6 +889,25 @@
                 "example": "doublethink"
               },
               "password_confirmation": {
+                "type": "string",
+                "example": "doublethink"
+              }
+            }
+          }
+        }
+      },
+      "RefreshToken": {
+        "type": "object",
+        "properties": {
+          "refresh_token": {
+            "type": "object",
+            "properties": {
+              "email": {
+                "type": "string",
+                "format": "int64",
+                "example": "winston.smith@embloy.com"
+              },
+              "password": {
                 "type": "string",
                 "example": "doublethink"
               }
