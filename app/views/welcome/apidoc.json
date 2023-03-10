@@ -126,7 +126,7 @@
                   "properties": {
                     "email": {
                       "type": "array",
-                      "description": "The attribute that caused the error. Possible values are:\n- `email`\n- `first_name`\n- `last_name`\n- `password`\n- `password_confirmation`",
+                      "description": "The attribute that caused the error. Possible values are:\n- `user`\n- `email`\n- `first_name`\n- `last_name`\n- `password`\n- `password_confirmation`",
                       "items": {
                         "type": "object",
                         "properties": {
@@ -142,6 +142,54 @@
                           }
                         }
                       }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `email`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_TAKEN",
+                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_BLANK`: When a required attribute must be unique and already exists in the database."
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Attribute is taken",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "format": "int64",
+                      "example": "Please try again later. If this error persists, we recommend to contact our support team"
                     }
                   }
                 }
