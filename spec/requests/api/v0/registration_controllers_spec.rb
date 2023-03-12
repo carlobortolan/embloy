@@ -14,7 +14,6 @@ RSpec.describe "Api::V0::RegistrationControllers" do
       @valid_user_params.push({user:params})
       @valid_user_params = @valid_user_params.uniq { |user| user[:user][:email] }
     end
-    puts "TEST"
   end
   describe "create user" do
 
