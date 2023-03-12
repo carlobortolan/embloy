@@ -15,10 +15,11 @@ RSpec.describe "Api::V0::RegistrationControllers" do
       @valid_user_params = @valid_user_params.uniq { |user| user[:user][:email] }
     end
   end
-  describe "create user" do
+  describe "create a user" do
 
-    it 'should return 200' do
+    it 'returns a 200' do
       @valid_user_params.each do |user_params|
+        post "http://localhost:3000/api/v0/user", params:user_params
         expect(response.status).to eq(200)
       end
     end
