@@ -133,7 +133,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_BLANK`: When a required attribute is blank. All required parameters are denoted above. If all required attributes were indeed given but this error gets raised it could be that the attributs are provided falsely (e.g. via header or via path instead of body ...)\n- `ERR_INVALID`: When a given attribute is malformed or unknown. Check for spelling or other formatting errors. This specific error indicates that no database records could be retrieved for the given inputs. So double check whether the email is correct or an corresponding Embloy account truly exists.\n- `blank`: When specifically the password attribute is blank."
+                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_BLANK`: When a required attribute is blank. All required parameters are denoted above. If all required attributes were indeed given but this error gets raised it could be that the attributs are provided falsely (e.g. via header or via path instead of body ...)\n- `ERR_INVALID`: When a given attribute is malformed or unknown. Check for spelling or other formatting errors. This specific error indicates that no database records could be retrieved for the given inputs. So double check whether the email is correct or an corresponding Embloy account truly exists."
                           },
                           "description": {
                             "type": "string",
