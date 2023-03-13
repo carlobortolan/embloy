@@ -15,7 +15,7 @@ RSpec.describe "Api::V0::RegistrationControllers" do
       @valid_user_params = @valid_user_params.uniq { |user| user[:user][:email] }
     end
   end
-  describe "create" do
+  describe 'create' do
     context 'valid normal inputs' do
       it 'returns a 200' do
         @valid_user_params.each do |user_params|
@@ -147,6 +147,10 @@ RSpec.describe "Api::V0::RegistrationControllers" do
         end
       end
     end
+  end
+
+  describe 'verify' do
+
   end
 
 end
