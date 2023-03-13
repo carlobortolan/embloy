@@ -71,9 +71,10 @@
           {
             "name": "password",
             "in": "body",
-            "description": "The password to be used for login",
+            "description": "The password to be used for login.",
             "required": true,
             "schema": {
+              "maxLength": 72,
               "type": "string",
               "example": "doublethink"
             }
