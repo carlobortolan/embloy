@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module ApiExceptionHandler
+  # frozen_string_literal: true
+
   extend ActiveSupport::Concern
   included do
 
@@ -9,8 +11,6 @@ module ApiExceptionHandler
 
     rescue_from CustomExceptions::InvalidJob::Unknown,
                 with: :job_unknown_error
-
-
 
     # =========== User related exceptions ===========
     # ===============================================
@@ -28,8 +28,6 @@ module ApiExceptionHandler
     rescue_from CustomExceptions::Unauthorized::InsufficientRole,
                 with: :user_role_to_low_error
 
-
-
     # ========== Token related exceptions ===========
     # ===============================================
 
@@ -41,7 +39,40 @@ module ApiExceptionHandler
     rescue_from JWT::ExpiredSignature,
                 with: :token_expired_error
 
+    #--------------------------------------
 
+    rescue_from JWT::InvalidIssuerError,
+                with: :token_invalid_issuer_error
+
+    #--------------------------------------
+
+    rescue_from JWT::IncorrectAlgorithm,
+                with: :token_algorithm_error
+
+    #--------------------------------------
+
+    rescue_from JWT::VerificationError,
+                with: :token_verification_error
+
+    #--------------------------------------
+
+    rescue_from JWT::DecodeError,
+                with: :token_decode_error
+
+    #--------------------------------------
+
+    rescue_from JWT::InvalidJtiError,
+                with: :token_jti_error
+
+    #--------------------------------------
+
+    rescue_from JWT::InvalidIatError,
+                with: :token_iat_error
+
+    #--------------------------------------
+
+    rescue_from JWT::InvalidSubError,
+                with: :token_sub_error
 
   end
 
@@ -53,8 +84,6 @@ module ApiExceptionHandler
   def job_unknown_error
     malformed_error('job')
   end
-
-
 
   # =========== User related exceptions ===========
   # ===============================================
@@ -75,8 +104,6 @@ module ApiExceptionHandler
     access_denied_error
   end
 
-
-
   # ========== Token related exceptions ===========
   # ===============================================
 
@@ -88,49 +115,49 @@ module ApiExceptionHandler
 
   def token_expired_error
     unauthorized_token_error
-    #render_error('token', 'ERR_INVALID', 'Attribute is expired', 401)
+    # render_error('token', 'ERR_INVALID', 'Attribute is expired', 401)
   end
 
   #--------------------------------------
 
   def token_invalid_issuer_error
     unauthorized_token_error
-    #render_error('token', 'ERR_INVALID', 'Attribute was signed by an unknown issuer', 401)
+    # render_error('token', 'ERR_INVALID', 'Attribute was signed by an unknown issuer', 401)
   end
 
   #--------------------------------------
 
   def token_algorithm_error
     unauthorized_token_error
-    #render_error('token', 'ERR_INVALID', 'Token was encoded with an unknown algorithm', 401)
+    # render_error('token', 'ERR_INVALID', 'Token was encoded with an unknown algorithm', 401)
   end
 
   #--------------------------------------
 
   def token_verification_error
     unauthorized_token_error
-    #render_error('token', 'ERR_INVALID', 'Attribute can\'t be verified', 401)
+    # render_error('token', 'ERR_INVALID', 'Attribute can\'t be verified', 401)
   end
 
   #--------------------------------------
 
   def token_jti_error
     unauthorized_token_error
-    #render_error('token', 'ERR_INACTIVE', 'Attribute is blocked', 403)
+    # render_error('token', 'ERR_INACTIVE', 'Attribute is blocked', 403)
   end
 
   #--------------------------------------
 
   def token_iat_error
     unauthorized_token_error
-    #render_error('token', 'ERR_INVALID', 'Attribute was timestamped incorrectly', 401)
+    # render_error('token', 'ERR_INVALID', 'Attribute was timestamped incorrectly', 401)
   end
 
   #--------------------------------------
 
   def token_sub_error
     unauthorized_token_error
-    #render_error('token', 'ERR_INVALID', 'Attribute can't be allocated to an existing user', 401)
+    # render_error('token', 'ERR_INVALID', 'Attribute can't be allocated to an existing user', 401)
   end
 
   #--------------------------------------
@@ -138,8 +165,6 @@ module ApiExceptionHandler
   def token_decode_error
     malformed_error('token')
   end
-
-
 
   # ============ Basic render methods =============
   # ===============================================
@@ -178,4 +203,6 @@ module ApiExceptionHandler
     render status: status, json: { attribute => [{ error: error, description: description }] }
   end
 end
+
+
 
