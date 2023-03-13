@@ -169,28 +169,11 @@
                           },
                           "description": {
                             "type": "string",
-                            "example": "Attribute is taken",
+                            "example": "Attribute exists",
                             "description": "A brief context specific classification of the error that occured"
                           }
                         }
                       }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "format": "int64",
-                      "example": "Please try again later. If this error persists, we recommend to contact our support team"
                     }
                   }
                 }
