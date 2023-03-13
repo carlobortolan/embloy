@@ -25,6 +25,17 @@ RSpec.describe "Api::V0::RegistrationControllers" do
       end
     end
 
+    context 'valid abnormal inputs' do
+      it 'returns a 422 for a taken email address' do
+        @valid_user_params.each do |user_params|
+          post "http://localhost:3000/api/v0/user", params: user_params
+          post "http://localhost:3000/api/v0/user", params: user_params
+          expect(response.status).to eq(422)
+          expect(JSON.parse(response.body)["email"][0]["error"]).to eq("ERR_TAKEN")
+        end
+      end
+    end
+
     context 'invalid inputs' do
       it 'returns a 400 ERR_BLANK for fully missing body' do
         post "http://localhost:3000/api/v0/user"
