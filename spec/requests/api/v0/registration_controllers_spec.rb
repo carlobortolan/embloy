@@ -8,7 +8,7 @@ RSpec.describe "Api::V0::RegistrationControllers" do
       fn = Faker::Name.first_name
       ln = Faker::Name.last_name
       mail = "#{fn}.#{ln}@fake_tests_12345.com"
-      pw = Faker::Job.name
+      pw = Faker::Job.field
       pw_conf = pw
       params = { email: mail, first_name: fn, last_name: ln, password: pw, password_confirmation: pw_conf }
       @valid_user_params.push({ user: params })
@@ -35,33 +35,98 @@ RSpec.describe "Api::V0::RegistrationControllers" do
       it 'returns a 400 ERR_BLANK for a missing parameter != password' do
         @valid_user_params.each do |user_params|
           # ============ email is missing  ================
-          post "http://localhost:3000/api/v0/user", params: user_params[:user].except!(:email)
+          params = user_params.deep_dup
+          post "http://localhost:3000/api/v0/user", params: params[:user].except!(:email)
           expect(response.status).to eq(400)
           expect(JSON.parse(response.body)["user"][0]["error"]).to eq("ERR_BLANK")
 
           # ========= first_name is missing  ==============
-          post "http://localhost:3000/api/v0/user", params: user_params[:user].except!(:first_name)
+          params = user_params.deep_dup
+          post "http://localhost:3000/api/v0/user", params: params[:user].except!(:first_name)
           expect(response.status).to eq(400)
           expect(JSON.parse(response.body)["user"][0]["error"]).to eq("ERR_BLANK")
 
           # ========== last_name is missing  ==============
-          post "http://localhost:3000/api/v0/user", params: user_params[:user].except!(:last_name)
+          params = user_params.deep_dup
+          post "http://localhost:3000/api/v0/user", params: params[:user].except!(:last_name)
           expect(response.status).to eq(400)
           expect(JSON.parse(response.body)["user"][0]["error"]).to eq("ERR_BLANK")
 
           # =========== password is missing  ==============
-          post "http://localhost:3000/api/v0/user", params: user_params[:user].except!(:password)
+          params = user_params.deep_dup
+          post "http://localhost:3000/api/v0/user", params: params[:user].except!(:password)
           expect(response.status).to eq(400)
           expect(JSON.parse(response.body)["user"][0]["error"]).to eq("ERR_BLANK")
 
           # ====== password_confirmation is missing  ======
-          post "http://localhost:3000/api/v0/user", params: user_params[:user].except!(:password_confirmation)
+          params = user_params.deep_dup
+          post "http://localhost:3000/api/v0/user", params: params[:user].except!(:password_confirmation)
           expect(response.status).to eq(400)
           expect(JSON.parse(response.body)["user"][0]["error"]).to eq("ERR_BLANK")
         end
       end
-    end
 
+      it 'returns a 400 ERR_BLANK for included claims that are empty' do
+        @valid_user_params.each do |user_params|
+          # ============= email is empty  =================
+          params = user_params.deep_dup
+          params[:user][:email] = ""
+          post "http://localhost:3000/api/v0/user", params: params
+          expect(response.status).to eq(400)
+          expect(JSON.parse(response.body)["email"][0]["error"] || JSON.parse(response.body)["email"][1]["error"]).to eq("ERR_BLANK")
+
+          # =========== first_name is empty  ==============
+          params = user_params.deep_dup
+          params[:user][:first_name] = ""
+          post "http://localhost:3000/api/v0/user", params: params
+          expect(response.status).to eq(400)
+          expect(JSON.parse(response.body)["first_name"][0]["error"]).to eq("ERR_BLANK")
+
+          # ============= last_name is empty ==============
+          params = user_params.deep_dup
+          params[:user][:last_name] = ""
+          post "http://localhost:3000/api/v0/user", params: params
+          expect(JSON.parse(response.body)["last_name"][0]["error"]).to eq("ERR_BLANK")
+
+          # ============= password is empty  ==============
+          params = user_params.deep_dup
+          params[:user][:password] = ""
+          post "http://localhost:3000/api/v0/user", params: params
+          expect(response.status).to eq(400)
+          expect(JSON.parse(response.body)["password"][0]["error"]).to eq("ERR_BLANK")
+
+          # ======= password_confirmation is empty  ======= => Kind of a edge case because there is no logical value to raising an blank pw_conf because it is just not matching to the pw
+          params = user_params.deep_dup
+          params[:user][:password_confirmation] = ""
+          post "http://localhost:3000/api/v0/user", params: params
+          expect(response.status).to eq(400)
+          expect(JSON.parse(response.body)["password_confirmation"][0]["error"]).to eq("ERR_INVALID")
+        end
+      end
+
+      it 'returns a 400 ERR_INVALID for to long passwords' do
+        @valid_user_params.each do |user_params|
+          params = user_params.deep_dup
+          to_long_pw = Faker::Lorem.characters(number: rand(1000..7000))
+          params[:user][:password] = to_long_pw
+          params[:user][:password_confirmation] = params[:user][:password]
+          post "http://localhost:3000/api/v0/user", params: params
+          expect(response.status).to eq(400)
+          expect(JSON.parse(response.body)["password"][0]["error"]).to eq("ERR_INVALID")
+        end
+      end
+
+      it 'returns a 400 ERR_INVALID for mismatching password/password_confirmation' do
+        @valid_user_params.each do |user_params|
+          params = user_params.deep_dup
+          params[:user][:password_confirmation] = "user_params[:user][:password]"
+          post "http://localhost:3000/api/v0/user", params: params
+          expect(response.status).to eq(400)
+          expect(JSON.parse(response.body)["password_confirmation"][0]["error"]).to eq("ERR_INVALID")
+        end
+      end
+    end
   end
 
 end
+

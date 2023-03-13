@@ -9,6 +9,8 @@ module Api
           if @user.save
             render status: 200, json: { "message": "Account registered! Please activate your account and claim your refresh token via GET #{api_v0_user_verify_path} " }
           else
+            # horrible code follows TODO: make prettier for v1
+            # the problem is that I dont know a way to customize the error messages from bycrypt verification and i want to morphe them into the standard error render format
             taken = false
             @user.errors.details[:email].each do |e|
               if e[:error] == "ERR_TAKEN"
@@ -16,9 +18,19 @@ module Api
               end
             end
             if taken
-              render status: 422, json: { "error": @user.errors.details }
+              render status: 422, json: @user.errors.details
             else
-              render status: 400, json: { "error": @user.errors.details }
+              if @user.errors.details[:password].present? && @user.errors.details[:password][0][:error] == :too_long # auto verification of pw (by bycript) doesnt render as we need it. preliminary solution. should be tidied up in v1
+                malformed_error('password')
+              elsif @user.errors.details[:password].present? && @user.errors.details[:password][0][:error] == :blank # this one is just there to substitute the error:blank to error:ERR_BLANK in case password:""
+                bin = @user.errors.details
+                bin[:password][0][:error] = :ERR_BLANK
+                render status: 400, json: bin
+              elsif @user.errors.details[:password_confirmation].present? && @user.errors.details[:password_confirmation][0][:error] == :confirmation
+                malformed_error('password_confirmation')
+              else
+                render status: 400, json: @user.errors.details
+              end
             end
           end
 
@@ -30,8 +42,6 @@ module Api
             }
           ]
           }
-        rescue
-          render status: 500, json: { "error": "Please try again later. If this error persists, we recommend to contact our support team." }
 
         end
       end
@@ -85,7 +95,7 @@ module Api
             else
 
               if @user.activity_status == 0
-                #Todo Exception handling
+                # Todo Exception handling
                 @user.update_column("user_role", "verified")
                 @user.update_column("activity_status", 1)
 
