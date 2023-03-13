@@ -125,6 +125,16 @@ RSpec.describe "Api::V0::RegistrationControllers" do
           expect(JSON.parse(response.body)["password_confirmation"][0]["error"]).to eq("ERR_INVALID")
         end
       end
+
+      it 'returns a 400 ERR_INVALID for malformed email' do
+        @valid_user_params.each do |user_params|
+          params = user_params.deep_dup
+          params[:user][:email] = params[:user][:last_name]
+          post "http://localhost:3000/api/v0/user", params: params
+          expect(response.status).to eq(400)
+          expect(JSON.parse(response.body)["email"][0]["error"]).to eq("ERR_INVALID")
+        end
+      end
     end
   end
 
