@@ -4,16 +4,23 @@ Rails.application.routes.draw do
   #= <<<<< *API* >>>>>>
   namespace :api, defaults: { format: 'json' } do
     namespace :v0 do
+      patch 'password', to: 'passwords#update'
+      post 'password/reset', to: 'password_resets#create'
+
       post 'user', to: 'registrations#create'
       get 'user/verify', to: 'registrations#verify'
       post 'user/auth/token/refresh', to: 'authentications#create_refresh'
       post 'user/auth/token/access', to: 'authentications#create_access'
+
       get 'user/jobs', to: 'user#own_jobs'
       get 'user/applications', to: 'user#own_applications'
       post 'user/(/:id)/reviews', to: 'reviews#create'
       get 'user/reviews', to: 'user#own_reviews'
-      patch 'password', to: 'passwords#update'
-      post 'password/reset', to: 'password_resets#create'
+
+      delete 'reviews/(/:id)', to: 'reviews#destroy'
+      patch 'reviews/(/:id)', to: 'reviews#update'
+
+      get 'jobs', to: 'jobs#feed'
       post 'jobs', to: 'jobs#create'
       patch 'jobs', to: 'jobs#update'
       delete 'jobs', to: 'jobs#destroy'
@@ -22,10 +29,7 @@ Rails.application.routes.draw do
       #      get 'jobs/(/:id)/applications/(/:user)/accept', to: 'applications#accept'
       # patch 'jobs/(/:id)/applications/(/:user)/accept', to: 'applications#accept'
       # delete 'jobs/(/:id)/applications', to: 'applications#destroy'
-      delete 'reviews/(/:id)', to: 'reviews#destroy'
-      patch 'reviews/(/:id)', to: 'reviews#update'
 
-      # delete 'jobs/(/:id)/applications', to: 'applications#destroy'
     end
   end
 
@@ -84,7 +88,6 @@ Rails.application.routes.draw do
   get 'user/applications', :to => 'user#own_applications', as: :own_applications
   get 'user/jobs', :to => 'user#own_jobs', as: :own_jobs
   get 'user/preferences', to: 'user#preferences', as: :preferences
-
 
   #= <<<<< *Web-Application* >>>>>>
   namespace :admin do
