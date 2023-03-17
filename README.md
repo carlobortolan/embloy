@@ -17,63 +17,67 @@ or conditions.
 > __NOTE__: _This file covers the web-application. If you are looking for the API documentation instead, go to_
 ___[api.md](app/controllers/api/v0/api.md)___
 
-### Managing of applications for available jobs
+### Filtering of Available Jobs and Creating an "Intelligent" Feed
 
-The system is able to manage jobs and application (supporting
-basic [CRUD-Operations](https://www.javatpoint.com/crud-operations-in-sql)) and notifies the employer when a new
-application is submitted as well as the applicant when his application is accepted.
+***Following mutual agreement among the developers, the FeedGenerator has been migrated to a proprietary repository on GitLab. While the details of the project are confidential, a basic understanding of its functionality is necessary to work on the Rails backend. The updated version of the FeedGenerator is written in Rust and features a single REST API endpoint (accessible only by the Rails-API), which creates an "intelligent" feed by ranking a set of jobs (or "slice" provided by the Rails API) using a proprietary algorithm. The resulting feed is then displayed to the user.***
 
-All notifications are sent using [SMTP](https://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol).
+### User Authentication
 
-### Filtering of available jobs
+Users can set up an account with their email address and password, or choose to log in using the OAuth2.0 services provided by Google and GitHub.
 
-The system receives a set of available jobs and filters them returning a sorted feed according to the user's parameters.
-_Default values for search_:
+Passwords are instantly encrypted using [bcryt](https://en.wikipedia.org/wiki/Bcrypt) and stored in the database as an encrypted hash. In case a user forgets their password, it can be reset via standard email authentication.
 
-- coordinates *<user's longitude>*, *<user's latitude>*
-- radius: *50.0*
-- timeslot: *Time.now*
-- limit (=maximum number of jobs shown): *100*
+For an optimal user experience, it is recommended to fill out the 'Preferences' field under 'My Profile'.
+To log into the application, users can use the aforementioned OAuth2.0 services or enter their password.
+If a user forgets their password, they can reset it by providing their email address and following the specified procedure in the email.
 
-### User authentication
+### Managing Applications for Available Jobs
 
-Users can set up an account with their email address and a password or choose to log in using the OAuth2.0 services
-provided by Google and GitHub.
+The system is capable of managing jobs and applications, supporting basic [CRUD operations](https://www.javatpoint.com/crud-operations-in-sql)), and notifying the employer when a new application is submitted, as well as notifying the applicant when their application is accepted or rejected.
 
-The password is instantaneously encrypted using  [bcryt](https://en.wikipedia.org/wiki/Bcrypt) and stored in form of a
-encrypted hash in the database. In case the user forgets this password, it can be reset via standard email
-authentication.
+All notifications are sent via [SMTP](https://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol).
 
-To maximize the user's experience it is recommended to fill out the 'Preferences' field under 'My Profile'.
-To log into the application, the user can use the mentioned OAuth2.0 services or use his password. In case that the
-password is forgotten, the user can reset by giving his email address and follow the procedure specified in the email.
 
-## How it works
+## How it Works
 
-Simply go to [our website](http://embloy.com/), create a new account or log in with an existing account. That's it.
+To get started, simply visit [our website](http://embloy.com/) and create a new account or log in with an existing account. It's that easy!
 
 ## Config
+> __NOTE__: _You only need to follow these steps if you wish to contribute and need to test your changes locally_
 
-### Prerequisites
+<details>
+  <summary> 1. Prerequisites </summary>
 
-- Install Ruby 2.7.5
-- Install Rails 7
-- Install Postgresql 15
-- Open pgAdmin4
-- Add a new server
+   - Install Ruby 2.7.5
 
-### Connect to our remote database
+   - Install Rails 7
 
--     hostname/address: <special authorization needed>
--     maintanence database: <special authorization needed>
--     username: <special authorization needed>
--     password: <special authorization needed>
--     port: 5432
+   - Install Postgresql 15
 
-### Start the server
+   - Open pgAdmin4
 
-**If you wish to experiment on our backend or contribute to our front end you can test your changes by starting a local
-server.**
+   - Add a new server
+</details>
+
+<details>
+  <summary> 2. Connect to our remote database </summary>
+   
+   -     hostname/address: <special authorization needed>
+
+   -     maintanence database: <special authorization needed>
+   
+   -     username: <special authorization needed>
+   
+   -     password: <special authorization needed>
+   
+   -      port: 5432
+</details>
+
+<details>
+  <summary> 3. Start the server </summary>
+
+If you wish to experiment on our backend or contribute to our front end you can test your changes by starting a local
+server.
 
 1. Create a file 'config/env_var.rb' with the following content:
 
@@ -92,8 +96,9 @@ server.**
 1. Run ``$ rails db:create`` to create all necessary tables in your development database.
 2. Run ``$ rails db:migrate`` to migrate your changes to the database.
 5. Run ``$ rails server`` to start the server.
+</details>
 
-### Go to http://localhost:3000
+4. Go to http://localhost:3000
 
 ## Sources
 
@@ -103,15 +108,12 @@ server.**
 
 > ___Note: See GitHub issues for more information___
 
-- Update profile section UI
-- Update job UI
-- ~~Update application UI~~
+- ~~Update profile section UI~~
 - Update search UI
-- ~~Update sign up UI~~
-- Update Job & Application UI
 - ~~Deploy test version~~
-- Implement basic search function
+- Implement review function
 - ~~Create seeds for jobs, users and applications~~
+- ~~Develop a first mobile-app prototype~~
 - ...
 
 ---
