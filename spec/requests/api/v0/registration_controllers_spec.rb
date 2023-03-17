@@ -150,6 +150,94 @@ RSpec.describe "Api::V0::RegistrationControllers" do
   end
 
   describe 'verify' do
+    context 'valid normal inputs' do
+      before :each do
+        User.delete_all
+        @valid_user_params.each do |params|
+          User.create!(params[:user])
+        end
+      end
+      it 'returns a 200' do
+        @valid_user_params.each do |user_params|
+          get "http://localhost:3000/api/v0/user/verify?email=#{user_params[:user][:email]}&password=#{user_params[:user][:password]}"
+          expect(response.status).to eq(200)
+        end
+      end
+    end
+
+
+    context 'valid abnormal inputs' do
+      before :each do
+        User.delete_all
+        @valid_user_params.each do |params|
+          User.create!(params[:user])
+        end
+      end
+
+      it "returns a 401 ERR_INVALID for malformed email and wrong password or both" do
+        @valid_user_params.each do |user_params|
+
+          # ====== either email or password is wrong ======
+          email = 'wrongmail@'
+          get "http://localhost:3000/api/v0/user/verify?email=#{email}&password=#{user_params[:user][:password]}"
+          expect(response.status).to eq(401)
+          expect(JSON.parse(response.body)["email||password"][0]["error"]).to eq("ERR_INVALID")
+
+          password = 'wrongword'
+          get "http://localhost:3000/api/v0/user/verify?email=#{user_params[:user][:email]}&password=#{password}"
+          expect(response.status).to eq(401)
+          expect(JSON.parse(response.body)["email||password"][0]["error"]).to eq("ERR_INVALID")
+
+          # ======== email and password are wrong =========
+          get "http://localhost:3000/api/v0/user/verify?email=#{email}&password=#{password}"
+          expect(response.status).to eq(401)
+          expect(JSON.parse(response.body)["email||password"][0]["error"]).to eq("ERR_INVALID")
+
+        end
+      end
+
+    end
+
+
+    context 'invalid inputs' do
+      before :each do
+        User.delete_all
+        @valid_user_params.each do |params|
+          User.create!(params[:user])
+        end
+      end
+      it 'returns a 400 ERR_BLANK for fully missing email param' do
+        # ====== either email or password are nil =======
+        @valid_user_params.each do |user_params|
+          get "http://localhost:3000/api/v0/user/verify?password=#{user_params[:user][:password]}"
+          expect(response.status).to eq(400)
+          expect(JSON.parse(response.body)["email"][0]["error"]).to eq("ERR_BLANK")
+
+          get "http://localhost:3000/api/v0/user/verify?email=#{user_params[:user][:email]}"
+          expect(response.status).to eq(400)
+          expect(JSON.parse(response.body)["password"][0]["error"]).to eq("ERR_BLANK")
+        end
+
+        # ========= email and password are nil ==========
+          get "http://localhost:3000/api/v0/user/verify"
+          expect(response.status).to eq(400)
+          expect(JSON.parse(response.body)["email"][0]["error"]).to eq("ERR_BLANK")
+          expect(JSON.parse(response.body)["password"][0]["error"]).to eq("ERR_BLANK")
+      end
+
+      it 'returns a 400 ERR_BLANK for included params that are empty' do
+        # ============== email is empty =================
+        @valid_user_params.each do |user_params|
+        email = ""
+        get "http://localhost:3000/api/v0/user/verify?email=#{email}&password=#{user_params[:user][:password]}"
+        expect(response.status).to eq(400)
+        expect(JSON.parse(response.body)["email"][0]["error"]).to eq("ERR_BLANK")
+
+        # ============= password is empty ===============
+        # Todo: go on
+        end
+      end
+    end
 
   end
 

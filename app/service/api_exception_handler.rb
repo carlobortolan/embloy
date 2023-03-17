@@ -200,7 +200,16 @@ module ApiExceptionHandler
   #--------------------------------------
 
   def render_error(attribute, error, description, status)
-    render status: status, json: { attribute => [{ error: error, description: description }] }
+    if attribute.class == Array
+      bin = {}
+      attribute.each do |att|
+        bin["#{att}"]=[{ error: error, description: description }]
+      end
+      render status: status, json: bin
+    else
+      render status: status, json: { attribute => [{ error: error, description: description }] }
+    end
+
   end
 end
 
