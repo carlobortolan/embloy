@@ -105,8 +105,7 @@ server.
 *(TODO)*
 
 ## What's next
-
-> ___Note: See GitHub issues for more information___
+> __NOTE__: _See [GitHub issues](https://github.com/carlobortolan/Embloy/issues) for more information_
 
 - ~~Update profile section UI~~
 - Update search UI
