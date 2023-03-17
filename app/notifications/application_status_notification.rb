@@ -10,12 +10,12 @@ class ApplicationStatusNotification < Noticed::Base
   end
 
   def message
-    # TODO: FIX BUG
+    # TODO: @carlobortolan FIX BUG
     "Update on #{params[:job]}"
   end
 
   def url
-    # TODO: FIX BUG
+    # TODO: @carlobortolan FIX BUG
     # job_path(id)
   end
 end
