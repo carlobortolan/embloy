@@ -26,12 +26,12 @@ class Application < ApplicationRecord
 
   def accept (response)
     notify_applicant(1, response)
-    ActiveRecord::Base.connection.execute("UPDATE applications SET status = '1', response = '#{response}' WHERE user_id = #{user_id} AND job_id = #{job_id}")
+    Application.where(user_id: user_id, job_id: job_id).update_all(status: 1, response: response)
   end
 
   def reject(response)
     notify_applicant(-1, response)
-    ActiveRecord::Base.connection.execute("UPDATE applications SET status = '-1', response = '#{response}' WHERE user_id = #{user_id} AND job_id = #{job_id}")
+    Application.where(user_id: user_id, job_id: job_id).update_all(status: -1, response: response)
   end
 
   private
