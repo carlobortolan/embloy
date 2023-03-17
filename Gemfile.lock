@@ -56,6 +56,9 @@ GEM
       activesupport (= 7.0.4.1)
     activerecord-import (1.4.1)
       activerecord (>= 4.2)
+    activerecord-postgis-adapter (8.0.1)
+      activerecord (~> 7.0.0)
+      rgeo-activerecord (~> 7.0.0)
     activestorage (7.0.4.1)
       actionpack (= 7.0.4.1)
       activejob (= 7.0.4.1)
@@ -259,6 +262,10 @@ GEM
     reline (0.3.2)
       io-console (~> 0.5)
     rexml (3.2.5)
+    rgeo (3.0.0)
+    rgeo-activerecord (7.0.1)
+      activerecord (>= 5.0)
+      rgeo (>= 1.0.0)
     rspec-core (3.12.1)
       rspec-support (~> 3.12.0)
     rspec-expectations (3.12.2)
@@ -335,6 +342,7 @@ PLATFORMS
 
 DEPENDENCIES
   activerecord-import (~> 1.4)
+  activerecord-postgis-adapter
   bcrypt (~> 3.1.7)
   benchmark (~> 0.2.1)
   bootsnap
@@ -355,6 +363,7 @@ DEPENDENCIES
   pg (~> 1.1)
   puma (~> 5.0)
   rails (~> 7.0.4, >= 7.0.4.1)
+  rgeo
   rspec-rails (~> 6.0.0)
   selenium-webdriver
   sprockets-rails

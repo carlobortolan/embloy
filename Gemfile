@@ -15,6 +15,11 @@ gem "sprockets-rails"
 # Use postgresql as the database for Active Record
 gem "pg", "~> 1.1"
 
+# Use PG's postgis extension
+gem 'rgeo'
+gem 'activerecord-postgis-adapter'
+
+
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", "~> 5.0"
 
