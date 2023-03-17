@@ -1,4 +1,4 @@
-<h1>EMBLOY</h1>
+<h1><a href="https://embloy.com">Embloy</a></h1>
 
 ## License
 
@@ -33,7 +33,7 @@ If a user forgets their password, they can reset it by providing their email add
 
 ### Managing Applications for Available Jobs
 
-The system is capable of managing jobs and applications, supporting basic [CRUD operations](https://www.javatpoint.com/crud-operations-in-sql)), and notifying the employer when a new application is submitted, as well as notifying the applicant when their application is accepted or rejected.
+The system is capable of managing jobs and applications, supporting basic [CRUD operations](https://www.javatpoint.com/crud-operations-in-sql), and notifying the employer when a new application is submitted, as well as notifying the applicant when their application is accepted or rejected.
 
 All notifications are sent via [SMTP](https://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol).
 
@@ -113,7 +113,7 @@ server.
 - ~~Deploy test version~~
 - Implement review function
 - ~~Create seeds for jobs, users and applications~~
-- ~~Develop a first mobile-app prototype~~
+- Develop a first mobile-app prototype
 - ...
 
 ---
