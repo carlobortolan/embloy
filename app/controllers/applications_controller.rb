@@ -11,9 +11,9 @@ class ApplicationsController < ApplicationController
 
   def show
     require_user_be_owner
-    @job = Job.find(params[:job_id])
-    # TODO: @carlobortolan: SQL in Ruby umschreiben
-    @application = @job.applications.find_by_sql("SELECT * FROM applications a WHERE a.user_id = #{1} and a.job_id = #{1}")
+    redirect_back(fallback_location: root_path)
+    # @job = Job.find(params[:job_id])
+    # @application = @job.applications
   end
 
   def new

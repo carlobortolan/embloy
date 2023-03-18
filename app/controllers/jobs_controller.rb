@@ -64,7 +64,6 @@ class JobsController < ApplicationController
 
   def parse_inputs
     @my_args = { "longitude" => params[:longitude].to_f, "latitude" => params[:latitude].to_f, "radius" => params[:radius].to_f, "time" => Time.parse(params[:time]), "limit" => params[:limit].to_i }
-    # TODO: REMOVE 'first(100)'
     @result = FeedGenerator.initialize_feed(Job.all.where("status = 'public'").first(100).as_json, @my_args)
   end
 

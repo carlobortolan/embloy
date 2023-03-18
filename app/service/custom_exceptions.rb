@@ -50,13 +50,13 @@ class CustomExceptions < StandardError
 
   # ============== JWT-Token - Exceptions =============
   class InvalidInput < StandardError
-    class Token < StandardError # TODO: Invalid token?
+    class Token < StandardError # Invalid token?
     end
 
-    class SUB < StandardError # TODO: Token has wrong format?
+    class SUB < StandardError # Token has wrong format?
     end
 
-    class CustomEXP < StandardError # TODO: Token expired?
+    class CustomEXP < StandardError # Token expired?
     end
 
   end

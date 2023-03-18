@@ -26,7 +26,7 @@ module Api
           verified!(@decoded_token["typ"])
           review = Review.find(params[:id])
 
-          # Todo: Replace with general must_be_owner! method (if it then exist)
+          # TODO: Replace with general must_be_owner! method (if it then exist)
           ###############################################################################################################################################
           review.created_by.to_i == User.find(@decoded_token["sub"].to_i).id ? true : raise(CustomExceptions::Unauthorized::NotOwner) #
           ###############################################################################################################################################
@@ -56,7 +56,7 @@ module Api
             verified!(@decoded_token["typ"])
             review = Review.find(params[:id])
 
-            # Todo: Replace with general must_be_owner! method (if it then exist)
+            # TODO: Replace with general must_be_owner! method (if it then exist)
             ###############################################################################################################################
             review.created_by.to_i == User.find(@decoded_token["sub"].to_i).id ? true : raise(CustomExceptions::Unauthorized::NotOwner) #
             ###############################################################################################################################

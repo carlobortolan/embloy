@@ -70,7 +70,7 @@ module Api
           else
 
             if @user.activity_status == 0
-              # Todo Exception handling
+              # TODO: Exception handling
               @user.update_column("user_role", "verified")
               @user.update_column("activity_status", 1)
 

@@ -74,7 +74,6 @@ class FeedGenerator
         puts "latitude not correct (@prefiltered)"
         return [401]
       end
-      # TODO: CLEARING DISTANCE
       unless i["distance"].nil?
         # puts "correcting distance (@prefiltered)"
         i["distance"] = nil
@@ -164,7 +163,6 @@ class FeedGenerator
     end
   end
 
-  # TODO: use binary method instead of linear
   # Basic linear search to return lower and upper bound of a job array depending on the start_slot with a deviation of +-day (=3600s*24)
   # @param array [Array] sorted array of jobs
   # @param search_item [Integer] time instance as Interger for reference
