@@ -2,6 +2,7 @@
 ################## SUPER CONTROLLER #####################
 #########################################################
 class ApplicationController < ActionController::Base
+  include SpatialJobValue
   before_action :set_current_user
   before_action :set_notifications, if: Current.user
   before_action :require_user_not_blacklisted!, if: Current.user

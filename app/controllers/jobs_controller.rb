@@ -19,7 +19,7 @@ class JobsController < ApplicationController
 
   def new
     @job = Job.new
-    @categories_list = File.readlines("app/helpers/job_categories.txt").map(&:chomp)
+    @categories_list= JSON.parse(File.read(Rails.root.join('config', 'job_types.json'))).keys
   end
 
   def create
@@ -37,7 +37,7 @@ class JobsController < ApplicationController
 
   def edit
     @job = Job.find(params[:id])
-    @categories_list = File.readlines("app/helpers/job_categories.txt").map(&:chomp)
+    @categories_list= JSON.parse(File.read(Rails.root.join('config', 'job_types.json'))).keys
     require_user_be_owner
   end
 
