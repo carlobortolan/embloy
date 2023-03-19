@@ -2,6 +2,7 @@
 
 module SpatialJobValue
 
+  # TODO: Make module use @job in Application controller
   def self.update_job_value(job = nil)
     # Load the JSON file containing the job types mapping
     job_types_file = File.read(Rails.root.join('config', 'job_types.json'))
