@@ -45,7 +45,7 @@ class Job < ApplicationRecord
     job_types = JSON.parse(job_types_file)
 
     unless job_types.key?(job_type)
-      errors.add(:job_type, "Invalid job type")
+      errors.add(:job_type, { "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" })
     end
   end
 end
