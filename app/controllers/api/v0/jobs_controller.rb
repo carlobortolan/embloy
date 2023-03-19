@@ -12,6 +12,7 @@ module Api
           @job.user_id = @decoded_token["sub"]
 
           if @job.save
+            SpatialJobValue.update_job_value(@job)
             render status: 200, json: { "message": "Job created!" }
           else
             render status: 400, json: { "error": @job.errors.details }
@@ -28,6 +29,7 @@ module Api
           must_be_owner!(params[:id], @decoded_token["sub"])
           @job.assign_attributes(job_params)
           if @job.save
+            SpatialJobValue.update_job_value(@job)
             render status: 200, json: { "message": "Job updated!" }
           else
             render status: 400, json: { "error": @job.errors.details }
@@ -98,7 +100,7 @@ module Api
       end
 
       def job_params
-        params.require(:job).permit(:title, :description, :start_slot, :status, :longitude, :latitude)
+        params.require(:job).permit(:title, :description, :content, :job_notifications, :start_slot, :notify, :status, :user_id, :longitude, :latitude, :job_type, :position, :currency, :salary, :key_skills, :duration, :job_type)
       end
 
       # mark_notifications_as_read is not implemented because i dont understand how it works
