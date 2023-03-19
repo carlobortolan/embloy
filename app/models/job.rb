@@ -1,3 +1,4 @@
+
 class Job < ApplicationRecord
   include Visible
   belongs_to :user, counter_cache: true
@@ -21,7 +22,7 @@ class Job < ApplicationRecord
   validates :currency, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   #TODO: @cb make front end job_type submit work -> Then activate verification blow
   #validates :job_type, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
-
+  validate :job_type_verification
   def profile
     @job.update(view_count: @job.view_count + 1)
   end
@@ -39,4 +40,12 @@ class Job < ApplicationRecord
     end
   end
 
+  def job_type_verification
+    job_types_file = File.read(Rails.root.join("config", "job_types.json"))
+    job_types = JSON.parse(job_types_file)
+
+    unless job_types.key?(job_type)
+      errors.add(:job_type, "Invalid job type")
+    end
+  end
 end
