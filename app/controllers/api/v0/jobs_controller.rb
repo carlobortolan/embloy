@@ -27,8 +27,10 @@ module Api
         begin
           verified!(@decoded_token["typ"])
           must_be_owner!(params[:id], @decoded_token["sub"])
-          @job.assign_attributes(job_params)
-          if @job.save
+          # TODO: Test .save
+          # @job.assign_attributes(job_params)
+          # if @job.save
+          if @job.update(job_params)
             SpatialJobValue.update_job_value(@job)
             render status: 200, json: { "message": "Job updated!" }
           else

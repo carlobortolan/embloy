@@ -19,7 +19,7 @@ class JobsController < ApplicationController
 
   def new
     @job = Job.new
-    @categories_list= JSON.parse(File.read(Rails.root.join('app/helpers', 'job_types.json'))).keys
+    @categories_list = JSON.parse(File.read(Rails.root.join('app/helpers', 'job_types.json'))).keys
   end
 
   def create
@@ -29,6 +29,7 @@ class JobsController < ApplicationController
     # @job.location_id = job_params[:location_id]
     if @job.save!
       # @job_service.set_notification(@job[:id].to_i, @job[:user_id].to_i, params[:job][:notify].eql?("1"))
+      SpatialJobValue.update_job_value(@job)
       redirect_to @job, notice: "Created new job"
     else
       render :new, status: :unprocessable_entity, alert: "Job has not been created"
@@ -37,7 +38,7 @@ class JobsController < ApplicationController
 
   def edit
     @job = Job.find(params[:id])
-    @categories_list= JSON.parse(File.read(Rails.root.join('app/helpers', 'job_types.json'))).keys
+    @categories_list = JSON.parse(File.read(Rails.root.join('app/helpers', 'job_types.json'))).keys
     require_user_be_owner
   end
 
@@ -45,6 +46,7 @@ class JobsController < ApplicationController
     @job = Job.find(params[:id])
     require_user_be_owner
     if @job.update(job_params)
+      SpatialJobValue.update_job_value(@job)
       redirect_to @job
     else
       render :edit, status: :unprocessable_entity

@@ -20,7 +20,6 @@ class Job < ApplicationRecord
   validates :duration, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validates :salary, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validates :currency, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
-  #TODO: @cb make front end job_type submit work -> Then activate verification blow
   validates :job_type, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validate :job_type_verification
   def profile
