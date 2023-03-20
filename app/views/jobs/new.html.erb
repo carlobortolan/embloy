@@ -8,25 +8,11 @@
           <div class="row d-flex justify-content-center">
             <div class="col-lg-6 text-center">
               <h2><%= form.text_field :title, placeholder: "Your job title", class: "form-control", required: true %></h2>
-              </p>
-              <div class="dropdown ">
-                <select class="btn btn-primary form-control" name="state">
-                  <option value="">Job Categories</option>
-                  <% @categories_list.each do |item| %>
-                    <option value="<%= item %>"><%= item %></option>
-                  <% end %>
-                </select>
-                <div class="dropdown-menu" aria-labelledby="job-dropdown">
-                  <% @categories_list.each do |item| %>
-                    <a class='dropdown-item' href='#'><%= item %></a>
-                  <% end %>
-                </div>
+
+              <div><%= form.label :job_type %>
+                <br><%= form.select :job_type, @categories_list, placeholder: "Job Categories", class: "form-select form-select-lg mb-3" %>
               </div>
-              <script>
-                  $(document).ready(function () {
-                      $('.js-example-basic-single').select2();
-                  });
-              </script>
+
 
               <div class="mt-3">
                 <%= form.datetime_field :start_slot, class: "datetime form-control", required: true %><br>
@@ -114,8 +100,6 @@
             <%= form.number_field :longitude, required: true %><br>
             <%= form.label :latitude %><br>
             <%= form.number_field :latitude, required: true %><br>
-            <%= form.label :job_type %><br>
-            <%= form.text_field :job_type, required: true %><br>
           </div>
           <%= form.submit %>
         </div>
