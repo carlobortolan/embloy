@@ -21,7 +21,7 @@ class Job < ApplicationRecord
   validates :salary, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validates :currency, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   #TODO: @cb make front end job_type submit work -> Then activate verification blow
-  #validates :job_type, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
+  validates :job_type, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validate :job_type_verification
   def profile
     @job.update(view_count: @job.view_count + 1)
@@ -31,7 +31,7 @@ class Job < ApplicationRecord
     self.applications.each { |application| application.reject("REJECTED") }
   end
 
-  def format_addeess
+  def format_address
     "#{self.address}, #{self.city}, #{self.postal_code}, #{self.country_code}"
     if self.address.nil? || self.city.nil? || self.postal_code.nil? || self.country_code.nil?
       "No location details available."
@@ -41,7 +41,7 @@ class Job < ApplicationRecord
   end
 
   def job_type_verification
-    job_types_file = File.read(Rails.root.join("config", "job_types.json"))
+    job_types_file = File.read(Rails.root.join("app/helpers", "job_types.json"))
     job_types = JSON.parse(job_types_file)
 
     unless job_types.key?(job_type)
