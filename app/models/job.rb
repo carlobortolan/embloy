@@ -1,4 +1,3 @@
-
 class Job < ApplicationRecord
   include Visible
   belongs_to :user, counter_cache: true
@@ -21,8 +20,10 @@ class Job < ApplicationRecord
   validates :salary, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validates :currency, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validates :job_type, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
+  validates :job_type_value, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validate :job_type_verification
   validate :employer_rating
+
   def profile
     @job.update(view_count: @job.view_count + 1)
   end

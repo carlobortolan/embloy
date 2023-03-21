@@ -14,5 +14,6 @@ class JobSlicer
     # results = ActiveRecord::Base.connection.execute(query)
 
     puts "ENDED SLICING"
+    Job.find_by_sql("SELECT * FROM jobs WHERE salary = 789")
   end
 end

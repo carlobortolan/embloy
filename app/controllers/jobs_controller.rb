@@ -4,8 +4,22 @@ class JobsController < ApplicationController
   before_action :require_user_logged_in, except: %w[index show find parse_inputs]
   layout 'job_applic_layout', :only => "edit"
 
+  # Creates feed based on current user's preferences (if available); if the current user is not verified yet or
+  # isn't logged in, his feed consists of random jobs (limit 100)
   def index
-    @jobs = Job.all.order(created_at: :desc).first(100)
+    # Create slice to find possible jobs
+    jobs = JobSlicer.slice(Current.user.nil? ? nil : Current.user)
+    puts "P0 #{jobs.size}"
+
+    # Call FrG-API to rank jobs
+    if !jobs.nil? && !jobs.empty?
+      puts "P1"
+      @jobs = call_feed(jobs)
+      puts "P2"
+      @jobs.nil? || @jobs.empty? ? render(status: 500, json: { "message": "Feed could not be generated!" }) : render(status: 200, json: { "feed": @jobs })
+    else
+      render status: 204, json: { "message": "No jobs found!" }
+    end
   end
 
   def show
@@ -19,13 +33,21 @@ class JobsController < ApplicationController
 
   def new
     @job = Job.new
+    puts "JOB = #{@job.nil?}"
     @categories_list = JSON.parse(File.read(Rails.root.join('app/helpers', 'job_types.json'))).keys
+    puts "CAT = #{@categories_list.nil?}"
   end
 
   def create
     puts "PARAMS = #{job_params}"
     @job = Job.new(job_params)
     @job.user_id = Current.user.id
+
+    job_types_file = File.read(Rails.root.join('app/helpers', 'job_types.json'))
+    job_types = JSON.parse(job_types_file)
+    job_type = @job.job_type
+    @job.job_type_value = job_types[job_type]
+
     # @job.location_id = job_params[:location_id]
     if @job.save!
       # @job_service.set_notification(@job[:id].to_i, @job[:user_id].to_i, params[:job][:notify].eql?("1"))
@@ -70,6 +92,35 @@ class JobsController < ApplicationController
   end
 
   private
+
+  # Method to communicate with the FG-API by sending a POST-request to tbd
+  def call_feed(jobs)
+    # TODO: Add FG-API endpoint url
+    url = URI.parse("http://embloy-fg-api.onrender.com/feed")
+    # request_body = jobs.to_json
+    request_body = "{\"slice\": #{jobs.to_json}}"
+
+    http = Net::HTTP.new(url.host, url.port)
+    # http.use_ssl = true
+    # http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+
+    request = Net::HTTP::Post.new(url)
+    request.basic_auth('FG', 'pw')
+    request.body = request_body
+
+    response = http.request(request)
+
+    puts "REQUEST = #{request.body}"
+    puts "RESPONSE = #{response}"
+
+    if response.code == '200'
+      feed_json = JSON.parse(response.body)
+      @jobs = Job.new(feed_json)
+    else
+      puts "Request failed with code #{response.code}"
+      nil
+    end
+  end
 
   def job_params
     params.require(:job).permit(:title, :description, :content, :job_notifications, :start_slot, :notify, :status, :user_id, :longitude, :latitude, :job_type, :position, :currency, :salary, :key_skills, :duration)

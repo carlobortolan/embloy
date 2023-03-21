@@ -96,6 +96,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_08_011051) do
 
   create_table "jobs", primary_key: "job_id", id: :serial, force: :cascade do |t|
     t.string "job_type"
+    t.integer "job_type_value"
     t.integer "job_status", limit: 2, default: 0
     t.enum "status", default: "public", null: false, enum_type: "job_status"
     t.integer "user_id", default: 0
@@ -216,4 +217,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_08_011051) do
   add_foreign_key "reviews", "users", column: "created_by"
 end
 
+# CREATE EXTENSION postgis;
 # ALTER TABLE jobs ADD COLUMN job_value public.geography(PointZ,4326);
+# CREATE INDEX IF NOT EXISTS job_job_value_index
+# ON public.jobs USING gist
+# (job_value)
+# TABLESPACE pg_default;

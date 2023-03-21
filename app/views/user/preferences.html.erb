@@ -48,6 +48,9 @@
                         <input type="radio" name="gender" value="other">
                         <span> other </span>
                       </label>
+                      <div><%= form.label :job_type %>
+                        <br><%= form.select :job_type, @categories_list, placeholder: "Job Categories", class: "form-select form-select-lg mb-3" %>
+                      </div>
                     </div>
                   </div>
                 </div>
