@@ -200,10 +200,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_08_011051) do
   end
 
   create_table "preferences", id: :serial, force: :cascade do |t|
-    t.jsonb :job_type, presence: false
-    t.string :salary_range, presence: false
-    t.float :spontaneity, presence: false
-    t.jsonb :key_skills, presence: false
+    t.integer "user_id", null: false
+    t.jsonb "job_type", presence: false
+    t.string "salary_range", presence: false
+    t.float "spontaneity", presence: false
+    t.jsonb "key_skills", presence: false
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -212,6 +213,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_08_011051) do
   add_foreign_key "applications", "users", on_delete: :cascade
   add_foreign_key "company_users", "users", column: "id", on_delete: :cascade
   add_foreign_key "jobs", "users", on_delete: :cascade
+  add_foreign_key "preferences", "users", on_delete: :cascade
   add_foreign_key "private_users", "users", column: "id", on_delete: :cascade
   add_foreign_key "reviews", "jobs", primary_key: "job_id"
   add_foreign_key "reviews", "users", column: "created_by"

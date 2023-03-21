@@ -29,13 +29,10 @@ class JobsController < ApplicationController
 
   def new
     @job = Job.new
-    puts "JOB = #{@job.nil?}"
     @categories_list = JSON.parse(File.read(Rails.root.join('app/helpers', 'job_types.json'))).keys
-    puts "CAT = #{@categories_list.nil?}"
   end
 
   def create
-    puts "PARAMS = #{job_params}"
     @job = Job.new(job_params)
     @job.user_id = Current.user.id
 
@@ -91,10 +88,15 @@ class JobsController < ApplicationController
 
   # Method to communicate with the FG-API by sending a POST-request to tbd
   def call_feed(jobs)
-    # TODO: Add FG-API endpoint url
     # url = URI.parse("http://embloy-fg-api.onrender.com/feed")
     url = URI.parse("http://localhost:8080/feed")
-    request_body = "{\"slice\": #{jobs.to_json}}"
+
+    if Current.user.nil? || Current.user.preferences.nil?
+      request_body = "{\"slice\": #{jobs.to_json}}"
+    else
+      request_body = "{\"pref\": #{Current.user.preferences.to_json},\"slice\": #{jobs.to_json}}"
+      puts "REQ = #{request_body}"
+    end
 
     http = Net::HTTP.new(url.host, url.port)
     # http.use_ssl = true
@@ -107,11 +109,6 @@ class JobsController < ApplicationController
 
     response = http.request(request)
 
-    puts "REQUEST = #{request.content_type}"
-    puts "REQUEST = #{request.body}"
-    puts "RESPONSE = #{response.code}"
-    puts "RESPONSE = #{response.body}"
-
     if response.code == '200'
       feed_json = JSON.parse(response.body)
       @jobs = []
@@ -119,9 +116,6 @@ class JobsController < ApplicationController
         @jobs << Job.new(job_hash)
       end
       @jobs
-    else
-      puts "Request failed with code #{response.code}"
-      nil
     end
   end
 

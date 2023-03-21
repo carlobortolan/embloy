@@ -88,6 +88,8 @@ Rails.application.routes.draw do
   get 'user/applications', :to => 'user#own_applications', as: :own_applications
   get 'user/jobs', :to => 'user#own_jobs', as: :own_jobs
   get 'user/preferences', to: 'user#preferences', as: :preferences
+  patch 'user/preferences', to: 'preferences#update', as: :preferences_update
+  post 'user/preferences', to: 'preferences#update', as: :preferences_create
 
   #= <<<<< *Web-Application* >>>>>>
   namespace :admin do

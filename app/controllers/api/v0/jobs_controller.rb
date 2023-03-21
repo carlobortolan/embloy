@@ -85,25 +85,21 @@ module Api
 
       # Method to communicate with the FG-API by sending a POST-request to tbd
       def call_feed(jobs)
-        # TODO: Add FG-API endpoint url
-        url = URI.parse("https://feedgenerator.com")
-        request_body = jobs.to_json
+        url = URI.parse("http://embloy-fg-api.onrender.com/feed")
+        request_body = "{\"slice\": #{jobs.to_json}}"
 
         http = Net::HTTP.new(url.host, url.port)
-        http.use_ssl = true
-        http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+        # http.use_ssl = true
+        # http.verify_mode = OpenSSL::SSL::VERIFY_PEER
 
         request = Net::HTTP::Post.new(url)
+        request.basic_auth('FG', 'pw')
         request.body = request_body
+        request["Content-Type"] = "application/json"
 
         response = http.request(request)
 
-        if response.code == '200'
-          response.body
-        else
-          puts "Request failed with code #{response.code}"
-          nil
-        end
+        feed_json = JSON.parse(response.body)
       end
 
       def job_params

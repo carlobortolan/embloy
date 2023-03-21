@@ -14,6 +14,6 @@ class JobSlicer
     # results = ActiveRecord::Base.connection.execute(query)
 
     puts "ENDED SLICING"
-    Job.all
+    Job.all.limit(50)
   end
 end
