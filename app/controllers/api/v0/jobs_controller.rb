@@ -94,7 +94,7 @@ module Api
         response = http.request(request)
 
         if response.code == '200'
-          feed = response.body
+          response.body
         else
           puts "Request failed with code #{response.code}"
           nil

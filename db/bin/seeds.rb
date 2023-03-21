@@ -87,7 +87,7 @@ Job.import(jobs)
 
 # => CREATE APPLICATIONS
 elapsed_application = Benchmark.measure do
-  0.times do
+  10000.times do
     begin
       response = [Faker::Quote.yoda, nil].sample
       a_id = (Faker::Number.number % User.count) + 1

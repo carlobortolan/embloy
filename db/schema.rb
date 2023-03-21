@@ -118,7 +118,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_08_011051) do
     t.integer "view_count", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "applications_count", default: 0
+    t.integer "applications_count", default: 0, null: false
+    t.integer "employer_rating", default: 0, null: false
     t.text "job_notifications", default: "1", null: false
     t.index ["country_code"], name: " job_country_code_index "
     t.index ["job_id"], name: "job_job_id_index"
@@ -197,6 +198,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_08_011051) do
     t.index ["user_type"], name: "user_user_type_index"
   end
 
+  create_table "preferences", id: :serial, force: :cascade do |t|
+    t.jsonb :job_type, presence: false
+    t.string :salary_range, presence: false
+    t.float :spontaneity, presence: false
+    t.jsonb :key_skills, presence: false
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "applications", "jobs", primary_key: "job_id", on_delete: :cascade
@@ -207,6 +215,5 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_08_011051) do
   add_foreign_key "reviews", "jobs", primary_key: "job_id"
   add_foreign_key "reviews", "users", column: "created_by"
 end
-
 
 # ALTER TABLE jobs ADD COLUMN job_value public.geography(PointZ,4326);
