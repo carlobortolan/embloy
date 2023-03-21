@@ -11,6 +11,11 @@ module Api
           @job = Job.new(job_params)
           @job.user_id = @decoded_token["sub"]
 
+          job_types_file = File.read(Rails.root.join('app/helpers', 'job_types.json'))
+          job_types = JSON.parse(job_types_file)
+          job_type = @job.job_type
+          @job.job_type_value = job_types[job_type]
+
           if @job.save
             SpatialJobValue.update_job_value(@job)
             render status: 200, json: { "message": "Job created!" }
