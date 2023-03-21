@@ -88,8 +88,7 @@ class JobsController < ApplicationController
 
   # Method to communicate with the FG-API by sending a POST-request to tbd
   def call_feed(jobs)
-    # url = URI.parse("http://embloy-fg-api.onrender.com/feed")
-    url = URI.parse("http://localhost:8080/feed")
+    url = URI.parse("http://embloy-fg-api.onrender.com/feed")
 
     if Current.user.nil? || Current.user.preferences.nil?
       request_body = "{\"slice\": #{jobs.to_json}}"

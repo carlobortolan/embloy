@@ -86,7 +86,13 @@ module Api
       # Method to communicate with the FG-API by sending a POST-request to tbd
       def call_feed(jobs)
         url = URI.parse("http://embloy-fg-api.onrender.com/feed")
-        request_body = "{\"slice\": #{jobs.to_json}}"
+
+        if Current.user.nil? || Current.user.preferences.nil?
+          request_body = "{\"slice\": #{jobs.to_json}}"
+        else
+          request_body = "{\"pref\": #{Current.user.preferences.to_json},\"slice\": #{jobs.to_json}}"
+          puts "REQ = #{request_body}"
+        end
 
         http = Net::HTTP.new(url.host, url.port)
         # http.use_ssl = true
@@ -99,7 +105,7 @@ module Api
 
         response = http.request(request)
 
-        feed_json = JSON.parse(response.body)
+        JSON.parse(response.body)
       end
 
       def job_params
