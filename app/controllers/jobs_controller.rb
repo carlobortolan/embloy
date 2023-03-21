@@ -9,14 +9,10 @@ class JobsController < ApplicationController
   def index
     # Create slice to find possible jobs
     jobs = JobSlicer.slice(Current.user.nil? ? nil : Current.user)
-    puts "P0 #{jobs.size}"
 
     # Call FrG-API to rank jobs
     if !jobs.nil? && !jobs.empty?
-      puts "P1"
       @jobs = call_feed(jobs)
-      puts "P2"
-      @jobs.nil? || @jobs.empty? ? render(status: 500, json: { "message": "Feed could not be generated!" }) : render(status: 200, json: { "feed": @jobs })
     else
       render status: 204, json: { "message": "No jobs found!" }
     end
@@ -96,8 +92,8 @@ class JobsController < ApplicationController
   # Method to communicate with the FG-API by sending a POST-request to tbd
   def call_feed(jobs)
     # TODO: Add FG-API endpoint url
-    url = URI.parse("http://embloy-fg-api.onrender.com/feed")
-    # request_body = jobs.to_json
+    # url = URI.parse("http://embloy-fg-api.onrender.com/feed")
+    url = URI.parse("http://localhost:8080/feed")
     request_body = "{\"slice\": #{jobs.to_json}}"
 
     http = Net::HTTP.new(url.host, url.port)
@@ -107,15 +103,22 @@ class JobsController < ApplicationController
     request = Net::HTTP::Post.new(url)
     request.basic_auth('FG', 'pw')
     request.body = request_body
+    request["Content-Type"] = "application/json"
 
     response = http.request(request)
 
+    puts "REQUEST = #{request.content_type}"
     puts "REQUEST = #{request.body}"
-    puts "RESPONSE = #{response}"
+    puts "RESPONSE = #{response.code}"
+    puts "RESPONSE = #{response.body}"
 
     if response.code == '200'
       feed_json = JSON.parse(response.body)
-      @jobs = Job.new(feed_json)
+      @jobs = []
+      feed_json.each do |job_hash|
+        @jobs << Job.new(job_hash)
+      end
+      @jobs
     else
       puts "Request failed with code #{response.code}"
       nil
