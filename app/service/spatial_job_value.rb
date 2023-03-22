@@ -21,11 +21,17 @@ module SpatialJobValue
   end
 
   def self.read_job_value(job = nil)
-    result = ActiveRecord::Base.connection.execute("SELECT ST_AsText(job_value) FROM jobs WHERE job_id=#{job.job_id}").first
+    sql = "SELECT ST_AsText(job_value) FROM jobs WHERE job_id=#{job.job_id}"
+    result = ActiveRecord::Base.connection.execute(sql).first
     point_string = result["st_astext"]
     latitude, longitude, job_type_id = point_string.scan(/[\d.-]+/)
     # return the values as a hash
     { latitude: latitude.to_f, longitude: longitude.to_f, job_type_id: job_type_id.to_i }
+  end
+
+  def self.geo_query_jobs(lat, lon, rad)
+    sql = "SELECT * FROM jobs WHERE ST_DWithin(job_value::geometry, ST_SetSRID(ST_MakePoint(#{lon}, #{lat}), 4326)::geography, #{rad} ORDER BY ST_Distance(job_value::geometry, ST_SetSRID(ST_MakePoint(#{lon}, #{lat}), 4326)::geography) LIMIT 500)"
+    result = ActiveRecord::Base.connection.execute(sql)
   end
 
 
