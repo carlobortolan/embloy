@@ -125,6 +125,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_22_100946) do
     t.integer "applications_count", default: 0, null: false
     t.integer "employer_rating", default: 0, null: false
     t.text "job_notifications", default: "1", null: false
+    t.integer "boost", default: 0, null: false
     t.index ["country_code"], name: " job_country_code_index "
     t.index ["job_id"], name: "job_job_id_index"
     t.index ["postal_code"], name: " job_postal_code_index "

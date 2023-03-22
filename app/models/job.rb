@@ -23,6 +23,7 @@ class Job < ApplicationRecord
   validates :job_type_value, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validate :job_type_verification
   validate :employer_rating
+  validate :boost
 
   def profile
     @job.update(view_count: @job.view_count + 1)

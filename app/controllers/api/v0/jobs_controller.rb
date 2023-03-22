@@ -91,7 +91,6 @@ module Api
           request_body = "{\"slice\": #{jobs.to_json}}"
         else
           request_body = "{\"pref\": #{Current.user.preferences.to_json},\"slice\": #{jobs.to_json}}"
-          puts "REQ = #{request_body}"
         end
 
         http = Net::HTTP.new(url.host, url.port)
