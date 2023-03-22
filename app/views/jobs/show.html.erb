@@ -34,13 +34,22 @@
                 </a>
               </h1>
               <div id="preloader2"></div>
-            <% else %>
-              <h1>
-                <a href="#applicationForm" class="scroll-bottom d-flex align-items-center justify-content-center">
-                  apply now&nbsp;<i class="bi bi-arrow-down-circle-fill fs-10"></i>
-                </a>
-              </h1>
-              <div id="preloader2"></div>
+            <% else
+                 if Current.user.nil? %>
+                <h1>
+                  <a href="<%= sign_in_path %>" class="scroll-bottom d-flex align-items-center justify-content-center">
+                    <i class="bi bi-person-exclamation"></i>&nbsp;Log in to apply
+                  </a>
+                </h1>
+                <div id="preloader2"></div>
+              <% else %>
+                <h1>
+                  <a href="#applicationForm" class="scroll-bottom d-flex align-items-center justify-content-center">
+                    apply now&nbsp;<i class="bi bi-arrow-down-circle-fill fs-10"></i>
+                  </a>
+                </h1>
+                <div id="preloader2"></div>
+              <% end %>
             <% end %>
 
           </article>
