@@ -3,7 +3,7 @@ require 'net/http'
 module Api
   module V0
     class JobsController < ApiController
-      before_action :verify_access_token, except: :feed
+      before_action :verify_access_token
 
       def create
         begin
@@ -63,7 +63,7 @@ module Api
       def feed
         begin
           # Check that user is verified
-          request.headers["HTTP_ACCESS_TOKEN"].nil? ? taboo! : @decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
+          # request.headers["HTTP_ACCESS_TOKEN"].nil? ? taboo! : @decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
           verified!(@decoded_token["typ"])
 
           # Create slice to find possible jobs
