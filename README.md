@@ -19,58 +19,70 @@ ___[api.md](app/controllers/api/v0/api.md)___
 
 ### Filtering of Available Jobs and Creating an "Intelligent" Feed
 
-***Following mutual agreement among the developers, the FeedGenerator has been migrated to a proprietary repository on GitLab. While the details of the project are confidential, a basic understanding of its functionality is necessary to work on the Rails backend. The updated version of the FeedGenerator is written in Rust and features a single REST API endpoint (accessible only by the Rails-API), which creates an "intelligent" feed by ranking a set of jobs (or "slice" provided by the Rails API) using a proprietary algorithm. The resulting feed is then displayed to the user.***
+***Following mutual agreement among the developers, the FeedGenerator has been migrated to a proprietary repository on
+GitLab. While the details of the project are confidential, a basic understanding of its functionality is necessary to
+work on the Rails backend. The updated version of the FeedGenerator is written in Rust and features a single REST API
+endpoint (accessible only by the Rails-API), which creates an "intelligent" feed by ranking a set of jobs (or "slice"
+provided by the Rails API) using a proprietary algorithm. The resulting feed is then displayed to the user.***
 
 ### User Authentication
 
-Users can set up an account with their email address and password, or choose to log in using the OAuth2.0 services provided by Google and GitHub.
+Users can set up an account with their email address and password, or choose to log in using the OAuth2.0 services
+provided by Google and GitHub.
 
-Passwords are instantly encrypted using [bcryt](https://en.wikipedia.org/wiki/Bcrypt) and stored in the database as an encrypted hash. In case a user forgets their password, it can be reset via standard email authentication.
+Passwords are instantly encrypted using [bcryt](https://en.wikipedia.org/wiki/Bcrypt) and stored in the database as an
+encrypted hash. In case a user forgets their password, it can be reset via standard email authentication.
 
 For an optimal user experience, it is recommended to fill out the 'Preferences' field under 'My Profile'.
 To log into the application, users can use the aforementioned OAuth2.0 services or enter their password.
-If a user forgets their password, they can reset it by providing their email address and following the specified procedure in the email.
+If a user forgets their password, they can reset it by providing their email address and following the specified
+procedure in the email.
 
 ### Managing Applications for Available Jobs
 
-The system is capable of managing jobs and applications, supporting basic [CRUD operations](https://www.javatpoint.com/crud-operations-in-sql), and notifying the employer when a new application is submitted, as well as notifying the applicant when their application is accepted or rejected.
+The system is capable of managing jobs and applications, supporting
+basic [CRUD operations](https://www.javatpoint.com/crud-operations-in-sql), and notifying the employer when a new
+application is submitted, as well as notifying the applicant when their application is accepted or rejected.
 
 All notifications are sent via [SMTP](https://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol).
 
-
 ## How it Works
 
-To get started, simply visit [our website](http://embloy.com/) and create a new account or log in with an existing account. It's that easy!
+To get started, simply visit [our website](http://embloy.com/) and create a new account or log in with an existing
+account. It's that easy!
 
 ## Config
+
 > __NOTE__: _You only need to follow these steps if you wish to contribute and need to test your changes locally_
 
 <details>
   <summary> 1. Prerequisites </summary>
 
-   - Install Ruby 2.7.5
+- Install Ruby 2.7.5
 
-   - Install Rails 7
+- Install Rails 7
 
-   - Install Postgresql 15
+- Install Postgresql 15
 
-   - Open pgAdmin4
+- Open pgAdmin4
 
-   - Add a new server
+- Add a new server
+
 </details>
 
 <details>
   <summary> 2. Connect to our remote database </summary>
-   
-   -     hostname/address: <special authorization needed>
 
-   -     maintanence database: <special authorization needed>
-   
-   -     username: <special authorization needed>
-   
-   -     password: <special authorization needed>
-   
-   -      port: 5432
+-     hostname/address: <special authorization needed>
+
+-     maintanence database: <special authorization needed>
+
+-     username: <special authorization needed>
+
+-     password: <special authorization needed>
+
+-      port: 5432
+
 </details>
 
 <details>
@@ -95,7 +107,18 @@ server.
 
 1. Run ``$ rails db:create`` to create all necessary tables in your development database.
 2. Run ``$ rails db:migrate`` to migrate your changes to the database.
-5. Run ``$ rails server`` to start the server.
+3. Run ``$ rails server`` to start the server.
+4. Add the following lines manually when resetting the current database or creating a new database:
+
+```
+CREATE EXTENSION postgis;
+ALTER TABLE jobs ADD COLUMN job_value public.geography(PointZ,4326);
+CREATE INDEX IF NOT EXISTS job_job_value_index
+ON public.jobs USING gist
+(job_value)
+TABLESPACE pg_default;
+```
+
 </details>
 
 4. Go to http://localhost:3000
@@ -105,6 +128,7 @@ server.
 *(TODO)*
 
 ## What's next
+
 > __NOTE__: _See [GitHub issues](https://github.com/carlobortolan/Embloy/issues) for more information_
 
 - ~~Update profile section UI~~

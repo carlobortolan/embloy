@@ -95,8 +95,39 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_22_100946) do
     t.datetime "updated_at", default: "2023-02-27 23:06:11", null: false
   end
 
-  # Could not dump table "jobs" because of following StandardError
-  #   Unknown type 'geography(PointZ,4326)' for column 'job_value'
+  create_table "jobs", primary_key: "job_id", id: :serial, force: :cascade do |t|
+    t.string "job_type"
+    t.integer "job_type_value"
+    t.integer "job_status", limit: 2, default: 0
+    t.enum "status", default: "public", null: false, enum_type: "job_status"
+    t.integer "user_id", default: 0
+    t.integer "duration", default: 0
+    t.string "code_lang", limit: 2
+    t.string "title", limit: 100
+    t.string "position", limit: 100
+    t.text "description"
+    t.string "key_skills", limit: 100
+    t.integer "salary"
+    t.string "currency"
+    t.string "image_url", limit: 500
+    t.datetime "start_slot", precision: nil
+    t.float "longitude", null: false
+    t.float "latitude", null: false
+    t.string "country_code", limit: 45
+    t.string "postal_code", limit: 45
+    t.string "city", limit: 45
+    t.string "address", limit: 45
+    t.integer "view_count", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "applications_count", default: 0, null: false
+    t.integer "employer_rating", default: 0, null: false
+    t.text "job_notifications", default: "1", null: false
+    t.index ["country_code"], name: " job_country_code_index "
+    t.index ["job_id"], name: "job_job_id_index"
+    t.index ["postal_code"], name: " job_postal_code_index "
+    t.index ["user_id"], name: "job_user_id_index "
+  end
 
   create_table "notifications", force: :cascade do |t|
     t.string "recipient_type", null: false
@@ -116,6 +147,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_22_100946) do
     t.float "spontaneity"
     t.jsonb "key_skills"
     t.integer "salary_range", default: [0, 0], array: true
+    t.integer "num_jobs_done", default: 0
   end
 
   create_table "private_users", id: :serial, force: :cascade do |t|
