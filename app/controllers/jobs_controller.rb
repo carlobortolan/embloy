@@ -42,7 +42,7 @@ class JobsController < ApplicationController
     @job.job_type_value = job_types[job_type]
 
     # @job.location_id = job_params[:location_id]
-    if @job.save!
+    if @job.save
       # @job_service.set_notification(@job[:id].to_i, @job[:user_id].to_i, params[:job][:notify].eql?("1"))
       SpatialJobValue.update_job_value(@job)
       redirect_to @job, notice: "Created new job"
