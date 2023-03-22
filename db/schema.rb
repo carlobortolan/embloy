@@ -15,7 +15,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_22_100946) do
   enable_extension "plpgsql"
   enable_extension "postgis"
 
-  execute("CREATE EXTENSION postgis;")
+  execute("CREATE EXTENSION IF NOT EXISTS postgis;")
 
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
