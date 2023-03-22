@@ -10,9 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_08_011051) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_22_100946) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "postgis"
 
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
@@ -94,39 +95,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_08_011051) do
     t.datetime "updated_at", default: "2023-02-27 23:06:11", null: false
   end
 
-  create_table "jobs", primary_key: "job_id", id: :serial, force: :cascade do |t|
-    t.string "job_type"
-    t.integer "job_type_value"
-    t.integer "job_status", limit: 2, default: 0
-    t.enum "status", default: "public", null: false, enum_type: "job_status"
-    t.integer "user_id", default: 0
-    t.integer "duration", default: 0
-    t.string "code_lang", limit: 2
-    t.string "title", limit: 100
-    t.string "position", limit: 100
-    t.text "description"
-    t.string "key_skills", limit: 100
-    t.integer "salary"
-    t.string "currency"
-    t.string "image_url", limit: 500
-    t.datetime "start_slot", precision: nil
-    t.float "longitude", null: false
-    t.float "latitude", null: false
-    t.string "country_code", limit: 45
-    t.string "postal_code", limit: 45
-    t.string "city", limit: 45
-    t.string "address", limit: 45
-    t.integer "view_count", default: 0, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "applications_count", default: 0, null: false
-    t.integer "employer_rating", default: 0, null: false
-    t.text "job_notifications", default: "1", null: false
-    t.index ["country_code"], name: " job_country_code_index "
-    t.index ["job_id"], name: "job_job_id_index"
-    t.index ["postal_code"], name: " job_postal_code_index "
-    t.index ["user_id"], name: "job_user_id_index "
-  end
+  # Could not dump table "jobs" because of following StandardError
+  #   Unknown type 'geography(PointZ,4326)' for column 'job_value'
 
   create_table "notifications", force: :cascade do |t|
     t.string "recipient_type", null: false
@@ -138,6 +108,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_08_011051) do
     t.datetime "updated_at", null: false
     t.index ["read_at"], name: "index_notifications_on_read_at"
     t.index ["recipient_type", "recipient_id"], name: "index_notifications_on_recipient"
+  end
+
+  create_table "preferences", id: :serial, force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.jsonb "job_type"
+    t.float "spontaneity"
+    t.jsonb "key_skills"
+    t.integer "salary_range", default: [0, 0], array: true
   end
 
   create_table "private_users", id: :serial, force: :cascade do |t|
@@ -199,14 +177,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_08_011051) do
     t.index ["user_type"], name: "user_user_type_index"
   end
 
-  create_table "preferences", id: :serial, force: :cascade do |t|
-    t.integer "user_id", null: false
-    t.jsonb "job_type", presence: false
-    t.string "salary_range", presence: false
-    t.float "spontaneity", presence: false
-    t.jsonb "key_skills", presence: false
-  end
-
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "applications", "jobs", primary_key: "job_id", on_delete: :cascade
@@ -218,10 +188,3 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_08_011051) do
   add_foreign_key "reviews", "jobs", primary_key: "job_id"
   add_foreign_key "reviews", "users", column: "created_by"
 end
-
-# CREATE EXTENSION postgis;
-# ALTER TABLE jobs ADD COLUMN job_value public.geography(PointZ,4326);
-# CREATE INDEX IF NOT EXISTS job_job_value_index
-# ON public.jobs USING gist
-# (job_value)
-# TABLESPACE pg_default;
