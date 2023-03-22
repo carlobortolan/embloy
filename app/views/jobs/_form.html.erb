@@ -8,26 +8,9 @@
           <div class="row d-flex justify-content-center">
             <div class="col-lg-6 text-center">
               <h2><%= form.text_field :title, placeholder: "Your job title", class: "form-control", required: true %></h2>
-              </p>
-              <div class="dropdown ">
-                <select class="btn btn-primary form-control" name="state">
-                  <option value="">Job Categories</option>
-                  <% @categories_list.each do |item| %>
-                    <option value="<%= item %>"><%= item %></option>
-                  <% end %>
-                </select>
-                <div class="dropdown-menu" aria-labelledby="job-dropdown">
-                  <% @categories_list.each do |item| %>
-                    <a class='dropdown-item' href='#'><%= item %></a>
-                  <% end %>
-                </div>
+              <div><%= form.label :job_type %>
+                <br><%= form.select :job_type, @categories_list, placeholder: "Job Categories", class: "btn btn-primary form-control" %>
               </div>
-              <script>
-                  $(document).ready(function () {
-                      $('.js-example-basic-single').select2();
-                  });
-              </script>
-
               <div class="mt-3">
                 <%= form.datetime_field :start_slot, class: "datetime form-control", required: true %><br>
               </div>
@@ -41,7 +24,7 @@
           <ol>
             <li><a href="<%= root_path %>">Home</a></li>
             <li><a href="<%= jobs_path %>">Jobs</a></li>
-            <li>Edit Job</li>
+            <li><%= editing ? "Edit Job" : "New Job" %></li>
           </ol>
         </div>
       </nav>
@@ -124,8 +107,6 @@
     <div>
     </div>
   <% end %>
-
-</main><!-- End #main -->
-
+</main>
 <a href="#" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 <div id="preloader"></div>
