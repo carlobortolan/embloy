@@ -15,6 +15,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_22_100946) do
   enable_extension "plpgsql"
   enable_extension "postgis"
 
+  execute("CREATE EXTENSION postgis;")
+
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "application_status", ["-1", "0", "1"]
@@ -128,6 +130,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_22_100946) do
     t.index ["postal_code"], name: " job_postal_code_index "
     t.index ["user_id"], name: "job_user_id_index "
   end
+
+  execute("ALTER TABLE jobs ADD COLUMN job_value public.geography(PointZ,4326);
+    CREATE INDEX IF NOT EXISTS job_job_value_index ON public.jobs USING gist(job_value)TABLESPACE pg_default;")
 
   create_table "notifications", force: :cascade do |t|
     t.string "recipient_type", null: false
