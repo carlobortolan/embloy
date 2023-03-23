@@ -30,9 +30,7 @@
 <div class="container px-3 px-lg-5 mt-5 text-dark">
   <div class="row gx-3 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-3 justify-content-center ">
     <% @jobs.each do |job| %>
-      <% if job.public? %>
-        <%= render "jobs/own_posting", job: job %>
-      <% end %>
+      <%= render "jobs/own_posting", job: job %>
     <% end %>
   </div>
 </div>
