@@ -4,21 +4,12 @@
       <h1>Find jobs</h1>
       <h3><%= link_to "Do you want to create a new job instead?", new_job_path %></h3>
 
-      <% my_args = { "account_id" => 1, "latitude" => 1.0, "longitude" => 1.0, "radius" => 1.0, "time" => Time.new(2022, 11, 11, 0, 0, 0), "limit" => 5 } %>
-
-      <h2 class="text-dark">Your parameters </h2>
-      <%= form_tag :action => 'parse_inputs' do %>
-        Your coordinates:
-        <%= number_field_tag :longitude, (0.0) %>
-        <%= number_field_tag :latitude, (0.0) %><br>
-        Search within radius:
-        <%= number_field_tag :radius, (50) %><br>
-        Search within timeslot:
-        <%= datetime_local_field_tag :time, (Time.zone.now.strftime("%Y-%m-%dT%H:%M")) %><br>
-        Set maximum number of jobs shown:
-        <%= number_field_tag :limit, (100) %><br>
-        <%= submit_tag "START SEARCH" %>
-      <% end %>
+      <div class="d-flex justify-content-center">
+        <form action="<%= jobs_find_path %>" method="get" class="form-search d-flex align-items-stretch mb-3" data-aos="fade-up" data-aos-delay="200">
+          <input type="text" class="form" placeholder="ZIP, city or keywords" name="query" style="height: 60px;">
+          <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+      </div>
 
       <h2 class="text-dark">All available jobs </h2>
       <section class="py-5">

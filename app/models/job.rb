@@ -1,5 +1,23 @@
 class Job < ApplicationRecord
   include Visible
+  # In job_controllers:
+  # Job.ms_search("finance", filter: ["job_type=sales"], sort: ["created_at:desc"])
+  include MeiliSearch::Rails
+  meilisearch if: (:status == "public") do
+    attribute :title
+    attribute :description
+    attribute :position
+    attribute :salary
+    attribute :country_code
+    attribute :postal_code
+    attribute :city
+    attribute :address
+
+    filterable_attributes [:job_type]
+    filterable_attributes [:key_skills]
+    sortable_attributes [:created_at, :updated_at, :start_slot]
+  end
+
   belongs_to :user, counter_cache: true
 
   has_many :applications, dependent: :delete_all

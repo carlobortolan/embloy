@@ -22,7 +22,6 @@ class UserController < ApplicationController
   end
 
   def update
-    puts "STARTED UPDATE USER CONTROLLER = #{params}"
     @user = Current.user
     require_user_logged_in
     if @user.update(user_params)
@@ -35,14 +34,12 @@ class UserController < ApplicationController
   def preferences
     @user = Current.user
     if @user.preferences.nil?
-      puts "PREF NIL"
       @user.create_preferences
       @user.save
     end
 
     @preferences = Current.user.preferences
     @categories_list = JSON.parse(File.read(Rails.root.join('app/helpers', 'job_types.json'))).keys
-    puts "#{params}"
   end
 
   def own_jobs

@@ -47,7 +47,7 @@ User.import(users)
 
 #=> CREATE JOBS POSTGRESQL
 elapsed_job = Benchmark.measure do
-  1.times do |i|
+  1000.times do |i|
     begin
       address_full = Faker::Address
       job = Job.new(

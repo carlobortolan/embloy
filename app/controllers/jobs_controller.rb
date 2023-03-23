@@ -10,7 +10,7 @@ class JobsController < ApplicationController
     # Create slice to find possible jobs
     jobs = JobSlicer.slice(Current.user.nil? ? nil : Current.user)
 
-    # Call FrG-API to rank jobs
+    # Call FG-API to rank jobs
     if !jobs.nil? && !jobs.empty?
       @jobs = call_feed(jobs)
     else
@@ -43,7 +43,6 @@ class JobsController < ApplicationController
 
     # @job.location_id = job_params[:location_id]
     if @job.save
-      # @job_service.set_notification(@job[:id].to_i, @job[:user_id].to_i, params[:job][:notify].eql?("1"))
       SpatialJobValue.update_job_value(@job)
       redirect_to @job, notice: "Created new job"
     else
@@ -76,12 +75,17 @@ class JobsController < ApplicationController
   end
 
   def find
-    @jobs = Job.all.where("status = 'public'").first(100)
+    Job.ms_reindex!
+    index = client.index('Job')
+    res = []
+    index.search(params[:query])['hits'].map do |hit|
+      res << Job.find(hit['id'])
+    end
+    @jobs = res
   end
 
-  def parse_inputs
-    @my_args = { "longitude" => params[:longitude].to_f, "latitude" => params[:latitude].to_f, "radius" => params[:radius].to_f, "time" => Time.parse(params[:time]), "limit" => params[:limit].to_i }
-    @result = FeedGenerator.initialize_feed(Job.all.where("status = 'public'").first(100).as_json, @my_args)
+  def client
+    @client ||= MeiliSearch::Client.new('http://localhost:7700', ENV['MEILISEARCH_API_KEY'])
   end
 
   private
@@ -94,7 +98,6 @@ class JobsController < ApplicationController
       request_body = "{\"slice\": #{jobs.to_json}}"
     else
       request_body = "{\"pref\": #{Current.user.preferences.to_json},\"slice\": #{jobs.to_json}}"
-      puts "REQ = #{request_body}"
     end
 
     http = Net::HTTP.new(url.host, url.port)

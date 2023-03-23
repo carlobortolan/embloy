@@ -8,10 +8,9 @@
           <p data-aos="fade-up" data-aos-delay="100">The best application to quickly find a fitting job for you or
             spontaneously provide work-opportunities to others.</p>
 
-          <form action="#" class="form-search d-flex align-items-stretch mb-3" data-aos="fade-up" data-aos-delay="200">
-            <input type="text" class="form-control" placeholder="ZIP, city or keywords">
-            <%#= text_field :search_input, type: "text", class: "form-search d-flex align-items-stretch mb-3", placeholder: "ZIP code or City" %>
-            <h3><%= link_to "Search", jobs_find_path, class: 'btn btn-primary' %></h3>
+          <form action="<%= jobs_find_path %>" method="get" class="form-search d-flex align-items-stretch mb-3" data-aos="fade-up" data-aos-delay="200">
+            <input type="text" class="form-control" placeholder="ZIP, city or keywords" name="query" style="height: 60px">
+            <button type="submit" class="btn btn-primary">Search</button>
           </form>
 
           <div class="row gy-4" data-aos="fade-up" data-aos-delay="400">
@@ -272,7 +271,7 @@
             <div class="card-img">
               <img src="assets/img/service_3.png" alt="" class="img-fluid">
             </div>
-            <h3><a href="<%= find_jobs_path %>" class="stretched-link">Intelligent feed</a></h3>
+            <h3><a href="<%= jobs_path %>" class="stretched-link">Intelligent feed</a></h3>
             <p>Dicta quam similique quia architecto eos nisi aut ratione aut ipsum reiciendis sit doloremque oluptatem
               aut et molestiae ut et nihil</p>
           </div>
@@ -324,8 +323,8 @@
       <div class="row justify-content-center">
         <div class="col-lg-8 text-center">
           <h3>Create a new job posting</h3>
-          <p> Don't waste any time and start to find the best employee for your business. Just head over
-            to <%= link_to "Submit job offering", jobs_path, class: "cta-btn" %>
+          <p> Don't waste any time and start to find the best employee for your business. <br>
+            <%= link_to "Submit job offering", jobs_path, class: "cta-btn" %>
         </div>
       </div>
 
