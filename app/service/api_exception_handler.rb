@@ -8,6 +8,11 @@ module ApiExceptionHandler
 
     # =========== Job related exceptions ============
     # ===============================================
+    #
+    rescue_from JWT::ExpiredSignature,
+                with: :token_expired_error
+
+    #--------------------------------------
 
     rescue_from CustomExceptions::InvalidJob::Unknown,
                 with: :job_unknown_error
@@ -33,11 +38,6 @@ module ApiExceptionHandler
 
     rescue_from CustomExceptions::InvalidInput::Token,
                 with: :token_invalid_input_error
-
-    #--------------------------------------
-
-    rescue_from JWT::ExpiredSignature,
-                with: :token_expired_error
 
     #--------------------------------------
 
