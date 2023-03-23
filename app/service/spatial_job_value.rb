@@ -29,7 +29,7 @@ module SpatialJobValue
     { latitude: latitude.to_f, longitude: longitude.to_f, job_type_id: job_type_id.to_i }
   end
 
-  def self.geo_query_jobs(lat, lon, rad)
+  def self.geo_query(lat, lon, rad)
     sql = "SELECT * FROM jobs WHERE ST_DWithin(job_value::geometry, ST_SetSRID(ST_MakePoint(#{lon}, #{lat}), 4326)::geography, #{rad} ORDER BY ST_Distance(job_value::geometry, ST_SetSRID(ST_MakePoint(#{lon}, #{lat}), 4326)::geography) LIMIT 500)"
     result = ActiveRecord::Base.connection.execute(sql)
   end
