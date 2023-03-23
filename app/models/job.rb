@@ -1,6 +1,5 @@
 class Job < ApplicationRecord
   include Visible
-  # In job_controllers:
   # Job.ms_search("finance", filter: ["job_type=sales"], sort: ["created_at:desc"])
   include MeiliSearch::Rails
   meilisearch do

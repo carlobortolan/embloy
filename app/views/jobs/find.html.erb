@@ -10,10 +10,9 @@
           <!-- Filter by job type -->
           <select name="job_type" class="form-select" aria-label="Filter by job type">
             <option value="">All job types</option>
-            <option value="Retail">Retail</option>
-            <option value="Sales">Sales</option>
-            <option value="Education">Education</option>
-            <option value="Administration">Administration</option>
+            <% @categories_list.each do |type| %>
+              <option value="<%= type %>"><%= type %></option>
+            <% end %>
           </select>
           <!-- Sort by -->
           <select name="sort_by" class="form-select" aria-label="Sort by">

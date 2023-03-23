@@ -74,20 +74,19 @@ class JobsController < ApplicationController
     redirect_to own_jobs_path, status: :see_other, notice: "Job successfully deleted."
   end
 
-  def findtest
-    Job.ms_reindex!
-    @jobs = Job.ms_search(params[:query])
-    puts "RES = #{Job.ms_search(params[:query])}"
-  end
+  # def find
+  #  Job.ms_reindex!
+  #  @jobs = Job.ms_search(params[:query])
+  # end
 
+  # TODO: This is just a first version that still needs to be improved.
   def find
+    @categories_list = JSON.parse(File.read(Rails.root.join('app/helpers', 'job_types.json'))).keys
     begin
-      index = client.index('Job')
-      #index.update_sortable_attributes(["created_at", "salary"])
+      index = MeiliSearch::Client.new(ENV['MEILISEARCH_URL'], ENV['MEILISEARCH_API_KEY']).index('Job')
+      index.update_sortable_attributes(["created_at", "salary"])
       res = []
       Job.ms_reindex!
-
-      puts "SETTINGS = #{index.get_settings}"
 
       query = params[:query]
       job_type = params[:job_type]
@@ -115,11 +114,10 @@ class JobsController < ApplicationController
         }
       else
         query_options = {
-          filter: [filters.join(' AND ')]
+          filter: [filters.join(' AND ')],
         }
       end
 
-      # Perform the search
       index.search(query, query_options)['hits'].map do |hit|
         res << Job.find(hit['id'])
       end
@@ -129,10 +127,6 @@ class JobsController < ApplicationController
       @jobs = []
     end
 
-  end
-
-  def client
-    @client ||= MeiliSearch::Client.new(ENV['MEILISEARCH_URL'], ENV['MEILISEARCH_API_KEY'])
   end
 
   private
