@@ -3,19 +3,11 @@ class Job < ApplicationRecord
   # In job_controllers:
   # Job.ms_search("finance", filter: ["job_type=sales"], sort: ["created_at:desc"])
   include MeiliSearch::Rails
-  meilisearch if: (:status == "public") do
-    attribute :title
-    attribute :description
-    attribute :position
-    attribute :salary
-    attribute :country_code
-    attribute :postal_code
-    attribute :city
-    attribute :address
-
+  meilisearch do
+    displayed_attributes [:id, :title, :description, :start_slot, :position, :key_skills, :salary, :job_type, :created_at, :updated_at]
+    searchable_attributes [:title, :description, :start_slot, :position, :key_skills, :salary, :job_type]
     filterable_attributes [:job_type]
-    filterable_attributes [:key_skills]
-    sortable_attributes [:created_at, :updated_at, :start_slot]
+    sortable_attributes [:created_at, :salary]
   end
 
   belongs_to :user, counter_cache: true

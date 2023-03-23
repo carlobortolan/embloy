@@ -74,18 +74,65 @@ class JobsController < ApplicationController
     redirect_to own_jobs_path, status: :see_other, notice: "Job successfully deleted."
   end
 
-  def find
+  def findtest
     Job.ms_reindex!
-    index = client.index('Job')
-    res = []
-    index.search(params[:query])['hits'].map do |hit|
-      res << Job.find(hit['id'])
+    @jobs = Job.ms_search(params[:query])
+    puts "RES = #{Job.ms_search(params[:query])}"
+  end
+
+  def find
+    begin
+      index = client.index('Job')
+      #index.update_sortable_attributes(["created_at", "salary"])
+      res = []
+      Job.ms_reindex!
+
+      puts "SETTINGS = #{index.get_settings}"
+
+      query = params[:query]
+      job_type = params[:job_type]
+      sort_by = params[:sort_by]
+
+      filters = []
+      if job_type.present?
+        filters << "job_type = #{job_type}"
+      end
+
+      if sort_by.present?
+        case sort_by
+        when 'salary_desc'
+          sort = 'salary:desc'
+        when 'salary_asc'
+          sort = 'salary:asc'
+        when 'date_desc'
+          sort = 'created_at:desc'
+        when 'date_asc'
+          sort = 'created_at:asc'
+        end
+        query_options = {
+          filter: [filters.join(' AND ')],
+          sort: [sort]
+        }
+      else
+        query_options = {
+          filter: [filters.join(' AND ')]
+        }
+      end
+
+      # Perform the search
+      index.search(query, query_options)['hits'].map do |hit|
+        res << Job.find(hit['id'])
+      end
+      @jobs = res
+    rescue MeiliSearch::ApiError => e
+      Rails.logger.error "MeiliSearch error: #{e.message}"
+      @jobs = []
     end
-    @jobs = res
+
   end
 
   def client
-    @client ||= MeiliSearch::Client.new('http://localhost:7700', ENV['MEILISEARCH_API_KEY'])
+    @client ||= MeiliSearch::Client.new(ENV['MEILISEARCH_URL'], ENV['MEILISEARCH_API_KEY'])
   end
 
   private

@@ -7,6 +7,22 @@
       <div class="d-flex justify-content-center">
         <form action="<%= jobs_find_path %>" method="get" class="form-search d-flex align-items-stretch mb-3" data-aos="fade-up" data-aos-delay="200">
           <input type="text" class="form" placeholder="ZIP, city or keywords" name="query" style="height: 60px;">
+          <!-- Filter by job type -->
+          <select name="job_type" class="form-select" aria-label="Filter by job type">
+            <option value="">All job types</option>
+            <option value="Retail">Retail</option>
+            <option value="Sales">Sales</option>
+            <option value="Education">Education</option>
+            <option value="Administration">Administration</option>
+          </select>
+          <!-- Sort by -->
+          <select name="sort_by" class="form-select" aria-label="Sort by">
+            <option value="">Sort by relevance</option>
+            <option value="salary_desc">Salary - High to Low</option>
+            <option value="salary_asc">Salary - Low to High</option>
+            <option value="date_desc">Date - Newest first</option>
+            <option value="date_asc">Date - Oldest first</option>
+          </select>
           <button type="submit" class="btn btn-primary">Search</button>
         </form>
       </div>

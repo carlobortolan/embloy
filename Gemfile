@@ -19,7 +19,6 @@ gem "pg", "~> 1.1"
 gem 'rgeo'
 gem 'activerecord-postgis-adapter'
 
-
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", "~> 5.0"
 
@@ -70,7 +69,6 @@ group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
 
-
   # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
   # gem "rack-mini-profiler"
 
@@ -97,4 +95,5 @@ gem "bullet", "~> 7.0"
 gem "benchmark", "~> 0.2.1"
 
 gem "activerecord-import", "~> 1.4"
-gem "meilisearch-rails"
+
+gem "meilisearch-rails", "~> 0.8.1"
