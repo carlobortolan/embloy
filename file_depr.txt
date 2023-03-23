@@ -1,0 +1,24 @@
+FROM ruby:2.7.5 AS builder
+
+RUN apt-get update && \
+    apt-get install -y nodejs postgresql-client
+
+RUN mkdir /app
+WORKDIR /app
+
+COPY Gemfile Gemfile.lock ./
+RUN gem install bundler
+RUN bundle install; bundle exec rake assets:precompile; bundle exec rake assets:clean;rails db:migrate;
+
+COPY . .
+
+RUN bundle exec rails assets:precompile
+RUN bundle exec rails webpacker:compile
+
+# Build stage for Meilisearch
+FROM getmeili/meilisearch:latest
+WORKDIR /app/meilisearch
+COPY --from=builder /app/db/seeds/meilisearch/ /app/meilisearch/db/seeds/
+
+EXPOSE 7700
+CMD ["meilisearch", "--http-addr", "0.0.0.0:7700"]

@@ -53,7 +53,7 @@ test:
 #
 production:
   <<: *default
-  database: embloy
+  database: embloy_c
   adapter: postgis
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
