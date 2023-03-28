@@ -81,7 +81,7 @@ class JobsController < ApplicationController
     @jobs = Job.search_for("#{params[:query]}" + "#{params[:job_type]}")
 
     if @jobs.nil? || @jobs.empty?
-      @jobs = Job.all.limit(100)
+      @jobs = Job.all
     end
 
     unless params[:job_type].nil? || params[:job_type].blank?
@@ -90,16 +90,16 @@ class JobsController < ApplicationController
 
     case params[:sort_by]
     when "salary_asc"
-      @jobs = @jobs.sort_by { |j| j[:salary] }
+      @jobs = @jobs.order(salary: :asc)
     when "salary_desc"
-      @jobs = @jobs.sort_by { |j| j[:salary] }.reverse
+      @jobs = @jobs.order(salary: :desc)
     when "date_asc"
-      @jobs = @jobs.sort_by { |j| j[:created_at] }
+      @jobs = @jobs.order(created_at: :asc)
     when "date_desc"
-      @jobs = @jobs.sort_by { |j| j[:created_at] }.reverse
+      @jobs = @jobs.order(created_at: :desc)
     end
 
-    @jobs = @jobs.page.page(params[:page])
+    @jobs = @jobs.page(params[:page]).per(24)
   end
 
   private
