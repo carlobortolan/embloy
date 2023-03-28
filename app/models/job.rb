@@ -5,7 +5,7 @@ class Job < ApplicationRecord
   max_pages 10
   pg_search_scope :search_by_title, against: :title
   pg_search_scope :search_by_job_type, against: :job_type
-  pg_search_scope :search_for, against: [:title, :job_type, :position, :key_skills, :description]
+  pg_search_scope :search_for, against: [:title, :job_type, :position, :key_skills, :description, :country_code, :city, :postal_code, :address]
 
   belongs_to :user, counter_cache: true
   has_many :applications, dependent: :delete_all
