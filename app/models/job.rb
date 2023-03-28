@@ -1,13 +1,17 @@
 class Job < ApplicationRecord
   include Visible
-  belongs_to :user, counter_cache: true
+  include PgSearch::Model
+  pg_search_scope :search_by_title, against: :title
+  pg_search_scope :search_by_job_type, against: :job_type
+  pg_search_scope :search_for, against: [:title, :job_type, :position, :key_skills, :description]
 
+  belongs_to :user, counter_cache: true
   has_many :applications, dependent: :delete_all
+  has_noticed_notifications model_name: 'Notification'
+  has_rich_text :content
   # has_many :notifications, dependent: :delete_all
   # has_many :notifications, through: :user, dependent: :delete_all
-  has_noticed_notifications model_name: 'Notification'
 
-  has_rich_text :content
   validates :title, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validates :description, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, length: { minimum: 10 }
   validates :start_slot, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }

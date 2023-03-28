@@ -76,13 +76,28 @@ class JobsController < ApplicationController
   end
 
   def find
-    Job.ms_reindex!
-    index = client.index('Job')
-    res = []
-    index.search(params[:query])['hits'].map do |hit|
-      res << Job.find(hit['id'])
+    @categories_list = JSON.parse(File.read(Rails.root.join('app/helpers', 'job_types.json'))).keys
+
+    @jobs = Job.search_for("#{params[:query]}" + "#{params[:job_type]}")
+
+    if @jobs.nil? || @jobs.empty?
+      @jobs = Job.all.limit(100)
     end
-    @jobs = res
+
+    unless params[:job_type].nil? || params[:job_type].blank?
+      @jobs = @jobs.where(job_type: params[:job_type])
+    end
+
+    case params[:sort_by]
+    when "salary_asc"
+      @jobs = @jobs.sort_by { |j| j[:salary] }
+    when "salary_desc"
+      @jobs = @jobs.sort_by { |j| j[:salary] }.reverse
+    when "date_asc"
+      @jobs = @jobs.sort_by { |j| j[:created_at] }
+    when "date_desc"
+      @jobs = @jobs.sort_by { |j| j[:created_at] }.reverse
+    end
   end
 
   private
