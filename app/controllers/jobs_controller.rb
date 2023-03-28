@@ -76,12 +76,13 @@ class JobsController < ApplicationController
   end
 
   def find
-    @jobs = Job.all.where("status = 'public'").first(100)
-  end
-
-  def parse_inputs
-    @my_args = { "longitude" => params[:longitude].to_f, "latitude" => params[:latitude].to_f, "radius" => params[:radius].to_f, "time" => Time.parse(params[:time]), "limit" => params[:limit].to_i }
-    @result = FeedGenerator.initialize_feed(Job.all.where("status = 'public'").first(100).as_json, @my_args)
+    Job.ms_reindex!
+    index = client.index('Job')
+    res = []
+    index.search(params[:query])['hits'].map do |hit|
+      res << Job.find(hit['id'])
+    end
+    @jobs = res
   end
 
   private
