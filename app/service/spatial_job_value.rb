@@ -37,7 +37,8 @@ module SpatialJobValue
     end
     result
   end
-  #todo: go on
+
+=begin
   def self.retrieve_records_within_range(x_min, y_min, x_max, y_max, max_records)
     distance = 0.1
     limit = 100
@@ -56,6 +57,6 @@ module SpatialJobValue
     sql = "SELECT * FROM jobs WHERE ST_DWithin(job_value::geometry, ST_MakeEnvelope(#{x_min}, #{y_min}, #{x_max}, #{y_max}, 4326), #{distance}) LIMIT #{limit}"
     ActiveRecord::Base.connection.select_all(sql)
   end
-
+=end
 
 end
