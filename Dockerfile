@@ -16,7 +16,7 @@ COPY . .
 # Set the default environment variables
 ENV RAILS_ENV=deployment \
     RACK_ENV=deployment \
-    DATABASE_URL=postgres://render_user:Rr6KuyMNOarlaovej8vxoovuZYtwGfSa@dpg-cft8562rrk0c83527na0-a.frankfurt-postgres.render.com/?sslmode=require
+
 # Precompile the assets
 RUN bundle install; bundle exec rake assets:precompile; bundle exec rake assets:clean;
 
