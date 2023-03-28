@@ -1,6 +1,8 @@
 class Job < ApplicationRecord
   include Visible
   include PgSearch::Model
+  paginates_per 48
+  max_pages 10
   pg_search_scope :search_by_title, against: :title
   pg_search_scope :search_by_job_type, against: :job_type
   pg_search_scope :search_for, against: [:title, :job_type, :position, :key_skills, :description]

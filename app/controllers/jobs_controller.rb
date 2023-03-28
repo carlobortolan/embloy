@@ -98,6 +98,8 @@ class JobsController < ApplicationController
     when "date_desc"
       @jobs = @jobs.sort_by { |j| j[:created_at] }.reverse
     end
+
+    @jobs = @jobs.page.page(params[:page])
   end
 
   private

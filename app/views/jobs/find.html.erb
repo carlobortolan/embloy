@@ -36,6 +36,29 @@
               <% end %>
             <% end %>
           </div>
+          <nav class="d-flex justify-content-center">
+            <ul class="pagination">
+              <% if @jobs.total_pages > 1 %>
+                <% if @jobs.current_page > 1 %>
+                  <li class="page-item">
+                    <%= link_to '«', find_jobs_path(page: @jobs.current_page - 1, q: params[:q]), class: 'page-link' %>
+                  </li>
+                <% end %>
+                <% @jobs.total_pages.times do |i| %>
+                  <% if @jobs.current_page == i + 1 %>
+                    <li class="page-item active"><%= link_to i + 1, '#', class: 'page-link' %></li>
+                  <% else %>
+                    <li class="page-item"><%= link_to i + 1, find_jobs_path(page: i + 1, q: params[:q]), class: 'page-link' %></li>
+                  <% end %>
+                <% end %>
+                <% if @jobs.current_page < @jobs.total_pages %>
+                  <li class="page-item">
+                    <%= link_to '»', find_jobs_path(page: @jobs.current_page + 1, q: params[:q]), class: 'page-link' %>
+                  </li>
+                <% end %>
+              <% end %>
+            </ul>
+          </nav>
         </div>
       </section>
     </div>
