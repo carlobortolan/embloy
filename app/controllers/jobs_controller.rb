@@ -76,12 +76,30 @@ class JobsController < ApplicationController
   end
 
   def find
-    @jobs = Job.all.where("status = 'public'").first(100)
-  end
+    @categories_list = JSON.parse(File.read(Rails.root.join('app/helpers', 'job_types.json'))).keys
 
-  def parse_inputs
-    @my_args = { "longitude" => params[:longitude].to_f, "latitude" => params[:latitude].to_f, "radius" => params[:radius].to_f, "time" => Time.parse(params[:time]), "limit" => params[:limit].to_i }
-    @result = FeedGenerator.initialize_feed(Job.all.where("status = 'public'").first(100).as_json, @my_args)
+    @jobs = Job.search_for("#{params[:query]}" + "#{params[:job_type]}")
+
+    if @jobs.nil? || @jobs.empty?
+      @jobs = Job.all
+    end
+
+    unless params[:job_type].nil? || params[:job_type].blank?
+      @jobs = @jobs.where(job_type: params[:job_type])
+    end
+
+    case params[:sort_by]
+    when "salary_asc"
+      @jobs = @jobs.order(salary: :asc)
+    when "salary_desc"
+      @jobs = @jobs.order(salary: :desc)
+    when "date_asc"
+      @jobs = @jobs.order(created_at: :asc)
+    when "date_desc"
+      @jobs = @jobs.order(created_at: :desc)
+    end
+
+    @jobs = @jobs.page(params[:page]).per(24)
   end
 
   private
