@@ -8,9 +8,44 @@ module ApiExceptionHandler
 
     # =========== Job related exceptions ============
     # ===============================================
-    #
+
+    rescue_from JWT::VerificationError,
+                with: :token_verification_error
+
+    #--------------------------------------
+
+    rescue_from JWT::DecodeError,
+                with: :token_decode_error
+
+    #--------------------------------------
+
     rescue_from JWT::ExpiredSignature,
                 with: :token_expired_error
+
+    #--------------------------------------
+
+    rescue_from JWT::InvalidIssuerError,
+                with: :token_invalid_issuer_error
+
+    #--------------------------------------
+
+    rescue_from JWT::IncorrectAlgorithm,
+                with: :token_algorithm_error
+
+    #--------------------------------------
+
+    rescue_from JWT::InvalidJtiError,
+                with: :token_jti_error
+
+    #--------------------------------------
+
+    rescue_from JWT::InvalidIatError,
+                with: :token_iat_error
+
+    #--------------------------------------
+
+    rescue_from JWT::InvalidSubError,
+                with: :token_sub_error
 
     #--------------------------------------
 
@@ -33,46 +68,14 @@ module ApiExceptionHandler
     rescue_from CustomExceptions::Unauthorized::InsufficientRole,
                 with: :user_role_to_low_error
 
+    rescue_from CustomExceptions::Unauthorized::Blocked,
+                with: :user_blocked_error
+
     # ========== Token related exceptions ===========
     # ===============================================
 
     rescue_from CustomExceptions::InvalidInput::Token,
                 with: :token_invalid_input_error
-
-    #--------------------------------------
-
-    rescue_from JWT::InvalidIssuerError,
-                with: :token_invalid_issuer_error
-
-    #--------------------------------------
-
-    rescue_from JWT::IncorrectAlgorithm,
-                with: :token_algorithm_error
-
-    #--------------------------------------
-
-    rescue_from JWT::VerificationError,
-                with: :token_verification_error
-
-    #--------------------------------------
-
-    rescue_from JWT::DecodeError,
-                with: :token_decode_error
-
-    #--------------------------------------
-
-    rescue_from JWT::InvalidJtiError,
-                with: :token_jti_error
-
-    #--------------------------------------
-
-    rescue_from JWT::InvalidIatError,
-                with: :token_iat_error
-
-    #--------------------------------------
-
-    rescue_from JWT::InvalidSubError,
-                with: :token_sub_error
 
   end
 
@@ -95,13 +98,19 @@ module ApiExceptionHandler
   #--------------------------------------
 
   def user_not_owner_error
-    access_denied_error
+    access_denied_error('user')
   end
 
   #--------------------------------------
 
   def user_role_to_low_error
-    access_denied_error
+    access_denied_error('user')
+  end
+
+  #--------------------------------------
+
+  def user_blocked_error
+    access_denied_error('user')
   end
 
   # ========== Token related exceptions ===========
@@ -142,7 +151,7 @@ module ApiExceptionHandler
   #--------------------------------------
 
   def token_jti_error
-    unauthorized_token_error
+    access_denied_error('refresh_token')
     # render_error('token', 'ERR_INACTIVE', 'Attribute is blocked', 403)
   end
 
@@ -161,7 +170,6 @@ module ApiExceptionHandler
   end
 
   #--------------------------------------
-
   def token_decode_error
     malformed_error('token')
   end
@@ -182,13 +190,13 @@ module ApiExceptionHandler
   #--------------------------------------
 
   def unauthorized_token_error
-    render_error('token', 'ERR_INVALID', 'Attribute is invalid or expired. Please authenticate again to access this resource', 401)
+    render_error('token', 'ERR_INVALID', 'Attribute is invalid or expired', 401)
   end
 
   #--------------------------------------
 
-  def access_denied_error
-    render_error('user', 'ERR_ACCESS_DENIED', 'Attribute is not permitted do proceed', 403)
+  def access_denied_error(attribute)
+    render_error(attribute, 'ERR_RAC', 'Proceeding is inhibited by an access restriction', 403)
   end
 
   #--------------------------------------

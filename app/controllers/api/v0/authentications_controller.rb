@@ -40,16 +40,6 @@ module Api
 
           # ========== Rescue normal Exceptions ==========
 
-        rescue CustomExceptions::Unauthorized::Blocked
-          # The requested token subject (User) is blocked (blacklisted).
-          render status: 403, json: { "user": [
-            {
-              "error": "ERR_INACTIVE",
-              "description": "Attribute is blocked."
-            }
-          ]
-          }
-
         rescue CustomExceptions::Unauthorized::InsufficientRole::NotVerified
           # The requested token subject (User) is unverified.
           render status: 403, json: { "user": [
@@ -90,13 +80,7 @@ module Api
           # Invalid User (User.find_by(id: id) == nil) BUT user.present says true
           render status: 500, json: { "error": "Please try again later. If this error persists, we recommend to contact our support team." }
         rescue CustomExceptions::Unauthorized::InsufficientRole
-          render status: 403, json: { "user": [
-            {
-              "error": "ERR_RAC",
-              "description": "Proceeding is inhibited by an access restriction"
-            }
-          ]
-          }
+          access_denied_error('user')
         end
       end
 
@@ -121,22 +105,9 @@ module Api
           end
 
           # ========== Rescue normal Exceptions ==========
-        rescue JWT::ExpiredSignature
-          render status: 401, json: { "refresh_token": [
-            {
-              "error": "ERR_INVALID",
-              "description": "Attribute has expired."
-            }
-          ]
-          }
-        rescue JWT::InvalidJtiError
-          render status: 403, json: { "refresh_token": [
-            {
-              "error": "ERR_INACTIVE",
-              "description": "Attribute is blocked."
-            }
-          ]
-          }
+=begin
+
+
         rescue CustomExceptions::InvalidInput::Token
           render status: 400, json: { "refresh_token": [
             {
@@ -202,7 +173,7 @@ module Api
             }
           ]
           }
-
+=end
         end
       end
 

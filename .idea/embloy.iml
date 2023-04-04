@@ -77,6 +77,10 @@
     <orderEntry type="library" scope="PROVIDED" name="irb (v1.6.3, ruby-2.7.5-p203) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="jbuilder (v2.11.5, ruby-2.7.5-p203) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="jwt (v2.7.0, ruby-2.7.5-p203) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="kaminari (v1.2.2, ruby-2.7.5-p203) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="kaminari-actionview (v1.2.2, ruby-2.7.5-p203) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="kaminari-activerecord (v1.2.2, ruby-2.7.5-p203) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="kaminari-core (v1.2.2, ruby-2.7.5-p203) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="llhttp-ffi (v0.4.0, ruby-2.7.5-p203) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="loofah (v2.19.1, ruby-2.7.5-p203) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="mail (v2.8.1, ruby-2.7.5-p203) [gem]" level="application" />
@@ -106,6 +110,7 @@
     <orderEntry type="library" scope="PROVIDED" name="omniauth-rails_csrf_protection (v1.0.1, ruby-2.7.5-p203) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="omniauth-twitter (v1.4.0, ruby-2.7.5-p203) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="pg (v1.4.6, ruby-2.7.5-p203) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="pg_search (v2.3.6, ruby-2.7.5-p203) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="public_suffix (v5.0.1, ruby-2.7.5-p203) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="puma (v5.6.5, ruby-2.7.5-p203) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="racc (v1.6.2, ruby-2.7.5-p203) [gem]" level="application" />
@@ -139,6 +144,7 @@
     <orderEntry type="library" scope="PROVIDED" name="timeout (v0.3.2, ruby-2.7.5-p203) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="turbo-rails (v1.4.0, ruby-2.7.5-p203) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="tzinfo (v2.0.6, ruby-2.7.5-p203) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="tzinfo-data (v1.2023.1, ruby-2.7.5-p203) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="unf (v0.1.4, ruby-2.7.5-p203) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="unf_ext (v0.0.8.2, ruby-2.7.5-p203) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="uniform_notifier (v1.16.0, ruby-2.7.5-p203) [gem]" level="application" />
