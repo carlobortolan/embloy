@@ -19,11 +19,7 @@ ___[api.md](app/controllers/api/v0/api.md)___
 
 ### Filtering of Available Jobs and Creating an "Intelligent" Feed
 
-***Following mutual agreement among the developers, the FeedGenerator has been migrated to a proprietary repository on
-GitLab. While the details of the project are confidential, a basic understanding of its functionality is necessary to
-work on the Rails backend. The updated version of the FeedGenerator is written in Rust and features a single REST API
-endpoint (accessible only by the Rails-API), which creates an "intelligent" feed by ranking a set of jobs (or "slice"
-provided by the Rails API) using a proprietary algorithm. The resulting feed is then displayed to the user.***
+***The FeedGenerator has been migrated to an external system after mutual agreement among the developers. Although the details of the project are confidential, a basic understanding of its functionality is necessary to work on the Rails backend. The enhanced FeedGenerator features a single REST API endpoint, which can only be accessed by the Rails server via an authentication barrier. Credentials are provided on a need-to-know basis. The FeedGenerator ranks each element of a set of jobs (or "slice") that are provided by the Rails backend. The resulting feed is then displayed to the user.***
 
 ### User Authentication
 
