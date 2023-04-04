@@ -463,7 +463,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_RAC",
-                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_RAC`: This error code is returned when the requested resource cannot be accessed due to access restrictions. The server understood the request but refuses to authorize it, in this case becausehe request violates security policies. This can be caused by either A: The Embloy account is not verified, or B: the Embloy account is currentlz blackisted and therefore temporarily banned. For any inqueries regarding case B we kindly recommend to contact our support team."
+                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_RAC`: The requested resource cannot be accessed due to access restrictions. The server has understood the request but refuses to authorize it because it violates security policies. This error may occur due to one of the following reasons: A: The Embloy account has not been verified. Please verify the account to access the resource. B: The Embloy account is currently blacklisted and has been temporarily banned. Please contact the support team for further assistance."
                           },
                           "description": {
                             "type": "string",
@@ -575,20 +575,20 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "email||password": {
+                    "refresh_token": {
                       "type": "array",
-                      "description": "The attribute that caused the error. Possible values are:\n- `email||password`",
+                      "description": "The attribute that caused the error. Possible values are:\n- `refresh_token`",
                       "items": {
                         "type": "object",
                         "properties": {
                           "error": {
                             "type": "string",
                             "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_INVALID`: When a given attribute is malformed or unknown. Check for spelling or other formatting errors. This specific error indicates that the provided password is incorrect."
+                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity, an unknown owner, or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh refresh token and try again. Contact our support team if the problem persists."
                           },
                           "description": {
                             "type": "string",
-                            "example": "Attribute is malformed or unknown",
+                            "example": "Attribute is invalid or expired",
                             "description": "A brief context specific classification of the error that occured"
                           }
                         }
@@ -606,16 +606,16 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "user": {
+                    "refresh_token": {
                       "type": "array",
-                      "description": "The attribute that caused the error. Possible values are:\n- `user`",
+                      "description": "The attribute that caused the error. Possible values are:\n- `user`\n- `refresh_token`",
                       "items": {
                         "type": "object",
                         "properties": {
                           "error": {
                             "type": "string",
                             "example": "ERR_RAC",
-                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_RAC`: This error code is returned when the requested resource cannot be accessed due to access restrictions. The server understood the request but refuses to authorize it, in this case becausehe request violates security policies. This can be caused by either A: The Embloy account is not verified, or B: the Embloy account is currentl blackisted and therefore temporarily banned."
+                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_RAC`: The requested resource cannot be accessed due to access restrictions. The server has understood the request but refuses to authorize it because it violates security policies. This error may occur due to one of the following reasons: A: The Embloy account has not been verified. Please verify the account to access the resource. B: The Embloy account is currently blacklisted and has been temporarily banned. Please contact the support team for further assistance. C: The refresh token is currentyl blacklisted and ahs been temporarily banned."
                           },
                           "description": {
                             "type": "string",
