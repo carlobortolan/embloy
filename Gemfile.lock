@@ -188,6 +188,8 @@ GEM
     net-smtp (0.3.3)
       net-protocol
     nio4r (2.5.8)
+    nokogiri (1.14.2-x64-mingw-ucrt)
+      racc (~> 1.4)
     nokogiri (1.14.2-x64-mingw32)
       racc (~> 1.4)
     nokogiri (1.14.2-x86_64-linux)
@@ -233,6 +235,7 @@ GEM
       omniauth-oauth (~> 1.1)
       rack
     pg (1.4.6)
+    pg (1.4.6-x64-mingw-ucrt)
     pg (1.4.6-x64-mingw32)
     pg_search (2.3.6)
       activerecord (>= 5.2)
@@ -352,6 +355,7 @@ GEM
     zeitwerk (2.6.7)
 
 PLATFORMS
+  x64-mingw-ucrt
   x64-mingw32
   x86_64-linux
 
@@ -391,7 +395,7 @@ DEPENDENCIES
   webdrivers
 
 RUBY VERSION
-   ruby 2.7.5p203
+   ruby 3.2.2p53
 
 BUNDLED WITH
    2.2.3
