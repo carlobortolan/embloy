@@ -821,12 +821,12 @@
                           "boost": {
                             "type": "integer",
                             "example": 84,
-                            "description": "This relates to Embloy's Job Ranking Engine and has NO RELEVANCE FOR THE USER. THIS CLAIM WILL NOT BE INCLUDED IN API V1.x"
+                            "description": "This information pertains to Embloy's Job Ranking Engine and is not relevant to the user. Therefore, this claim will not be included in API V1.x."
                           },
                           "job_value": {
                             "type": "string",
                             "example": "01010000A0E6100000000000000000264000000000000048400000000000003940",
-                            "description": "This relates to Embloy's Job Ranking Engine and has NO RELEVANCE FOR THE USER. THIS CLAIM WILL NOT BE INCLUDED IN API V1.x"
+                            "description": "This information pertains to Embloy's Job Ranking Engine and is not relevant to the user. Therefore, this claim will not be included in API V1.x."
                           }
                         }
                       }
