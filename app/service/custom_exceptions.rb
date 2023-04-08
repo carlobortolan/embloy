@@ -59,6 +59,9 @@ class CustomExceptions < StandardError
     class CustomEXP < StandardError # Token expired?
     end
 
+    class BlankCredentials < StandardError #Blank email || password
+    end
+
   end
 
   # ============== Job - Exceptions =============

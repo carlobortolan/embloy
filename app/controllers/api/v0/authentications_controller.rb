@@ -18,57 +18,19 @@ module Api
 
             else
               # user.authenticate(refresh_token_params["password"]) fails
-              render status: 401, json: { "email||password": [
-                {
-                  "error": "ERR_INVALID",
-                  "description": "Attribute is malformed or unknown."
-                }
-              ]
-              }
+              unauthorized_error('email|password')
             end
 
           else
             # User.find_by(email: refresh_token_params["email"]) fails
-            render status: 400, json: { "email||password": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Attribute is malformed or unknown."
-              }
-            ]
-            }
+            unauthorized_error("email|password")
           end
-
-          # ========== Rescue normal Exceptions ==========
-
-        rescue CustomExceptions::Unauthorized::InsufficientRole::NotVerified
-          # The requested token subject (User) is unverified.
-          render status: 403, json: { "user": [
-            {
-              "error": "ERR_RAC",
-              "description": "Proceeding is inhibited by an access restriction"
-            }
-          ]
-          }
-
-        rescue CustomExceptions::InvalidInput::CustomEXP
-          # Invalid Input (Validity [man_interval] attribute is malformed)
-          render status: 400, json: { "validity": [
-            {
-              "error": "ERR_INVALID",
-              "description": "Attribute is malformed or unknown."
-            }
-          ]
-          }
 
           # ========== Rescue severe Exceptions ==========
         rescue ActionController::ParameterMissing
-          render status: 400, json: { "refresh_token": [
-            {
-              "error": "ERR_BLANK",
-              "description": "Attribute can't be blank"
-            }
-          ]
-          }
+          blank_error('refresh_token')
+
+          # ======== Overwrite APIExceptionHandler =======
         rescue CustomExceptions::InvalidUser::Unknown
           # The requested token subject (User) doesn't exists BUT user.authenticate(refresh_token_params["password"]) says true
           render status: 500, json: { "error": "Please try again later. If this error persists, we recommend to contact our support team." }
@@ -79,8 +41,6 @@ module Api
         rescue CustomExceptions::InvalidUser::Unknown
           # Invalid User (User.find_by(id: id) == nil) BUT user.present says true
           render status: 500, json: { "error": "Please try again later. If this error persists, we recommend to contact our support team." }
-        rescue CustomExceptions::Unauthorized::InsufficientRole
-          access_denied_error('user')
         end
       end
 
@@ -185,7 +145,11 @@ module Api
 
       def user
         # enables to not explicitly define user by just calling this method
-        @user ||= User.find_by(email: refresh_token_params["email"])
+        if refresh_token_params["email"].nil? || refresh_token_params["email"].empty? || refresh_token_params["password"].nil? || refresh_token_params["password"].empty?
+          raise CustomExceptions::InvalidInput::BlankCredentials
+        else
+          @user ||= User.find_by(email: refresh_token_params["email"])
+        end
       end
     end
 
