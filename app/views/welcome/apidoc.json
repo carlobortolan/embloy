@@ -976,7 +976,157 @@
                           "response": {
                             "type": "string",
                             "example": "public",
-                            "description": "A brief message from the employer regarding the application review statusn."
+                            "description": "A brief message from the employer regarding the application review status."
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "No content"
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `token`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_BLANK",
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_BLANK`: When a required attribute is blank. All required parameters are denoted above. If all required attributes were indeed given but this error gets raised it could be that the attributs are provided falsely (e.g. via header or via path instead of body ...)"
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Attribute can't be blank",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `token`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_INVALID",
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh accesstoken and try again. Contact our support team if the problem persists."
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Attribute is invalid or expired",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/reviews": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "List own received reviews.",
+        "description": "The provided access token is first verified, and then a list of all reviews associated with its owner is generated.The reviews cover both employer and employee submissions, providing a comprehensive overview of the experiences and perspectives.",
+        "operationId": "listOwnREceivedReviewss",
+        "parameters": [
+          {
+            "name": "access_token",
+            "in": "header",
+            "description": "A valid access token",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOjksImV4cCI6MTY4MDk3MzE1MSwidHlwIjoidmVyaWZpZWQiLCJpc3MiOiJodW1tZWxKLVNGQzgifQ.93iFsNUwhoQewsiGsc7fBiW8U6BjyoSmr16n-jBvN9I"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "reviews": {
+                      "type": "array",
+                      "description": "This is a list of submitted applications to jobs for the specified account.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "review_id": {
+                            "type": "integer",
+                            "example": 42,
+                            "description": "The specific review_id is a unique identifier for a specific review that is permanently assigned to that review and does not correspond to any other review in the system. This review_id corresponds to the review that the user has received."
+                          },
+                          "rating": {
+                            "type": "string",
+                            "example": 5,
+                            "description": "The rating score that the user has received within this specific review."
+                          },
+                          "message": {
+                            "type": "string",
+                            "example": "We had a great experience working with him and would definitely hire him again. He was professional, efficient, and delivered high-quality work.",
+                            "description": "Detailed review message outlining the strengths and areas for improvement of the user submitted by the reviewer."
+                          },
+                          "created_by": {
+                            "type": "integer",
+                            "example": 1778112,
+                            "description": "This refers to a existing user_id. The specific user_id is a unique identifier for a specific user account that is permanently assigned to that user account and does not correspond to any other user account in the system. This user_id corresponds to the user that submitted the review for the user specified in subject."
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "example": "2023-03-23T12:21:42.623Z",
+                            "description": "The specific date and time when this review was created."
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "example": "2023-04-01T10:31:01.623Z",
+                            "description": "The specific date and time when this review was updated the last time."
+                          },
+                          "job_id": {
+                            "type": "integer",
+                            "example": 3968,
+                            "description": "The specific job_id is a unique identifier for a specific job that is permanently assigned to that job and does not correspond to any other job in the system. This job_id corresponds to the job that is \\\"links\\\" the user receiving the review to the user submitting it."
+                          },
+                          "subject": {
+                            "type": "integer",
+                            "example": 9,
+                            "description": "This refers to a existing user_id. The specific user_id is a unique identifier for a specific user account that is permanently assigned to that user account and does not correspond to any other user account in the system. This user_id corresponds to the user that received the review from the user specified in created_by."
                           }
                         }
                       }
