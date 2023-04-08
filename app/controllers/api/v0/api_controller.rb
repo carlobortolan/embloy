@@ -7,7 +7,7 @@ module Api
       protect_from_forgery with: :null_session
 
       def verify_access_token
-        request.headers["HTTP_ACCESS_TOKEN"].nil? ? blank_error('token') : @decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
+        (request.headers["HTTP_ACCESS_TOKEN"].nil? || request.headers["HTTP_ACCESS_TOKEN"].empty?) ? blank_error('token') : @decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
       end
 
     end

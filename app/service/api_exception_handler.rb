@@ -175,7 +175,7 @@ module ApiExceptionHandler
   #--------------------------------------
 
   def token_jti_error
-    access_denied_error('refresh_token')
+    access_denied_error('token')
     # render_error('token', 'ERR_INACTIVE', 'Attribute is blocked', 403)
   end
 

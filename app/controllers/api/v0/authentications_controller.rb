@@ -49,8 +49,8 @@ module Api
         begin
 
           # ============ Token gets claimed ==============
-          if request.headers["HTTP_REFRESH_TOKEN"].nil?
-            render status: 400, json: { "refresh_token": [
+          if request.headers["HTTP_REFRESH_TOKEN"].nil? || request.headers["HTTP_REFRESH_TOKEN"].empty?
+            render status: 400, json: { "token": [
               {
                 "error": "ERR_BLANK",
                 "description": "Attribute can't be blank"
