@@ -54,10 +54,7 @@ class AuthenticationTokenService
 
     def self.jti?(jti)
       # checks whether a specifc (refresh) token is blacklisted (via its identifier "jti")
-      puts "TEST"
-      p jti
       if AuthBlacklist.find_by(token: jti).present?
-        puts "wlan"
         false # user is blacklisted
       else
         true # user isn't blacklisted
