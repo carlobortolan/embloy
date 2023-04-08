@@ -588,7 +588,7 @@
                   "properties": {
                     "token": {
                       "type": "array",
-                      "description": "The attribute that caused the error. Possible values are:\n- `refresh_token`",
+                      "description": "The attribute that caused the error. Possible values are:\n- `token`",
                       "items": {
                         "type": "object",
                         "properties": {
@@ -681,7 +681,7 @@
                           "job_id": {
                             "type": "integer",
                             "example": 1984,
-                            "description": "The specific job_id is a unique identifier for a specific job that is permanently assigned to that job and does not correspond to any other job in the system."
+                            "description": "The specific job_id is a unique identifier for a specific job that is permanently assigned to that job and does not correspond to any other job in the system. This job_id corresponds to the job that the user created."
                           },
                           "job_type": {
                             "type": "string",
@@ -706,7 +706,7 @@
                           "user_id": {
                             "type": "integer",
                             "example": 9,
-                            "description": "The specific user_id is a unique identifier for a specific user account that is permanently assigned to that user account and does not correspond to any other user account in the system."
+                            "description": "The specific user_id is a unique identifier for a specific user account that is permanently assigned to that user account and does not correspond to any other user account in the system. This user_id corresponds to the user that created the specific job."
                           },
                           "duration": {
                             "type": "integer",
@@ -879,14 +879,14 @@
                   "properties": {
                     "token": {
                       "type": "array",
-                      "description": "The attribute that caused the error. Possible values are:\n- `refresh_token`",
+                      "description": "The attribute that caused the error. Possible values are:\n- `token`",
                       "items": {
                         "type": "object",
                         "properties": {
                           "error": {
                             "type": "string",
                             "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh refresh token and try again. Contact our support team if the problem persists."
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh accesstoken and try again. Contact our support team if the problem persists."
                           },
                           "description": {
                             "type": "string",
@@ -900,9 +900,97 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/user/applications": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "List own job applications",
+        "description": "The provided access token is first verified, and then a list of all the job applications associated with its owner is generated.",
+        "operationId": "listOwnApplications",
+        "parameters": [
+          {
+            "name": "access_token",
+            "in": "header",
+            "description": "A valid access token",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOjksImV4cCI6MTY4MDk3MzE1MSwidHlwIjoidmVyaWZpZWQiLCJpc3MiOiJodW1tZWxKLVNGQzgifQ.93iFsNUwhoQewsiGsc7fBiW8U6BjyoSmr16n-jBvN9I"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "applications": {
+                      "type": "array",
+                      "description": "This is a list of submitted applications to jobs for the specified account.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "job_id": {
+                            "type": "integer",
+                            "example": 3968,
+                            "description": "The specific job_id is a unique identifier for a specific job that is permanently assigned to that job and does not correspond to any other job in the system. This job_id corresponds to the job that the user applied for."
+                          },
+                          "user_id": {
+                            "type": "integer",
+                            "example": 9,
+                            "description": "The specific user_id is a unique identifier for a specific user account that is permanently assigned to that user account and does not correspond to any other user account in the system. This user_id corresponds to the user that applied for the specific job."
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "example": "2023-03-23T12:21:42.623Z",
+                            "description": "The specific date and time when this job post was created."
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "example": "2023-04-01T10:31:01.623Z",
+                            "description": "The specific date and time when this job post was updated the last time."
+                          },
+                          "status": {
+                            "type": "string",
+                            "example": 1,
+                            "description": "Applications with a status of -1 indicate that they have been rejected, while applications with a status of 1 have been accepted. Applications with a status of 0 are still awaiting a response."
+                          },
+                          "application_text": {
+                            "type": "string",
+                            "example": "Hey, I am an expirenced story teller and would love to support your sales team. [...]",
+                            "description": "A brief message to the employer with the an application."
+                          },
+                          "application_documents": {
+                            "type": "string",
+                            "example": "public",
+                            "description": "The URL where supporting documents(s) for this particular application can be found."
+                          },
+                          "response": {
+                            "type": "string",
+                            "example": "public",
+                            "description": "A brief message from the employer regarding the application review statusn."
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
-          "403": {
-            "description": "Forbidden",
+          "204": {
+            "description": "No content"
+          },
+          "400": {
+            "description": "Bad request",
             "content": {
               "application/json": {
                 "schema": {
@@ -910,18 +998,49 @@
                   "properties": {
                     "token": {
                       "type": "array",
-                      "description": "The attribute that caused the error. Possible values are:\n- `user`\n- `token`",
+                      "description": "The attribute that caused the error. Possible values are:\n- `token`",
                       "items": {
                         "type": "object",
                         "properties": {
                           "error": {
                             "type": "string",
-                            "example": "ERR_RAC",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_RAC`: The requested resource cannot be accessed due to access restrictions. The server has understood the request but refuses to authorize it because it violates security policies. This error may occur due to one of the following reasons: A: The Embloy account has not been verified. Please verify the account to access the resource. B: The Embloy account is currently blacklisted and has been temporarily banned. Please contact the support team for further assistance. C: The refresh token is currently blacklisted and has been temporarily banned."
+                            "example": "ERR_BLANK",
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_BLANK`: When a required attribute is blank. All required parameters are denoted above. If all required attributes were indeed given but this error gets raised it could be that the attributs are provided falsely (e.g. via header or via path instead of body ...)"
                           },
                           "description": {
                             "type": "string",
-                            "example": "Proceeding is inhibited by an access restriction",
+                            "example": "Attribute can't be blank",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `token`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_INVALID",
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh accesstoken and try again. Contact our support team if the problem persists."
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Attribute is invalid or expired",
                             "description": "A brief context specific classification of the error that occured"
                           }
                         }
