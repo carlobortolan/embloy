@@ -333,7 +333,7 @@
           "user"
         ],
         "summary": "Claim a refresh token",
-        "description": "This first verifies Embloy account credentials and then issues a refresh token for this specific account. Refresh tokens only possess a time-limited validity. (current default validity is 2 weeks) Refresh tokens are primarily used to claim the much more powerful (but much shorter valid) access tokens.",
+        "description": "This first authenticates the account credentials and then issues a refresh token for this specific verified Embloy account. Refresh tokens only possess a time-limited validity. (current default validity is 2 weeks) Refresh tokens are primarily used to claim the much more powerful (but much shorter valid) access tokens.",
         "operationId": "createRefreshToken",
         "parameters": [
           {
@@ -354,6 +354,17 @@
             "schema": {
               "type": "string",
               "example": "doublethink"
+            }
+          },
+          {
+            "name": "validity",
+            "in": "body",
+            "description": "The validity interval for the refresh token (NOT IMPLEMENTED IN API v0)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "int64",
+              "example": 20000
             }
           }
         ],
@@ -394,18 +405,18 @@
                   "properties": {
                     "email||password": {
                       "type": "array",
-                      "description": "The attribute that caused the error. Possible values are:\n- `refresh_token`\n- `email`\n- `password`",
+                      "description": "The attribute that caused the error. Possible values are:\n- `validity`\n- `email|password`",
                       "items": {
                         "type": "object",
                         "properties": {
                           "error": {
                             "type": "string",
-                            "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_BLANK`: When a required attribute is blank. All required parameters are denoted above. If all required attributes were indeed given but this error gets raised it could be that the attributs are provided falsely (e.g. via header or via path instead of body ...)\n- `ERR_INVALID`: When a given attribute is malformed or unknown. Check for spelling or other formatting errors. This specific error indicates that no database records could be retrieved for the given inputs. So double check whether the email is correct or an corresponding Embloy account truly exists."
+                            "example": "ERR_BLANK",
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_BLANK`: When a required attribute is blank. All required parameters are denoted above. If all required attributes were indeed given but this error gets raised it could be that the attributs are provided falsely (e.g. via header or via path instead of body ...)\n- `ERR_INVALID`: When a given attribute is malformed or unknown. Check for spelling or other formatting errors. This specific error indicates that the individually set validity interval for the refresh token is falsely formatted. So double check whether the provided attribute obeys the rekevant denotations."
                           },
                           "description": {
                             "type": "string",
-                            "example": "Attribute is malformed or unknown",
+                            "example": "Attribute can't be blank",
                             "description": "A brief context specific classification of the error that occured"
                           }
                         }
@@ -432,11 +443,11 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_INVALID`: When a given attribute is malformed or unknown. Check for spelling or other formatting errors. This specific error indicates that the provided password is incorrect."
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: When a given attribute is malformed or unknown. Check for spelling or other formatting errors. This specific error either indicates that no database records could be retrieved for the given inputs or that the provided password is incorrect. So double check whether the email or password is correct or an corresponding Embloy account truly exists."
                           },
                           "description": {
                             "type": "string",
-                            "example": "Attribute is malformed or unknown",
+                            "example": "Attribute is invalid or expired",
                             "description": "A brief context specific classification of the error that occured"
                           }
                         }
