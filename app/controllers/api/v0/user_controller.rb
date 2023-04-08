@@ -7,7 +7,7 @@ module Api
       def own_jobs
         begin
           verified!(@decoded_token["typ"])
-          jobs = User.find(id: @decoded_token["sub"].to_i).jobs.order(created_at: :desc)
+          jobs = User.find(@decoded_token["sub"].to_i).jobs.order(created_at: :desc)
           jobs.empty? ? render( status: 204, json: { "jobs": jobs }) : render(status: 200, json: { "jobs": jobs })
         end
       end
