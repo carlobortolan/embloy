@@ -26,7 +26,7 @@ class AuthenticationTokenService
     def self.decode(token)
       # token decoding for a refresh token
       # this method decodes a jwt token
-      decoded_token = JWT.decode(token, HMAC_SECRET, true, { verify_jti: Proc.new { |jti| jti?(jti) }, iss: ISSUER, verify_iss: true, verify_iat: true, required_claims: ['iss', 'sub', 'exp', 'jti', 'iat'], algorithm: ALGORITHM_TYPE })
+      decoded_token = JWT.decode(token, HMAC_SECRET, true, { verify_jti: Proc.new { |jti| jti?(jti,sub.to_i) }, iss: ISSUER, verify_iss: true, verify_iat: true, required_claims: ['iss', 'sub', 'exp', 'jti', 'iat'], algorithm: ALGORITHM_TYPE })
 
       if User.find_by(id: decoded_token[0]["sub"]).blank?
         raise JWT::InvalidSubError
@@ -41,7 +41,7 @@ class AuthenticationTokenService
       # if exists and is explicitly blacklisted .forbidden? is true if token is allowed .forbidden? is false
       jti = content(token)
       if !jti[0].nil? # if .content returns { "status": status, "token": errors } == nil, because {...}[0] == nil
-        return !(jti?(jti[0]["jti"])) # if .jti? finds token identifier blacklisted, it returns true. .forbidden? returns false in this case
+        return !(jti?(jti[0]["jti"],token["sub"].to_i)) # if .jti? finds token identifier blacklisted, it returns true. .forbidden? returns false in this case
       else
         return jti # error message from content
       end
@@ -52,9 +52,9 @@ class AuthenticationTokenService
       Digest::MD5.hexdigest([iat.to_s, ISSUER, HMAC_SECRET].join(':').to_s)
     end
 
-    def self.jti?(jti)
+    def self.jti?(jti, sub = nil)
       # checks whether a specifc (refresh) token is blacklisted (via its identifier "jti")
-      if AuthBlacklist.find_by(token: jti).present?
+      if AuthBlacklist.find_by(token: jti).present? || User.find_by(id: sub).present?
         false # user is blacklisted
       else
         true # user isn't blacklisted
@@ -181,35 +181,5 @@ class AuthenticationTokenService
     end
 
   end
-
-  #########################################################
-  ################# CUSTOM EXCEPTIONS #####################
-  #########################################################
-
-  # class InvalidInput < StandardError
-  #   class SUB < StandardError
-  #   end
-  #
-  #   class CustomEXP < StandardError
-  #   end
-  #
-  #   class Token < StandardError
-  #   end
-  #
-  # end
-  #
-  # class InvalidUser < StandardError
-  #   class Unknown < StandardError
-  #   end
-  #
-  #   class Inactive < StandardError
-  #     class NotVerified < StandardError
-  #     end
-  #
-  #     class Blocked < StandardError
-  #     end
-  #   end
-  #
-  # end
 
 end
