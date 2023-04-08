@@ -195,7 +195,7 @@ module ApiExceptionHandler
 
   #--------------------------------------
   def token_decode_error
-    malformed_error('token')
+    unauthorized_error('token')
   end
 
   # ============ Basic render methods =============
