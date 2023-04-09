@@ -38,7 +38,7 @@ module Api
           else
             verified!(@decoded_token["typ"])
             User.find(@decoded_token["sub"]).update!(password_params)
-            render status: 200, json: { "message": "Password successfully updated!" }
+            render status: 200, json: { "message": "Password updated" }
           end
 
         rescue ActionController::ParameterMissing
@@ -48,7 +48,7 @@ module Api
             malformed_error('user')
 
         rescue ActiveRecord::RecordInvalid
-          malformed_error('user')
+          mismatch_error('password|password_confirmation')
 
         end
       end

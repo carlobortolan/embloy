@@ -237,6 +237,12 @@ module ApiExceptionHandler
 
   #--------------------------------------
 
+  def mismatch_error(attribute)
+    render_error(attribute, 'ERR_MISMATCH', 'Required matching attributes do not match', 422)
+  end
+
+  #--------------------------------------
+
   def render_error(attribute, error, description, status)
     if attribute.class == Array
       bin = {}
