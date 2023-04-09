@@ -37,7 +37,7 @@ module Api
             }
           else
             verified!(@decoded_token["typ"])
-            User.find(id: @decoded_token["sub"]).update!(password_params)
+            User.find(@decoded_token["sub"]).update!(password_params)
             render status: 200, json: { "message": "Password successfully updated!" }
           end
 
