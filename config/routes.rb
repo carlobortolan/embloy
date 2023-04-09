@@ -4,8 +4,8 @@ Rails.application.routes.draw do
   #= <<<<< *API* >>>>>>
   namespace :api, defaults: { format: 'json' } do
     namespace :v0 do
-      patch 'password', to: 'passwords#update'
-      post 'password/reset', to: 'password_resets#create'
+      patch 'user/password', to: 'passwords#update'
+      post 'user/password/reset', to: 'password_resets#create'
 
       post 'user', to: 'registrations#create'
       get 'user/verify', to: 'registrations#verify'
