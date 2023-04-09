@@ -36,18 +36,18 @@ module Api
             ]
             }
           else
-            verified!(@decoded_token["typ"])
+            verified!('spectator')
             User.find(@decoded_token["sub"]).update!(password_params)
             render status: 200, json: { "message": "Password updated" }
           end
 
         rescue ActionController::ParameterMissing
-          blank_error('user')
+          blank_error('user') # should not be thrown
 
-        rescue ActiveRecord::RecordNotFound
+        rescue ActiveRecord::RecordNotFound # Thrown when there is no User for id token["sub"]
             malformed_error('user')
 
-        rescue ActiveRecord::RecordInvalid
+        rescue ActiveRecord::RecordInvalid # Thrown when password != password_confirmation
           mismatch_error('password|password_confirmation')
 
         end
