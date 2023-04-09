@@ -6,7 +6,7 @@ module Api
 
       def update
         begin
-          if !password_params[:password].nil? && password_params[:password_confirmation].nil?
+          if (!password_params[:password].nil? && !password_params[:password].empty?) && (password_params[:password_confirmation].nil? || password_params[:password_confirmation].empty?)
             render status: 400, json: { "password_confirmation": [
               {
                 "error": "ERR_BLANK",
@@ -14,7 +14,7 @@ module Api
               }
             ]
             }
-          elsif password_params[:password].nil? && !password_params[:password_confirmation].nil?
+          elsif (password_params[:password].nil? || password_params[:password].empty?) && (!password_params[:password_confirmation].nil? && !password_params[:password_confirmation].empty?)
             render status: 400, json: { "password": [
               {
                 "error": "ERR_BLANK",
@@ -22,7 +22,7 @@ module Api
               }
             ]
             }
-          elsif password_params[:password].nil? && password_params[:password_confirmation].nil?
+          elsif (password_params[:password].nil? || password_params[:password].empty?) && (password_params[:password_confirmation].nil? || password_params[:password_confirmation].empty?)
             render status: 400, json: { "password": [
               {
                 "error": "ERR_BLANK",
