@@ -7,23 +7,15 @@ module Api
       def create
         begin
           verified!(@decoded_token["typ"])
-          user = User.find(id: @decoded_token["sub"].to_i)
-          PasswordMailer.with(user: user).reset.deliver_later
-          render status: 200, json: { "message": "Password reset process successfully initiated! Please check your mailbox." }
+          user = User.find(@decoded_token["sub"])
+          #PasswordMailer.with(user: user).reset.deliver_later
+          render status: 200, json: { "message": "Password reset process initiated! Please check your mailbox." }
 
-        rescue ActionController::ParameterMissing
-          blank_error('user')
-
+          rescue ActiveRecord::RecordNotFound # Thrown when there is no User for id token["sub"]
+            malformed_error('user')
         end
       end
-
       # edit/update methods are not implemented on purpose. this is due to the fact that a user must do the confirmation manually.
-
-      private
-
-      def password_params
-        params.require(:user).permit(:password, :password_confirmation)
-      end
     end
   end
 end

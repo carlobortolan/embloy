@@ -9,6 +9,8 @@ module Api
           verified!(@decoded_token["typ"])
           jobs = User.find(@decoded_token["sub"].to_i).jobs.order(created_at: :desc)
           jobs.empty? ? render( status: 204, json: { "jobs": jobs }) : render(status: 200, json: { "jobs": jobs })
+          rescue ActiveRecord::RecordNotFound
+            malformed_error('user')
         end
       end
 
