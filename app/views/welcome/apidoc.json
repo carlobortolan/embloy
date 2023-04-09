@@ -134,7 +134,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_BLANK`: When a required attribute is blank. All required parameters are denoted above. If all required attributes were indeed given but this error gets raised it could be that the attributs are provided falsely (e.g. via header or via path instead of body ...)\n- `ERR_INVALID`: When a given attribute is malformed or unknown. Check for spelling or other formatting errors. This specific error indicates that no database records could be retrieved for the given inputs. So double check whether the email is correct or an corresponding Embloy account truly exists."
+                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_BLANK`: When a required attribute is blank. All required parameters are denoted above. If all required attributes were indeed given but this error gets raised it could be that the attributs are provided falsely (e.g. via header or via path instead of body ...)\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue double check the formatting requirements and try again. Contact our support team if the problem persists."
                           },
                           "description": {
                             "type": "string",
@@ -283,7 +283,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_INVALID`: When a given attribute is malformed or unknown. Check for spelling or other formatting errors. This specific error indicates that the provided password is incorrect."
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue double check the formatting requirements and try again. Contact our support team if the problem persists."
                           },
                           "description": {
                             "type": "string",
@@ -419,7 +419,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_BLANK",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_BLANK`: When a required attribute is blank. All required parameters are denoted above. If all required attributes were indeed given but this error gets raised it could be that the attributs are provided falsely (e.g. via header or via path instead of body ...)\n- `ERR_INVALID`: When a given attribute is malformed or unknown. Check for spelling or other formatting errors. This specific error indicates that the individually set validity interval for the refresh token is falsely formatted. So double check whether the provided attribute obeys the rekevant denotations."
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_BLANK`: When a required attribute is blank. All required parameters are denoted above. If all required attributes were indeed given but this error gets raised it could be that the attributs are provided falsely (e.g. via header or via path instead of body ...)\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue double check the formatting requirements and try again. Contact our support team if the problem persists."
                           },
                           "description": {
                             "type": "string",
@@ -450,7 +450,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: When a given attribute is malformed or unknown. Check for spelling or other formatting errors. This specific error either indicates that no database records could be retrieved for the given inputs or that the provided password is incorrect. So double check whether the email or password is correct or an corresponding Embloy account truly exists."
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue double check the formatting requirements and try again. Contact our support team if the problem persists."
                           },
                           "description": {
                             "type": "string",
@@ -602,7 +602,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh refresh token and try again. Contact our support team if the problem persists."
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh refresh token, double check the formatting requirements and try again. Contact our support team if the problem persists."
                           },
                           "description": {
                             "type": "string",
@@ -638,6 +638,169 @@
                           "description": {
                             "type": "string",
                             "example": "Proceeding is inhibited by an access restriction",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/password": {
+      "patch": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Update the password for a user account",
+        "description": "The provided access token is first verified, and then the password for the specific account associated with the access token is updated.",
+        "operationId": "updatePassword",
+        "parameters": [
+          {
+            "name": "access_token",
+            "in": "header",
+            "description": "A valid access token",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOjksImV4cCI6MTY4MDk3MzE1MSwidHlwIjoidmVyaWZpZWQiLCJpc3MiOiJodW1tZWxKLVNGQzgifQ.93iFsNUwhoQewsiGsc7fBiW8U6BjyoSmr16n-jBvN9I"
+            }
+          },
+          {
+            "name": "password",
+            "in": "body",
+            "description": "The new password to be used for login.",
+            "required": true,
+            "schema": {
+              "maxLength": 72,
+              "type": "string",
+              "example": "doppeldenk"
+            }
+          },
+          {
+            "name": "password_confirmation",
+            "in": "body",
+            "description": "The new password to be used for login (must be exactly the same as above)",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "doppeldenk"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Update password",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "example": "Password updated"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `token`\n- `password`\n- `password_confirmation`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_BLANK",
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_BLANK`: When a required attribute is blank. All required parameters are denoted above. If all required attributes were indeed given but this error gets raised it could be that the attributs are provided falsely (e.g. via header or via path instead of body ...)\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Attribute can't be blank",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `token`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_INVALID",
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Attribute is invalid or expired",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "password|password_confirmation": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `password|password_confirmation`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_MISMATCH",
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_MISMATCH`: If attributes do not match or are not in the expected format. This error occurs when two or more attributes are expected to match or have a specific linkage, but they do not meet the criteria. For example, this error may occur when a user is asked to enter and confirm a password, and the two entries do not match, or when a date is entered in an incorrect format. To resolve this issue, please double-check the relevant requirements and ensure that there are no spelling or formatting errors in the input data. Contact our support team if the problem persists."
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Required matching attributes do not match",
                             "description": "A brief context specific classification of the error that occured"
                           }
                         }
@@ -893,7 +1056,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh accesstoken and try again. Contact our support team if the problem persists."
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
                           },
                           "description": {
                             "type": "string",
@@ -1043,7 +1206,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh accesstoken and try again. Contact our support team if the problem persists."
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
                           },
                           "description": {
                             "type": "string",
@@ -1193,7 +1356,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh accesstoken and try again. Contact our support team if the problem persists."
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
                           },
                           "description": {
                             "type": "string",
@@ -1348,7 +1511,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh accesstoken and try again. Contact our support team if the problem persists."
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
                           },
                           "description": {
                             "type": "string",
@@ -1742,6 +1905,24 @@
               "password_confirmation": {
                 "type": "string",
                 "example": "doublethink"
+              }
+            }
+          }
+        }
+      },
+      "PasswordUpdate": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "properties": {
+              "password": {
+                "type": "string",
+                "example": "doppeldenk"
+              },
+              "password_confirmation": {
+                "type": "string",
+                "example": "doppeldenk"
               }
             }
           }
