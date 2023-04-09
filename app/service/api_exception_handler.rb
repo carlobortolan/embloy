@@ -226,7 +226,7 @@ module ApiExceptionHandler
   #--------------------------------------
 
   def not_found_error(attribute)
-    render_error(attribute, 'ERR_INVALID', 'Attribute is malformed or unknown', 404)
+    render_error(attribute, 'ERR_INVALID', 'Attribute can not be retrieved', 404)
   end
 
   #--------------------------------------

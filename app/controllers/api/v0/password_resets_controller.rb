@@ -12,7 +12,7 @@ module Api
           render status: 200, json: { "message": "Password reset process initiated! Please check your mailbox." }
 
           rescue ActiveRecord::RecordNotFound # Thrown when there is no User for id token["sub"]
-            malformed_error('user')
+            not_found_error('user')
         end
       end
       # edit/update methods are not implemented on purpose. this is due to the fact that a user must do the confirmation manually.
