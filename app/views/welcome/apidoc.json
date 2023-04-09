@@ -1035,37 +1035,6 @@
                 }
               }
             }
-          },
-          "422": {
-            "description": "Unprocessable Entity",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "password|password_confirmation": {
-                      "type": "array",
-                      "description": "The attribute that caused the error. Possible values are:\n- `password|password_confirmation`",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "error": {
-                            "type": "string",
-                            "example": "ERR_MISMATCH",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_MISMATCH`: If attributes do not match or are not in the expected format. This error occurs when two or more attributes are expected to match or have a specific linkage, but they do not meet the criteria. For example, this error may occur when a user is asked to enter and confirm a password, and the two entries do not match, or when a date is entered in an incorrect format. To resolve this issue, please double-check the relevant requirements and ensure that there are no spelling or formatting errors in the input data. Contact our support team if the problem persists."
-                          },
-                          "description": {
-                            "type": "string",
-                            "example": "Required matching attributes do not match",
-                            "description": "A brief context specific classification of the error that occured"
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
           }
         }
       }
