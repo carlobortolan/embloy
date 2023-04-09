@@ -6,7 +6,7 @@ module Api
 
       def create
           verified!(@decoded_token["typ"])
-          if Review.all.where(:created_by => @decoded_token["sub"], :subject => params[:id]).present?
+          if Review.all.where(:created_by => @decoded_token["sub"], :subject => params[:id], :job_id =>  params[:job_id]).present?
             unnecessary_error('review')
           else
             @decoded_token["sub"].to_i == params[:id].to_i ? raise(CustomExceptions::InvalidUser::Unknown) : false
