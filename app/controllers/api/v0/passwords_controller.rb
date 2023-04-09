@@ -36,7 +36,7 @@ module Api
             ]
             }
           else
-            verified!('spectator')
+            verified!(@decoded_token["typ"])
             User.find(@decoded_token["sub"]).update!(password_params)
             render status: 200, json: { "message": "Password updated" }
           end
