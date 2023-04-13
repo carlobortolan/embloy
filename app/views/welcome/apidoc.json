@@ -1979,7 +1979,7 @@
           "jobs"
         ],
         "summary": "Post a new job",
-        "description": "The provided access token is first verified, and then a new job is created. Upon creation, a job remains private and hidden from other users until the job creator chooses to make it public. Public jobs undergo evaluation by Employ's Job Ranking Engine and may appear in a user's individual job feed. Moreover, such jobs are open to applications from interested candidates.",
+        "description": "The provided access token is first verified, and then a new job is created. Upon creation, a job ismlisted as public. Public jobs undergo evaluation by Embloy's Job Ranking Engine and may appear in a user's individual job feed. Moreover, such jobs are open to applications from interested candidates. The job creator/owner or correspondingly authorized users correspondingly authorized users are able to limit the visibility of the job to \\\"private\\\". Private jobs are ignored by the Job Ranking Engine and so do not appear to any job seeking user.",
         "parameters": [
           {
             "name": "access_token",
@@ -2014,7 +2014,7 @@
           {
             "name": "job_notification",
             "in": "body",
-            "description": "If the job_notifications value for a job is 0, it will not be included in Embloy's notification service, and the above specified user account will not receive any push notifications for it. However, if the job_notifications value is set to 1, the job will be considered for Embloy's notification service, and the above specified user account will receive push notifications for it. Default wise every job post is not public",
+            "description": "If the job_notifications value for a job is 0, it will not be included in Embloy's notification service, and the above specified user account will not receive any push notifications for it. However, if the job_notifications value is set to 1, the job will be considered for Embloy's notification service, and the above specified user account will receive push notifications for it.",
             "schema": {
               "type": "string",
               "format": "int64",
