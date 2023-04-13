@@ -8,6 +8,7 @@ module Api
       def create
         begin
           verified!(@decoded_token["typ"])
+          job_params["status"] = 0
           @job = Job.new(job_params)
           @job.user_id = @decoded_token["sub"]
 
@@ -105,7 +106,11 @@ module Api
       end
 
       def job_params
-        params.require(:job).permit(:title, :description, :content, :job_notifications, :start_slot, :notify, :status, :user_id, :longitude, :latitude, :job_type, :position, :currency, :salary, :key_skills, :duration, :job_type)
+        #params.require(:job).permit(:title, :description, :content, :job_notifications, :start_slot, :notify, :status, :user_id, :longitude, :latitude, :job_type, :position, :currency, :salary, :key_skills, :duration, :job_type)
+
+        # =================== API v0 ====================
+        # ===============================================
+        params.require(:job).permit(:title, :description, :start_slot, :user_id, :longitude, :latitude, :job_type, :position, :currency, :salary, :key_skills, :duration)
       end
 
       # mark_notifications_as_read is not implemented because i dont understand how it works
