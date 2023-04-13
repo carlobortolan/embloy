@@ -28,7 +28,7 @@ module Api
       def own_reviews
         begin
           verified!(@decoded_token["typ"])
-          user = User.find(@decoded_token["sub"].to_i)
+          user = User.find(@decoded_token["sub"].to_it)
           reviews = Review.all.where(subject: user.id)
           reviews.empty? ? render(status: 204, json: { "reviews": reviews }) : render(status: 200, json: { "reviews": reviews })
         rescue ActiveRecord::RecordNotFound

@@ -8,7 +8,7 @@ module Api
         begin
           verified!(@decoded_token["typ"])
           user = User.find(@decoded_token["sub"])
-          #PasswordMailer.with(user: user).reset.deliver_later
+          PasswordMailer.with(user: user).reset.deliver_later
           render status: 200, json: { "message": "Password reset process initiated! Please check your mailbox." }
 
           rescue ActiveRecord::RecordNotFound # Thrown when there is no User for id token["sub"]
