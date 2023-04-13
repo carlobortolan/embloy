@@ -2075,11 +2075,11 @@
           {
             "name": "position",
             "in": "body",
-            "description": "The password to be used for login.",
+            "description": "The specific job role.",
             "required": true,
             "schema": {
               "type": "string",
-              "example": "The specific job role."
+              "example": "Brand Ambassador"
             }
           },
           {
@@ -2124,11 +2124,11 @@
           }
         ],
         "requestBody": {
-          "description": "Created user object",
+          "description": "Create job",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/User"
+                "$ref": "#/components/schemas/Job"
               }
             }
           }
@@ -2655,6 +2655,70 @@
               "message": {
                 "type": "string",
                 "example": "Great guy, a hard & loyal worker."
+              }
+            }
+          }
+        }
+      },
+      "Job": {
+        "type": "object",
+        "properties": {
+          "job": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string",
+                "example": "Communications talent wanted"
+              },
+              "description": {
+                "type": "string",
+                "example": "We are seeking an individual with strong rhetorical skills to promote our brand to people passing by. [...]"
+              },
+              "job_notifications": {
+                "type": "integer",
+                "example": 1
+              },
+              "start_slot": {
+                "type": "string",
+                "example": "1949-06-08T08:12:00.000Z"
+              },
+              "user_id": {
+                "type": "integer",
+                "example": 9
+              },
+              "latitude": {
+                "type": "number",
+                "format": "double",
+                "example": 51.5207794
+              },
+              "longitude": {
+                "type": "number",
+                "format": "double",
+                "example": -0.1293754
+              },
+              "job_type": {
+                "type": "string",
+                "example": "Marketing"
+              },
+              "position": {
+                "type": "string",
+                "example": "Brand Ambassador"
+              },
+              "salary": {
+                "type": "integer",
+                "example": 100
+              },
+              "currency": {
+                "type": "string",
+                "example": "euro"
+              },
+              "key_skills": {
+                "type": "string",
+                "example": "open mindedness, eloquence, and always a smile on the face"
+              },
+              "duration": {
+                "type": "integer",
+                "example": 120
               }
             }
           }
