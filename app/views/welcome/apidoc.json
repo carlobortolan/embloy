@@ -2148,8 +2148,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "format": "int64",
-                      "example": "Account registered! Please activate this account to proceed"
+                      "example": "Job created!"
                     }
                   }
                 }
@@ -2719,7 +2718,7 @@
               },
               "key_skills": {
                 "type": "string",
-                "example": "blalalal"
+                "example": "open mindedness, eloquence, and always a smile on the face"
               },
               "duration": {
                 "type": "integer",
