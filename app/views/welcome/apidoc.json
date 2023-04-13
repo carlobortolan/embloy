@@ -2069,6 +2069,7 @@
             "name": "job_type",
             "in": "body",
             "description": "The job's displayed category is determined by the branch it belongs to within the system. This branch is specified by job_type. To ensure accuracy, it is recommended to review the current system regulations for job_types and select the most appropriate one.",
+            "required": true,
             "schema": {
               "type": "string",
               "example": "Marketing"
