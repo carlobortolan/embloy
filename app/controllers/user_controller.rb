@@ -23,12 +23,17 @@ class UserController < ApplicationController
 
   def update
     @user = Current.user
-    require_user_logged_in
     if @user.update(user_params)
       redirect_to @user, notice: "Updated profile"
     else
       render :index, status: :unprocessable_entity, alert: "Could not save changes"
     end
+  end
+
+  def destroy
+    @user = Current.user
+    @user.destroy!
+    redirect_to root_path, status: :see_other, notice: "Account successfully deleted."
   end
 
   def preferences
@@ -48,6 +53,7 @@ class UserController < ApplicationController
   end
 
   def own_applications
+    #TODO: Optimize
     @applications = Application.includes(:user).all.where("user_id = #{Current.user.id}").order("updated_at DESC")
   end
 
@@ -56,9 +62,6 @@ class UserController < ApplicationController
   def user_params
     params.require(:user).permit(:first_name, :last_name, :email, :phone, :degree, :date_of_birth, :country_code, :city, :postal_code, :address, :twitter_url, :facebook_url, :linkedin_url, :instagram_url)
   end
-
-  # PHONE
-  # DEGREE
 
 end
 
