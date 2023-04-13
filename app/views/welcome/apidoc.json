@@ -1154,12 +1154,14 @@
                             "description": "The specific start date and time for this job."
                           },
                           "latitude": {
-                            "type": "integer",
+                            "type": "number",
+                            "format": "double",
                             "example": 51.5207794,
                             "description": "The latitude coordinates for the job location."
                           },
                           "longitude": {
-                            "type": "integer",
+                            "type": "number",
+                            "format": "double",
                             "example": -0.1293754,
                             "description": "The longitude coordinates for the job location."
                           },
@@ -1958,6 +1960,254 @@
                           "description": {
                             "type": "string",
                             "example": "Proceeding is inhibited by an access restriction",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/jobs": {
+      "post": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "Post a new job",
+        "description": "The provided access token is first verified, and then a new job is created. Upon creation, a job remains private and hidden from other users until the job creator chooses to make it public. Public jobs undergo evaluation by Employ's Job Ranking Engine and may appear in a user's individual job feed. Moreover, such jobs are open to applications from interested candidates.",
+        "parameters": [
+          {
+            "name": "access_token",
+            "in": "header",
+            "description": "A valid access token",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOjksImV4cCI6MTY4MDk3MzE1MSwidHlwIjoidmVyaWZpZWQiLCJpc3MiOiJodW1tZWxKLVNGQzgifQ.93iFsNUwhoQewsiGsc7fBiW8U6BjyoSmr16n-jBvN9I"
+            }
+          },
+          {
+            "name": "title",
+            "in": "body",
+            "description": "The title for the job post.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Communications talent wanted"
+            }
+          },
+          {
+            "name": "description",
+            "in": "body",
+            "description": "A detailed description of the job.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "We are seeking an individual with strong rhetorical skills to promote our brand to people passing by. [...]"
+            }
+          },
+          {
+            "name": "job_notification",
+            "in": "body",
+            "description": "If the job_notifications value for a job is 0, it will not be included in Embloy's notification service, and the above specified user account will not receive any push notifications for it. However, if the job_notifications value is set to 1, the job will be considered for Embloy's notification service, and the above specified user account will receive push notifications for it.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          },
+          {
+            "name": "start_slot",
+            "in": "body",
+            "description": "The specific start date and time for this job.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "1949-06-08T08:12:00.000Z"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "body",
+            "description": "The specific user_id is a unique identifier for a specific user account that is permanently assigned to that user account and does not correspond to any other user account in the system. This user_id corresponds to the user that created the specific job.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 9
+            }
+          },
+          {
+            "name": "latitude",
+            "in": "body",
+            "description": "The latitude coordinates for the job location.",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "example": 51.5207794
+            }
+          },
+          {
+            "name": "longitude",
+            "in": "body",
+            "description": "The longitude coordinates for the job location.",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "example": -0.1293754
+            }
+          },
+          {
+            "name": "job_type",
+            "in": "body",
+            "description": "The job's displayed category is determined by the branch it belongs to within the system. This branch is specified by job_type. To ensure accuracy, it is recommended to review the current system regulations for job_types and select the most appropriate one.",
+            "schema": {
+              "type": "string",
+              "example": "Marketing"
+            }
+          },
+          {
+            "name": "position",
+            "in": "body",
+            "description": "The password to be used for login.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "The specific job role."
+            }
+          },
+          {
+            "name": "salary",
+            "in": "body",
+            "description": "The total amount of compensation for the entire period of the job, in the currency specified.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 100
+            }
+          },
+          {
+            "name": "currency",
+            "in": "body",
+            "description": "The currency of the salary denoted above.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "euro"
+            }
+          },
+          {
+            "name": "key_skills",
+            "in": "body",
+            "description": "A brief outline of the required skills for the job.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "open mindedness, eloquence, and always a smile on the face"
+            }
+          },
+          {
+            "name": "duration",
+            "in": "body",
+            "description": "The duration of the job in minutes.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 120
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Created user object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "format": "int64",
+                      "example": "Account registered! Please activate this account to proceed"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `user`\n- `email`\n- `first_name`\n- `last_name`\n- `password`\n- `password_confirmation`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_INVALID",
+                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_BLANK`: When a required attribute is blank. All required parameters are denoted above. If all required attributes were indeed given but this error gets raised it could be that the attributs are provided falsely (e.g. via header or via path instead of body ...)\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue double check the formatting requirements and try again. Contact our support team if the problem persists."
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Attribute is malformed or unknown",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `email`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_TAKEN",
+                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_TAKEN`: When a required attribute must be unique and already exists in the database. This specific error indicates that another Embloy account with the exact same email already exists."
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Attribute exists",
+                            "description": "A brief context specific classification of the error that occured"
+                          },
+                          "value": {
+                            "type": "string",
+                            "example": "winston.smith@embloy.com",
                             "description": "A brief context specific classification of the error that occured"
                           }
                         }
