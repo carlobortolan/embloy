@@ -2017,7 +2017,8 @@
             "description": "If the job_notifications value for a job is 0, it will not be included in Embloy's notification service, and the above specified user account will not receive any push notifications for it. However, if the job_notifications value is set to 1, the job will be considered for Embloy's notification service, and the above specified user account will receive push notifications for it.",
             "required": true,
             "schema": {
-              "type": "integer",
+              "type": "string",
+              "format": "int64",
               "example": 1
             }
           },
@@ -2037,7 +2038,8 @@
             "description": "The specific user_id is a unique identifier for a specific user account that is permanently assigned to that user account and does not correspond to any other user account in the system. This user_id corresponds to the user that created the specific job.",
             "required": true,
             "schema": {
-              "type": "integer",
+              "type": "string",
+              "format": "int64",
               "example": 9
             }
           },
@@ -2047,8 +2049,8 @@
             "description": "The latitude coordinates for the job location.",
             "required": true,
             "schema": {
-              "type": "number",
-              "format": "double",
+              "type": "string",
+              "format": "float",
               "example": 51.5207794
             }
           },
@@ -2058,8 +2060,8 @@
             "description": "The longitude coordinates for the job location.",
             "required": true,
             "schema": {
-              "type": "number",
-              "format": "double",
+              "type": "string",
+              "format": "float",
               "example": -0.1293754
             }
           },
@@ -2088,7 +2090,8 @@
             "description": "The total amount of compensation for the entire period of the job, in the currency specified.",
             "required": true,
             "schema": {
-              "type": "integer",
+              "type": "string",
+              "format": "int64",
               "example": 100
             }
           },
@@ -2118,7 +2121,8 @@
             "description": "The duration of the job in minutes.",
             "required": true,
             "schema": {
-              "type": "integer",
+              "type": "string",
+              "format": "int64",
               "example": 120
             }
           }
@@ -2714,7 +2718,7 @@
               },
               "key_skills": {
                 "type": "string",
-                "example": "open mindedness, eloquence, and always a smile on the face"
+                "example": "blalalal"
               },
               "duration": {
                 "type": "integer",
