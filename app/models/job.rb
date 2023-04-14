@@ -51,7 +51,7 @@ class Job < ApplicationRecord
   def job_type_verification
     job_types_file = File.read(Rails.root.join("app/helpers", "job_types.json"))
     job_types = JSON.parse(job_types_file)
-
+    # Given job_type is not existent in job_types.json
     unless job_types.key?(job_type)
       errors.add(:job_type, { "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" })
     end
