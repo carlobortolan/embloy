@@ -149,11 +149,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_22_100946) do
 
   create_table "preferences", id: :serial, force: :cascade do |t|
     t.integer "user_id", null: false
-    t.jsonb "job_type"
+    t.string "interests", limit: 100
+    t.string "experience", limit: 100
+    t.string "degree", limit: 100
+    t.integer "num_jobs_done", default: 0
+    t.string "gender", limit: 10
     t.float "spontaneity"
+    t.jsonb "job_type"
     t.jsonb "key_skills"
     t.float "salary_range", default: [0.0, 0.0], array: true
-    t.integer "num_jobs_done", default: 0
+    t.string "cv_url", limit: 500
   end
 
   create_table "private_users", id: :serial, force: :cascade do |t|
