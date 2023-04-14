@@ -37,8 +37,9 @@ Rails.application.routes.draw do
   # -----> Homepage <-----
   root 'welcome#index', as: :root
   get 'about', :to => 'welcome#about', as: :about
-  get 'about/privacy/policy', :to => 'welcome#privacy_policy', as: :privacy_policy
-  get 'about/privacy/cookies', :to => 'welcome#cookies', as: :cookies
+  get 'about/privacy_policy', :to => 'welcome#privacy_policy', as: :privacy_policy
+  get 'about/cookies', :to => 'welcome#cookies', as: :cookies
+  get 'about/termsofservice', :to => 'welcome#terms_of_service', as: :terms_of_service
   get 'about/help', :to => 'welcome#help', as: :help
   get 'about/api', :to => 'welcome#api', as: :api
   get 'about/api/apidoc.json', :to => 'welcome#apidoc', as: :apidoc
