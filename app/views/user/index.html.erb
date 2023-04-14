@@ -59,7 +59,8 @@
               <h3><%= link_to "Preferences", preferences_path, class: 'btn btn-primary btn-lg mr-1' %></h3>
               <h3><%= link_to "My applications", own_applications_path, class: 'btn btn-primary btn-lg mr-1' %></h3>
               <h3><%= link_to "My jobs", own_jobs_path, class: 'btn btn-primary btn-lg mr-1' %></h3>
-              <%= button_to 'Logout', logout_path, method: :delete, class: "btn btn-dark btn-lg mr-1" %>
+              <h3><%= button_to 'Logout', logout_path, method: :delete, class: "btn btn-dark btn-lg mr-1" %></h3>
+              <%= button_to 'Delete Account', user_delete_path, method: :delete, class: "btn btn-danger btn-lg mr-1" %>
             </div>
           </div>
 

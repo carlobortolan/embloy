@@ -4,8 +4,8 @@ Rails.application.routes.draw do
   #= <<<<< *API* >>>>>>
   namespace :api, defaults: { format: 'json' } do
     namespace :v0 do
-      patch 'password', to: 'passwords#update'
-      post 'password/reset', to: 'password_resets#create'
+      patch 'user/password', to: 'passwords#update'
+      post 'user/password/reset', to: 'password_resets#create'
 
       post 'user', to: 'registrations#create'
       get 'user/verify', to: 'registrations#verify'
@@ -37,8 +37,9 @@ Rails.application.routes.draw do
   # -----> Homepage <-----
   root 'welcome#index', as: :root
   get 'about', :to => 'welcome#about', as: :about
-  get 'about/privacy/policy', :to => 'welcome#privacy_policy', as: :privacy_policy
-  get 'about/privacy/cookies', :to => 'welcome#cookies', as: :cookies
+  get 'about/privacy_policy', :to => 'welcome#privacy_policy', as: :privacy_policy
+  get 'about/cookies', :to => 'welcome#cookies', as: :cookies
+  get 'about/termsofservice', :to => 'welcome#terms_of_service', as: :terms_of_service
   get 'about/help', :to => 'welcome#help', as: :help
   get 'about/api', :to => 'welcome#api', as: :api
   get 'about/api/apidoc.json', :to => 'welcome#apidoc', as: :apidoc
@@ -82,6 +83,7 @@ Rails.application.routes.draw do
   # get 'user/', :to => 'user#index', as: :user_index
   get 'user/profile', :to => 'user#index', as: :profile_index
   patch 'user/profile', :to => 'user#update', as: :user
+  delete 'user', to: 'user#destroy', as: :user_delete
   patch 'user/profile', to: 'user#update', as: :profile_update
   get 'user/edit', :to => 'user#edit', as: :profile_edit
   get 'user/settings', :to => 'user#settings', as: :profile_settings

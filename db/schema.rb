@@ -164,12 +164,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_22_100946) do
 
   create_table "reviews", primary_key: "review_id", id: :serial, force: :cascade do |t|
     t.enum "rating", default: "1", null: false, enum_type: "rating_type"
-    t.text "message"
+    t.integer "user_id", null: false
     t.integer "created_by", null: false
+    t.text "message"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "job_id"
-    t.integer "reviewer_id"
     t.integer "subject", null: false
     t.index ["created_by"], name: "reviews_created_by_index"
   end
@@ -225,4 +225,5 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_22_100946) do
   add_foreign_key "private_users", "users", column: "id", on_delete: :cascade
   add_foreign_key "reviews", "jobs", primary_key: "job_id"
   add_foreign_key "reviews", "users", column: "created_by"
+  add_foreign_key "reviews", "users", column: "user_id"
 end
