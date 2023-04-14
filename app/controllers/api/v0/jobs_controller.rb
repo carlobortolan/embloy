@@ -21,7 +21,18 @@ module Api
             SpatialJobValue.update_job_value(@job)
             render status: 200, json: { "message": "Job created!" }
           else
-            render status: 400, json: { "error": @job.errors.details }
+
+            if @job.errors.details != false
+              error = @job.errors.details.dup # necessary because @job.errors.details cant be modified manually
+              if error[:job_type_value].present? && error[:job_type_value][0][:error] == "ERR_BLANK"
+                error.delete('job_type_value') # in case that job_type_value is blank error is raised, delete it because it is against the documentation policy of only raising blank errors for required attributes (and job_type value is non)
+                not_found_error('job_type')
+                return 0
+              end
+              render status: 400, json: { "error": error }
+            else
+              render status: 400, json: { "error": @job.errors.details }
+            end
           end
 
         rescue ActionController::ParameterMissing
@@ -83,7 +94,7 @@ module Api
 
       # Method to communicate with the FG-API by sending a POST-request to tbd
       def call_feed(jobs)
-        #url = URI.parse("https://embloy-fg-api.onrender.com/feed")
+        # url = URI.parse("https://embloy-fg-api.onrender.com/feed")
         url = URI.parse("http://localhost:8080/feed")
         if Current.user.nil? || Current.user.preferences.nil?
           request_body = "{\"slice\": #{jobs.to_json}}"
@@ -92,7 +103,7 @@ module Api
         end
         puts request_body
         http = Net::HTTP.new(url.host, url.port)
-        #http.use_ssl = true
+        # http.use_ssl = true
         http.verify_mode = OpenSSL::SSL::VERIFY_PEER
 
         request = Net::HTTP::Post.new(url)
@@ -106,7 +117,7 @@ module Api
       end
 
       def job_params
-        #params.require(:job).permit(:title, :description, :content, :job_notifications, :start_slot, :notify, :status, :user_id, :longitude, :latitude, :job_type, :position, :currency, :salary, :key_skills, :duration, :job_type)
+        # params.require(:job).permit(:title, :description, :content, :job_notifications, :start_slot, :notify, :status, :user_id, :longitude, :latitude, :job_type, :position, :currency, :salary, :key_skills, :duration, :job_type)
 
         # =================== API v0 ====================
         # ===============================================
