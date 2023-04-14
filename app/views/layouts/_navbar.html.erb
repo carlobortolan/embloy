@@ -14,22 +14,16 @@
       <ul>
         <li><%= link_to "Home", root_path %></li>
         <li><%= link_to "About", about_path %></li>
-        <li><%= link_to "API", api_path %></li>
+        <li><%= link_to "Your Feed", jobs_path %></li>
         <li class="dropdown"><a href="#"><span>Jobs</span> <i class="bi bi-chevron-down dropdown-indicator"></i></a>
           <ul>
-            <!--            <li class="dropdown">-->
-            <!--              <a href="#"><span>Deep Drop Down</span> <i class="bi bi-chevron-down dropdown-indicator"></i></a>-->
-            <!--              <ul>-->
-            <!--              </ul>-->
-            <!--            </li>-->
-            <li><%= link_to "Create new jobs", new_job_path %></li>
-            <li><%= link_to "Feed", jobs_path %></li>
-            <li><%= link_to "Search for jobs", jobs_find_path %></li>
-            <li><%= link_to "Your jobs", own_jobs_path %></li>
-            <li><%= link_to "Your applications", own_applications_path %></li>
+            <li><%= link_to "Create new Jobs", new_job_path %></li>
+            <li><%= link_to "Search for Jobs", jobs_find_path %></li>
+            <li><%= link_to "Your Jobs", own_jobs_path %></li>
+            <li><%= link_to "Your Applications", own_applications_path %></li>
           </ul>
         </li>
-        <li><%= link_to "Contact", help_path %></li>
+        <li><%= link_to "API", api_path %></li>
 
         <li>
           <%= render 'layouts/notifications' %>

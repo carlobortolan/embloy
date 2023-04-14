@@ -152,7 +152,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_22_100946) do
     t.jsonb "job_type"
     t.float "spontaneity"
     t.jsonb "key_skills"
-    t.integer "salary_range", default: [0, 0], array: true
+    t.float "salary_range", default: [0.0, 0.0], array: true
     t.integer "num_jobs_done", default: 0
   end
 

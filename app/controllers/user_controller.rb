@@ -42,7 +42,6 @@ class UserController < ApplicationController
       @user.create_preferences
       @user.save
     end
-
     @preferences = Current.user.preferences
     @categories_list = JSON.parse(File.read(Rails.root.join('app/helpers', 'job_types.json'))).keys
   end
