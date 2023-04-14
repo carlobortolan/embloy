@@ -21,6 +21,9 @@ module Api
             SpatialJobValue.update_job_value(@job)
             render status: 200, json: { "message": "Job created!" }
           else
+            puts "HALLo"
+            p @job.errors
+            p @job.errors.details
 
             if @job.errors.details != false
               error = @job.errors.details.dup # necessary because @job.errors.details cant be modified manually
