@@ -18,14 +18,14 @@ class Job < ApplicationRecord
   validates :title, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validates :description, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, length: { minimum: 10 }
   validates :start_slot, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
-  validates :longitude, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, :numericality => { "error": "ERR_INVALID", "description": "Attribute is malformed or unknown"}
-  validates :latitude, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, :numericality => { "error": "ERR_INVALID", "description": "Attribute is malformed or unknown"}
+  validates :longitude, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, :numericality => { "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" }
+  validates :latitude, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, :numericality => { "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" }
 
-  validates :job_notifications, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, :numericality => {only_integer: true, "error": "ERR_INVALID", "description": "Attribute is malformed or unknown"}
+  validates :job_notifications, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, :numericality => { only_integer: true, "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" }
   validates :position, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validates :key_skills, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
-  validates :duration, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, :numericality => {only_integer: true, "error": "ERR_INVALID", "description": "Attribute is malformed or unknown"}
-  validates :salary, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, :numericality => {only_integer: true, "error": "ERR_INVALID", "description": "Attribute is malformed or unknown"}
+  validates :duration, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, :numericality => { only_integer: true, greater_than: 0, "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" }
+  validates :salary, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, :numericality => { only_integer: true, greater_than: 0, "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" }
   validates :currency, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validates :job_type, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validates :job_type_value, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
