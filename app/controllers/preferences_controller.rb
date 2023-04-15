@@ -24,7 +24,7 @@ class PreferencesController < ApplicationController
       num_jobs_done: num_jobs_done,
       gender: gender,
       spontaneity: spontaneity,
-      job_type: job_type,
+      job_types: job_type,
       key_skills: key_skills,
       salary_range: salary_range,
       cv_url: cv_url,

@@ -27,36 +27,36 @@
 
                       <div class="form-group">
                         <label for="interests">Interests *</label>
-                        <input type="text" class="form-control" id="interests" name="interests">
+                        <input type="text" class="form-control" id="interests" value="<%= @preferences.interests %>" name="interests">
                       </div>
                       <div class="form-group">
                         <label for="text2">Previous experience *</label>
-                        <input type="text" class="form-control" id="experience" name="experience">
+                        <input type="text" class="form-control" id="experience" value="<%= @preferences.experience %>" name="experience">
                       </div>
                       <div class="form-group">
-                        <label for="degree">Degree / Field of study</label>
-                        <input type="text" class="form-control" id="degree" name="degree">
+                        <label for="degree">Degree / Field of study *</label>
+                        <input type="text" class="form-control" id="degree" value="<%= @preferences.degree %>" name="degree">
                       </div>
                       <div class="form-group">
-                        <label for="num_jobs_done">Number of completed jobs</label>
-                        <input type="number" class="form-control" id="num_jobs_done" name="num_jobs_done" min="0">
+                        <label for="num_jobs_done">Number of completed jobs *</label>
+                        <input type="number" class="form-control" id="num_jobs_done" value="<%= @preferences.num_jobs_done %>" name="num_jobs_done" min="0">
                       </div>
                       <div class="form-group">
-                        <label for="key_skills">Key Skills</label>
-                        <input type="text" name="key_skills" id="key_skills" class="form-control">
+                        <label for="key_skills">Key Skills *</label>
+                        <input type="text" name="key_skills" id="key_skills" value="<%= @preferences.key_skills %>" class="form-control">
                       </div>
                       <div class="form-group">
                         <div class="maxl">
                           <label class="radio inline">
-                            <input type="radio" name="gender" value="male">
+                            <input type="radio" <%= @preferences.gender == "male" ? "checked" : "unchecked" %> name="gender" value="male">
                             <span> Male </span>
                           </label>
                           <label class="radio inline">
-                            <input type="radio" name="gender" value="female">
+                            <input type="radio" <%= @preferences.gender == "female" ? "checked" : "unchecked" %> name="gender" value="female">
                             <span>Female </span>
                           </label>
                           <label class="radio inline">
-                            <input type="radio" name="gender" value="other">
+                            <input type="radio" <%= @preferences.gender == "other" ? "checked" : "unchecked" %> name="gender" value="other">
                             <span> other </span>
                           </label>
                         </div>
@@ -66,7 +66,7 @@
                     <div class="col-md-6">
                       <div class="form-group">
                         <label for="spontaneity">Spontaneity</label>
-                        <input type="range" class="form-control-range" id="spontaneity" name="spontaneity" min="0" max="100">
+                        <input type="range" class="form-control-range" id="spontaneity" value="<%= @preferences.spontaneity %>" name="spontaneity" min="0" max="100">
                       </div>
                       <div class="form-group">
                         <label for="dropdown1">What type of job are you looking for?</label>
@@ -87,16 +87,16 @@
                         </select>
                       </div>
                       <div class="form-group row">
-                        <label for="salary_range_min">Salary Range*</label>
+                        <label for="salary_range_min">Salary Range (min-max)</label>
                         <div class="input-group">
                           <div class="input-group-prepend">
                             <span class="input-group-text">€</span>
                           </div>
-                          <input type="text" class="form-control" id="salary_range_min" name="salary_range_min" placeholder="Minimum">
+                          <input type="text" class="form-control" id="salary_range_min" name="salary_range_min" value="<%= @preferences.salary_range[0] %>" placeholder="Minimum">
                           <div class="input-group-append">
                             <span class="input-group-text">-</span>
                           </div>
-                          <input type="text" class="form-control" id="salary_range_max" name="salary_range_max" placeholder="Maximum">
+                          <input type="text" class="form-control" id="salary_range_max" name="salary_range_max" value="<%= @preferences.salary_range[1] %>" placeholder="Maximum">
                         </div>
                       </div>
                       <script>
