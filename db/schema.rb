@@ -110,6 +110,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_22_100946) do
     t.text "description"
     t.string "key_skills", limit: 100
     t.integer "salary"
+    t.integer "euro_salary"
+    t.float "relevance_score"
     t.string "currency"
     t.string "image_url", limit: 500
     t.datetime "start_slot", precision: nil
