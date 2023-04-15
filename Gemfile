@@ -98,3 +98,4 @@ gem "activerecord-import", "~> 1.4"
 
 gem "pg_search"
 gem 'kaminari'
+gem 'geocoder'

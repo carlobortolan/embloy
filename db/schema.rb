@@ -118,7 +118,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_22_100946) do
     t.string "country_code", limit: 45
     t.string "postal_code", limit: 45
     t.string "city", limit: 45
-    t.string "address", limit: 45
+    t.string "address", limit: 150
     t.integer "view_count", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -199,7 +199,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_22_100946) do
     t.string "country_code", limit: 45
     t.string "postal_code", limit: 45
     t.string "city", limit: 45
-    t.string "address", limit: 45
+    t.string "address", limit: 150
     t.datetime "date_of_birth"
     t.enum "user_type", default: "private", null: false, enum_type: "user_type"
     t.integer "view_count", default: 0, null: false

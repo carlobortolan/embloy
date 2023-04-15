@@ -41,8 +41,16 @@ class JobsController < ApplicationController
     job_type = @job.job_type
     @job.job_type_value = job_types[job_type]
 
-    # @job.location_id = job_params[:location_id]
-    if @job.save
+    latitude = @job.latitude
+    longitude = @job.longitude
+    result = Geocoder.search("#{latitude},#{longitude}").first
+    country_code = result.country_code
+    postal_code = result.postal_code
+    city = result.city
+    address = result.address
+    location_params = { country_code: country_code, postal_code: postal_code, city: city, address: address }
+
+    if @job.save && @job.update(location_params)
       # @job_service.set_notification(@job[:id].to_i, @job[:user_id].to_i, params[:job][:notify].eql?("1"))
       SpatialJobValue.update_job_value(@job)
       redirect_to @job, notice: "Created new job"
@@ -60,7 +68,17 @@ class JobsController < ApplicationController
   def update
     @job = Job.find(params[:id])
     require_user_be_owner
-    if @job.update(job_params)
+
+    latitude = @job.latitude
+    longitude = @job.longitude
+    result = Geocoder.search("#{latitude},#{longitude}").first
+    country_code = result.country_code
+    postal_code = result.postal_code
+    city = result.city
+    address = result.address
+    location_params = { country_code: country_code, postal_code: postal_code, city: city, address: address }
+
+    if @job.update(job_params) && @job.update(location_params)
       SpatialJobValue.update_job_value(@job)
       redirect_to @job
     else
@@ -112,7 +130,6 @@ class JobsController < ApplicationController
       request_body = "{\"slice\": #{jobs.to_json}}"
     else
       request_body = "{\"pref\": #{Current.user.preferences.to_json},\"slice\": #{jobs.to_json}}"
-      puts "REQ = #{request_body}"
     end
 
     http = Net::HTTP.new(url.host, url.port)
@@ -138,6 +155,10 @@ class JobsController < ApplicationController
 
   def job_params
     params.require(:job).permit(:title, :description, :content, :job_notifications, :start_slot, :notify, :status, :user_id, :longitude, :latitude, :job_type, :position, :currency, :salary, :key_skills, :duration)
+  end
+
+  def location_params
+    params.require(:job).permit(:country_code, :postal_code, :city, :address)
   end
 
   def mark_notifications_as_read
