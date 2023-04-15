@@ -4,17 +4,18 @@ class Job < ApplicationRecord
   include PgSearch::Model
   paginates_per 48
   max_pages 10
-  pg_search_scope :search_by_title, against: :title
-  pg_search_scope :search_by_job_type, against: :job_type
-  pg_search_scope :search_for, against: [:title, :job_type, :position, :key_skills, :description, :country_code, :city, :postal_code, :address]
+  multisearchable against: [:title, :job_type, :position, :key_skills, :description, :city, :postal_code, :address]
+  pg_search_scope :search_for,
+                  against: [:title, :description, :position, :job_type, :key_skills, :address, :city, :postal_code, :start_slot],
+                  using: {
+                    tsearch: { prefix: true, any_word: true, dictionary: "english", normalization: 2 },
+                    trigram: { threshold: 0.1 }
+                  }
 
   belongs_to :user, counter_cache: true
   has_many :applications, dependent: :delete_all
   has_noticed_notifications model_name: 'Notification'
   has_rich_text :content
-  # has_many :notifications, dependent: :delete_all
-  # has_many :notifications, through: :user, dependent: :delete_all
-
   validates :title, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validates :description, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, length: { minimum: 10 }
   validates :start_slot, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }

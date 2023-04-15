@@ -10,12 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_22_100946) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_15_205359) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_trgm"
   enable_extension "plpgsql"
   enable_extension "postgis"
-
-  execute("CREATE EXTENSION IF NOT EXISTS postgis;")
+  enable_extension "unaccent"
 
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
@@ -132,10 +132,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_22_100946) do
     t.index ["job_id"], name: "job_job_id_index"
     t.index ["postal_code"], name: " job_postal_code_index "
     t.index ["user_id"], name: "job_user_id_index "
+    t.index ["position"], name: "job_position_index "
+    t.index ["job_type"], name: "job_job_type_index "
   end
 
-  execute("ALTER TABLE jobs ADD COLUMN job_value public.geography(PointZ,4326);
-    CREATE INDEX IF NOT EXISTS job_job_value_index ON public.jobs USING gist(job_value)TABLESPACE pg_default;")
+  execute("ALTER TABLE jobs ADD COLUMN job_value public.geography(PointZ,4326);CREATE INDEX IF NOT EXISTS job_job_value_index ON public.jobs USING gist(job_value)TABLESPACE pg_default;")
+  execute("CREATE INDEX jobs_tsvector_idx ON jobs USING gin(to_tsvector('simple', coalesce(title,'') || ' ' || coalesce(job_type,'') || ' ' || coalesce(position,'') || ' ' || coalesce(key_skills,'') || ' ' || coalesce(description,'') || ' ' || coalesce(country_code,'') || ' ' || coalesce(city,'') || ' ' || coalesce(postal_code,'') || ' ' || coalesce(address,'')));")
+  execute("CREATE EXTENSION pg_trgm;CREATE INDEX jobs_title_trgm_idx ON jobs USING gin(title gin_trgm_ops);CREATE INDEX jobs_job_type_trgm_idx ON jobs USING gin(job_type gin_trgm_ops);")
+  execute("CREATE EXTENSION unaccent;")
 
   create_table "notifications", force: :cascade do |t|
     t.string "recipient_type", null: false
@@ -147,6 +151,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_22_100946) do
     t.datetime "updated_at", null: false
     t.index ["read_at"], name: "index_notifications_on_read_at"
     t.index ["recipient_type", "recipient_id"], name: "index_notifications_on_recipient"
+  end
+
+  create_table "pg_search_documents", force: :cascade do |t|
+    t.text "content"
+    t.string "searchable_type"
+    t.bigint "searchable_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["searchable_type", "searchable_id"], name: "index_pg_search_documents_on_searchable"
   end
 
   create_table "preferences", id: :serial, force: :cascade do |t|
