@@ -2,7 +2,8 @@
 
   <!-- ======= Breadcrumbs ======= -->
   <div class="breadcrumbs">
-    <div class="page-header d-flex align-items-center" style="background-image: url('assets/img/page-header.jpg');">
+    <div class="page-header d-flex align-items-center" style="background-image: url('../assets/img/quote-bg.jpg');">
+<!--      <img src="../assets/img/testimonials/testimonials-1.jpg" class="testimonial-img" alt="">-->
       <div class="container position-relative">
         <div class="row d-flex justify-content-center">
           <div class="col-lg-6 text-center">
@@ -37,7 +38,6 @@
 
               <% if !@user.nil? && !@user.image_url.nil? %>
                 <%= image_tag @user.image_url, style: "width: 400px; height: 400px; border-radius:100%", class: "card-img-top" %>
-                <!--          <br><%#= image_tag "https://avatars.githubusercontent.com/u/106114526?v=4", style: "width: 400px; height: 400px; border-radius:100%", class: "card-img-top" %>-->
               <% end %>
 
               <h2><%= @user.full_name %></h2>
@@ -168,7 +168,10 @@
                     <div class="row mb-3">
                       <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Profile Image</label>
                       <div class="col-md-8 col-lg-9">
-                        <img src="assets/img/profile-img.jpg" alt="Profile">
+                        <% if !@user.nil? && !@user.image_url.nil? %>
+                          <br><%= image_tag @user.image_url, style: "width: 400px; height: 400px; border-radius:100%", class: "card-img-top" %>
+                        <% end %>
+
                         <div class="pt-2">
                           <a href="#" class="btn btn-primary btn-sm" title="Upload new profile image"><i class="bi bi-upload"></i></a>
                           <a href="#" class="btn btn-danger btn-sm" title="Remove my profile image"><i class="bi bi-trash"></i></a>
