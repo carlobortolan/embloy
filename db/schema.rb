@@ -155,7 +155,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_22_100946) do
     t.integer "num_jobs_done", default: 0
     t.string "gender", limit: 10
     t.float "spontaneity"
-    t.jsonb "job_types"
+    t.jsonb "job_types", default: { "1": 0, "2": 0, "3": 0 }
     t.jsonb "key_skills"
     t.float "salary_range", default: [0.0, 0.0], array: true
     t.string "cv_url", limit: 500

@@ -124,6 +124,8 @@ class JobsController < ApplicationController
     request.basic_auth('FG', 'pw')
     request.body = request_body
     request["Content-Type"] = "application/json"
+    puts "REQUEST = #{request}"
+    puts "BODY = #{request.body.to_s}"
 
     response = http.request(request)
 
