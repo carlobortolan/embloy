@@ -1125,6 +1125,7 @@
                           },
                           "description": {
                             "type": "string",
+                            "minLength": 10,
                             "example": "We are seeking an individual with strong rhetorical skills to promote our brand to people passing by. [...]",
                             "description": "A detailed description of the job."
                           },
@@ -2008,6 +2009,7 @@
             "required": true,
             "schema": {
               "type": "string",
+              "minLength": 10,
               "example": "We are seeking an individual with strong rhetorical skills to promote our brand to people passing by. [...]"
             }
           },
@@ -2029,17 +2031,6 @@
             "schema": {
               "type": "string",
               "example": "1949-06-08T08:12:00.000Z"
-            }
-          },
-          {
-            "name": "user_id",
-            "in": "body",
-            "description": "The specific user_id is a unique identifier for a specific user account that is permanently assigned to that user account and does not correspond to any other user account in the system. This user_id corresponds to the user that created the specific job.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "int64",
-              "example": 9
             }
           },
           {
@@ -2163,14 +2154,14 @@
                   "properties": {
                     "token": {
                       "type": "array",
-                      "description": "The attribute that caused the error. Possible values are:\n- `token`",
+                      "description": "The attribute that caused the error. Possible values are:\n- `token`\n- `title`\n- `description`\n- `start_slot`\n- `latitude`\n- `longitude`\n- `job_type`\n- `position`\n- `salary`\n- `currency`\n- `key_skills`\n- `duration`",
                       "items": {
                         "type": "object",
                         "properties": {
                           "error": {
                             "type": "string",
                             "example": "ERR_BLANK",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_BLANK`: When a required attribute is blank. All required parameters are denoted above. If all required attributes were indeed given but this error gets raised it could be that the attributs are provided falsely (e.g. via header or via path instead of body ...)"
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_BLANK`: When a required attribute is blank. All required parameters are denoted above. If all required attributes were indeed given but this error gets raised it could be that the attributs are provided falsely (e.g. via header or via path instead of body ...)\n- `ERR_TOO_SHORT`: If a specific input fails to meet the minimum size requirement (e.g. character count) for a required attribute. The documentation for that attribute will denote such constraints.\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue double check the formatting requirements and try again. Contact our support team if the problem persists."
                           },
                           "description": {
                             "type": "string",
@@ -2256,7 +2247,7 @@
                   "properties": {
                     "user": {
                       "type": "array",
-                      "description": "The attribute that caused the error. Possible values are:\n- `user`",
+                      "description": "The attribute that caused the error. Possible values are:\n- `job_type`",
                       "items": {
                         "type": "object",
                         "properties": {
@@ -2741,10 +2732,6 @@
               "start_slot": {
                 "type": "string",
                 "example": "1949-06-08T08:12:00.000Z"
-              },
-              "user_id": {
-                "type": "integer",
-                "example": 9
               },
               "latitude": {
                 "type": "number",
