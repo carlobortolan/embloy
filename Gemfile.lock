@@ -118,6 +118,7 @@ GEM
     ffi-compiler (1.0.1)
       ffi (>= 1.0.0)
       rake
+    geocoder (1.8.1)
     globalid (1.1.0)
       activesupport (>= 5.0)
     hashie (5.0.0)
@@ -370,6 +371,7 @@ DEPENDENCIES
   database_cleaner
   debug
   faker
+  geocoder
   httparty
   image_processing (~> 1.2)
   importmap-rails
@@ -398,4 +400,4 @@ RUBY VERSION
    ruby 3.2.2p53
 
 BUNDLED WITH
-   2.2.3
+   2.4.10

@@ -1,4 +1,5 @@
 class Job < ApplicationRecord
+  geocoded_by :latitude_longitude
   include Visible
   include PgSearch::Model
   paginates_per 48

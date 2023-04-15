@@ -1,6 +1,5 @@
 <main id="main">
   <%= form_with model: @job do |form| %>
-
     <!-- ======= Breadcrumbs ======= -->
     <div class="breadcrumbs">
       <div class="page-header d-flex align-items-center" style="background-image: url('assets/img/page-header.jpg');">
@@ -15,7 +14,6 @@
                 <%= form.datetime_field :start_slot, class: "datetime form-control", required: true %><br>
               </div>
             </div>
-
           </div>
         </div>
       </div>
@@ -29,27 +27,63 @@
         </div>
       </nav>
     </div><!-- End Breadcrumbs -->
-
     <!-- ======= Contact Section ======= -->
     <section id="contact" class="contact">
       <div class="container" data-aos="fade-up">
+        <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css"/>
+        <style>
+            #mapid {
+                border: 0;
+                width: 100%;
+                height: 340px;
+            }
+        </style>
+        <div id="mapid"></div>
+        <script>
+            var latitude = <%= @job.latitude.nil? ? 37.7749 : @job.latitude %>;
+            var longitude = <%= @job.longitude.nil? ? -122.4194 : @job.longitude %>;
+            var map = L.map('mapid').setView([latitude, longitude], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+                maxZoom: 18,
+                tileSize: 512,
+                zoomOffset: -1
+            }).addTo(map);
+            var marker = L.marker([latitude, longitude]).addTo(map);
 
-        <div>
-          <iframe style="border:0; width: 100%; height: 340px;" src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d12097.433213460943!2d-74.0062269!3d40.7101282!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0xb89d1fe6bc499443!2sDowntown+Conference+Center!5e0!3m2!1smk!2sbg!4v1539943755621" frameborder="0" allowfullscreen></iframe>
-        </div><!-- End Google Maps -->
+            function onMapClick(e) {
+                marker.setLatLng(e.latlng);
+                document.getElementById('longitude').value = e.latlng.lng;
+                document.getElementById('latitude').value = e.latlng.lat;
+                var url = "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=" + e.latlng.lat + "&lon=" + e.latlng.lng;
+                console.log("Request URL:", url);
+                fetch(url)
+                    .then(response => {
+                        console.log("Response Status:", response.status);
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log("Response Data:", data);
+                        var address = data.display_name;
+                        document.getElementById("address").innerHTML = address;
+                    })
+                    .catch(error => console.error(error));
+            }
 
+            map.on('click', onMapClick);
+        </script>
         <div class="row gy-4 mt-4">
-
           <div class="col-lg-4">
-
             <div class="info-item d-flex">
               <i class="bi bi-geo-alt flex-shrink-0"></i>
               <div>
                 <h4>Location:</h4>
-                <p>A108 Adam Street, New York, NY 535022</p>
+                <p id="address"></p>
+                <% form.text_field :address, id: "address", required: true %><br>
+
               </div>
             </div><!-- End Info Item -->
-
             <div class="info-item d-flex">
               <i class="bi bi-envelope flex-shrink-0"></i>
               <div>
@@ -57,7 +91,6 @@
                 <p><%= Current.user.email %></p>
               </div>
             </div><!-- End Info Item -->
-
             <div class="info-item d-flex">
               <i class="bi bi-person flex-shrink-0"></i>
               <div>
@@ -65,9 +98,7 @@
                 <p><%= Current.user.full_name %></p>
               </div>
             </div><!-- End Info Item -->
-
           </div>
-
           <div class="col-lg-8">
             <form action="forms/contact.php" method="post" role="form" class="php-email-form">
               <div class="row">
@@ -93,10 +124,10 @@
             <%= form.select :status, ['public', 'private', 'archived'], selected: 'public' %>
           </div>
           <div>
-            <%= form.label :longitude %><br>
-            <%= form.number_field :longitude, required: true %><br>
-            <%= form.label :latitude %><br>
-            <%= form.number_field :latitude, required: true %><br>
+            <%= form.label :longitude, for: "longitude" %><br>
+            <%= form.text_field :longitude, id: "longitude", required: true %><br>
+            <%= form.label :latitude, for: "latitude" %><br>
+            <%= form.text_field :latitude, id: "latitude", required: true %><br>
           </div>
           <%= form.submit %>
         </div>
