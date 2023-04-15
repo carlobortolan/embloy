@@ -21,20 +21,27 @@ module Api
             SpatialJobValue.update_job_value(@job)
             render status: 200, json: { "message": "Job created!" }
           else
-            puts "HALLo"
-            p @job.errors
-            p @job.errors.details
-
             if @job.errors.details != false
               error = @job.errors.details.dup # necessary because @job.errors.details cant be modified manually
+              error.each do |a,b|
+                b.each_with_index do |e, i|
+                  b[i] = flatted_first_element(e)
+                end
+              end
+              p error
               if error[:job_type_value].present? && error[:job_type_value][0][:error] == "ERR_BLANK"
                 error.delete('job_type_value') # in case that job_type_value is blank error is raised, delete it because it is against the documentation policy of only raising blank errors for required attributes (and job_type value is non)
                 not_found_error('job_type')
                 return 0
+              elsif error[:start_slot].present? && error[:start_slot][0][:error] == "ERR_INVALID"
+                puts "PING"
+                malformed_error('start_slot') #necessary because of weird formatting of errors.add ...
+                return 0
+              else
+                render status: 400, json: error
               end
-              render status: 400, json: { "error": error }
             else
-              render status: 400, json: { "error": @job.errors.details }
+              render status: 400, json: @job.errors.details
             end
           end
 
@@ -51,7 +58,7 @@ module Api
             SpatialJobValue.update_job_value(@job)
             render status: 200, json: { "message": "Job updated!" }
           else
-            render status: 400, json: { "error": @job.errors.details }
+            render status: 400, json: @job.errors.details
           end
 
         rescue ActionController::ParameterMissing # just relevant for strong parameters

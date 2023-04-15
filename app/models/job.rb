@@ -31,6 +31,7 @@ class Job < ApplicationRecord
   validate :job_type_verification
   validate :employer_rating
   validate :boost
+  validate :start_slot_validation
 
   def profile
     @job.update(view_count: @job.view_count + 1)
@@ -57,4 +58,14 @@ class Job < ApplicationRecord
       errors.add(:job_type, { "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" })
     end
   end
+
+  def start_slot_validation
+    begin
+      if start_slot - Time.now < -86400
+        errors.add(:start_slot, { "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" })
+      end
+    end
+  end
+
 end
+

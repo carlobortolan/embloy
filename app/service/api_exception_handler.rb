@@ -247,13 +247,68 @@ module ApiExceptionHandler
     if attribute.class == Array
       bin = {}
       attribute.each do |att|
-        bin["#{att}"]=[{ error: error, description: description }]
+        bin["#{att}"] = [{ error: error, description: description }]
       end
       render status: status, json: bin
     else
       render status: status, json: { attribute => [{ error: error, description: description }] }
     end
 
+  end
+
+  #--------------------------------------
+  def flatten_hash(hash)
+    new_hash = {}
+
+    hash.each do |key, value|
+      if value.class == Hash && value.present?
+        e = value
+        new_hash[key] = {}
+
+        e.each do |k, v|
+          if k == key && v.class != Hash
+            new_hash[key] = v
+            break
+          elsif v.class == Hash && v.present?
+            bin = flatten_hash(v)
+            new_hash[key] = bin
+          else
+            new_hash[key][k] = v
+          end
+        end
+      else
+        new_hash[key] = value
+      end
+    end
+
+    if new_hash.size == 1 && new_hash.values[0].class == Hash
+      new_hash = new_hash.values[0]
+    end
+
+    return new_hash
+
+end
+
+  def flatted_first_element(hash)
+    new = {}
+    if hash.values.present? && hash.values[0].class == Hash
+      e = hash.values[0]
+      new[hash.keys[0]] = {}
+      e.each do |k, v|
+        if k == hash.keys[0] && v.class != Hash
+          new = e.dup
+          break
+        elsif v.class == Hash && v.present?
+          bin = ApiExceptionHandler.flatten_hash(v)
+          new[hash.keys[0]] = bin
+        else
+          p new.inspect
+          new[hash.keys[0]][k] = v
+        end
+      end
+      hash = new
+    end
+    return hash
   end
 
 end
