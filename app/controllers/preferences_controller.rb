@@ -14,6 +14,7 @@ class PreferencesController < ApplicationController
     gender = params[:gender]
     spontaneity = params[:spontaneity]
     # job_type = { "1": params[:job_type_1], "2": params[:job_type_2], "3": params[:job_type_3] }
+    # TODO: Add option to select job_types in view
     job_types = { "1": 0.0, "2": 0.0, "3": 0.0 }
     key_skills = params[:key_skills]
     salary_range = [params[:salary_range_min], params[:salary_range_max]]
