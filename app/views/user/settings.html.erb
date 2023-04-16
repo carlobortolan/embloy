@@ -1,147 +1,147 @@
 <!-- ======= Breadcrumbs ======= -->
-<div class="breadcrumbs">
-  <div class="page-header d-flex align-items-center" style="background-image: url('assets/img/page-header.jpg');">
-    <!--    <div class="container position-relative">-->
-    <!--      <div class="row d-flex justify-content-center">-->
-    <!--        <div class="col-lg-6 text-center">-->
-    <!--          <h2><%#= @user.first_name %> <%#= @user.last_name %></h2>-->
-    <!--          <h3><p><%#= @user.email %></p></h3>-->
-    <!--        </div>-->
-    <!--      </div>-->
-    <!--    </div>-->
-  </div>
-  <nav>
-    <div class="container">
-      <ol>
-        <li><a href="<%= root_path %>">Home</a></li>
-        <li><a href="<%= profile_index_path %>">Profile</a></li>
-        <li>Settings</li>
-      </ol>
-    </div>
-  </nav>
-</div><!-- End Breadcrumbs -->
+<!--<div class="breadcrumbs">-->
+<!--  <div class="page-header d-flex align-items-center" style="background-image: url('assets/img/page-header.jpg');">-->
+<!--    <!--    <div class="container position-relative">-->-->
+<!--    <!--      <div class="row d-flex justify-content-center">-->-->
+<!--    <!--        <div class="col-lg-6 text-center">-->-->
+<!--    <!--          <h2><%##= @user.first_name %> <%##= @user.last_name %></h2>-->-->
+<!--    <!--          <h3><p><%##= @user.email %></p></h3>-->-->
+<!--    <!--        </div>-->-->
+<!--    <!--      </div>-->-->
+<!--    <!--    </div>-->-->
+<!--  </div>-->
+<!--  <nav>-->
+<!--    <div class="container">-->
+<!--      <ol>-->
+<!--        <li><a href="<%#= root_path %>">Home</a></li>-->
+<!--        <li><a href="<%#= profile_index_path %>">Profile</a></li>-->
+<!--        <li>Settings</li>-->
+<!--      </ol>-->
+<!--    </div>-->
+<!--  </nav>-->
+<!--</div><!-- End Breadcrumbs -->-->
 
-<%= link_to 'Edit Password', edit_password_path %>
+<%#= link_to 'Edit Password', edit_password_path %>
 
 
-<style>
-    body {
-        background: #BA68C8;
-    }
+<!--<style>-->
+<!--    body {-->
+<!--        background: #BA68C8;-->
+<!--    }-->
 
-    .form-control:focus {
-        box-shadow: none;
-        border-color: #BA68C8;
-    }
+<!--    .form-control:focus {-->
+<!--        box-shadow: none;-->
+<!--        border-color: #BA68C8;-->
+<!--    }-->
 
-    .profile-button {
-        background: #BA68C8;
-        box-shadow: none;
-        border: none;
-    }
+<!--    .profile-button {-->
+<!--        background: #BA68C8;-->
+<!--        box-shadow: none;-->
+<!--        border: none;-->
+<!--    }-->
 
-    .profile-button:hover {
-        background: #682773;
-    }
+<!--    .profile-button:hover {-->
+<!--        background: #682773;-->
+<!--    }-->
 
-    .profile-button:focus {
-        background: #682773;
-        box-shadow: none;
-    }
+<!--    .profile-button:focus {-->
+<!--        background: #682773;-->
+<!--        box-shadow: none;-->
+<!--    }-->
 
-    .profile-button:active {
-        background: #682773;
-        box-shadow: none;
-    }
+<!--    .profile-button:active {-->
+<!--        background: #682773;-->
+<!--        box-shadow: none;-->
+<!--    }-->
 
-    .back:hover {
-        color: #682773;
-        cursor: pointer;
-    }
+<!--    .back:hover {-->
+<!--        color: #682773;-->
+<!--        cursor: pointer;-->
+<!--    }-->
 
-    .labels {
-        font-size: 11px;
-    }
+<!--    .labels {-->
+<!--        font-size: 11px;-->
+<!--    }-->
 
-    .add-experience:hover {
-        background: #BA68C8;
-        color: #fff;
-        cursor: pointer;
-        border: solid 1px #BA68C8;
-    }
-</style>
+<!--    .add-experience:hover {-->
+<!--        background: #BA68C8;-->
+<!--        color: #fff;-->
+<!--        cursor: pointer;-->
+<!--        border: solid 1px #BA68C8;-->
+<!--    }-->
+<!--</style>-->
 
-<div class="container rounded bg-white mt-5 mb-5">
-  <div class="row">
-    <div class="col-md-3 border-right">
-      <div class="d-flex flex-column align-items-center text-center p-3 py-5">
-        <img class="rounded-circle mt-5" src="https://i.imgur.com/O1RmJXT.jpg" width="90"><span class="font-weight-bold">John Doe</span><span class="text-black-50">john_doe12@bbb.com</span><span>United States</span>
-      </div>
-    </div>
-    <div class="col-md-5 border-right">
-      <div class="p-3 py-5">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h6 class="text-right">Edit your profile</h6>
-        </div>
-        <div class="row mt-2">
-          <div class="col-md-6">
-            <label class="labels">Name</label><input type="text" class="form-control" placeholder="first name" value="John">
-          </div>
-          <div class="col-md-6">
-            <label class="labels">Surname</label><input type="text" class="form-control" value="Doe" placeholder="Doe">
-          </div>
-        </div>
-        <div class="row mt-3">
-          <div class="col-md-12">
-            <label class="labels">Headline</label><input type="text" class="form-control" placeholder="headline" value="UI/UX Developer">
-          </div>
-          <div class="col-md-12"><label class="labels">Current
-            position</label><input type="text" class="form-control" placeholder="headline" value="UI/UX Developer at Boston">
-          </div>
-          <div class="col-md-12">
-            <label class="labels">Education</label><input type="text" class="form-control" placeholder="education" value="Boston University">
-          </div>
-        </div>
-        <div class="row mt-3">
-          <div class="col-md-6">
-            <label class="labels">Country</label><input type="text" class="form-control" placeholder="country" value="USA">
-          </div>
-          <div class="col-md-6">
-            <label class="labels">State/Region</label><input type="text" class="form-control" value="Boston" placeholder="state">
-          </div>
-        </div>
-        <div class="mt-5 text-center">
-          <button class="btn btn-primary profile-button" type="button">Save Profile</button>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="p-3 py-5">
-        <div class="d-flex justify-content-between align-items-center experience">
-          <span>Edit Experience</span><span class="border px-3 p-1 add-experience"><i class="fa fa-plus"></i>&nbsp;Experience</span>
-        </div>
-        <div class="d-flex flex-row mt-3 exp-container">
-          <img src="https://i.imgur.com/azSfBM3.png" width="45" height="45">
-          <div class="work-experience ml-1">
-            <span class="font-weight-bold d-block">Senior UI/UX Designer</span><span class="d-block text-black-50 labels">Twitter Inc.</span><span class="d-block text-black-50 labels">March,2017 - May 2020</span>
-          </div>
-        </div>
-        <hr>
-        <div class="d-flex flex-row mt-3 exp-container">
-          <img src="https://img.icons8.com/color/100/000000/facebook.png" width="45" height="45">
-          <div class="work-experience ml-1">
-            <span class="font-weight-bold d-block">Senior UI/UX Designer</span><span class="d-block text-black-50 labels">Facebook Inc.</span><span class="d-block text-black-50 labels">March,2017 - May 2020</span>
-          </div>
-        </div>
-        <hr>
-        <div class="d-flex flex-row mt-3 exp-container">
-          <img src="https://img.icons8.com/color/50/000000/google-logo.png" width="45" height="45">
-          <div class="work-experience ml-1">
-            <span class="font-weight-bold d-block">UI/UX Designer</span><span class="d-block text-black-50 labels">Google Inc.</span><span class="d-block text-black-50 labels">March,2017 - May 2020</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<div id="preloader"></div>
+<!--<div class="container rounded bg-white mt-5 mb-5">-->
+<!--  <div class="row">-->
+<!--    <div class="col-md-3 border-right">-->
+<!--      <div class="d-flex flex-column align-items-center text-center p-3 py-5">-->
+<!--        <img class="rounded-circle mt-5" src="https://i.imgur.com/O1RmJXT.jpg" width="90"><span class="font-weight-bold">John Doe</span><span class="text-black-50">john_doe12@bbb.com</span><span>United States</span>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--    <div class="col-md-5 border-right">-->
+<!--      <div class="p-3 py-5">-->
+<!--        <div class="d-flex justify-content-between align-items-center mb-3">-->
+<!--          <h6 class="text-right">Edit your profile</h6>-->
+<!--        </div>-->
+<!--        <div class="row mt-2">-->
+<!--          <div class="col-md-6">-->
+<!--            <label class="labels">Name</label><input type="text" class="form-control" placeholder="first name" value="John">-->
+<!--          </div>-->
+<!--          <div class="col-md-6">-->
+<!--            <label class="labels">Surname</label><input type="text" class="form-control" value="Doe" placeholder="Doe">-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <div class="row mt-3">-->
+<!--          <div class="col-md-12">-->
+<!--            <label class="labels">Headline</label><input type="text" class="form-control" placeholder="headline" value="UI/UX Developer">-->
+<!--          </div>-->
+<!--          <div class="col-md-12"><label class="labels">Current-->
+<!--            position</label><input type="text" class="form-control" placeholder="headline" value="UI/UX Developer at Boston">-->
+<!--          </div>-->
+<!--          <div class="col-md-12">-->
+<!--            <label class="labels">Education</label><input type="text" class="form-control" placeholder="education" value="Boston University">-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <div class="row mt-3">-->
+<!--          <div class="col-md-6">-->
+<!--            <label class="labels">Country</label><input type="text" class="form-control" placeholder="country" value="USA">-->
+<!--          </div>-->
+<!--          <div class="col-md-6">-->
+<!--            <label class="labels">State/Region</label><input type="text" class="form-control" value="Boston" placeholder="state">-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <div class="mt-5 text-center">-->
+<!--          <button class="btn btn-primary profile-button" type="button">Save Profile</button>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--    <div class="col-md-4">-->
+<!--      <div class="p-3 py-5">-->
+<!--        <div class="d-flex justify-content-between align-items-center experience">-->
+<!--          <span>Edit Experience</span><span class="border px-3 p-1 add-experience"><i class="fa fa-plus"></i>&nbsp;Experience</span>-->
+<!--        </div>-->
+<!--        <div class="d-flex flex-row mt-3 exp-container">-->
+<!--          <img src="https://i.imgur.com/azSfBM3.png" width="45" height="45">-->
+<!--          <div class="work-experience ml-1">-->
+<!--            <span class="font-weight-bold d-block">Senior UI/UX Designer</span><span class="d-block text-black-50 labels">Twitter Inc.</span><span class="d-block text-black-50 labels">March,2017 - May 2020</span>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <hr>-->
+<!--        <div class="d-flex flex-row mt-3 exp-container">-->
+<!--          <img src="https://img.icons8.com/color/100/000000/facebook.png" width="45" height="45">-->
+<!--          <div class="work-experience ml-1">-->
+<!--            <span class="font-weight-bold d-block">Senior UI/UX Designer</span><span class="d-block text-black-50 labels">Facebook Inc.</span><span class="d-block text-black-50 labels">March,2017 - May 2020</span>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <hr>-->
+<!--        <div class="d-flex flex-row mt-3 exp-container">-->
+<!--          <img src="https://img.icons8.com/color/50/000000/google-logo.png" width="45" height="45">-->
+<!--          <div class="work-experience ml-1">-->
+<!--            <span class="font-weight-bold d-block">UI/UX Designer</span><span class="d-block text-black-50 labels">Google Inc.</span><span class="d-block text-black-50 labels">March,2017 - May 2020</span>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
+<!--<div id="preloader"></div>-->

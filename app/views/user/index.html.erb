@@ -183,7 +183,7 @@
                       <label for="validationServer01" class="col-md-4 col-lg-3 col-form-label">First
                         Name</label>
                       <div class="col-md-8 col-lg-9">
-                        <%= f.text_field :first_name, type: "text", class: "form-control is-valid", id: 'validationServer01', placeholder: "First name", required: true %>
+                        <%= f.text_field :first_name, type: "text", class: "form-control", id: 'validationServer01', placeholder: "First name", required: true %>
                       </div>
                     </div>
 
@@ -191,34 +191,34 @@
                       <label for="validationServer02" class="col-md-4 col-lg-3 col-form-label">Last
                         Name</label>
                       <div class="col-md-8 col-lg-9">
-                        <%= f.text_field :last_name, type: "text", class: "form-control is-valid", id: 'validationServer02', placeholder: "Last name", required: true %>
+                        <%= f.text_field :last_name, type: "text", class: "form-control", id: 'validationServer02', placeholder: "Last name", required: true %>
                       </div>
                     </div>
 
                     <div class="row mb-3">
                       <label for="validationServer03" class="col-md-4 col-lg-3 col-form-label">Email</label>
                       <div class="col-md-8 col-lg-9">
-                        <%= f.email_field :email, type: "text", class: "form-control is-valid", id: 'validationServer03', placeholder: "Your email", required: true %>
+                        <%= f.email_field :email, type: "email", class: "form-control", id: 'validationServer03', placeholder: "Your email", required: true %>
                       </div>
                     </div>
 
                     <div class="row mb-3">
                       <label for="validationServer04" class="col-md-4 col-lg-3 col-form-label">Phone</label>
                       <div class="col-md-8 col-lg-9">
-                        <%= f.telephone_field :phone, type: "phone", class: "form-control is-valid", id: 'validationServer04', placeholder: "Your phone number", required: false %>
+                        <%= f.telephone_field :phone, type: "phone", class: "form-control", id: 'validationServer04', placeholder: "Your phone number", required: false %>
                       </div>
                     </div>
 
                     <div class="row mb-3">
                       <label for="validationServer05" class="col-md-4 col-lg-3 col-form-label">Birthday</label>
                       <div class="col-md-8 col-lg-9">
-                        <%= f.date_field :date_of_birth, type: "date", class: "form-control is-valid", id: 'validationServer05', placeholder: "Your date of birth", required: false %>
+                        <%= f.date_field :date_of_birth, type: "date", class: "form-control", id: 'validationServer05', placeholder: "Your date of birth", required: false %>
                       </div>
                     </div>
                     <div class="row mb-3">
                       <label for="validationServer055" class="col-md-4 col-lg-3 col-form-label">Degree</label>
                       <div class="col-md-8 col-lg-9">
-                        <%= f.text_field :degree, type: "text", class: "form-control is-valid", id: 'validationServer055', placeholder: "Your hightest degree", required: false %>
+                        <%= f.text_field :degree, type: "text", class: "form-control", id: 'validationServer055', placeholder: "Your hightest degree", required: false %>
                       </div>
                     </div>
 
@@ -226,20 +226,20 @@
                       <label for="validationServer06" class="col-md-4 col-lg-3 col-form-label">Country
                         Code</label>
                       <div class="col-md-8 col-lg-9">
-                        <%= f.text_field :country_code, type: "text", class: "form-control is-valid", id: 'validationServer06', placeholder: "e.g.,: DE", required: false, pattern: "^(A(D|E|F|G|I|L|M|N|O|R|S|T|Q|U|W|X|Z)|B(A|B|D|E|F|G|H|I|J|L|M|N|O|R|S|T|V|W|Y|Z)|C(A|C|D|F|G|H|I|K|L|M|N|O|R|U|V|X|Y|Z)|D(E|J|K|M|O|Z)|E(C|E|G|H|R|S|T)|F(I|J|K|M|O|R)|G(A|B|D|E|F|G|H|I|L|M|N|P|Q|R|S|T|U|W|Y)|H(K|M|N|R|T|U)|I(D|E|Q|L|M|N|O|R|S|T)|J(E|M|O|P)|K(E|G|H|I|M|N|P|R|W|Y|Z)|L(A|B|C|I|K|R|S|T|U|V|Y)|M(A|C|D|E|F|G|H|K|L|M|N|O|Q|P|R|S|T|U|V|W|X|Y|Z)|N(A|C|E|F|G|I|L|O|P|R|U|Z)|OM|P(A|E|F|G|H|K|L|M|N|R|S|T|W|Y)|QA|R(E|O|S|U|W)|S(A|B|C|D|E|G|H|I|J|K|L|M|N|O|R|T|V|Y|Z)|T(C|D|F|G|H|J|K|L|M|N|O|R|T|V|W|Z)|U(A|G|M|S|Y|Z)|V(A|C|E|G|I|N|U)|W(F|S)|Y(E|T)|Z(A|M|W))$" %>
+                        <%= f.text_field :country_code, type: "text", class: "form-control", id: 'validationServer06', placeholder: "e.g.,: DE", required: false, pattern: "^(A(D|E|F|G|I|L|M|N|O|R|S|T|Q|U|W|X|Z)|B(A|B|D|E|F|G|H|I|J|L|M|N|O|R|S|T|V|W|Y|Z)|C(A|C|D|F|G|H|I|K|L|M|N|O|R|U|V|X|Y|Z)|D(E|J|K|M|O|Z)|E(C|E|G|H|R|S|T)|F(I|J|K|M|O|R)|G(A|B|D|E|F|G|H|I|L|M|N|P|Q|R|S|T|U|W|Y)|H(K|M|N|R|T|U)|I(D|E|Q|L|M|N|O|R|S|T)|J(E|M|O|P)|K(E|G|H|I|M|N|P|R|W|Y|Z)|L(A|B|C|I|K|R|S|T|U|V|Y)|M(A|C|D|E|F|G|H|K|L|M|N|O|Q|P|R|S|T|U|V|W|X|Y|Z)|N(A|C|E|F|G|I|L|O|P|R|U|Z)|OM|P(A|E|F|G|H|K|L|M|N|R|S|T|W|Y)|QA|R(E|O|S|U|W)|S(A|B|C|D|E|G|H|I|J|K|L|M|N|O|R|T|V|Y|Z)|T(C|D|F|G|H|J|K|L|M|N|O|R|T|V|W|Z)|U(A|G|M|S|Y|Z)|V(A|C|E|G|I|N|U)|W(F|S)|Y(E|T)|Z(A|M|W))$" %>
                       </div>
                     </div>
                     <div class="row mb-3">
                       <label for="validationServer07" class="col-md-4 col-lg-3 col-form-label">City</label>
                       <div class="col-md-8 col-lg-9">
-                        <%= f.text_field :city, type: "text", class: "form-control is-valid", id: 'validationServer07', placeholder: "City", required: false %>
+                        <%= f.text_field :city, type: "text", class: "form-control", id: 'validationServer07', placeholder: "City", required: false %>
                       </div>
                     </div>
                     <div class="row mb-3">
                       <label for="validationServer08" class="col-md-4 col-lg-3 col-form-label">Postal
                         Code</label>
                       <div class="col-md-8 col-lg-9">
-                        <%= f.text_field :postal_code, type: "text", class: "form-control is-valid", id: 'validationServer08', placeholder: "e.g.,: 80805", required: false, pattern: "[\\d]{5}(-[\\d]{4})?" %>
+                        <%= f.text_field :postal_code, type: "text", class: "form-control", id: 'validationServer08', placeholder: "e.g.,: 80805", required: false, pattern: "[\\d]{5}(-[\\d]{4})?" %>
                       </div>
                     </div>
 
@@ -247,7 +247,7 @@
                       <label for="validationServer09" class="col-md-4 col-lg-3 col-form-label">Address
                         (street)</label>
                       <div class="col-md-8 col-lg-9">
-                        <%= f.text_field :address, type: "text", class: "form-control is-valid", id: 'validationServer09', placeholder: "Address", required: false %>
+                        <%= f.text_field :address, type: "text", class: "form-control", id: 'validationServer09', placeholder: "Address", required: false %>
                       </div>
                     </div>
 
