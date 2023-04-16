@@ -1,31 +1,25 @@
 <section id="hero" class="hero d-flex align-items-center">
 
   <div class="container"><h1>Search all jobs</h1>
-    <!--    <form action="<%#= jobs_find_path %>" method="get" class="form-search d-flex align-items-stretch mb-3">-->
-    <!--      <input type="text" class="form-control" placeholder="ZIP, city or keywords" name="query" style="height: 60px">-->
-    <!--      <button type="submit" class="btn btn-primary">Search</button>-->
     <form action="<%= jobs_find_path %>" method="get" class="form-search d-flex align-items-stretch mb-3">
-      <div class="d-flex justify-content-center">
-        <input type="text" class="form-control" placeholder="ZIP, city or keywords" name="query" style="height: 60px;">
+        <input type="text" class="form-control flex-grow-1" placeholder="ZIP, city or keywords" name="query" style="height: 60px;">
         <!-- Filter by job type -->
-        <select name="job_type" class="form-select" aria-label="Filter by job type">
+        <select name="job_type" class="form-select flex-grow-1" aria-label="Filter by job type">
           <option value="">All job types</option>
           <% @categories_list.each do |type| %>
             <option value="<%= type %>"><%= type %></option>
           <% end %>
         </select>
         <!-- Sort by -->
-        <select name="sort_by" class="form-select" aria-label="Sort by">
+        <select name="sort_by" class="form-select flex-grow-1" aria-label="Sort by">
           <option value="">Sort by relevance</option>
           <option value="salary_desc">Salary - High to Low</option>
           <option value="salary_asc">Salary - Low to High</option>
           <option value="date_desc">Date - Newest first</option>
           <option value="date_asc">Date - Oldest first</option>
         </select>
-        <button type="submit" class="btn btn-primary">Search</button>
-      </div>
+        <button type="submit" class="btn btn-primary flex-grow-1">Search</button>
     </form>
-
   </div>
 </section>
 
@@ -56,52 +50,6 @@
               <% end %>
             <% end %>
           </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-
-<section id="hero" class="hero d-flex align-items-center text-dark">
-  <div class="col mb-5 text-dark">
-    <div class="card h-100">
-      <h1>Find jobs</h1>
-      <h3><%= link_to "Do you want to create a new job instead?", new_job_path %></h3>
-
-      <div class="d-flex justify-content-center">
-        <form action="<%= jobs_find_path %>" method="get" class="form-search d-flex align-items-stretch mb-3">
-          <input type="text" class="form" placeholder="ZIP, city or keywords" name="query" style="height: 60px;">
-          <!-- Filter by job type -->
-          <select name="job_type" class="form-select" aria-label="Filter by job type">
-            <option value="">All job types</option>
-            <% @categories_list.each do |type| %>
-              <option value="<%= type %>"><%= type %></option>
-            <% end %>
-          </select>
-          <!-- Sort by -->
-          <select name="sort_by" class="form-select" aria-label="Sort by">
-            <option value="">Sort by relevance</option>
-            <option value="salary_desc">Salary - High to Low</option>
-            <option value="salary_asc">Salary - Low to High</option>
-            <option value="date_desc">Date - Newest first</option>
-            <option value="date_asc">Date - Oldest first</option>
-          </select>
-          <button type="submit" class="btn btn-primary">Search</button>
-        </form>
-      </div>
-
-      <h2 class="text-dark">All available jobs </h2>
-      <section class="py-5" data-aos="fade-up">
-        <div class="container px-3 px-lg-5">
-          <div class="row gx-3 gx-lg-5 row-cols-1 row-cols-md-3 row-cols-xl-3 justify-content-center ">
-            <% @jobs.each do |job| %>
-              <% if job.public? %>
-                <%= render "posting", job: job %>
-              <% end %>
-            <% end %>
-          </div>
           <nav class="d-flex justify-content-center">
             <ul class="pagination">
               <% if @jobs.total_pages > 1 %>
@@ -125,8 +73,9 @@
               <% end %>
             </ul>
           </nav>
+
         </div>
-      </section>
+      </div>
     </div>
   </div>
 </section>
