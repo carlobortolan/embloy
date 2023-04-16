@@ -46,7 +46,7 @@
           <script>
               var latitude = <%= @job.latitude.nil? ? 37.7749 : @job.latitude %>;
               var longitude = <%= @job.longitude.nil? ? -122.4194 : @job.longitude %>;
-              var map = L.map('mapid').setView([latitude, longitude], 13);
+              var map = L.map('mapid', {maxBounds: L.latLngBounds([[latitude, longitude], [latitude, longitude]])}).setView([latitude, longitude], 13);
               L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                   attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
                   maxZoom: 18,
