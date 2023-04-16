@@ -7,7 +7,7 @@
           <div class="row d-flex justify-content-center">
             <div class="col-lg-6 text-center">
               <h2><%= form.text_field :title, placeholder: "Your job title", class: "form-control", required: true %></h2>
-              <div><%= form.label :job_type %>
+              <div>
                 <br><%= form.select :job_type, @categories_list, placeholder: "Job Categories", class: "btn btn-primary form-control" %>
               </div>
               <div class="mt-3">

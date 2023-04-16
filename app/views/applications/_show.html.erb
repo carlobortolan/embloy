@@ -16,14 +16,14 @@
           <h5 class="fw-bolder"><%= @application.user.full_name %></h5>
           <p class="card-text"><%= @application.application_text %></p>
 
-          <button type="button" class="btn btn-success" data-toggle="modal" data-target="#acceptModal" data-whatever="<%= @application.user.email %>">Accept
+          <button type="button" class="btn btn-success" data-toggle="modal" data-target="#acceptModal<%= @application.user_id %>" data-whatever="<%= @application.user.email %>">Accept
           </button>
-          <div class="modal fade" id="acceptModal" tabindex="-1" role="dialog" aria-labelledby="acceptModalLabel" aria-hidden="true">
+          <div class="modal fade" id="acceptModal<%= @application.user_id %>" tabindex="-1" role="dialog" aria-labelledby="acceptModal<%= @application.user_id %>Label" aria-hidden="true">
             <%= form_with model: @application, url: job_application_accept_path(@job, @application.user_id) do |f| %>
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title" id="acceptModalLabel">New message</h5>
+                    <h5 class="modal-title" id="acceptModal<%= @application.user_id %>Label">New message</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
@@ -51,9 +51,9 @@
             <% end %>
           </div>
 
-          <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#rejectModal" data-whatever="<%= @application.user.email %>">Reject
+          <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#rejectModal<%= @application.user_id %>" data-whatever="<%= @application.user.email %>">Reject
           </button>
-          <div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="acceptModalLabel" aria-hidden="true">
+          <div class="modal fade" id="rejectModal<%= @application.user_id %>" tabindex="-1" role="dialog" aria-labelledby="rejectModal<%= @application.user_id %>Label" aria-hidden="true">
             <%= form_with model: @application, url: job_application_reject_path(@job, @application.user_id) do |f| %>
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -96,8 +96,5 @@
       </div>
     </div>
     </div>
-    </div>
-    </div>
-  </div>
 
 <% end %>
