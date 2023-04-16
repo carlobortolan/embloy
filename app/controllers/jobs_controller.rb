@@ -85,11 +85,11 @@ class JobsController < ApplicationController
                .page(params[:page])
 
     if @jobs.nil? || @jobs.empty?
-      @jobs = Job.all
+      @jobs = Job.includes([:user]).all
     end
 
     unless params[:job_type].nil? || params[:job_type].blank?
-      @jobs = @jobs.where(job_type: params[:job_type])
+      @jobs = @jobs.includes([:user]).where(job_type: params[:job_type])
     end
 
     case params[:sort_by]
