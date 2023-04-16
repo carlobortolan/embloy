@@ -11,9 +11,6 @@
     <% end %>
 
     <div class="card h-100">
-      <!-- Job image-->
-      <!--    <img class="card-img-top" src="app/views/jobs/joblogo.png"/>-->
-      <!-- Job details-->
       <div class="card-body p-4 ">
         <div class="text-center ">
           <h5 class="fw-bolder"><%= @application.user.full_name %></h5>
@@ -82,14 +79,12 @@
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <%=
                       f.submit "Send message", class: "btn btn-primary", method: :patch
-                      #link_to "Send message", job_application_reject_path(@job, @application.user_id, response: :response, method: :patch), class: "btn btn-primary"
                     %>
                   </div>
                 </div>
               </div>
             <% end %>
           </div>
-
 
           <p class="card-text">
             <i><b> <%= @application.response.nil? ? "Not response yet ..." : @application.response %></b></i></p>

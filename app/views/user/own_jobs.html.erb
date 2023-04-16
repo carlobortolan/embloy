@@ -28,13 +28,11 @@
 
 <!-- Section-->
 <div class="container px-3 px-lg-5 mt-5 text-dark">
-  <div class="row gx-3 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-3 justify-content-center ">
+  <div class="row gx-3 gx-lg-5 row-cols-1 row-cols-md-3 row-cols-xl-3 justify-content-center" data-aos="fade-up">
     <% @jobs.each do |job| %>
       <%= render "jobs/own_posting", job: job %>
     <% end %>
   </div>
 </div>
 
-
-<a href="#" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 <div id="preloader"></div>

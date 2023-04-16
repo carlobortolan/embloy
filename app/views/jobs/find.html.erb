@@ -1,11 +1,11 @@
 <section id="hero" class="hero d-flex align-items-center text-dark">
-  <div class="col mb-5 text-dark" data-aos="fade-up">
+  <div class="col mb-5 text-dark">
     <div class="card h-100">
       <h1>Find jobs</h1>
       <h3><%= link_to "Do you want to create a new job instead?", new_job_path %></h3>
 
       <div class="d-flex justify-content-center">
-        <form action="<%= jobs_find_path %>" method="get" class="form-search d-flex align-items-stretch mb-3" data-aos="fade-up" data-aos-delay="200">
+        <form action="<%= jobs_find_path %>" method="get" class="form-search d-flex align-items-stretch mb-3">
           <input type="text" class="form" placeholder="ZIP, city or keywords" name="query" style="height: 60px;">
           <!-- Filter by job type -->
           <select name="job_type" class="form-select" aria-label="Filter by job type">
@@ -27,9 +27,9 @@
       </div>
 
       <h2 class="text-dark">All available jobs </h2>
-      <section class="py-5">
-        <div class="container px-3 px-lg-5 mt-5">
-          <div class="row gx-3 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-3 justify-content-center ">
+      <section class="py-5" data-aos="fade-up">
+        <div class="container px-3 px-lg-5">
+          <div class="row gx-3 gx-lg-5 row-cols-1 row-cols-md-3 row-cols-xl-3 justify-content-center ">
             <% @jobs.each do |job| %>
               <% if job.public? %>
                 <%= render "posting", job: job %>
@@ -64,5 +64,4 @@
     </div>
   </div>
 </section>
-<a href="#" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 <div id="preloader"></div>

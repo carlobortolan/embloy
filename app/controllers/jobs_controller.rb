@@ -81,7 +81,7 @@ class JobsController < ApplicationController
     @categories_list = JSON.parse(File.read(Rails.root.join('app/helpers', 'job_types.json'))).keys
 
     # @jobs = Job.search_for(params[:query])
-    @jobs = Job.where("title ILIKE :query OR description ILIKE :query OR position ILIKE :query OR job_type ILIKE :query OR key_skills ILIKE :query OR address ILIKE :query OR city ILIKE :query OR postal_code ILIKE :query OR start_slot::text ILIKE :query", query: "%#{params[:query]}%")
+    @jobs = Job.includes([:user]).where("title ILIKE :query OR description ILIKE :query OR position ILIKE :query OR job_type ILIKE :query OR key_skills ILIKE :query OR address ILIKE :query OR city ILIKE :query OR postal_code ILIKE :query OR start_slot::text ILIKE :query", query: "%#{params[:query]}%")
                .page(params[:page])
 
     if @jobs.nil? || @jobs.empty?

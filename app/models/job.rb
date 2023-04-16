@@ -39,6 +39,27 @@ class Job < ApplicationRecord
     @job.update(view_count: @job.view_count + 1)
   end
 
+  def time_left
+      diff_seconds = (start_slot - Time.zone.now).to_i
+
+      case
+      when diff_seconds < 0
+        return "deadline passed"
+      when diff_seconds < 60
+        return "in less than a minute"
+      when diff_seconds < 60 * 60
+        return "in #{diff_seconds / 60} minute#{'s' if diff_seconds / 60 > 1}"
+      when diff_seconds < 60 * 60 * 24
+        return "in #{diff_seconds / 3600} hour#{'s' if diff_seconds / 3600 > 1}"
+      when diff_seconds < 60 * 60 * 24 * 7
+        return "in #{diff_seconds / 86400} day#{'s' if diff_seconds / 86400 > 1}"
+      when diff_seconds < 60 * 60 * 24 * 30
+        return "in #{diff_seconds / 604800} week#{'s' if diff_seconds / 604800 > 1}"
+      else
+        return "in more than a month"
+      end
+  end
+
   def reject_all
     self.applications.each { |application| application.reject("REJECTED") }
   end
