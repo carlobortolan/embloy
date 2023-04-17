@@ -311,6 +311,12 @@ end
     return hash
   end
 
+
+  def ok
+    #do nothing
+    1
+  end
+
 end
 
 
