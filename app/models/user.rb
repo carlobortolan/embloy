@@ -19,12 +19,13 @@ class User < ApplicationRecord
   validates :address, presence: false
   validates :user_type, presence: false
   validates :image_url, presence: false
-  validates :job_type_1, presence: false
-  validates :job_type_2, presence: false
-  validates :job_type_3, presence: false
 
   def full_name
     "#{first_name} #{last_name}"
+  end
+
+  def is_verified?
+    [true, false].sample
   end
 
   def age

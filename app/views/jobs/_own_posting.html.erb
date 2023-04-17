@@ -1,4 +1,4 @@
-<div class="col mb-5" data-aos="fade-up">
+<div class="col mb-5">
   <div class="card h-100">
     <!-- Job image-->
     <!--    <img class="card-img-top" src="app/views/jobs/joblogo.png"/>-->
@@ -6,16 +6,16 @@
     <div class="card-body p-4 ">
       <div class="text-center ">
         <!-- Title-->
-        <h5 class="fw-bolder"><%= job.title %></h5>
-        <small class="text-muted"><%= pluralize(job.applications_count, "application") %> </small>
-        <small class="text-muted">| <%= pluralize(job.view_count, "views") %> </small>
-        <!-- Salary-->
+        <header class="text-center content-center pt-1 pb-2">
+          <small class="text-muted"><i class="bi bi-clock-fill mr-1"></i><%= job.time_left %></small>
+          <a class="badge bg-secondary text-decoration-none link-light" href="#!"><%= job.job_type %></a>
+        </header>
+        <h5 class="fw-bolder"><%= job.title %></h5><br>
         <%= "#{job.salary} #{job.currency}" %>
-        <!-- Description-->
         <p class="card-text"><%= job.description %></p>
-        <div class="d-flex justify-content-between align-items-center">
-          <!-- Start slot-->
-          <small class="text-muted  "><%= job.start_slot.getlocal.asctime %></small>
+        <div class="d-flex justify-content-center align-items-center">
+          <small class="text-muted"><%= pluralize(job.applications_count, "application") %> </small>
+          <small class="text-muted">| <%= pluralize(job.view_count, "views") %> </small>
         </div>
       </div>
     </div>

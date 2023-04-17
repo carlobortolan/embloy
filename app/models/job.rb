@@ -4,28 +4,29 @@ class Job < ApplicationRecord
   include PgSearch::Model
   paginates_per 48
   max_pages 10
-  pg_search_scope :search_by_title, against: :title
-  pg_search_scope :search_by_job_type, against: :job_type
-  pg_search_scope :search_for, against: [:title, :job_type, :position, :key_skills, :description, :country_code, :city, :postal_code, :address]
+  multisearchable against: [:title, :job_type, :position, :key_skills, :description, :city, :postal_code, :address]
+  pg_search_scope :search_for,
+                  against: [:title, :description, :position, :job_type, :key_skills, :address, :city, :postal_code, :start_slot],
+                  using: {
+                    tsearch: { prefix: true, any_word: true, dictionary: "english", normalization: 2 },
+                    trigram: { threshold: 0.1 }
+                  }
 
   belongs_to :user, counter_cache: true
   has_many :applications, dependent: :delete_all
   has_noticed_notifications model_name: 'Notification'
   has_rich_text :content
-  # has_many :notifications, dependent: :delete_all
-  # has_many :notifications, through: :user, dependent: :delete_all
-
   validates :title, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validates :description, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, length: { minimum: 10 }
   validates :start_slot, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
-  validates :longitude, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, :numericality => { "error": "ERR_INVALID", "description": "Attribute is malformed or unknown"}
-  validates :latitude, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, :numericality => { "error": "ERR_INVALID", "description": "Attribute is malformed or unknown"}
+  validates :longitude, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, :numericality => { "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" }
+  validates :latitude, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, :numericality => { "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" }
 
-  validates :job_notifications, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, :numericality => {only_integer: true, "error": "ERR_INVALID", "description": "Attribute is malformed or unknown"}
+  validates :job_notifications, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, :numericality => { only_integer: true, "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" }
   validates :position, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validates :key_skills, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
-  validates :duration, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, :numericality => {only_integer: true, "error": "ERR_INVALID", "description": "Attribute is malformed or unknown"}
-  validates :salary, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, :numericality => {only_integer: true, "error": "ERR_INVALID", "description": "Attribute is malformed or unknown"}
+  validates :duration, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, :numericality => { only_integer: true, greater_than: 0, "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" }
+  validates :salary, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, :numericality => { only_integer: true, greater_than: 0, "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" }
   validates :currency, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validates :job_type, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validates :job_type_value, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
@@ -36,6 +37,27 @@ class Job < ApplicationRecord
 
   def profile
     @job.update(view_count: @job.view_count + 1)
+  end
+
+  def time_left
+      diff_seconds = (start_slot - Time.zone.now).to_i
+
+      case
+      when diff_seconds < 0
+        return "deadline passed"
+      when diff_seconds < 60
+        return "in less than a minute"
+      when diff_seconds < 60 * 60
+        return "in #{diff_seconds / 60} minute#{'s' if diff_seconds / 60 > 1}"
+      when diff_seconds < 60 * 60 * 24
+        return "in #{diff_seconds / 3600} hour#{'s' if diff_seconds / 3600 > 1}"
+      when diff_seconds < 60 * 60 * 24 * 7
+        return "in #{diff_seconds / 86400} day#{'s' if diff_seconds / 86400 > 1}"
+      when diff_seconds < 60 * 60 * 24 * 30
+        return "in #{diff_seconds / 604800} week#{'s' if diff_seconds / 604800 > 1}"
+      else
+        return "in more than a month"
+      end
   end
 
   def reject_all

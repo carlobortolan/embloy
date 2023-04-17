@@ -54,8 +54,8 @@ class ApplicationsController < ApplicationController
   def accept
     @job = Job.find(params[:job_id])
     if require_user_be_owner
-      @application = @job.applications.where(user_id: params[:application_id]).first
-      @application.accept(application_params[:response])
+      application = @job.applications.where(user_id: params[:application_id]).first
+      application.accept(application_params[:response])
       redirect_to job_path(@job), status: :see_other, notice: 'Application has been accepted'
     end
   end
@@ -63,8 +63,8 @@ class ApplicationsController < ApplicationController
   def reject
     @job = Job.find(params[:job_id])
     if require_user_be_owner
-      @application = @job.applications.where(user_id: params[:application_id]).first
-      @application.reject(application_params[:response])
+      application = @job.applications.where(user_id: params[:application_id]).first
+      application.reject(application_params[:response])
       redirect_to job_applications_path(params[:job_id]), status: :see_other, notice: 'Application has been rejected'
     end
   end

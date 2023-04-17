@@ -1,3 +1,19 @@
+<style>
+    @media (max-aspect-ratio: 1/1) {
+        .login-form img {
+            display: none;
+            /*background-image: url('assets/img/hero-bg.png');*/
+            /*background-repeat: no-repeat;*/
+            /*background-size: cover;*/
+        }
+    }
+
+    /*body {*/
+    /*    background-image: url('assets/img/hero-bg.png');*/
+    /*    background-repeat: no-repeat;*/
+    /*    background-size: cover;*/
+    /*}*/
+</style>
 <%= form_with url: sign_in_path do |f| %>
   <body class="bg-light">
   <section class="bg-light">
@@ -10,8 +26,13 @@
               <div class="container py-5 h-100">
                 <div class="row d-flex align-items-center justify-content-center h-100">
                   <div class="col-md-8 col-lg-7 col-xl-6">
-                    <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.svg"
-                         class="img-fluid" alt="Phone image">
+                    <% if request.user_agent =~ /Mobile/ %>
+                      <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.svg"
+                           class="img-fluid" alt="">
+                    <% else %>
+                      <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.svg"
+                           class="img-fluid d-none d-md-block" alt="">
+                    <% end %>
                   </div>
                   <%= render 'login_form_raw' %>
                 </div>
@@ -24,5 +45,4 @@
   </section>
   </body>
 <% end %>
-<a href="#" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 <div id="preloader"></div>

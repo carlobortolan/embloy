@@ -33,10 +33,6 @@ module Api
                 error.delete('job_type_value') # in case that job_type_value is blank error is raised, delete it because it is against the documentation policy of only raising blank errors for required attributes (and job_type value is non)
                 not_found_error('job_type')
                 return 0
-              elsif error[:start_slot].present? && error[:start_slot][0][:error] == "ERR_INVALID"
-                puts "PING"
-                malformed_error('start_slot') #necessary because of weird formatting of errors.add ...
-                return 0
               else
                 render status: 400, json: error
               end

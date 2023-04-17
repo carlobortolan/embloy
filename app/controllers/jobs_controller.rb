@@ -9,7 +9,6 @@ class JobsController < ApplicationController
   def index
     # Create slice to find possible jobs
     jobs = JobSlicer.slice(Current.user.nil? ? nil : Current.user)
-
     # Call FrG-API to rank jobs
     if !jobs.nil? && !jobs.empty?
       @jobs = call_feed(jobs)
@@ -29,11 +28,14 @@ class JobsController < ApplicationController
 
   def new
     @job = Job.new
+    @job.currency = "EUR"
     @categories_list = JSON.parse(File.read(Rails.root.join('app/helpers', 'job_types.json'))).keys
+    @editing = false
   end
 
   def create
     @job = Job.new(job_params)
+    @job.currency = "EUR"
     @job.user_id = Current.user.id
 
     job_types_file = File.read(Rails.root.join('app/helpers', 'job_types.json'))
@@ -41,17 +43,7 @@ class JobsController < ApplicationController
     job_type = @job.job_type
     @job.job_type_value = job_types[job_type]
 
-    latitude = @job.latitude
-    longitude = @job.longitude
-    result = Geocoder.search("#{latitude},#{longitude}").first
-    country_code = result.country_code
-    postal_code = result.postal_code
-    city = result.city
-    address = result.address
-    location_params = { country_code: country_code, postal_code: postal_code, city: city, address: address }
-
-    if @job.save && @job.update(location_params)
-      # @job_service.set_notification(@job[:id].to_i, @job[:user_id].to_i, params[:job][:notify].eql?("1"))
+    if @job.save! && @job.update(geocode(@job))
       SpatialJobValue.update_job_value(@job)
       redirect_to @job, notice: "Created new job"
     else
@@ -61,24 +53,16 @@ class JobsController < ApplicationController
 
   def edit
     @job = Job.find(params[:id])
-    @categories_list = JSON.parse(File.read(Rails.root.join('app/helpers', 'job_types.json'))).keys
     require_user_be_owner
+    @categories_list = JSON.parse(File.read(Rails.root.join('app/helpers', 'job_types.json'))).keys
+    @editing = true
   end
 
   def update
     @job = Job.find(params[:id])
     require_user_be_owner
 
-    latitude = @job.latitude
-    longitude = @job.longitude
-    result = Geocoder.search("#{latitude},#{longitude}").first
-    country_code = result.country_code
-    postal_code = result.postal_code
-    city = result.city
-    address = result.address
-    location_params = { country_code: country_code, postal_code: postal_code, city: city, address: address }
-
-    if @job.update(job_params) && @job.update(location_params)
+    if @job.update(job_params) && @job.update(geocode(@job))
       SpatialJobValue.update_job_value(@job)
       redirect_to @job
     else
@@ -96,14 +80,16 @@ class JobsController < ApplicationController
   def find
     @categories_list = JSON.parse(File.read(Rails.root.join('app/helpers', 'job_types.json'))).keys
 
-    @jobs = Job.search_for("#{params[:query]}" + "#{params[:job_type]}")
+    # @jobs = Job.search_for(params[:query])
+    @jobs = Job.includes([:user]).where("title ILIKE :query OR description ILIKE :query OR position ILIKE :query OR job_type ILIKE :query OR key_skills ILIKE :query OR address ILIKE :query OR city ILIKE :query OR postal_code ILIKE :query OR start_slot::text ILIKE :query", query: "%#{params[:query]}%")
+               .page(params[:page])
 
     if @jobs.nil? || @jobs.empty?
-      @jobs = Job.all
+      @jobs = Job.includes([:user]).all
     end
 
     unless params[:job_type].nil? || params[:job_type].blank?
-      @jobs = @jobs.where(job_type: params[:job_type])
+      @jobs = @jobs.includes([:user]).where(job_type: params[:job_type])
     end
 
     case params[:sort_by]
@@ -140,7 +126,6 @@ class JobsController < ApplicationController
     request.basic_auth('FG', 'pw')
     request.body = request_body
     request["Content-Type"] = "application/json"
-
     response = http.request(request)
 
     if response.code == '200'
@@ -150,6 +135,21 @@ class JobsController < ApplicationController
         @jobs << Job.new(job_hash)
       end
       @jobs
+    end
+  end
+
+  def geocode(job)
+    begin
+      latitude = job.latitude
+      longitude = job.longitude
+      result = Geocoder.search("#{latitude},#{longitude}").first
+      country_code = result.country_code
+      postal_code = result.postal_code
+      city = result.city
+      address = result.address
+      { country_code: country_code, postal_code: postal_code, city: city, address: address }
+    rescue
+      {}
     end
   end
 

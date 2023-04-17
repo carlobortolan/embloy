@@ -6,16 +6,20 @@ class ApplicationStatusNotification < Noticed::Base
   param :application, :user, :job, :status, :response
 
   def email_notifications?
+    puts "STARTED NOTIFICATION STATUS CHANGE"
+    puts "params = #{params}"
+    puts
+    puts "Job = #{params[:job]}"
+    puts "Jobid = #{params[:job][:id]}"
+    puts
     recipient.application_notifications?
   end
 
   def message
-    # TODO: @carlobortolan FIX BUG
-    "Update on #{params[:job]}"
+    "Update on #{params[:job][:title]}"
   end
 
   def url
-    # TODO: @carlobortolan FIX BUG
-    # job_path(id)
+    "#{job_path(params[:job][:id])}#applicationForm"
   end
 end
