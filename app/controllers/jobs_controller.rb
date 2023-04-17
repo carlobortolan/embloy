@@ -18,7 +18,15 @@ class JobsController < ApplicationController
   end
 
   def map
+    puts "STARTED MAP = #{[params[:latitude]]}  #{params[:longitude]}"
+    puts "GEOCODING: #{Job.first.geocode}"
+
+    latitude = params[:latitude]
+    longitude = params[:longitude]
+
+    @jobs = Job.where("ACOS(SIN(RADIANS(:lat)) * SIN(RADIANS(latitude)) + COS(RADIANS(:lat)) * COS(RADIANS(latitude)) * COS(RADIANS(:lon - longitude))) * 6371 <= 100", { lat: params[:latitude], lon: params[:longitude] })
     @jobs = Job.all.limit(100)
+    puts "SZ = #{@jobs.size}"
   end
 
   def show
