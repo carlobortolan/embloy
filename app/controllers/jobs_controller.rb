@@ -1,7 +1,7 @@
 require_relative '../../lib/feed_generator.rb'
 
 class JobsController < ApplicationController
-  before_action :require_user_logged_in, except: %w[index show find parse_inputs]
+  before_action :require_user_logged_in, except: %w[index show find parse_inputs map]
   layout 'job_applic_layout', :only => "edit"
 
   # Creates feed based on current user's preferences (if available); if the current user is not verified yet or
@@ -15,6 +15,10 @@ class JobsController < ApplicationController
     else
       render status: 204, json: { "message": "No jobs found!" }
     end
+  end
+
+  def map
+    @jobs = Job.all.limit(100)
   end
 
   def show
