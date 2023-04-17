@@ -49,6 +49,8 @@ module Api
       def update
         begin
           verified!(@decoded_token["typ"])
+          return blank_error('id') if params[:id].nil? || params[:id].empty?
+          return malformed_error('id') unless params[:id].to_i.class == Integer && params[:id].to_i > 0
           must_be_owner!(params[:id], @decoded_token["sub"])
           if @job.update(job_params)
             SpatialJobValue.update_job_value(@job)

@@ -1956,7 +1956,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_RAC",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_RAC`: The requested resource cannot be accessed due to access restrictions. The server has understood the request but refuses to authorize it because it violates security policies. This error may occur due to one of the following reasons: A: The Embloy account has not been verified. Please verify the account to access the resource. B: The requested resource requires some for of a higher level of security, such as ownership, collaboratorship, or need-to-know-basis, that was not satisfied by the attempted access with the specific Embloy account. Contact our support team if the problem persists and you believe you should have access to this resource."
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_RAC`: The requested resource cannot be accessed due to access restrictions. The server has understood the request but refuses to authorize it because it violates security policies. This error may occur due to one of the following reasons: A: The Embloy account has not been verified. Please verify the account to access the resource. B: The requested resource requires some form of a higher level of security, such as ownership, collaboratorship, or need-to-know-basis, that was not satisfied by the attempted access with the specific Embloy account. Contact our support team if the problem persists and you believe you should have access to this resource."
                           },
                           "description": {
                             "type": "string",
@@ -2270,243 +2270,311 @@
             }
           }
         }
-      }
-    },
-    "/user/createWithList": {
-      "post": {
+      },
+      "patch": {
         "tags": [
-          "user"
+          "jobs"
         ],
-        "summary": "Creates list of users with given input array",
-        "description": "Creates list of users with given input array",
-        "operationId": "createUsersWithListInput",
+        "summary": "Update a job",
+        "description": "The provided access token is first verified, and then a new job is created. Upon creation, a job ismlisted as public. Public jobs undergo evaluation by Embloy's Job Ranking Engine and may appear in a user's individual job feed. Moreover, such jobs are open to applications from interested candidates. The job creator/owner or correspondingly authorized users correspondingly authorized users are able to limit the visibility of the job to \\\"private\\\". Private jobs are ignored by the Job Ranking Engine and so do not appear to any job seeking user.",
+        "parameters": [
+          {
+            "name": "access_token",
+            "in": "header",
+            "description": "A valid access token",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOjksImV4cCI6MTY4MDk3MzE1MSwidHlwIjoidmVyaWZpZWQiLCJpc3MiOiJodW1tZWxKLVNGQzgifQ.93iFsNUwhoQewsiGsc7fBiW8U6BjyoSmr16n-jBvN9I"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The specific job_id is a unique identifier for a specific job that is permanently assigned to that job and does not correspond to any other job in the system. This job_id corresponds to the job to be updated.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "int64",
+              "example": 4891
+            }
+          },
+          {
+            "name": "title",
+            "in": "body",
+            "description": "The title for the job post.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Communications talent wanted"
+            }
+          },
+          {
+            "name": "description",
+            "in": "body",
+            "description": "A detailed description of the job.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 10,
+              "example": "We are seeking an individual with strong rhetorical skills to promote our brand to people passing by. [...]"
+            }
+          },
+          {
+            "name": "job_notification",
+            "in": "body",
+            "description": "If the job_notifications value for a job is 0, it will not be included in Embloy's notification service, and the above specified user account will not receive any push notifications for it. However, if the job_notifications value is set to 1, the job will be considered for Embloy's notification service, and the above specified user account will receive push notifications for it.",
+            "schema": {
+              "type": "string",
+              "format": "int64",
+              "example": 1
+            }
+          },
+          {
+            "name": "start_slot",
+            "in": "body",
+            "description": "The specific start date and time for this job.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "1949-06-08T08:12:00.000Z"
+            }
+          },
+          {
+            "name": "latitude",
+            "in": "body",
+            "description": "The latitude coordinates for the job location.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "float",
+              "example": 51.5207794
+            }
+          },
+          {
+            "name": "longitude",
+            "in": "body",
+            "description": "The longitude coordinates for the job location.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "float",
+              "example": -0.1293754
+            }
+          },
+          {
+            "name": "job_type",
+            "in": "body",
+            "description": "The job's displayed category is determined by the branch it belongs to within the system. This branch is specified by job_type. To ensure accuracy, it is recommended to review the current system regulations for job_types and select the most appropriate one.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Marketing"
+            }
+          },
+          {
+            "name": "position",
+            "in": "body",
+            "description": "The specific job role.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "Brand Ambassador"
+            }
+          },
+          {
+            "name": "salary",
+            "in": "body",
+            "description": "The total amount of compensation for the entire period of the job, in the currency specified.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "int64",
+              "example": 100
+            }
+          },
+          {
+            "name": "currency",
+            "in": "body",
+            "description": "The currency of the salary denoted above.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "euro"
+            }
+          },
+          {
+            "name": "key_skills",
+            "in": "body",
+            "description": "A brief outline of the required skills for the job.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "open mindedness, eloquence, and always a smile on the face"
+            }
+          },
+          {
+            "name": "duration",
+            "in": "body",
+            "description": "The duration of the job in minutes.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "int64",
+              "example": 120
+            }
+          }
+        ],
         "requestBody": {
+          "description": "Update job",
           "content": {
             "application/json": {
               "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/User"
-                }
+                "$ref": "#/components/schemas/UpJob"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Successful operation",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/User"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/User"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "successful operation"
-          }
-        }
-      }
-    },
-    "/user/login": {
-      "get": {
-        "tags": [
-          "user"
-        ],
-        "summary": "Logs user into the system",
-        "description": "",
-        "operationId": "loginUser",
-        "parameters": [
-          {
-            "name": "username",
-            "in": "query",
-            "description": "The user name for login",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "password",
-            "in": "query",
-            "description": "The password for login in clear text",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "successful operation",
-            "headers": {
-              "X-Rate-Limit": {
-                "description": "calls per hour allowed by the user",
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              },
-              "X-Expires-After": {
-                "description": "date in UTC when token expires",
-                "schema": {
-                  "type": "string",
-                  "format": "date-time"
-                }
-              }
-            },
-            "content": {
-              "application/xml": {
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "string"
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Job updated!"
+                    }
+                  }
                 }
               }
             }
           },
           "400": {
-            "description": "Invalid username/password supplied"
-          }
-        }
-      }
-    },
-    "/user/logout": {
-      "get": {
-        "tags": [
-          "user"
-        ],
-        "summary": "Logs out current logged in user session",
-        "description": "",
-        "operationId": "logoutUser",
-        "parameters": [],
-        "responses": {
-          "default": {
-            "description": "successful operation"
-          }
-        }
-      }
-    },
-    "/user/{username}": {
-      "get": {
-        "tags": [
-          "user"
-        ],
-        "summary": "Get user by user name",
-        "description": "",
-        "operationId": "getUserByName",
-        "parameters": [
-          {
-            "name": "username",
-            "in": "path",
-            "description": "The name that needs to be fetched. Use user1 for testing. ",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "successful operation",
+            "description": "Bad request",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/User"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/User"
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `token`\n- `title`\n- `description`\n- `start_slot`\n- `latitude`\n- `longitude`\n- `job_type`\n- `position`\n- `salary`\n- `currency`\n- `key_skills`\n- `duration`\n- `job`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_BLANK",
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_BLANK`: When a required attribute is blank. All required parameters are denoted above. If all required attributes were indeed given but this error gets raised it could be that the attributs are provided falsely (e.g. via header or via path instead of body ...)\n- `ERR_TOO_SHORT`: If a specific input fails to meet the minimum size requirement (e.g. character count) for a required attribute. The documentation for that attribute will denote such constraints.\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue double check the formatting requirements and try again. Contact our support team if the problem persists."
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Attribute can't be blank",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
           },
-          "400": {
-            "description": "Invalid username supplied"
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `token`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_INVALID",
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Attribute is invalid or expired",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `user`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_RAC",
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_RAC`: The requested resource cannot be accessed due to access restrictions. The server has understood the request but refuses to authorize it because it violates security policies. This error may occur due to one of the following reasons: A: The Embloy account has not been verified. Please verify the account to access the resource. B: The requested resource requires some form of a higher level of security, such as ownership, collaboratorship, or need-to-know-basis, that was not satisfied by the attempted access with the specific Embloy account. Contact our support team if the problem persists and you believe you should have access to this resource."
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Proceeding is inhibited by an access restriction",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "404": {
-            "description": "User not found"
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "user"
-        ],
-        "summary": "Update user",
-        "description": "This can only be done by the logged in user.",
-        "operationId": "updateUser",
-        "parameters": [
-          {
-            "name": "username",
-            "in": "path",
-            "description": "name that need to be deleted",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "Update an existent user in the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/User"
-              }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#/components/schemas/User"
-              }
-            },
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "$ref": "#/components/schemas/User"
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `job_type`\n- 'job'",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_INVALID",
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Attribute can not be retrieved",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
               }
             }
-          }
-        },
-        "responses": {
-          "default": {
-            "description": "successful operation"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "user"
-        ],
-        "summary": "Delete user",
-        "description": "This can only be done by the logged in user.",
-        "operationId": "deleteUser",
-        "parameters": [
-          {
-            "name": "username",
-            "in": "path",
-            "description": "The name that needs to be deleted",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "400": {
-            "description": "Invalid username supplied"
-          },
-          "404": {
-            "description": "User not found"
           }
         }
       }
@@ -2771,19 +2839,22 @@
           }
         }
       },
-      "Tag": {
+      "UpJob": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "name": {
-            "type": "string"
+          "job": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string",
+                "example": "Who wants to be a Campus Brand Ambassador?"
+              },
+              "salary": {
+                "type": "integer",
+                "example": 84
+              }
+            }
           }
-        },
-        "xml": {
-          "name": "tag"
         }
       },
       "Pet": {
@@ -2823,7 +2894,7 @@
               "wrapped": true
             },
             "items": {
-              "$ref": "#/components/schemas/Tag"
+              "$ref": "#/components/schemas/Job"
             }
           },
           "status": {
