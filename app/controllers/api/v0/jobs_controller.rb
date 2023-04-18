@@ -28,7 +28,6 @@ module Api
                   b[i] = flatted_first_element(e)
                 end
               end
-              p error
               if error[:job_type_value].present? && error[:job_type_value][0][:error] == "ERR_BLANK"
                 error.delete('job_type_value') # in case that job_type_value is blank error is raised, delete it because it is against the documentation policy of only raising blank errors for required attributes (and job_type value is non)
                 not_found_error('job_type')
@@ -51,6 +50,7 @@ module Api
           verified!(@decoded_token["typ"])
           return blank_error('id') if params[:id].nil? || params[:id].empty?
           return malformed_error('id') unless params[:id].to_i.class == Integer && params[:id].to_i > 0
+          # if id points to a non existing job, due to security reasons no specific error will be returned (so no 404 but a 400)
           must_be_owner!(params[:id], @decoded_token["sub"])
           if @job.update(job_params)
             SpatialJobValue.update_job_value(@job)

@@ -4,6 +4,7 @@ module ApiExceptionHandler
   # frozen_string_literal: true
 
   extend ActiveSupport::Concern
+
   included do
 
     # =========== Job related exceptions ============
