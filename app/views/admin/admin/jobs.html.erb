@@ -18,6 +18,42 @@
         <h5 class="card-title">All jobs</h5>
         <p>A list of all current jobs and general information</p>
         <!-- Small tables -->
+        <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css"/>
+        <style>
+            #mapid {
+                border: 0;
+                width: 100%;
+                height: 360px;
+            }
+        </style>
+        <div id="mapid"></div>
+        <script>
+            var southWest = L.latLng(-90, -180);
+            var northEast = L.latLng(90, 180);
+            var bounds = L.latLngBounds(southWest, northEast);
+
+            var map = L.map('mapid', {
+                maxBounds: bounds,
+                maxBoundsViscosity: 1.0
+            }).setView([48.13743, 11.57549], 5);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+                maxZoom: 18,
+                tileSize: 512,
+                zoomOffset: -1
+            }).addTo(map);
+            <% @jobs.each do |u| %>
+            var latitude = <%= u.latitude.nil? ? 37.7749 : u.latitude %>;
+            var longitude = <%= u.longitude.nil? ? -122.4194 : u.longitude %>;
+
+            var jobInfo = '<b><%= u.title %></b><br><%= u.description %><br><a href="<%= job_url(u) %>">Apply Now</a>';
+
+            var marker = L.marker([latitude, longitude]).addTo(map);
+            marker.bindPopup(jobInfo);
+            <%end %>
+        </script>
+
         <table class="table table-sm table-hover">
           <thead>
           <tr>

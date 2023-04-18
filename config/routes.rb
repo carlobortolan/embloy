@@ -58,6 +58,9 @@ Rails.application.routes.draw do
   get 'reviews/(/:user_id)', :to => 'reviews#for_user', as: :reviews_user
   post 'reviews', :to => 'reviews#index'
 
+  # -----> Map <-----
+  get 'jobs_maps', :to => 'jobs#map', as: :jobs_map
+
   # -----> Feed-Generator <-----
   get 'find_jobs', :to => 'jobs#find', as: :jobs_find
   post 'find_jobs', :to => 'jobs#parse_inputs'
@@ -106,6 +109,7 @@ Rails.application.routes.draw do
     get 'users/moderators', to: 'admin#users_moderators'
 
     get 'jobs', to: 'admin#jobs'
+    get 'map_jobs', to: 'admin#map_jobs'
     get 'applications', to: 'admin#applications'
     get 'reviews', to: 'admin#reviews'
   end

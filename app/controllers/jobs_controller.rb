@@ -1,7 +1,7 @@
 require_relative '../../lib/feed_generator.rb'
 
 class JobsController < ApplicationController
-  before_action :require_user_logged_in, except: %w[index show find parse_inputs]
+  before_action :require_user_logged_in, except: %w[index show find parse_inputs map]
   layout 'job_applic_layout', :only => "edit"
 
   # Creates feed based on current user's preferences (if available); if the current user is not verified yet or
@@ -15,6 +15,18 @@ class JobsController < ApplicationController
     else
       render status: 204, json: { "message": "No jobs found!" }
     end
+  end
+
+  def map
+    puts "STARTED MAP = #{[params[:latitude]]}  #{params[:longitude]}"
+    puts "GEOCODING: #{Job.first.geocode}"
+
+    latitude = params[:latitude]
+    longitude = params[:longitude]
+
+    @jobs = Job.where("ACOS(SIN(RADIANS(:lat)) * SIN(RADIANS(latitude)) + COS(RADIANS(:lat)) * COS(RADIANS(latitude)) * COS(RADIANS(:lon - longitude))) * 6371 <= 100", { lat: params[:latitude], lon: params[:longitude] })
+    @jobs = Job.all.limit(100)
+    puts "SZ = #{@jobs.size}"
   end
 
   def show
