@@ -16,6 +16,7 @@ module Api
           job_types = JSON.parse(job_types_file)
           job_type = @job.job_type
           @job.job_type_value = job_types[job_type]
+          @job.job_status = 1
 
           if @job.save
             SpatialJobValue.update_job_value(@job)
@@ -50,9 +51,9 @@ module Api
           verified!(@decoded_token["typ"])
           return blank_error('id') if params[:id].nil? || params[:id].empty?
           return malformed_error('id') unless params[:id].to_i.class == Integer && params[:id].to_i > 0
-          # if id points to a non existing job, due to security reasons no specific error will be returned (so no 404 but a 400)
           must_be_owner!(params[:id], @decoded_token["sub"])
-          if @job.update(job_params)
+          return removed_error('job') if @job.job_status == 0
+          if @job.update(update_job_params)
             SpatialJobValue.update_job_value(@job)
             render status: 200, json: { "message": "Job updated!" }
           else
@@ -68,8 +69,9 @@ module Api
 
       def destroy
         begin
-          verified!(@decoded_token["typ"])
-          must_be_owner!(params[:id], @decoded_token["sub"])
+          must_be_editor!(@decoded_token["sub"])
+          #verified!(@decoded_token["typ"]) #jobs should be removed with job_status = 0 instead of being irreversibly deleted
+          #must_be_owner!(params[:id], @decoded_token["sub"])
           @job.destroy!
           render status: 200, json: { "message": "Job deleted!" }
         end
@@ -130,6 +132,9 @@ module Api
         # =================== API v0 ====================
         # ===============================================
         params.require(:job).permit(:title, :description, :start_slot, :user_id, :longitude, :latitude, :job_type, :position, :currency, :salary, :key_skills, :duration)
+      end
+      def update_job_params
+        params.require(:job).permit(:title, :description, :start_slot, :user_id, :longitude, :latitude, :job_type, :status, :job_status, :position, :currency, :salary, :key_skills, :duration)
       end
       # mark_notifications_as_read is not implemented because i dont understand how it works
 =begin
