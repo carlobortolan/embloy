@@ -131,7 +131,6 @@ module Api
         # ===============================================
         params.require(:job).permit(:title, :description, :start_slot, :user_id, :longitude, :latitude, :job_type, :position, :currency, :salary, :key_skills, :duration)
       end
-
       # mark_notifications_as_read is not implemented because i dont understand how it works
 =begin
       def mark_notifications_as_read
