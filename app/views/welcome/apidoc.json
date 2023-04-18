@@ -1091,12 +1091,12 @@
                           "job_status": {
                             "type": "integer",
                             "example": 1,
-                            "description": "A job with a job_status of 0 will be excluded from Embloy's Job Ranking Engine and will not be visible to other users, while a job with a job_status of 1 will be considered by the engine and made visible to other users."
+                            "description": "A job with a job_status of 0 will be excluded from Embloy's Backend and Embloy's Job Ranking Engine and will not be visible to other users, while a job with a job_status of 1 will be considered by the engine and made visible to other users. A job with status 0 can be considered as removed."
                           },
                           "status": {
                             "type": "string",
                             "example": "public",
-                            "description": "String representation of job_status. 0 => private, 1 => public."
+                            "description": "This indicates the visibility of a job posting. A job marked as private will not be considered by Embloy's Job Ranking Engine and will not be visible to other users. On the other hand, a job marked as public will be visible to other users and will also be displayed to relevant job seekers in the feed, increasing its visibility to potential candidates."
                           },
                           "user_id": {
                             "type": "integer",
@@ -1980,7 +1980,7 @@
           "jobs"
         ],
         "summary": "Post a new job",
-        "description": "The provided access token is first verified, and then a new job is created. Upon creation, a job ismlisted as public. Public jobs undergo evaluation by Embloy's Job Ranking Engine and may appear in a user's individual job feed. Moreover, such jobs are open to applications from interested candidates. The job creator/owner or correspondingly authorized users correspondingly authorized users are able to limit the visibility of the job to \\\"private\\\". Private jobs are ignored by the Job Ranking Engine and so do not appear to any job seeking user.",
+        "description": "The provided access token is first verified, and then a new job is created. Upon creation, a job is listed as public. Public jobs undergo evaluation by Embloy's Job Ranking Engine and may appear in a user's individual job feed. Moreover, such jobs are open to applications from interested candidates. The job creator/owner or correspondingly authorized users correspondingly authorized users are able to limit the visibility of the job to \\\"private\\\". Private jobs are ignored by the Job Ranking Engine and so do not appear to any job seeking user.",
         "parameters": [
           {
             "name": "access_token",
@@ -2276,7 +2276,373 @@
           "jobs"
         ],
         "summary": "Update a job",
-        "description": "The provided access token is first verified, and then a new job is created. Upon creation, a job ismlisted as public. Public jobs undergo evaluation by Embloy's Job Ranking Engine and may appear in a user's individual job feed. Moreover, such jobs are open to applications from interested candidates. The job creator/owner or correspondingly authorized users correspondingly authorized users are able to limit the visibility of the job to \\\"private\\\". Private jobs are ignored by the Job Ranking Engine and so do not appear to any job seeking user.",
+        "description": "The provided access token is first verified, and then a new job is created. Upon creation, a job is listed as public. Public jobs undergo evaluation by Embloy's Job Ranking Engine and may appear in a user's individual job feed. Moreover, such jobs are open to applications from interested candidates. The job creator/owner or correspondingly authorized users correspondingly authorized users are able to limit the visibility of the job to \\\"private\\\". Private jobs are ignored by the Job Ranking Engine and so do not appear to any job seeking user.",
+        "parameters": [
+          {
+            "name": "access_token",
+            "in": "header",
+            "description": "A valid access token",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOjksImV4cCI6MTY4MDk3MzE1MSwidHlwIjoidmVyaWZpZWQiLCJpc3MiOiJodW1tZWxKLVNGQzgifQ.93iFsNUwhoQewsiGsc7fBiW8U6BjyoSmr16n-jBvN9I"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The specific job_id is a unique identifier for a specific job that is permanently assigned to that job and does not correspond to any other job in the system. This job_id corresponds to the job to be updated.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "int64",
+              "example": 4891
+            }
+          },
+          {
+            "name": "title",
+            "in": "body",
+            "description": "The title for the job post.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "Communications talent wanted"
+            }
+          },
+          {
+            "name": "description",
+            "in": "body",
+            "description": "A detailed description of the job.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 10,
+              "example": "We are seeking an individual with strong rhetorical skills to promote our brand to people passing by. [...]"
+            }
+          },
+          {
+            "name": "job_notification",
+            "in": "body",
+            "description": "If the job_notifications value for a job is 0, it will not be included in Embloy's notification service, and the above specified user account will not receive any push notifications for it. However, if the job_notifications value is set to 1, the job will be considered for Embloy's notification service, and the above specified user account will receive push notifications for it.",
+            "schema": {
+              "type": "string",
+              "format": "int64",
+              "example": 1
+            }
+          },
+          {
+            "name": "start_slot",
+            "in": "body",
+            "description": "The specific start date and time for this job.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "1949-06-08T08:12:00.000Z"
+            }
+          },
+          {
+            "name": "latitude",
+            "in": "body",
+            "description": "The latitude coordinates for the job location.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "float",
+              "example": 51.5207794
+            }
+          },
+          {
+            "name": "longitude",
+            "in": "body",
+            "description": "The longitude coordinates for the job location.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "float",
+              "example": -0.1293754
+            }
+          },
+          {
+            "name": "job_type",
+            "in": "body",
+            "description": "The job's displayed category is determined by the branch it belongs to within the system. This branch is specified by job_type. To ensure accuracy, it is recommended to review the current system regulations for job_types and select the most appropriate one.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "Marketing"
+            }
+          },
+          {
+            "name": "status",
+            "in": "body",
+            "description": "This indicates the visibility of a job posting. A job marked as private will not be considered by Embloy's Job Ranking Engine and will not be visible to other users. On the other hand, a job marked as public will be visible to other users and will also be displayed to relevant job seekers in the feed, increasing its visibility to potential candidates.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "public"
+            }
+          },
+          {
+            "name": "job_status",
+            "in": "body",
+            "description": "A job with a job_status of 0 will be excluded from Embloy's Backend and Embloy's Job Ranking Engine and will not be visible to other users, while a job with a job_status of 1 will be considered by the engine and made visible to other users. A job with status 0 can be considered as removed.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "int64",
+              "example": 1
+            }
+          },
+          {
+            "name": "position",
+            "in": "body",
+            "description": "The specific job role.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "Brand Ambassador"
+            }
+          },
+          {
+            "name": "salary",
+            "in": "body",
+            "description": "The total amount of compensation for the entire period of the job, in the currency specified.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "int64",
+              "example": 100
+            }
+          },
+          {
+            "name": "currency",
+            "in": "body",
+            "description": "The currency of the salary denoted above.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "euro"
+            }
+          },
+          {
+            "name": "key_skills",
+            "in": "body",
+            "description": "A brief outline of the required skills for the job.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "open mindedness, eloquence, and always a smile on the face"
+            }
+          },
+          {
+            "name": "duration",
+            "in": "body",
+            "description": "The duration of the job in minutes.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "int64",
+              "example": 120
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Update job",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpJob"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Job updated!"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `token`\n- `title`\n- `description`\n- `start_slot`\n- `latitude`\n- `longitude`\n- `job_type`\n- `position`\n- `salary`\n- `currency`\n- `key_skills`\n- `duration`\n- `job`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_BLANK",
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_BLANK`: When a required attribute is blank. All required parameters are denoted above. If all required attributes were indeed given but this error gets raised it could be that the attributs are provided falsely (e.g. via header or via path instead of body ...)\n- `ERR_TOO_SHORT`: If a specific input fails to meet the minimum size requirement (e.g. character count) for a required attribute. The documentation for that attribute will denote such constraints.\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue double check the formatting requirements and try again. Contact our support team if the problem persists. It should be noted that if the provided body is correctly formatted but contains no data to update or does not match any of the keys that can be updated, the API will not return an error but instead will simply not perform any updates."
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Attribute can't be blank",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `token`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_INVALID",
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Attribute is invalid or expired",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `user`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_RAC",
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_RAC`: The requested resource cannot be accessed due to access restrictions. The server has understood the request but refuses to authorize it because it violates security policies. This error may occur due to one of the following reasons: A: The Embloy account has not been verified. Please verify the account to access the resource. B: The requested resource requires some form of a higher level of security, such as ownership, collaboratorship, or need-to-know-basis, that was not satisfied by the attempted access with the specific Embloy account. Contact our support team if the problem persists and you believe you should have access to this resource."
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Proceeding is inhibited by an access restriction",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `job_type`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_INVALID",
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Attribute can not be retrieved",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Removed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `job`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_REMOVED",
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_REMOVED`: If the attribute that is tried to be accessed was removed. Double check your archive and if needed contact our support team to discuss data retrieval options"
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Attribute was removed and cannot be accessed anymore",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "Destroy a job post",
+        "description": "Please note that this method is not part of the standard usage and requires editor-level or above user permissions. Use with caution. The provided access token is first verified, and then a given job is irreversibly deleted from the system. To only remove a job post you can either use the PATCH /jobs method and change the job_status to 0.",
+        "security": [
+          {
+            "access_token": [
+              "editor"
+            ]
+          }
+        ],
         "parameters": [
           {
             "name": "access_token",
@@ -2530,7 +2896,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_RAC",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_RAC`: The requested resource cannot be accessed due to access restrictions. The server has understood the request but refuses to authorize it because it violates security policies. This error may occur due to one of the following reasons: A: The Embloy account has not been verified. Please verify the account to access the resource. B: The requested resource requires some form of a higher level of security, such as ownership, collaboratorship, or need-to-know-basis, that was not satisfied by the attempted access with the specific Embloy account. Contact our support team if the problem persists and you believe you should have access to this resource."
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_RAC`: The requested resource cannot be accessed due to access restrictions. The server has understood the request but refuses to authorize it because it violates security policies. This error may occur due to one of the following reasons: A: The Embloy account has not the Editor role. Please verify the account to access the resource. Contact our support team if the problem persists and you believe you should have access to this resource."
                           },
                           "description": {
                             "type": "string",
@@ -2961,22 +3327,28 @@
       }
     },
     "securitySchemes": {
+      "access_token": {
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header",
+        "x-access-token-roles": [
+          "admin",
+          "editor",
+          "developer",
+          "moderator",
+          "verified"
+        ]
+      },
       "petstore_auth": {
         "type": "oauth2",
         "flows": {
           "implicit": {
             "authorizationUrl": "https://petstore3.swagger.io/oauth/authorize",
             "scopes": {
-              "write:pets": "modify pets in your account",
-              "read:pets": "read your pets"
+              "write:pets": "modify pets in your account"
             }
           }
         }
-      },
-      "api_key": {
-        "type": "apiKey",
-        "name": "api_key",
-        "in": "header"
       }
     }
   }
