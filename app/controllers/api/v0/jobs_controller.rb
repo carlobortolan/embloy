@@ -72,8 +72,13 @@ module Api
           must_be_editor!(@decoded_token["sub"])
           #verified!(@decoded_token["typ"]) #jobs should be removed with job_status = 0 instead of being irreversibly deleted
           #must_be_owner!(params[:id], @decoded_token["sub"])
+          return blank_error('id') if params[:id].nil? || params[:id].empty?
+          return malformed_error('id') unless params[:id].to_i.class == Integer && params[:id].to_i > 0
+          @job = Job.find(params[:id]) # no must_be_owner! call @job needs to be set manually
           @job.destroy!
           render status: 200, json: { "message": "Job deleted!" }
+        rescue ActiveRecord::RecordNotFound
+          not_found_error('job') # ok to be this specific because onöy editors can delete jobs
         end
       end
 
