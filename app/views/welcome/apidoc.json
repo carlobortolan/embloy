@@ -734,7 +734,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_BLANK",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_BLANK`: When a required attribute is blank. All required parameters are denoted above. If all required attributes were indeed given but this error gets raised it could be that the attributs are provided falsely (e.g. via header or via path instead of body ...)\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_BLANK`: When a required attribute is blank. All required parameters are denoted above. If all required attributes were indeed given but this error gets raised it could be that the attributs are provided falsely (e.g. via header or via path instead of body ...)\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors, external manipulation or a formatting error. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
                           },
                           "description": {
                             "type": "string",
@@ -765,7 +765,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors, external manipulation or a formatting error. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
                           },
                           "description": {
                             "type": "string",
@@ -827,7 +827,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors, external manipulation or a formatting error. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
                           },
                           "description": {
                             "type": "string",
@@ -959,7 +959,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors, external manipulation or a formatting error. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
                           },
                           "description": {
                             "type": "string",
@@ -1021,7 +1021,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors, external manipulation or a formatting error. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
                           },
                           "description": {
                             "type": "string",
@@ -1284,7 +1284,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors, external manipulation or a formatting error. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
                           },
                           "description": {
                             "type": "string",
@@ -1346,7 +1346,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors, external manipulation or a formatting error. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
                           },
                           "description": {
                             "type": "string",
@@ -1496,7 +1496,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors, external manipulation or a formatting error. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
                           },
                           "description": {
                             "type": "string",
@@ -1558,7 +1558,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors, external manipulation or a formatting error. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
                           },
                           "description": {
                             "type": "string",
@@ -1708,7 +1708,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors, external manipulation or a formatting error. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
                           },
                           "description": {
                             "type": "string",
@@ -1770,7 +1770,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors, external manipulation or a formatting error. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
                           },
                           "description": {
                             "type": "string",
@@ -1925,7 +1925,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors, external manipulation or a formatting error. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
                           },
                           "description": {
                             "type": "string",
@@ -2192,7 +2192,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors, external manipulation or a formatting error. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
                           },
                           "description": {
                             "type": "string",
@@ -2254,7 +2254,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors, external manipulation or a formatting error. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
                           },
                           "description": {
                             "type": "string",
@@ -2520,7 +2520,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors, external manipulation or a formatting error. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
                           },
                           "description": {
                             "type": "string",
@@ -2582,7 +2582,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors, external manipulation or a formatting error. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
                           },
                           "description": {
                             "type": "string",
@@ -2664,143 +2664,8 @@
               "format": "int64",
               "example": 4891
             }
-          },
-          {
-            "name": "title",
-            "in": "body",
-            "description": "The title for the job post.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "Communications talent wanted"
-            }
-          },
-          {
-            "name": "description",
-            "in": "body",
-            "description": "A detailed description of the job.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "minLength": 10,
-              "example": "We are seeking an individual with strong rhetorical skills to promote our brand to people passing by. [...]"
-            }
-          },
-          {
-            "name": "job_notification",
-            "in": "body",
-            "description": "If the job_notifications value for a job is 0, it will not be included in Embloy's notification service, and the above specified user account will not receive any push notifications for it. However, if the job_notifications value is set to 1, the job will be considered for Embloy's notification service, and the above specified user account will receive push notifications for it.",
-            "schema": {
-              "type": "string",
-              "format": "int64",
-              "example": 1
-            }
-          },
-          {
-            "name": "start_slot",
-            "in": "body",
-            "description": "The specific start date and time for this job.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "1949-06-08T08:12:00.000Z"
-            }
-          },
-          {
-            "name": "latitude",
-            "in": "body",
-            "description": "The latitude coordinates for the job location.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "float",
-              "example": 51.5207794
-            }
-          },
-          {
-            "name": "longitude",
-            "in": "body",
-            "description": "The longitude coordinates for the job location.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "float",
-              "example": -0.1293754
-            }
-          },
-          {
-            "name": "job_type",
-            "in": "body",
-            "description": "The job's displayed category is determined by the branch it belongs to within the system. This branch is specified by job_type. To ensure accuracy, it is recommended to review the current system regulations for job_types and select the most appropriate one.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "Marketing"
-            }
-          },
-          {
-            "name": "position",
-            "in": "body",
-            "description": "The specific job role.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "Brand Ambassador"
-            }
-          },
-          {
-            "name": "salary",
-            "in": "body",
-            "description": "The total amount of compensation for the entire period of the job, in the currency specified.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "int64",
-              "example": 100
-            }
-          },
-          {
-            "name": "currency",
-            "in": "body",
-            "description": "The currency of the salary denoted above.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "euro"
-            }
-          },
-          {
-            "name": "key_skills",
-            "in": "body",
-            "description": "A brief outline of the required skills for the job.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "open mindedness, eloquence, and always a smile on the face"
-            }
-          },
-          {
-            "name": "duration",
-            "in": "body",
-            "description": "The duration of the job in minutes.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "int64",
-              "example": 120
-            }
           }
         ],
-        "requestBody": {
-          "description": "Update job",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpJob"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "OK",
@@ -2811,7 +2676,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "Job updated!"
+                      "example": "Job deleted!"
                     }
                   }
                 }
@@ -2827,14 +2692,14 @@
                   "properties": {
                     "token": {
                       "type": "array",
-                      "description": "The attribute that caused the error. Possible values are:\n- `token`\n- `title`\n- `description`\n- `start_slot`\n- `latitude`\n- `longitude`\n- `job_type`\n- `position`\n- `salary`\n- `currency`\n- `key_skills`\n- `duration`\n- `job`",
+                      "description": "The attribute that caused the error. Possible values are:\n- `token`\n- `id`",
                       "items": {
                         "type": "object",
                         "properties": {
                           "error": {
                             "type": "string",
                             "example": "ERR_BLANK",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_BLANK`: When a required attribute is blank. All required parameters are denoted above. If all required attributes were indeed given but this error gets raised it could be that the attributs are provided falsely (e.g. via header or via path instead of body ...)\n- `ERR_TOO_SHORT`: If a specific input fails to meet the minimum size requirement (e.g. character count) for a required attribute. The documentation for that attribute will denote such constraints.\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue double check the formatting requirements and try again. Contact our support team if the problem persists. It should be noted that if the provided body is correctly formatted but contains no data to update or does not match any of the keys that can be updated, the API will not return an error but instead will simply not perform any updates."
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_BLANK`: When a required attribute is blank. All required parameters are denoted above. If all required attributes were indeed given but this error gets raised it could be that the attributs are provided falsely (e.g. via header or via path instead of body ...)\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue double check the formatting requirements and try again. Contact our support team if the problem persists. It should be noted that if the provided body is correctly formatted but contains no data to update or does not match any of the keys that can be updated, the API will not return an error but instead will simply not perform any updates."
                           },
                           "description": {
                             "type": "string",
@@ -2865,7 +2730,7 @@
                           "error": {
                             "type": "string",
                             "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors, external manipulation or a formatting error. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
                           },
                           "description": {
                             "type": "string",
@@ -2920,14 +2785,14 @@
                   "properties": {
                     "user": {
                       "type": "array",
-                      "description": "The attribute that caused the error. Possible values are:\n- `job_type`",
+                      "description": "The attribute that caused the error. Possible values are:\n- `job`",
                       "items": {
                         "type": "object",
                         "properties": {
                           "error": {
                             "type": "string",
                             "example": "ERR_INVALID",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors, external manipulation or a formatting error. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
                           },
                           "description": {
                             "type": "string",
