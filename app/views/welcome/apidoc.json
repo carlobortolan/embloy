@@ -1975,6 +1975,334 @@
       }
     },
     "/jobs": {
+      "get": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "Call the user specific job feed",
+        "description": "The provided access token is first verified, and then a user specific job feed is generated and returned.",
+        "parameters": [
+          {
+            "name": "access_token",
+            "in": "header",
+            "description": "A valid access token",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOjksImV4cCI6MTY4MDk3MzE1MSwidHlwIjoidmVyaWZpZWQiLCJpc3MiOiJodW1tZWxKLVNGQzgifQ.93iFsNUwhoQewsiGsc7fBiW8U6BjyoSmr16n-jBvN9I"
+            }
+          },
+          {
+            "name": "latitude",
+            "in": "path",
+            "description": "The latitude coordinates for the job location.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "float",
+              "example": 51.5207794
+            }
+          },
+          {
+            "name": "longitude",
+            "in": "path",
+            "description": "The longitude coordinates for the job location.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "float",
+              "example": -0.1293754
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "feed": {
+                      "type": "array",
+                      "description": "This is a list of currently active and visible job postings for the specified account.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "job_id": {
+                            "type": "integer",
+                            "example": 1984,
+                            "description": "The specific job_id is a unique identifier for a specific job that is permanently assigned to that job and does not correspond to any other job in the system. This job_id corresponds to the job that the user created."
+                          },
+                          "job_type": {
+                            "type": "string",
+                            "example": "Marketing",
+                            "description": "The job's displayed category is determined by the branch it belongs to within the system."
+                          },
+                          "job_type_value": {
+                            "type": "integer",
+                            "example": 11,
+                            "description": "The job_type_value is an integer representation used to allocate similar job_types together based on a hierarchy, where many job_types can be summarized under the same value."
+                          },
+                          "job_status": {
+                            "type": "integer",
+                            "example": 1,
+                            "description": "A job with a job_status of 0 will be excluded from Embloy's Backend and Embloy's Job Ranking Engine and will not be visible to other users, while a job with a job_status of 1 will be considered by the engine and made visible to other users. A job with status 0 can be considered as removed."
+                          },
+                          "status": {
+                            "type": "string",
+                            "example": "public",
+                            "description": "This indicates the visibility of a job posting. A job marked as private will not be considered by Embloy's Job Ranking Engine and will not be visible to other users. On the other hand, a job marked as public will be visible to other users and will also be displayed to relevant job seekers in the feed, increasing its visibility to potential candidates."
+                          },
+                          "user_id": {
+                            "type": "integer",
+                            "example": 9,
+                            "description": "The specific user_id is a unique identifier for a specific user account that is permanently assigned to that user account and does not correspond to any other user account in the system. This user_id corresponds to the user that created the specific job."
+                          },
+                          "duration": {
+                            "type": "integer",
+                            "example": 120,
+                            "description": "The duration of the job in minutes."
+                          },
+                          "code_lang": {
+                            "type": "string",
+                            "example": "EN",
+                            "description": "The required language at the workplace as a two character code."
+                          },
+                          "title": {
+                            "type": "string",
+                            "example": "Who wants to be a Campus Brand Ambassador?",
+                            "description": "The title for the job post."
+                          },
+                          "position": {
+                            "type": "string",
+                            "example": "Brand Ambassador",
+                            "description": "The specific job role."
+                          },
+                          "description": {
+                            "type": "string",
+                            "minLength": 10,
+                            "example": "We are seeking an individual with strong rhetorical skills to promote our brand to people passing by. [...]",
+                            "description": "A detailed description of the job."
+                          },
+                          "key_skills": {
+                            "type": "string",
+                            "example": "open mindedness, eloquence, and always a smile on the face",
+                            "description": "A brief outline of the required skills for the job."
+                          },
+                          "salary": {
+                            "type": "integer",
+                            "example": 84,
+                            "description": "The total amount of compensation for the entire period of the job, in the currency specified."
+                          },
+                          "currency": {
+                            "type": "string",
+                            "example": "gbp",
+                            "description": "The currency of the salary denoted above."
+                          },
+                          "image_url": {
+                            "type": "string",
+                            "example": "https://embloy.com/drive/v0/img/jobs/1984",
+                            "description": "The URL where the image(s) for this particular job post can be found."
+                          },
+                          "start_slot": {
+                            "type": "string",
+                            "example": "2023-04-08T14:00:00.000Z",
+                            "description": "The specific start date and time for this job."
+                          },
+                          "latitude": {
+                            "type": "number",
+                            "format": "double",
+                            "example": 51.5207794,
+                            "description": "The latitude coordinates for the job location."
+                          },
+                          "longitude": {
+                            "type": "number",
+                            "format": "double",
+                            "example": -0.1293754,
+                            "description": "The longitude coordinates for the job location."
+                          },
+                          "country_code": {
+                            "type": "string",
+                            "example": "GB",
+                            "description": "The two character country code for the job location."
+                          },
+                          "postal_code": {
+                            "type": "string",
+                            "example": "WC1E 7HU",
+                            "description": "The postal code for the job location."
+                          },
+                          "city": {
+                            "type": "string",
+                            "example": "London",
+                            "description": "The locacity for the job location."
+                          },
+                          "address": {
+                            "type": "string",
+                            "example": "251 Malet Street",
+                            "description": "The address for the job location."
+                          },
+                          "view_count": {
+                            "type": "integer",
+                            "example": 2100,
+                            "description": "The total number of views for this specific job post."
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "example": "2023-03-23T12:21:42.623Z",
+                            "description": "The specific date and time when this job post was created."
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "example": "2023-04-01T10:31:01.623Z",
+                            "description": "The specific date and time when this job post was updated the last time."
+                          },
+                          "applications_count": {
+                            "type": "integer",
+                            "example": 101,
+                            "description": "The total number of applications for this specific job post."
+                          },
+                          "employer_rating": {
+                            "type": "integer",
+                            "example": 4.4,
+                            "description": "The average rating for the user account specified by user_id."
+                          },
+                          "job_notifications": {
+                            "type": "string",
+                            "example": 1,
+                            "description": "If the job_notifications value for a job is 0, it will not be included in Embloy's notification service, and the above specified user account will not receive any push notifications for it. However, if the job_notifications value is set to 1, the job will be considered for Embloy's notification service, and the above specified user account will receive push notifications for it."
+                          },
+                          "boost": {
+                            "type": "integer",
+                            "example": 84,
+                            "description": "This information pertains to Embloy's Job Ranking Engine and is not relevant to the user. Therefore, this claim will not be included in API V1.x."
+                          },
+                          "job_value": {
+                            "type": "string",
+                            "example": "01010000A0E6100000000000000000264000000000000048400000000000003940",
+                            "description": "This information pertains to Embloy's Job Ranking Engine and is not relevant to the user. Therefore, this claim will not be included in API V1.x."
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `token`\n- `latitude`\n- `longitude`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_BLANK",
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_BLANK`: When a required attribute is blank. All required parameters are denoted above. If all required attributes were indeed given but this error gets raised it could be that the attributs are provided falsely (e.g. via header or via path instead of body ...)\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue double check the formatting requirements and try again. Contact our support team if the problem persists. It should be noted that if the provided body is correctly formatted but contains no data to update or does not match any of the keys that can be updated, the API will not return an error but instead will simply not perform any updates."
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Attribute can't be blank",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `token`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_INVALID",
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors, external manipulation or a formatting error. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Attribute is invalid or expired",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `user`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_RAC",
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_RAC`: The requested resource cannot be accessed due to access restrictions. The server has understood the request but refuses to authorize it because it violates security policies. This error may occur due to one of the following reasons: A: The Embloy account has not been verified. Please verify the account to access the resource."
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Proceeding is inhibited by an access restriction",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "format": "int64",
+                      "example": "Please try again later. If this error persists, we recommend to contact our support team",
+                      "description": "A message indicating that an internal server error has occurred. This specific error only occurs in case of an severe bug in the codebase."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "post": {
         "tags": [
           "jobs"
@@ -2306,7 +2634,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "example": "Communications talent wanted"
+              "example": "Who wants to be a Campus Brand Ambassador?"
             }
           },
           {
@@ -2421,7 +2749,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "example": "euro"
+              "example": "gbp"
             }
           },
           {
@@ -2783,7 +3111,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "user": {
+                    "job": {
                       "type": "array",
                       "description": "The attribute that caused the error. Possible values are:\n- `job`",
                       "items": {
@@ -3083,6 +3411,10 @@
               "salary": {
                 "type": "integer",
                 "example": 84
+              },
+              "currency": {
+                "type": "string",
+                "example": "gbp"
               }
             }
           }
