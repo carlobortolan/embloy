@@ -101,7 +101,7 @@ module Api
             render status: 204, json: { "message": "No jobs found!" } # message will not show with 204, just for maintainability
           end
         rescue CustomExceptions::Unauthorized::InsufficientRole
-          render(status: 200, json: { "feed": Job.all.limit(20) })
+          access_denied_error('user')
         end
       end
 
