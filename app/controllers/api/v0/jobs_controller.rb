@@ -89,19 +89,33 @@ module Api
           # Check that user is verified
           # request.headers["HTTP_ACCESS_TOKEN"].nil? ? taboo! : @decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
           verified!(@decoded_token["typ"])
-
+          if (params[:latitude].nil? || params[:latitude].empty?) && (params[:longitude].nil? || params[:longitude].empty?)
+            render status: 400, json:{"latitude" => [{error: 'ERR_BLANK', description: 'Attribute can\'t be blank'}], "longitude" => [{error: 'ERR_BLANK', description: 'Attribute can\'t be blank'}]}
+            return -1
+          end
+          return blank_error('latitude') if params[:latitude].nil? || params[:latitude].empty?
+          return blank_error('longitude') if params[:longitude].nil? || params[:longitude].empty?
+          return malformed_error('latitude') unless params[:latitude].to_f.class == Float
+          begin
+            params[:latitude] = Float(params[:latitude])
+          rescue ArgumentError
+            return malformed_error('latitude')
+          end
+          begin
+            params[:longitude] = Float(params[:longitude])
+          rescue ArgumentError
+            return malformed_error('longitude')
+          end
           # Create slice to find possible jobs
           jobs = JobSlicer.slice(User.find(@decoded_token["sub"].to_i))
-
           # Call FG-API to rank jobs
           if !jobs.nil? && !jobs.empty?
-            feed = call_feed(jobs)
-            feed.nil? || feed.empty? ? render(status: 500, json: { "message": "Feed could not be generated!" }) : render(status: 200, json: { "feed": feed })
+            #feed = call_feed(jobs)
+            #feed.nil? || feed.empty? ? render(status: 500, json: { "message": "Please try again later. If this error persists, we recommend to contact our support team" }) : render(status: 200, json: { "feed": feed })
+            render status: 200, json:{"test":"REMOVE"}
           else
             render status: 204, json: { "message": "No jobs found!" } # message will not show with 204, just for maintainability
           end
-        rescue CustomExceptions::Unauthorized::InsufficientRole
-          access_denied_error('user')
         end
       end
 
