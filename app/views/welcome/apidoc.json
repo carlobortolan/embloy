@@ -2962,7 +2962,7 @@
         "tags": [
           "jobs"
         ],
-        "summary": "Destroy a job post",
+        "summary": "Destroy a job",
         "description": "Please note that this method is not part of the standard usage and requires editor-level or above user permissions. Use with caution. The provided access token is first verified, and then a given job is irreversibly deleted from the system. To only remove a job post you can either use the PATCH /jobs method and change the job_status to 0.",
         "security": [
           {
