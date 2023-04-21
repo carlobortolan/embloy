@@ -98,10 +98,10 @@ module Api
             feed = call_feed(jobs)
             feed.nil? || feed.empty? ? render(status: 500, json: { "message": "Feed could not be generated!" }) : render(status: 200, json: { "feed": feed })
           else
-            render status: 204, json: { "message": "No jobs found!" }
+            render status: 204, json: { "message": "No jobs found!" } # message will not show with 204, just for maintainability
           end
         rescue CustomExceptions::Unauthorized::InsufficientRole
-          render(status: 200, json: { "feed": Job.all.limit(100) })
+          render(status: 200, json: { "feed": Job.all.limit(20) })
         end
       end
 
