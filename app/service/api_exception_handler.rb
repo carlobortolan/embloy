@@ -102,7 +102,8 @@ module ApiExceptionHandler
   # ===============================================
 
   def job_unknown_error
-    malformed_error('job')
+    not_found_error('job')
+    #malformed_error('job')
   end
 
   # =========== User related exceptions ===========
@@ -228,6 +229,12 @@ module ApiExceptionHandler
 
   def not_found_error(attribute)
     render_error(attribute, 'ERR_INVALID', 'Attribute can not be retrieved', 404)
+  end
+
+  #--------------------------------------
+
+  def removed_error(attribute)
+    render_error(attribute, 'ERR_REMOVED', 'Attribute was removed and cannot be accessed anymore', 409)
   end
 
   #--------------------------------------

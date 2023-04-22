@@ -6,6 +6,8 @@ module Api
       def show
         begin
             verified!(@decoded_token["typ"])
+            return blank_error('job') if params[:id].nil? || params[:id].empty?
+            return malformed_error('job') unless params[:id].to_i.class == Integer && params[:id].to_i > 0
             must_be_owner!(params[:id], @decoded_token["sub"])
             applications = @job.applications.find_by_sql("SELECT * FROM applications a WHERE a.job_id = #{@job.job_id}")
             if applications.empty?
