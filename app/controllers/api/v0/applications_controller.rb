@@ -7,7 +7,7 @@ module Api
         begin
             verified!(@decoded_token["typ"])
             must_be_owner!(params[:id], @decoded_token["sub"])
-            applications = @job.applications.find_by_sql("SELECT * FROM applications a WHERE a.user_id = #{@decoded_token["sub"]} and a.job_id = #{@job.job_idg}")
+            applications = @job.applications.find_by_sql("SELECT * FROM applications a WHERE a.user_id = #{@decoded_token["sub"]} and a.job_id = #{@job.job_id}")
             if applications.empty?
               render status: 204, json: { "applications": applications }
             else
