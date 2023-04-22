@@ -25,7 +25,11 @@
   "tags": [
     {
       "name": "user",
-      "description": "Methods for managing user accounts on embloy"
+      "description": "Methods for managing user accounts, user reviews & API access on embloy"
+    },
+    {
+      "name": "jobs",
+      "description": "Methods for managing jobs & job applications on embloy"
     }
   ],
   "paths": {
