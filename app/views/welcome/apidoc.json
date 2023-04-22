@@ -3188,156 +3188,46 @@
                         "properties": {
                           "job_id": {
                             "type": "integer",
-                            "example": 1984,
+                            "example": 2823,
                             "description": "The specific job_id is a unique identifier for a specific job that is permanently assigned to that job and does not correspond to any other job in the system. This job_id corresponds to the job that the user created."
-                          },
-                          "job_type": {
-                            "type": "string",
-                            "example": "Marketing",
-                            "description": "The job's displayed category is determined by the branch it belongs to within the system."
-                          },
-                          "job_type_value": {
-                            "type": "integer",
-                            "example": 11,
-                            "description": "The job_type_value is an integer representation used to allocate similar job_types together based on a hierarchy, where many job_types can be summarized under the same value."
-                          },
-                          "job_status": {
-                            "type": "integer",
-                            "example": 1,
-                            "description": "A job with a job_status of 0 will be excluded from Embloy's Backend and Embloy's Job Ranking Engine and will not be visible to other users, while a job with a job_status of 1 will be considered by the engine and made visible to other users. A job with status 0 can be considered as removed."
-                          },
-                          "status": {
-                            "type": "string",
-                            "example": "public",
-                            "description": "This indicates the visibility of a job posting. A job marked as private will not be considered by Embloy's Job Ranking Engine and will not be visible to other users. On the other hand, a job marked as public will be visible to other users and will also be displayed to relevant job seekers in the feed, increasing its visibility to potential candidates."
                           },
                           "user_id": {
                             "type": "integer",
                             "example": 9,
-                            "description": "The specific user_id is a unique identifier for a specific user account that is permanently assigned to that user account and does not correspond to any other user account in the system. This user_id corresponds to the user that created the specific job."
-                          },
-                          "duration": {
-                            "type": "integer",
-                            "example": 120,
-                            "description": "The duration of the job in minutes."
-                          },
-                          "code_lang": {
-                            "type": "string",
-                            "example": "EN",
-                            "description": "The required language at the workplace as a two character code."
-                          },
-                          "title": {
-                            "type": "string",
-                            "example": "Who wants to be a Campus Brand Ambassador?",
-                            "description": "The title for the job post."
-                          },
-                          "position": {
-                            "type": "string",
-                            "example": "Brand Ambassador",
-                            "description": "The specific job role."
-                          },
-                          "description": {
-                            "type": "string",
-                            "minLength": 10,
-                            "example": "We are seeking an individual with strong rhetorical skills to promote our brand to people passing by. [...]",
-                            "description": "A detailed description of the job."
-                          },
-                          "key_skills": {
-                            "type": "string",
-                            "example": "open mindedness, eloquence, and always a smile on the face",
-                            "description": "A brief outline of the required skills for the job."
-                          },
-                          "salary": {
-                            "type": "integer",
-                            "example": 84,
-                            "description": "The total amount of compensation for the entire period of the job, in the currency specified."
-                          },
-                          "currency": {
-                            "type": "string",
-                            "example": "gbp",
-                            "description": "The currency of the salary denoted above."
-                          },
-                          "image_url": {
-                            "type": "string",
-                            "example": "https://embloy.com/drive/v0/img/jobs/1984",
-                            "description": "The URL where the image(s) for this particular job post can be found."
-                          },
-                          "start_slot": {
-                            "type": "string",
-                            "example": "2023-04-08T14:00:00.000Z",
-                            "description": "The specific start date and time for this job."
-                          },
-                          "latitude": {
-                            "type": "number",
-                            "format": "double",
-                            "example": 51.5207794,
-                            "description": "The latitude coordinates for the job location."
-                          },
-                          "longitude": {
-                            "type": "number",
-                            "format": "double",
-                            "example": -0.1293754,
-                            "description": "The longitude coordinates for the job location."
-                          },
-                          "country_code": {
-                            "type": "string",
-                            "example": "GB",
-                            "description": "The two character country code for the job location."
-                          },
-                          "postal_code": {
-                            "type": "string",
-                            "example": "WC1E 7HU",
-                            "description": "The postal code for the job location."
-                          },
-                          "city": {
-                            "type": "string",
-                            "example": "London",
-                            "description": "The locacity for the job location."
-                          },
-                          "address": {
-                            "type": "string",
-                            "example": "251 Malet Street",
-                            "description": "The address for the job location."
-                          },
-                          "view_count": {
-                            "type": "integer",
-                            "example": 2100,
-                            "description": "The total number of views for this specific job post."
+                            "description": "The specific user_id is a unique identifier for a specific user account that is permanently assigned to that user account and does not correspond to any other user account in the system. This user_id corresponds to the user that applied for the specific job. In the specific case of applications this also functions as a symbolic link to the applicants cv (their Embloy profile)"
                           },
                           "created_at": {
                             "type": "string",
                             "example": "2023-03-23T12:21:42.623Z",
-                            "description": "The specific date and time when this job post was created."
+                            "description": "The specific date and time when this application was created."
                           },
                           "updated_at": {
                             "type": "string",
                             "example": "2023-04-01T10:31:01.623Z",
-                            "description": "The specific date and time when this job post was updated the last time."
+                            "description": "The specific date and time when this application was updated the last time."
                           },
-                          "applications_count": {
-                            "type": "integer",
-                            "example": 101,
-                            "description": "The total number of applications for this specific job post."
-                          },
-                          "employer_rating": {
-                            "type": "integer",
-                            "example": 4.4,
-                            "description": "The average rating for the user account specified by user_id."
-                          },
-                          "job_notifications": {
+                          "status": {
                             "type": "string",
-                            "example": 1,
-                            "description": "If the job_notifications value for a job is 0, it will not be included in Embloy's notification service, and the above specified user account will not receive any push notifications for it. However, if the job_notifications value is set to 1, the job will be considered for Embloy's notification service, and the above specified user account will receive push notifications for it."
+                            "format": "int64",
+                            "example": 0,
+                            "description": "This indicates the current status of a specific application. An application with status -1 is considered to be rejected, 0 is considered to be pending and 1 is considered to be accepted."
                           },
-                          "boost": {
-                            "type": "integer",
-                            "example": 84,
-                            "description": "This information pertains to Embloy's Job Ranking Engine and is not relevant to the user. Therefore, this claim will not be included in API V1.x."
-                          },
-                          "job_value": {
+                          "application_text": {
                             "type": "string",
-                            "example": "01010000A0E6100000000000000000264000000000000048400000000000003940",
-                            "description": "This information pertains to Embloy's Job Ranking Engine and is not relevant to the user. Therefore, this claim will not be included in API V1.x."
+                            "minLength": 10,
+                            "example": "Dear Diogenes, I am writing to express my interest in the Barista job. I am a highly joyous and gentle [...]",
+                            "description": "An individual application text (based on own saveable templates)."
+                          },
+                          "application_documents": {
+                            "type": "string",
+                            "example": "https://embloy.com/drive/v0/docs/applications/2823",
+                            "description": "The URL where additional documents for this particular application can be found."
+                          },
+                          "response": {
+                            "type": "string",
+                            "minLength": 10,
+                            "example": "Dear Diogenes, I am writing to express my interest in the Barista job. I am a highly joyous and gentle [...]",
+                            "description": "The individual application response from the employer (based on own saveable templates)."
                           }
                         }
                       }
