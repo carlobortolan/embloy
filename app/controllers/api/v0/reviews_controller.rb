@@ -6,7 +6,8 @@ module Api
       before_action :verify_path_user_id, only: [:create]
 =begin
       def create
-        # todo:test
+        # todo:test, adapt and complete the api documentation for reviews accodingly, make review update, review delete method, adapt doc
+
         begin
           must_be_verified!(@decoded_token["sub"])
 
