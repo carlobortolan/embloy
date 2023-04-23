@@ -20,6 +20,19 @@ module Api
         end
       end
 
+      def verify_path_user_id
+        return blank_error('user') if params[:id].nil? || params[:id].empty? || params[:id].blank? || params[:id] == ":id"
+        begin
+          params[:id] = Integer(params[:id])
+          raise ArgumentError unless params[:id] > 0
+          return User.find(params[:id])
+        rescue ActiveRecord::RecordNotFound
+          return not_found_error('user')
+        rescue ArgumentError
+          return malformed_error('user')
+        end
+      end
+
     end
   end
 end
