@@ -4,6 +4,7 @@ module Api
   module V0
     class JobsController < ApiController
       before_action :verify_access_token
+      before_action :verify_path_job_id, only: [:update,:destroy]
 
       def create
         begin
@@ -49,8 +50,6 @@ module Api
       def update
         begin
           verified!(@decoded_token["typ"])
-          return blank_error('id') if params[:id].nil? || params[:id].empty?
-          return malformed_error('id') unless params[:id].to_i.class == Integer && params[:id].to_i > 0
           must_be_owner!(params[:id], @decoded_token["sub"])
           return removed_error('job') if @job.job_status == 0
           if @job.update(update_job_params)
@@ -72,8 +71,6 @@ module Api
           must_be_editor!(@decoded_token["sub"])
           #verified!(@decoded_token["typ"]) #jobs should be removed with job_status = 0 instead of being irreversibly deleted
           #must_be_owner!(params[:id], @decoded_token["sub"])
-          return blank_error('id') if params[:id].nil? || params[:id].empty?
-          return malformed_error('id') unless params[:id].to_i.class == Integer && params[:id].to_i > 0
           @job = Job.find(params[:id]) # no must_be_owner! call @job needs to be set manually
           @job.destroy!
           render status: 200, json: { "message": "Job deleted!" }

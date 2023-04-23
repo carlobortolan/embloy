@@ -10,6 +10,16 @@ module Api
         (request.headers["HTTP_ACCESS_TOKEN"].nil? || request.headers["HTTP_ACCESS_TOKEN"].empty?) ? blank_error('token') : @decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
       end
 
+      def verify_path_job_id
+        return blank_error('job') if params[:id].nil? || params[:id].empty? || params[:id].blank? || params[:id] == ":id"
+        begin
+          params[:id] = Integer(params[:id])
+          raise ArgumentError unless params[:id] > 0
+        rescue ArgumentError
+          return malformed_error('job')
+        end
+      end
+
     end
   end
 end

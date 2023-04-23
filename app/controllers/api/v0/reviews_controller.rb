@@ -3,8 +3,25 @@ module Api
 
     class ReviewsController < ApiController
       before_action :verify_access_token
+      before_action :verify_path_job_id, only: [:create]
+
+
 
       def create
+        must_be_verified!(@decoded_token["sub"])
+      end
+
+
+
+
+
+
+
+
+
+
+
+      def reate
           verified!(@decoded_token["typ"])
           if Review.all.where(:created_by => @decoded_token["sub"], :subject => params[:id], :job_id =>  params[:job_id]).present?
             unnecessary_error('review')
@@ -25,7 +42,6 @@ module Api
 
           verified!(@decoded_token["typ"])
           review = Review.find(params[:id])
-
           # TODO: Replace with general must_be_owner! method (if it then exist)
           ###############################################################################################################################################
           review.created_by.to_i == User.find(@decoded_token["sub"].to_i).id ? true : raise(CustomExceptions::Unauthorized::NotOwner) #

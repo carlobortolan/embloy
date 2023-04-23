@@ -2,12 +2,11 @@ module Api
   module V0
     class ApplicationsController < ApiController
       before_action :verify_access_token
+      before_action :verify_path_job_id, only: [:show, :create]
 
       def show
         begin
             verified!(@decoded_token["typ"])
-            return blank_error('job') if params[:id].nil? || params[:id].empty?
-            return malformed_error('job') unless params[:id].to_i.class == Integer && params[:id].to_i > 0
             must_be_owner!(params[:id], @decoded_token["sub"])
             applications = @job.applications.find_by_sql("SELECT * FROM applications a WHERE a.job_id = #{@job.job_id}")
             if applications.empty?
@@ -17,24 +16,10 @@ module Api
             end
         end
       end
-=begin
-      def show
-        begin
-          verified!(@decoded_token["typ"])
-          must_be_owner!(params[:id], @decoded_token["sub"])
-          applications = @job.applications.find_by_sql("SELECT * FROM applications a WHERE a.user_id = #{@decoded_token["sub"]} and a.job_id = #{@job.job_id}")
-          if applications.empty?
-            render status: 204, json: { "applications": applications }
-          else
-            render status: 200, json: { "applications": applications }
-          end
-        end
-      end
-=end
+
       def create
           begin
             verified!(@decoded_token["typ"])
-            return blank_error('job') if params[:id].nil? || params[:id].empty?
             job = Job.find(params[:id])
             application = Application.create!(
               user_id: @decoded_token["sub"],
