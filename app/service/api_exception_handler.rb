@@ -254,7 +254,6 @@ module ApiExceptionHandler
     render_error(attribute, 'ERR_INVALID', 'Attribute is biased', 422)
   end
 
-
   #--------------------------------------
 
   def render_error(attribute, error, description, status)
