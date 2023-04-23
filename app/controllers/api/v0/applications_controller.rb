@@ -34,16 +34,22 @@ module Api
       def create
           begin
             verified!(@decoded_token["typ"])
+            return blank_error('job') if params[:id].nil? || params[:id].empty?
             job = Job.find(params[:id])
             application = Application.create!(
               user_id: @decoded_token["sub"],
               job_id: job.job_id,
               application_text: "This application was submitted through the v.0 Embloy API",
-              applied_at: Time.now,
+              created_at: Time.now,
               updated_at: Time.now,
-              response: "No response yet..."
+              response: "null"
             )
-            application.user = User.find(@decoded_token["sub"])
+            begin
+              application.user = User.find(@decoded_token["sub"])
+            rescue ActiveRecord::RecordNotFound
+              raise CustomExceptions::InvalidUser::Unknown
+            end
+
             application.save!
             render status: 200, json: { "message": "Application submitted!" }
 
@@ -51,11 +57,7 @@ module Api
             unnecessary_error('application')
 
           rescue ActiveRecord::RecordNotFound
-            if params[:id].nil?
-              blank_error('job')
-            else
-              malformed_error('job')
-            end
+            raise CustomExceptions::InvalidJob::Unknown
 
           rescue ActiveRecord::RecordInvalid
             malformed_error('application')
