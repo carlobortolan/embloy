@@ -103,14 +103,13 @@ module ApiExceptionHandler
 
   def job_unknown_error
     not_found_error('job')
-    #malformed_error('job')
   end
 
   # =========== User related exceptions ===========
   # ===============================================
 
   def user_unknown_error
-    malformed_error('user')
+    not_found_error('user')
   end
 
   #--------------------------------------
