@@ -2577,7 +2577,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "user": {
+                    "job_type": {
                       "type": "array",
                       "description": "The attribute that caused the error. Possible values are:\n- `job_type`",
                       "items": {
@@ -2905,9 +2905,9 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "user": {
+                    "job": {
                       "type": "array",
-                      "description": "The attribute that caused the error. Possible values are:\n- `job_type`",
+                      "description": "The attribute that caused the error. Possible values are:\n- `job_type`\n- `job`",
                       "items": {
                         "type": "object",
                         "properties": {
@@ -3237,6 +3237,9 @@
               }
             }
           },
+          "204": {
+            "description": "No content"
+          },
           "400": {
             "description": "Bad request",
             "content": {
@@ -3246,7 +3249,7 @@
                   "properties": {
                     "token": {
                       "type": "array",
-                      "description": "The attribute that caused the error. Possible values are:\n- `token`\n- `latitude`\n- `longitude`",
+                      "description": "The attribute that caused the error. Possible values are:\n- `token`\n- `job`",
                       "items": {
                         "type": "object",
                         "properties": {
@@ -3330,18 +3333,31 @@
               }
             }
           },
-          "500": {
-            "description": "Internal server error",
+          "404": {
+            "description": "Not Found",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": {
-                      "type": "string",
-                      "format": "int64",
-                      "example": "Please try again later. If this error persists, we recommend to contact our support team",
-                      "description": "A message indicating that an internal server error has occurred. This specific error only occurs in case of an severe bug in the codebase."
+                    "job": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `user`\n- `job`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_INVALID",
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors, external manipulation or a formatting error. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Attribute can not be retrieved",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
                     }
                   }
                 }
