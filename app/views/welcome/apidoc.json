@@ -1798,7 +1798,7 @@
           "user"
         ],
         "summary": "Submit a review",
-        "description": "The provided access token is first verified, and then a review of a given user is submitted. A user can only review another user once for every job, and if multiple reviews from the same user are received, it is because those reviews came from different jobs. Users who are actual employees can only be reviewed by the employer for that job, and the employer can only review users who are actual employees for that same job.",
+        "description": "The provided access token is first verified, and then a review of a given user is submitted. A review must be bound to a certain job. A user can only review another user once for every job, and if multiple reviews from the same user are received, it is because those reviews came from different jobs. Users who are actual employees can only be reviewed by the employer for that job, and the employer can only review users who are actual employees for that same job.",
         "operationId": "createReview",
         "parameters": [
           {
@@ -1848,8 +1848,8 @@
           {
             "name": "message",
             "in": "body",
-            "description": "Detailed review message outlining the strengths and areas for improvement of the user submitted by the reviewer.",
-            "required": true,
+            "description": "Review message outlining the strengths and areas for improvement of the user submitted by the reviewer.",
+            "required": false,
             "schema": {
               "type": "string",
               "example": "Great guy, a hard & loyal worker."
@@ -1875,7 +1875,7 @@
                   "type": "object",
                   "properties": {
                     "message": {
-                      "example": "Review submitted"
+                      "example": "Review submitted\""
                     }
                   }
                 }
@@ -1891,14 +1891,14 @@
                   "properties": {
                     "token": {
                       "type": "array",
-                      "description": "The attribute that caused the error. Possible values are:\n- `token`",
+                      "description": "The attribute that caused the error. Possible values are:\n- `token`\n- `job_id`\n- `rating`\n- `user`",
                       "items": {
                         "type": "object",
                         "properties": {
                           "error": {
                             "type": "string",
                             "example": "ERR_BLANK",
-                            "description": "The type of error that occurred. Possible values are:\n- `ERR_BLANK`: When a required attribute is blank. All required parameters are denoted above. If all required attributes were indeed given but this error gets raised it could be that the attributs are provided falsely (e.g. via header or via path instead of body ...)"
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_BLANK`: When a required attribute is blank. All required parameters are denoted above. If all required attributes were indeed given but this error gets raised it could be that the attributs are provided falsely (e.g. via header or via path instead of body ...)                      \n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue double check the formatting requirements and try again. Contact our support team if the problem persists."
                           },
                           "description": {
                             "type": "string",
@@ -1965,6 +1965,68 @@
                           "description": {
                             "type": "string",
                             "example": "Proceeding is inhibited by an access restriction",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "job": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `user`\n- `job`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_INVALID",
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors, external manipulation or a formatting error. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Attribute can not be retrieved",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "review": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `review`\n- `user`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_UNNECESSARY",
+                            "description": "The type of error that occurred. Possible values are:\n\n- `ERR_UNNECESSARY`: When a requested task is unnecessary, the system refusess to process it. Often it helps to ask the system what your exact intentions are and wheter the specific call to the Embloy API is the standard method for it. This specific error implies that the Embloy account is aleady verified.\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors, external manipulation or a formatting error. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Attribute is already submitted",
                             "description": "A brief context specific classification of the error that occured"
                           }
                         }
