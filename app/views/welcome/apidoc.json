@@ -2038,6 +2038,221 @@
             }
           }
         }
+      },
+      "patch": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Update a review",
+        "description": "The provided access token is first verified, and then the existing review of a given user on a specific job is updated.",
+        "operationId": "updateReview",
+        "parameters": [
+          {
+            "name": "access_token",
+            "in": "header",
+            "description": "A valid access token",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOjksImV4cCI6MTY4MDk3MzE1MSwidHlwIjoidmVyaWZpZWQiLCJpc3MiOiJodW1tZWxKLVNGQzgifQ.93iFsNUwhoQewsiGsc7fBiW8U6BjyoSmr16n-jBvN9I"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The user_id of the reviewed user",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          },
+          {
+            "name": "job_id",
+            "in": "body",
+            "description": "This job_id corresponds to the job that is \\\"links\\\" the user receiving the review to the user submitting it.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "int64",
+              "example": 84,
+              "description": "The specific job_id is a unique identifier for a specific job that is permanently assigned to that job and does not correspond to any other job in the system."
+            }
+          },
+          {
+            "name": "rating",
+            "in": "body",
+            "description": "The rating score.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "int64",
+              "example": 5,
+              "description": "Accepted scores are 0,1,2,3,4,5"
+            }
+          },
+          {
+            "name": "message",
+            "in": "body",
+            "description": "Review message outlining the strengths and areas for improvement of the user submitted by the reviewer.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "Great guy, a hard & loyal worker."
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Create refresh token",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Review"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "example": "Review submitted\""
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `token`\n- `job_id`\n- `rating`\n- `user`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_BLANK",
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_BLANK`: When a required attribute is blank. All required parameters are denoted above. If all required attributes were indeed given but this error gets raised it could be that the attributs are provided falsely (e.g. via header or via path instead of body ...)                      \n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors or external manipulation. To resolve the issue double check the formatting requirements and try again. Contact our support team if the problem persists."
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Attribute can't be blank",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `token`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_INVALID",
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors, external manipulation or a formatting error. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Attribute is invalid or expired",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `user`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_RAC",
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_RAC`: The requested resource cannot be accessed due to access restrictions. The server has understood the request but refuses to authorize it because it violates security policies. This error may occur due to one of the following reasons: A: The Embloy account has not been verified. Please verify the account to access the resource. B: The requested resource requires some form of a higher level of security, such as ownership, collaboratorship, or need-to-know-basis, that was not satisfied by the attempted access with the specific Embloy account. Contact our support team if the problem persists and you believe you should have access to this resource."
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Proceeding is inhibited by an access restriction",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "job": {
+                      "type": "array",
+                      "description": "The attribute that caused the error. Possible values are:\n- `user`\n- `job`\n- `review`",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ERR_INVALID",
+                            "description": "The type of error that occurred. Possible values are:\n- `ERR_INVALID`: If an attribute is invalid, it may be due to an expired validity or other factors. This could be caused by internal system errors, external manipulation or a formatting error. To resolve the issue, request a fresh access token, double check the formatting requirements and try again. Contact our support team if the problem persists."
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Attribute can not be retrieved",
+                            "description": "A brief context specific classification of the error that occured"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/jobs": {
