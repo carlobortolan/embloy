@@ -14,11 +14,11 @@ Rails.application.routes.draw do
 
       get 'user/jobs', to: 'user#own_jobs'
       get 'user/applications', to: 'user#own_applications'
-      post 'user/(/:id)/reviews', to: 'reviews#create'
       get 'user/reviews', to: 'user#own_reviews'
 
-      delete 'reviews/(/:id)', to: 'reviews#destroy'
-      patch 'reviews/(/:id)', to: 'reviews#update'
+      post 'user/(/:id)/reviews', to: 'reviews#create'
+      delete 'user/(/:id)/reviews', to: 'reviews#destroy'
+      patch 'user/(/:id)/reviews', to: 'reviews#update'
 
       get 'jobs', to: 'jobs#feed'
       post 'jobs', to: 'jobs#create'
