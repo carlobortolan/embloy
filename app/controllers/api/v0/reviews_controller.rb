@@ -74,12 +74,12 @@ module Api
           return blank_error('review')
         end
       end
-=begin
+
       def update
         begin
           must_be_verified!(@decoded_token["sub"])
           # verify strong param input
-          return blank_error('job_id') if (review_params[:job_id].nil? || review_params[:job_id].blank?) && review_params[:rating].present?
+          return blank_error('job_id') if review_params[:job_id].nil? || review_params[:job_id].blank?
 
           #--------------------------------------
 
@@ -111,7 +111,7 @@ module Api
 
           # verify whether this specific review really exists
           review = Review.all.where(:user_id => @decoded_token["sub"], :subject => params[:id], :job_id => review_params[:job_id])
-          return blank_error('review') unless review.present?
+          return not_found_error('review') unless review.present?
 
           #--------------------------------------
 
@@ -127,7 +127,7 @@ module Api
         end
 
       end
-=end
+
       def destroy
 
         begin
