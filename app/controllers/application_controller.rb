@@ -160,6 +160,7 @@ class ApplicationController < ActionController::Base
       end
     else
       Current.user = User.find_by(id: id)
+
       if Current.user.nil?
         raise CustomExceptions::InvalidUser::Unknown
       end

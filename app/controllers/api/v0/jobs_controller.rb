@@ -4,6 +4,7 @@ module Api
   module V0
     class JobsController < ApiController
       before_action :verify_access_token
+      before_action :verify_path_job_id, only: [:update,:destroy]
 
       def create
         begin
@@ -16,6 +17,7 @@ module Api
           job_types = JSON.parse(job_types_file)
           job_type = @job.job_type
           @job.job_type_value = job_types[job_type]
+          @job.job_status = 1
 
           if @job.save
             SpatialJobValue.update_job_value(@job)
@@ -28,7 +30,6 @@ module Api
                   b[i] = flatted_first_element(e)
                 end
               end
-              p error
               if error[:job_type_value].present? && error[:job_type_value][0][:error] == "ERR_BLANK"
                 error.delete('job_type_value') # in case that job_type_value is blank error is raised, delete it because it is against the documentation policy of only raising blank errors for required attributes (and job_type value is non)
                 not_found_error('job_type')
@@ -49,10 +50,9 @@ module Api
       def update
         begin
           verified!(@decoded_token["typ"])
-          return blank_error('id') if params[:id].nil? || params[:id].empty?
-          return malformed_error('id') unless params[:id].to_i.class == Integer && params[:id].to_i > 0
           must_be_owner!(params[:id], @decoded_token["sub"])
-          if @job.update(job_params)
+          return removed_error('job') if @job.job_status == 0
+          if @job.update(update_job_params)
             SpatialJobValue.update_job_value(@job)
             render status: 200, json: { "message": "Job updated!" }
           else
@@ -68,10 +68,14 @@ module Api
 
       def destroy
         begin
-          verified!(@decoded_token["typ"])
-          must_be_owner!(params[:id], @decoded_token["sub"])
+          must_be_editor!(@decoded_token["sub"])
+          #verified!(@decoded_token["typ"]) #jobs should be removed with job_status = 0 instead of being irreversibly deleted
+          #must_be_owner!(params[:id], @decoded_token["sub"])
+          @job = Job.find(params[:id]) # no must_be_owner! call @job needs to be set manually
           @job.destroy!
           render status: 200, json: { "message": "Job deleted!" }
+        rescue ActiveRecord::RecordNotFound
+          not_found_error('job') # ok to be this specific because onöy editors can delete jobs
         end
       end
 
@@ -82,19 +86,33 @@ module Api
           # Check that user is verified
           # request.headers["HTTP_ACCESS_TOKEN"].nil? ? taboo! : @decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
           verified!(@decoded_token["typ"])
-
+          if (params[:latitude].nil? || params[:latitude].empty?) && (params[:longitude].nil? || params[:longitude].empty?)
+            render status: 400, json:{"latitude" => [{error: 'ERR_BLANK', description: 'Attribute can\'t be blank'}], "longitude" => [{error: 'ERR_BLANK', description: 'Attribute can\'t be blank'}]}
+            return -1
+          end
+          return blank_error('latitude') if params[:latitude].nil? || params[:latitude].empty?
+          return blank_error('longitude') if params[:longitude].nil? || params[:longitude].empty?
+          return malformed_error('latitude') unless params[:latitude].to_f.class == Float
+          begin
+            params[:latitude] = Float(params[:latitude])
+          rescue ArgumentError
+            return malformed_error('latitude')
+          end
+          begin
+            params[:longitude] = Float(params[:longitude])
+          rescue ArgumentError
+            return malformed_error('longitude')
+          end
           # Create slice to find possible jobs
           jobs = JobSlicer.slice(User.find(@decoded_token["sub"].to_i))
-
           # Call FG-API to rank jobs
           if !jobs.nil? && !jobs.empty?
-            feed = call_feed(jobs)
-            feed.nil? || feed.empty? ? render(status: 500, json: { "message": "Feed could not be generated!" }) : render(status: 200, json: { "feed": feed })
+            #feed = call_feed(jobs)
+            #feed.nil? || feed.empty? ? render(status: 500, json: { "message": "Please try again later. If this error persists, we recommend to contact our support team" }) : render(status: 200, json: { "feed": feed })
+            render status: 200, json:{"test":"REMOVE"}
           else
-            render status: 204, json: { "message": "No jobs found!" }
+            render status: 204, json: { "message": "No jobs found!" } # message will not show with 204, just for maintainability
           end
-        rescue CustomExceptions::Unauthorized::InsufficientRole
-          render(status: 200, json: { "feed": Job.all.limit(100) })
         end
       end
 
@@ -131,7 +149,9 @@ module Api
         # ===============================================
         params.require(:job).permit(:title, :description, :start_slot, :user_id, :longitude, :latitude, :job_type, :position, :currency, :salary, :key_skills, :duration)
       end
-
+      def update_job_params
+        params.require(:job).permit(:title, :description, :start_slot, :user_id, :longitude, :latitude, :job_type, :status, :job_status, :position, :currency, :salary, :key_skills, :duration)
+      end
       # mark_notifications_as_read is not implemented because i dont understand how it works
 =begin
       def mark_notifications_as_read

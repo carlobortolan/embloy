@@ -2,12 +2,13 @@ module Api
   module V0
     class ApplicationsController < ApiController
       before_action :verify_access_token
+      before_action :verify_path_job_id, only: [:show, :create]
 
       def show
         begin
             verified!(@decoded_token["typ"])
             must_be_owner!(params[:id], @decoded_token["sub"])
-            applications = @job.applications.find_by_sql("SELECT * FROM applications a WHERE a.user_id = #{@decoded_token["sub"]} and a.job_id = #{@job.job_idg}")
+            applications = @job.applications.find_by_sql("SELECT * FROM applications a WHERE a.job_id = #{@job.job_id}")
             if applications.empty?
               render status: 204, json: { "applications": applications }
             else
@@ -24,11 +25,16 @@ module Api
               user_id: @decoded_token["sub"],
               job_id: job.job_id,
               application_text: "This application was submitted through the v.0 Embloy API",
-              applied_at: Time.now,
+              created_at: Time.now,
               updated_at: Time.now,
-              response: "No response yet..."
+              response: "null"
             )
-            application.user = User.find(@decoded_token["sub"])
+            begin
+              application.user = User.find(@decoded_token["sub"])
+            rescue ActiveRecord::RecordNotFound
+              raise CustomExceptions::InvalidUser::Unknown
+            end
+
             application.save!
             render status: 200, json: { "message": "Application submitted!" }
 
@@ -36,11 +42,7 @@ module Api
             unnecessary_error('application')
 
           rescue ActiveRecord::RecordNotFound
-            if params[:id].nil?
-              blank_error('job')
-            else
-              malformed_error('job')
-            end
+            raise CustomExceptions::InvalidJob::Unknown
 
           rescue ActiveRecord::RecordInvalid
             malformed_error('application')

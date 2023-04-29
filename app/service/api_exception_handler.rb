@@ -4,6 +4,7 @@ module ApiExceptionHandler
   # frozen_string_literal: true
 
   extend ActiveSupport::Concern
+
   included do
 
     # =========== Job related exceptions ============
@@ -101,14 +102,14 @@ module ApiExceptionHandler
   # ===============================================
 
   def job_unknown_error
-    malformed_error('job')
+    not_found_error('job')
   end
 
   # =========== User related exceptions ===========
   # ===============================================
 
   def user_unknown_error
-    malformed_error('user')
+    not_found_error('user')
   end
 
   #--------------------------------------
@@ -231,6 +232,12 @@ module ApiExceptionHandler
 
   #--------------------------------------
 
+  def removed_error(attribute)
+    render_error(attribute, 'ERR_REMOVED', 'Attribute was removed and cannot be accessed anymore', 409)
+  end
+
+  #--------------------------------------
+
   def unnecessary_error(attribute)
     render_error(attribute, 'ERR_UNNECESSARY', 'Attribute is already submitted', 422)
   end
@@ -239,6 +246,12 @@ module ApiExceptionHandler
 
   def mismatch_error(attribute)
     render_error(attribute, 'ERR_MISMATCH', 'Required matching attributes do not match', 422)
+  end
+
+  #--------------------------------------
+
+  def biased_error(attribute)
+    render_error(attribute, 'ERR_INVALID', 'Attribute is biased', 422)
   end
 
   #--------------------------------------
