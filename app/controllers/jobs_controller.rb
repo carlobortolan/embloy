@@ -8,7 +8,10 @@ class JobsController < ApplicationController
   # isn't logged in, his feed consists of random jobs (limit 100)
   def index
     # Create slice to find possible jobs
-    jobs = JobSlicer.slice(Current.user.nil? ? nil : Current.user)
+    # todo: add actual location query
+    latitude = 0.0
+    longitude = 0.0
+    jobs = JobSlicer.slice(Current.user.nil? ? nil : Current.user, 30000, latitude, longitude)
     # Call FrG-API to rank jobs
     if !jobs.nil? && !jobs.empty?
       @jobs = call_feed(jobs)
