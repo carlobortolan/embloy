@@ -86,12 +86,12 @@ module Api
           # Check that user is verified
           # request.headers["HTTP_ACCESS_TOKEN"].nil? ? taboo! : @decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
           verified!(@decoded_token["typ"])
-          if (params[:latitude].nil? || params[:latitude].empty?) && (params[:longitude].nil? || params[:longitude].empty?)
+          if (params[:latitude].nil? || params[:latitude].blank?) && (params[:longitude].nil? || params[:longitude].blank?)
             render status: 400, json:{"latitude" => [{error: 'ERR_BLANK', description: 'Attribute can\'t be blank'}], "longitude" => [{error: 'ERR_BLANK', description: 'Attribute can\'t be blank'}]}
             return -1
           end
-          return blank_error('latitude') if params[:latitude].nil? || params[:latitude].empty?
-          return blank_error('longitude') if params[:longitude].nil? || params[:longitude].empty?
+          return blank_error('latitude') if params[:latitude].nil? || params[:latitude].blank?
+          return blank_error('longitude') if params[:longitude].nil? || params[:longitude].blank?
           return malformed_error('latitude') unless params[:latitude].to_f.class == Float
           begin
             params[:latitude] = Float(params[:latitude])
@@ -108,8 +108,9 @@ module Api
           # Call FG-API to rank jobs
           if !jobs.nil? && !jobs.empty?
             #feed = call_feed(jobs)
-            #feed.nil? || feed.empty? ? render(status: 500, json: { "message": "Please try again later. If this error persists, we recommend to contact our support team" }) : render(status: 200, json: { "feed": feed })
-            render status: 200, json:{"test":"REMOVE"}
+            feed = nil
+            feed.nil? || feed.empty? ? render(status: 500, json: { "message": "Please try again later. If this error persists, we recommend to contact our support team" }) : render(status: 200, json: { "feed": feed })
+            #render status: 200, json:{"test":"REMOVE"}
           else
             render status: 204, json: { "message": "No jobs found!" } # message will not show with 204, just for maintainability
           end
