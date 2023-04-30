@@ -107,10 +107,11 @@ module Api
           jobs = JobSlicer.slice(User.find(@decoded_token["sub"].to_i), 30000, params[:latitude], params[:longitude])
           # Call FG-API to rank jobs
           if !jobs.nil? && !jobs.empty?
-            #feed = call_feed(jobs)
-            feed = nil
+            #feed = call_feed(jobs) # - #
+            # ------------------------- #
+            feed = jobs # todo:remove-- #
+            # ------------------------- #
             feed.nil? || feed.empty? ? render(status: 500, json: { "message": "Please try again later. If this error persists, we recommend to contact our support team" }) : render(status: 200, json: { "feed": feed })
-            #render status: 200, json:{"test":"REMOVE"}
           else
             render status: 204, json: { "message": "No jobs found!" } # message will not show with 204, just for maintainability
           end
