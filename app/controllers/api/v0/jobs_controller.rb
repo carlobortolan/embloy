@@ -104,7 +104,7 @@ module Api
             return malformed_error('longitude')
           end
           # Create slice to find possible jobs
-          jobs = JobSlicer.slice(User.find(@decoded_token["sub"].to_i))
+          jobs = JobSlicer.slice(User.find(@decoded_token["sub"].to_i), 30000, params[:latitude], params[:longitude])
           # Call FG-API to rank jobs
           if !jobs.nil? && !jobs.empty?
             #feed = call_feed(jobs)
