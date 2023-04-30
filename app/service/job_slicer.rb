@@ -7,6 +7,7 @@ class JobSlicer
     if rad.nil?
       rad = 25000
     end
+    # ------------------------- #
 =begin
     unless lat.nil? && lon.nil? #no database entry will be made (because there is no user.save!)
       user.latitude = lat
