@@ -1,3 +1,0 @@
-class LocationService
-  # TODO CONVERSION OF ADDRESS TO COORDINATES ETC
-end
