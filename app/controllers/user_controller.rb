@@ -30,6 +30,14 @@ class UserController < ApplicationController
     end
   end
 
+  def update_location
+    if params[:latitude].present? && params[:longitude].present?
+      Current.user.update(latitude: params[:latitude], longitude: params[:longitude])
+    elsif params[:location_denied]
+      redirect_to root_path, alert: "Unable to update location as location access was denied."
+    end
+  end
+
   def destroy
     @user = Current.user
     @user.destroy!
@@ -52,7 +60,7 @@ class UserController < ApplicationController
   end
 
   def own_applications
-    #TODO: Optimize
+    # TODO: Optimize
     @applications = Application.includes(:user).all.where("user_id = #{Current.user.id}").order("updated_at DESC")
   end
 

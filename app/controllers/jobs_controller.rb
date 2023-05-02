@@ -7,13 +7,25 @@ class JobsController < ApplicationController
   # Creates feed based on current user's preferences (if available); if the current user is not verified yet or
   # isn't logged in, his feed consists of random jobs (limit 100)
   def index
-    # Create slice to find possible jobs
-    # todo: add actual location query
-    latitude = 0.0
-    longitude = 0.0
-    jobs = JobSlicer.slice(Current.user.nil? ? nil : Current.user, 30000, latitude, longitude)
-    # Call FrG-API to rank jobs
+    # Create slice     distance double precision,
+    #     latitude_longitude character varying(300) COLLATE pg_catalog."default",
+    #     distance_km double precision,to find possible jobs
+
+    # Get User Coordinates (currently saved directly as latitude, longitude in DB)
+    if !Current.user.nil? && !Current.user.latitude.nil? && !Current.user.longitude.nil?
+      latitude = Current.user.latitude
+      longitude = Current.user.longitude
+    else
+      latitude = 48.1374300
+      longitude = 11.5754900
+    end
+
+    # Slice jobs
+    jobs = JobSlicer.slice(Current.user, 30000, latitude, longitude)
+
+    # Call FG-API to rank jobs
     if !jobs.nil? && !jobs.empty?
+      # TODO: Add pagination to feed / slicer @jobs = call_feed(jobs[params[:page]])
       @jobs = call_feed(jobs)
     else
       render status: 204, json: { "message": "No jobs found!" }

@@ -4,6 +4,7 @@
 * Author: BootstrapMade.com
 * License: https://bootstrapmade.com/license/
 */
+//= require rails-ujs
 document.addEventListener('DOMContentLoaded', () => {
   "use strict";
 

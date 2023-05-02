@@ -86,6 +86,7 @@ Rails.application.routes.draw do
   # get 'user/', :to => 'user#index', as: :user_index
   get 'user/profile', :to => 'user#index', as: :profile_index
   patch 'user/profile', :to => 'user#update', as: :user
+  patch 'user/update_location', :to => 'user#update_location', as: :user_update_location
   delete 'user', to: 'user#destroy', as: :user_delete
   patch 'user/profile', to: 'user#update', as: :profile_update
   get 'user/edit', :to => 'user#edit', as: :profile_edit
