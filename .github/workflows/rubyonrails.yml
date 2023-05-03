@@ -73,13 +73,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Install bundler
-        run: gem install bundler
+        run: sudo gem install bundler
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y postgresql-client
           bundle install
-
       - name: Setup environment variables
         run: |
           echo "DATABASE_URL=$DATABASE_URL" >> .env
