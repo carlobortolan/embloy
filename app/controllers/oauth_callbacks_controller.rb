@@ -30,7 +30,7 @@ class OauthCallbacksController < ApplicationController
           last_name: auth.info.name.split[1],
           image_url: auth.info.image
         )
-        if @user.save!
+        if @user.save
           WelcomeMailer.with(user: @user).welcome_email.deliver_later
           session[:user_id] = @user.id
           redirect_to root_path, notice: 'Successfully created account'
