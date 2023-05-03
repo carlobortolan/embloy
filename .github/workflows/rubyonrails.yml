@@ -87,10 +87,10 @@ jobs:
           RAILS_MASTER_KEY: '${{ secrets.RAILS_MASTER_KEY }}'
         run: |
           echo "DATABASE_URL='$DATABASE_URL'" >> config/env_var.rb
-          echo "RAILS_MASTER_KEY='$DATABASE_URL'" >> config/env_var
-          echo "DATABASE_USER='$DATABASE_URL'" >> config/env_var.rb
-          echo "DATABASE_HOST='$DATABASE_URL'" >> config/env_var.rb
-          echo "DATABASE_PASSWORD='$DATABASE_URL'" >> config/env_var.rb
+          echo "RAILS_MASTER_KEY='$RAILS_MASTER_KEY'" >> config/env_var
+          echo "DATABASE_USER='$DATABASE_USER'" >> config/env_var.rb
+          echo "DATABASE_HOST='$DATABASE_HOST'" >> config/env_var.rb
+          echo "DATABASE_PASSWORD='$DATABASE_PASSWORD'" >> config/env_var.rb
 
       - name: Setup database
         run: |
