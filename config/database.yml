@@ -10,7 +10,7 @@
 #   https://dev.mysql.com/doc/refman/5.7/en/password-hashing.html
 #
 default: &default
-  database: embloy_db
+  database: jobdata_test1
   adapter: postgis
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
@@ -23,14 +23,21 @@ default: &default
 
 development:
   <<: *default
-  database: embloy_db
+  database: jobdata_test2
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: jobdata_test
+  database: jobdata_test3
   adapter: postgis
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+  username: <%= ENV["DATABASE_USER"] %>
+  password: <%= ENV["DATABASE_PASSWORD"] %>
+  host: <%= ENV["DATABASE_HOST"] %>
+  url: <%= ENV["DATABASE_URL"] %>
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -54,7 +61,7 @@ test:
 #
 production:
   <<: *default
-  database: embloy_db
+  database: jobdata_test4
   adapter: postgis
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
