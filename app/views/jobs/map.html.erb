@@ -26,7 +26,7 @@
         var map = L.map('mapid', {
             maxBounds: bounds,
             maxBoundsViscosity: 1.0
-        }).setView([48.1374300, 11.5754900], 3);
+        }).setView([48.1374300, 11.5754900], 5);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
             maxZoom: 18,
@@ -37,10 +37,23 @@
         // Get user's location
         var userLat = -1.0;
         var userLng = -1.0;
+
+        <%if !Current.user.nil? && !Current.user.latitude.nil? && !Current.user.longitude.nil?  %>
+        geoMap(<%=Current.user.latitude %>, <%=Current.user.longitude %>);
+        <% else %>
         navigator.geolocation.getCurrentPosition(function (position) {
             userLat = position.coords.latitude;
             userLng = position.coords.longitude;
+            geoMap(userLat, userLng, false);
+        });
+        <% end %>
+        map.on('click', function (e) {
+            var userLat = e.latlng.lat;
+            var userLng = e.latlng.lng;
+            geoMap(userLat, userLng, true);
+        });
 
+        function geoMap(userLat, userLng, clicked) {
             // Make AJAX request to update jobs based on user's location
             var xhr = new XMLHttpRequest();
             xhr.open('POST', '/jobs_maps/update_jobs');
@@ -66,8 +79,7 @@
                         map.setView([userLat, userLng], 8);
                     });
                     var userM0 = L.marker([userLat, userLng], {icon: red}).addTo(map);
-                    userM0.bindPopup('You are here!');
-
+                    userM0.bindPopup(clicked ? 'You clicked here!' : 'You are here!');
 
                 } else {
                     console.log('Error updating jobs:', xhr.statusText);
@@ -77,23 +89,19 @@
                 console.log('Error updating jobs:', xhr.statusText);
             };
             xhr.send(JSON.stringify({latitude: userLat, longitude: userLng}));
+        }
 
-
-            // Add a red marker for the user's location
-            var red = L.icon({
-                iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
-                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-                iconSize: [25, 41],
-                iconAnchor: [12, 41],
-                popupAnchor: [1, -34],
-                shadowSize: [41, 41]
-            });
-            var userM = L.marker([userLat, userLng], {icon: red}).addTo(map);
-            userM.bindPopup('You are here!');
-
-        }, function (error) {
-            console.log('Error getting user location:', error.message);
+        // Add a red marker for the user's location
+        var red = L.icon({
+            iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
         });
+        var userM = L.marker([userLat, userLng], {icon: red}).addTo(map);
+        userM.bindPopup('You are here!');
 
 
         // Display jobs on map

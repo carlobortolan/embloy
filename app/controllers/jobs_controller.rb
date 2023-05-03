@@ -36,7 +36,7 @@ class JobsController < ApplicationController
       lng = Current.user.longitude
       @jobs = JobSlicer.fetch(lat, lng)
     else
-      @jobs = Job.all.where(job_id < 100)
+      @jobs = Job.order('random()').limit(500)
     end
   end
 

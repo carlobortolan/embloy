@@ -10,6 +10,15 @@
 <% unless Current.user.nil? %>
   <% if !params[:latitude] && !params[:longitude] %>
     <script>
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(updatePosition, showError);
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
         let watchId;
 
         if (navigator.geolocation) {
@@ -23,9 +32,6 @@
             xhr.open('PATCH', '/user/update_location');
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.setRequestHeader('X-CSRF-Token', Rails.csrfToken());
-            xhr.onload = function () {
-                // Handle response from server
-            };
             xhr.send(JSON.stringify({latitude: position.coords.latitude, longitude: position.coords.longitude}));
         }
 
