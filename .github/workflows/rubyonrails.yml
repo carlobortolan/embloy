@@ -65,7 +65,6 @@ jobs:
     env:
       RAILS_ENV: test
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      DATABASE_USER: ${{ secrets.DATABASE_USER }}
       DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
       DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
       RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
