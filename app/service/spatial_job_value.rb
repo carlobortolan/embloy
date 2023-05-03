@@ -14,6 +14,11 @@ module SpatialJobValue
     # Map the job type string to an integer using the job types mapping
     job_type_id = job_types[job_type]
 
+    # Default value for Faker-jobs
+    if job_type_id.nil?
+      job_type_id = 5
+    end
+
     # Update the job_value column with the 3D point using the mapped job type ID
     sql = "UPDATE jobs SET job_value = ST_SetSRID(ST_MakePoint(#{job.latitude}, #{job.longitude}, #{job_type_id}), 4326) WHERE job_id = #{job.job_id}"
     # Execute the SQL statement
@@ -29,15 +34,7 @@ module SpatialJobValue
     { latitude: latitude.to_f, longitude: longitude.to_f, job_type_id: job_type_id.to_i }
   end
 
-  def self.geo_query(lat, lon, rad, lim)
-    sql = "SELECT * FROM jobs WHERE ST_DWithin(job_value::geometry, ST_SetSRID(ST_MakePoint(#{lon}, #{lat}), 4326)::geography, #{rad}) ORDER BY ST_Distance(job_value::geometry, ST_SetSRID(ST_MakePoint(#{lon}, #{lat}), 4326)::geography) LIMIT #{lim};"
-    result = ActiveRecord::Base.connection.select_all(sql)
-    result.each do |row|
-      row['euro_salary'] = row['salary'] # todo: add external api for exchange rate conversion
-    end
-    result
-  end
-
+  # TODO: add external api for exchange rate conversion
 =begin
   def self.retrieve_records_within_range(x_min, y_min, x_max, y_max, max_records)
     distance = 0.1

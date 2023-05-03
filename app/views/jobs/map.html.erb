@@ -44,6 +44,17 @@
         <%end %>
         // Add a red marker for the user's location
         <% if !Current.user.nil? && !Current.user.longitude.nil? && !Current.user.latitude.nil? %>
+        var red = L.icon({
+            iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+        var userM = L.marker([<%=Current.user.latitude %>, <%=Current.user.longitude %>], {icon: red}).addTo(map);
+        userM.bindPopup('You are here!');
+
         <% else %>
         navigator.geolocation.getCurrentPosition(function (position) {
             var userLat = position.coords.latitude;
