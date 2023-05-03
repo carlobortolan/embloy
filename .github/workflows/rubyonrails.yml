@@ -84,11 +84,11 @@ jobs:
           bundle install
       - name: Setup environment variables
         run: |
-          echo "DATABASE_URL=$DATABASE_URL" >> .env
-          echo "RAILS_MASTER_KEY=$RAILS_MASTER_KEY" >> .env
-          echo "DATABASE_USER=$DATABASE_USER" >> .env
-          echo "DATABASE_HOST=$DATABASE_HOST" >> .env
-          echo "DATABASE_PASSWORD=$DATABASE_PASSWORD" >> .env
+          echo "DATABASE_URL=$DATABASE_URL" >> config/env_var.rb
+          echo "RAILS_MASTER_KEY=$RAILS_MASTER_KEY" >> config/env_var
+          echo "DATABASE_USER=$DATABASE_USER" >> config/env_var.rb
+          echo "DATABASE_HOST=$DATABASE_HOST" >> config/env_var.rb
+          echo "DATABASE_PASSWORD=$DATABASE_PASSWORD" >> config/env_var.rb
 
       - name: Setup database
         run: |
