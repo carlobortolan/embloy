@@ -61,13 +61,8 @@ jobs:
       #  run: bin/rubocop --parallel
       
   build:
+    environment: CI
     runs-on: ubuntu-latest
-    env:
-      RAILS_ENV: test
-      DATABASE_URL: '${{ secrets.DATABASE_URL }}'
-      DATABASE_HOST: '${{ secrets.DATABASE_HOST }}'
-      DATABASE_PASSWORD: '${{ secrets.DATABASE_PASSWORD }}'
-      RAILS_MASTER_KEY: '${{ secrets.RAILS_MASTER_KEY }}'
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -83,6 +78,12 @@ jobs:
           sudo apt-get install -y postgresql-client
           bundle install
       - name: Setup environment variables
+        env:
+          RAILS_ENV: test
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
         run: |
           echo "DATABASE_URL=$DATABASE_URL" >> config/env_var.rb
           echo "RAILS_MASTER_KEY=$RAILS_MASTER_KEY" >> config/env_var
