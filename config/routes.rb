@@ -60,6 +60,7 @@ Rails.application.routes.draw do
 
   # -----> Map <-----
   get 'jobs_maps', :to => 'jobs#map', as: :jobs_map
+  post 'jobs_maps/update_jobs', :to => 'jobs#update_jobs', as: :jobs_map_update_jobs
 
   # -----> Feed-Generator <-----
   get 'find_jobs', :to => 'jobs#find', as: :jobs_find

@@ -1,7 +1,7 @@
 require_relative '../../lib/feed_generator.rb'
 
 class JobsController < ApplicationController
-  before_action :require_user_logged_in, except: %w[index show find parse_inputs map]
+  before_action :require_user_logged_in, except: %w[index show find parse_inputs map update_jobs]
   layout 'job_applic_layout', :only => "edit"
 
   # Creates feed based on current user's preferences (if available); if the current user is not verified yet or
@@ -34,8 +34,25 @@ class JobsController < ApplicationController
     if (lat.nil? || lng.nil?) && !Current.user.nil? && !Current.user.longitude.nil? && !Current.user.latitude.nil?
       lat = Current.user.latitude
       lng = Current.user.longitude
+      @jobs = JobSlicer.fetch(lat, lng)
+    else
+      @jobs = Job.all.where(job_id < 100)
+    end
+  end
+
+  def update_jobs
+    puts "PARAA = #{params}"
+
+    lat = params[:latitude]
+    lng = params[:longitude]
+    if (lat.nil? || lng.nil?) && !Current.user.nil? && !Current.user.longitude.nil? && !Current.user.latitude.nil?
+      lat = Current.user.latitude
+      lng = Current.user.longitude
     end
     @jobs = JobSlicer.fetch(lat, lng)
+    respond_to do |format|
+      format.json { render json: @jobs }
+    end
   end
 
   def show

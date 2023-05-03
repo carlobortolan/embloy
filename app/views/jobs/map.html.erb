@@ -26,7 +26,7 @@
         var map = L.map('mapid', {
             maxBounds: bounds,
             maxBoundsViscosity: 1.0
-        }).setView([48.1374300, 11.5754900], 5);
+        }).setView([48.1374300, 11.5754900], 3);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
             maxZoom: 18,
@@ -41,17 +41,44 @@
             userLat = position.coords.latitude;
             userLng = position.coords.longitude;
 
+            // Make AJAX request to update jobs based on user's location
             var xhr = new XMLHttpRequest();
-            xhr.open('GET', '/jobs_maps');
+            xhr.open('POST', '/jobs_maps/update_jobs');
             xhr.setRequestHeader('Content-Type', 'application/json');
-            //  xhr.setRequestHeader('X-CSRF-Token', Rails.csrfToken());
+            xhr.setRequestHeader('X-CSRF-Token', Rails.csrfToken());
             xhr.onload = function () {
-                console.log("TESTTEST");
-                // Handle response from server
+                if (xhr.status === 200) {
+                    // Handle response from server
+                    var updatedJobs = JSON.parse(xhr.responseText);
+                    console.log("STAT3: " + updatedJobs);
+                    // Remove existing job markers from map
+                    map.eachLayer(function (layer) {
+                        if (layer instanceof L.Marker) {
+                            map.removeLayer(layer);
+                        }
+                    });
+
+                    // Add updated job markers to map
+                    updatedJobs.forEach(function (job) {
+                        var jobInfo = '<b>' + job.title + '</b><br>' + job.description + '<br><a href=<%=root_path %>jobs/' + job.job_id + '>Apply Now</a>';
+                        var marker = L.marker([job.latitude, job.longitude]).addTo(map);
+                        marker.bindPopup(jobInfo);
+                        map.setView([userLat, userLng], 8);
+                    });
+                    var userM0 = L.marker([userLat, userLng], {icon: red}).addTo(map);
+                    userM0.bindPopup('You are here!');
+
+
+                } else {
+                    console.log('Error updating jobs:', xhr.statusText);
+                }
             };
-            xhr.send(JSON.stringify({latitude: position.coords.latitude, longitude: position.coords.longitude}));
-            // Redirect user to /jobs_maps
-            window.location.href = "/jobs_maps";
+            xhr.onerror = function () {
+                console.log('Error updating jobs:', xhr.statusText);
+            };
+            xhr.send(JSON.stringify({latitude: userLat, longitude: userLng}));
+
+
             // Add a red marker for the user's location
             var red = L.icon({
                 iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
