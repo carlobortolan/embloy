@@ -62,41 +62,35 @@ jobs:
       
   build:
     runs-on: ubuntu-latest
-
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DATABASE_USER: ${{ secrets.DATABASE_USER }}
+      DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+      DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+      RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: 3.2.2
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+          bundle install
 
-    - name: Install dependencies
-      run: |
-        gem install bundler
-        bundle install --jobs 4 --retry 3
+      - name: Setup environment variables
+        run: |
+          echo "DATABASE_URL=$DATABASE_URL" >> .env
+          echo "RAILS_MASTER_KEY=$RAILS_MASTER_KEY" >> .env
+          echo "DATABASE_USER=$DATABASE_USER" >> .env
+          echo "DATABASE_HOST=$DATABASE_HOST" >> .env
+          echo "DATABASE_PASSWORD=$DATABASE_PASSWORD" >> .env
 
-    - name: Setup environment variables
-      run: |
-        echo "DATABASE_URL=$DATABASE_URL" >> .env
-        echo "RAILS_MASTER_KEY=$RAILS_MASTER_KEY" >> .env
+      - name: Setup database
+        run: |
+          bundle exec rails db:create db:migrate
 
-    - name: Run tests
-      env:
-        RAILS_ENV: test
-      run: |
-        rails db:create
-        rails db:migrate
-        rails test
-
-    #- name: Deploy to production
-    #  if: ${{ github.ref == 'refs/heads/main' }}
-    #  run: |
-    #    ssh user@yourserver.com << EOF
-    #      cd /path/to/your/rails/app
-    #      git pull
-    #      bundle install --jobs 4 --retry 3
-    #      rails db:migrate
-    #      exit
-    #    EOF
+      - name: Run tests
+        run: |
+          bundle exec rails test
