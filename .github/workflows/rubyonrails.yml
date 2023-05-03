@@ -64,10 +64,10 @@ jobs:
     runs-on: ubuntu-latest
     env:
       RAILS_ENV: test
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
-      DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-      RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+      DATABASE_URL: '${{ secrets.DATABASE_URL }}'
+      DATABASE_HOST: '${{ secrets.DATABASE_HOST }}'
+      DATABASE_PASSWORD: '${{ secrets.DATABASE_PASSWORD }}'
+      RAILS_MASTER_KEY: '${{ secrets.RAILS_MASTER_KEY }}'
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
