@@ -7,21 +7,17 @@ class JobsController < ApplicationController
   # Creates feed based on current user's preferences (if available); if the current user is not verified yet or
   # isn't logged in, his feed consists of random jobs (limit 100)
   def index
-    # Create slice     distance double precision,
-    #     latitude_longitude character varying(300) COLLATE pg_catalog."default",
-    #     distance_km double precision,to find possible jobs
-
-    # Get User Coordinates (currently saved directly as latitude, longitude in DB)
-    if !Current.user.nil? && !Current.user.latitude.nil? && !Current.user.longitude.nil?
-      latitude = Current.user.latitude
-      longitude = Current.user.longitude
+    # TODO: Get User Coordinates (currently saved directly as latitude, longitude in DB)
+    unless Current.user.nil?
+      lat = Current.user.latitude
+      lng = Current.user.longitude
     else
-      latitude = 48.1374300
-      longitude = 11.5754900
+      lat = 48.1374300
+      lng = 11.5754900
     end
 
     # Slice jobs
-    jobs = JobSlicer.slice(Current.user, 30000, latitude, longitude)
+    jobs = JobSlicer.slice(Current.user, 30000, lat, lng)
 
     # Call FG-API to rank jobs
     if !jobs.nil? && !jobs.empty?
@@ -33,15 +29,13 @@ class JobsController < ApplicationController
   end
 
   def map
-    puts "STARTED MAP = #{[params[:latitude]]}  #{params[:longitude]}"
-    puts "GEOCODING: #{Job.first.geocode}"
-
-    latitude = params[:latitude]
-    longitude = params[:longitude]
-
-    @jobs = Job.where("ACOS(SIN(RADIANS(:lat)) * SIN(RADIANS(latitude)) + COS(RADIANS(:lat)) * COS(RADIANS(latitude)) * COS(RADIANS(:lon - longitude))) * 6371 <= 100", { lat: params[:latitude], lon: params[:longitude] })
-    @jobs = Job.all.limit(100)
-    puts "SZ = #{@jobs.size}"
+    lat = params[:latitude]
+    lng = params[:longitude]
+    if (lat.nil? || lng.nil?) && !Current.user.nil? && !Current.user.longitude.nil? && !Current.user.latitude.nil?
+      lat = Current.user.latitude
+      lng = Current.user.longitude
+    end
+    @jobs = JobSlicer.fetch(lat, lng)
   end
 
   def show

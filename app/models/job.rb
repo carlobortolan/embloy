@@ -12,7 +12,12 @@ class Job < ApplicationRecord
                     tsearch: { prefix: true, any_word: true, dictionary: "english", normalization: 2 },
                     trigram: { threshold: 0.1 }
                   }
-
+  scope :within_radius, ->(lat, lng, rad, lim) {
+    select("*, ST_Distance(job_value::geometry, ST_SetSRID(ST_MakePoint(#{lat}, #{lng}), 4326)::geography) AS distance").
+      where("ST_DWithin(job_value::geometry, ST_SetSRID(ST_MakePoint(#{lat}, #{lng}), 4326)::geography, #{rad})").
+      order("distance").
+      limit(lim)
+  }
   belongs_to :user, counter_cache: true
   has_many :applications, dependent: :delete_all
   has_noticed_notifications model_name: 'Notification'
