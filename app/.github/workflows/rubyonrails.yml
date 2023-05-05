@@ -1,0 +1,111 @@
+# This workflow uses actions that are not certified by GitHub.  They are
+# provided by a third-party and are governed by separate terms of service,
+# privacy policy, and support documentation.
+#
+# This workflow will install a prebuilt Ruby version, install dependencies, and
+# run tests and linters.
+
+name: "Ruby on Rails CI"
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+jobs:
+  test:
+    environment: CI
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        ports:
+          - "5432:5432"
+        env:
+          POSTGRES_DB: jobdata_test
+          POSTGRES_USER: ${{ vars.DATABASE_USER }}
+          POSTGRES_PASSWORD: ${{ vars.DATABASE_PASSWORD }}
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: ${{ vars.DATABASE_URL }}
+      DATABASE_HOST: ${{ vars.DATABASE_HOST }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      # Add or replace dependency steps here
+      - name: Install Ruby and gems
+        uses: ruby/setup-ruby@55283cc23133118229fd3f97f9336ee23a179fcf # v1.146.0
+        with:
+          bundler-cache: true
+        # Add or replace database setup steps here
+        #- name: Set up database schema
+        #  run: bin/rails db:schema:load
+      #   run: bin/rails db:load
+      # Add or replace test runners here
+      #- name: Run tests
+      #  run: bin/rake
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Install Ruby and gems
+        uses: ruby/setup-ruby@55283cc23133118229fd3f97f9336ee23a179fcf # v1.146.0
+        with:
+          bundler-cache: true
+      # Add or replace any other lints here
+      #- name: Security audit dependencies
+      #  run: bin/bundler-audit --update
+      #- name: Security audit application code
+      #  run: bin/brakeman -q -w2
+      #- name: Lint Ruby files
+      #  run: bin/rubocop --parallel
+
+  build:
+    environment: CI
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        ports:
+          - "5432:5432"
+        env:
+          POSTGRES_DB: jobdata_test
+          POSTGRES_USER: ${{ vars.DATABASE_USER }}
+          POSTGRES_PASSWORD: ${{ vars.DATABASE_PASSWORD }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install bundler
+        run: sudo gem install bundler
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2.2
+      #- name: Install dependencies
+      #  run: |
+      #    sudo apt-get update
+      #    sudo apt-get install -y postgresql-client
+      #    bundle install
+      - name: Setup environment variables
+        env:
+          RAILS_ENV: test
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+        run: |
+          echo "DATABASE_URL='$DATABASE_URL'" >> config/env_var.rb
+          echo "RAILS_MASTER_KEY='$RAILS_MASTER_KEY'" >> config/env_var
+          echo "DATABASE_USER='$DATABASE_USER'" >> config/env_var.rb
+          echo "DATABASE_HOST='$DATABASE_HOST'" >> config/env_var.rb
+          echo "DATABASE_PASSWORD='$DATABASE_PASSWORD'" >> config/env_var.rb
+
+      #- name: Setup database
+      #  run: |
+      #    bundle exec rails db:create db:migrate
+
+      #- name: Run tests
+      #  run: |
+      #    bundle exec rails test
