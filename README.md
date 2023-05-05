@@ -125,7 +125,7 @@ TABLESPACE pg_default;
 
 ## What's next
 
-> __NOTE__: _See [GitHub issues](https://github.com/carlobortolan/Embloy/issues) for more information_
+> __NOTE__: _See [GitHub issues](https://github.com/embloy/embloy-backend/issues) for more information_
 
 - ~~Update profile section UI~~
 - ~~Integrate meilisearch into front-and backend~~
