@@ -34,6 +34,17 @@ module SpatialJobValue
     { latitude: latitude.to_f, longitude: longitude.to_f, job_type_id: job_type_id.to_i }
   end
 
+  def self.find_cluster(job = nil, eps = nil)
+    if eps.nil?
+      eps = 0.1
+    end
+    sql = "job_type, ST_ClusterDBSCAN(job_value, eps := #{eps}, minpoints := #{minpoints}) OVER () AS cluster_id, ST_NumGeometries(ST_Collect(job_value)) AS cluster_size FROM jobs WHERE job_value IS NOT NULL"
+    clusters = ActiveRecord::Base.connection.execute(sql)
+    clusters.each do |cluster|
+      puts "#{cluster.cluster_id}: #{cluster.cluster_size} jobs"
+    end
+  end
+
   # TODO: add external api for exchange rate conversion
 =begin
   def self.retrieve_records_within_range(x_min, y_min, x_max, y_max, max_records)
