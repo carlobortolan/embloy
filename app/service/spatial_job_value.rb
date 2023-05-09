@@ -34,9 +34,12 @@ module SpatialJobValue
     { latitude: latitude.to_f, longitude: longitude.to_f, job_type_id: job_type_id.to_i }
   end
 
-  def self.find_cluster(job = nil, eps = nil)
+  def self.find_cluster(job = nil, eps = nil, minpoints = nil)
     if eps.nil?
       eps = 0.1
+    end
+    if minpoints.nil?
+      minpoints = 2
     end
     sql = "job_type, ST_ClusterDBSCAN(job_value, eps := #{eps}, minpoints := #{minpoints}) OVER () AS cluster_id, ST_NumGeometries(ST_Collect(job_value)) AS cluster_size FROM jobs WHERE job_value IS NOT NULL"
     clusters = ActiveRecord::Base.connection.execute(sql)
