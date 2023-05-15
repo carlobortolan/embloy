@@ -37,7 +37,7 @@
             <% unless @jobs.nil?
                  @jobs.each do |job| %>
                 <% if job.public? %>
-                  <%= render "posting", job: job %>
+                  <%= render "job_posting", job: job %>
                 <% end %>
               <% end %>
             <% end %>
