@@ -30,6 +30,8 @@ Rails.application.routes.draw do
       # patch 'jobs/(/:id)/applications/(/:user)/accept', to: 'applications#accept'
       # delete 'jobs/(/:id)/applications', to: 'applications#destroy'
 
+      get '/drive/website/pages/(/:page)', to: 'drive#website_content'
+
     end
   end
 
