@@ -1,7 +1,7 @@
 module Api
   module V0
     class DriveController < ApiController
-      #before_action :verify_access_token
+      before_action :verify_access_token
       def website_content
         begin
           if params[:page] == "b2b"

@@ -2,6 +2,6 @@
 
 class WebsiteDataSource
   def self.page_b2b
-    "test_123"
+    "test"
   end
 end
