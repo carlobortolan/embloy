@@ -1,4 +1,7 @@
+
 <h1><a href="https://embloy.com">Embloy</a></h1>
+
+This repository contains the backend code for our application. We have recently deployed an initial prototype, although it is not yet publicly accessible. If you are interested and would like to take a look, please reach out to us at ___info@embloy.com___
 
 ## License
 
