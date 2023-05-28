@@ -73,6 +73,8 @@ class JobsController < ApplicationController
 
   def create
     @job = Job.new(job_params)
+    @job.image_url.attach(params[:job][:image_url]) if params[:job][:image_url].present?
+
     @job.currency = "EUR"
     @job.user_id = Current.user.id
 
@@ -101,6 +103,7 @@ class JobsController < ApplicationController
     require_user_be_owner
 
     if @job.update(job_params) && @job.update(geocode(@job))
+      @job.image_url.attach(params[:job][:image_url]) if params[:job][:image_url].present?
       SpatialJobValue.update_job_value(@job)
       redirect_to @job
     else
@@ -119,15 +122,15 @@ class JobsController < ApplicationController
     @categories_list = JSON.parse(File.read(Rails.root.join('app/helpers', 'job_types.json'))).keys
 
     # @jobs = Job.search_for(params[:query])
-    @jobs = Job.includes([:user]).where("title ILIKE :query OR description ILIKE :query OR position ILIKE :query OR job_type ILIKE :query OR key_skills ILIKE :query OR address ILIKE :query OR city ILIKE :query OR postal_code ILIKE :query OR start_slot::text ILIKE :query", query: "%#{params[:query]}%")
+    @jobs = Job.includes([:user]).includes([:image_url_attachment]).where("title ILIKE :query OR description ILIKE :query OR position ILIKE :query OR job_type ILIKE :query OR key_skills ILIKE :query OR address ILIKE :query OR city ILIKE :query OR postal_code ILIKE :query OR start_slot::text ILIKE :query", query: "%#{params[:query]}%")
                .page(params[:page])
 
     if @jobs.nil? || @jobs.empty?
-      @jobs = Job.includes([:user]).all
+      @jobs = Job.includes([:user]).includes([:image_url_attachment]).all
     end
 
     unless params[:job_type].nil? || params[:job_type].blank?
-      @jobs = @jobs.includes([:user]).where(job_type: params[:job_type])
+      @jobs = @jobs.includes([:user]).includes([:image_url_attachment]).where(job_type: params[:job_type])
     end
 
     case params[:sort_by]

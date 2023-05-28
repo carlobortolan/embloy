@@ -12,7 +12,6 @@
         </header>
         <h5 class="fw-bolder"><%= job.title %></h5><br>
         <%= "#{job.salary} #{job.currency}" %>
-        <p class="card-text"><%= job.description %></p>
         <div class="d-flex justify-content-center align-items-center">
           <small class="text-muted"><%= pluralize(job.applications_count, "application") %> </small>
           <small class="text-muted">| <%= pluralize(job.view_count, "views") %> </small>
