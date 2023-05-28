@@ -21,7 +21,7 @@ class Job < ApplicationRecord
   belongs_to :user, counter_cache: true
   has_many :applications, dependent: :delete_all
   has_noticed_notifications model_name: 'Notification'
-  has_rich_text :content
+  has_rich_text :description
   validates :title, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validates :description, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, length: { minimum: 10 }
   validates :start_slot, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }

@@ -1,4 +1,7 @@
 <main id="main">
+  <%= javascript_include_tag 'trix' %>
+  <%= stylesheet_link_tag 'trix' %>
+
   <%= form_with model: @job do |form| %>
     <!-- ======= Breadcrumbs ======= -->
     <div class="breadcrumbs">
@@ -112,7 +115,7 @@
                   <%= form.text_field :position, class: "form-control", placeholder: "Job position", class: "form-control", required: true %>
                 </div>
                 <div class="col-md-6 form-group mt-3 mt-md-0">
-                  <%= form.text_field :key_skills, class: "form-control", placeholder: "Required skills", class: "form-control", required: true %>
+                  <%= form.text_field :key_skills, class: "form-control-1", placeholder: "Required skills", class: "form-control", required: true %>
                 </div>
               </div>
               <div class="form-group mt-3">
@@ -121,7 +124,7 @@
                 <%= form.text_field :currency, value: "EUR", placeholder: "EUR", required: true, disabled: true %>
               </div>
               <div class="form-group mt-3">
-                <p><%= form.text_area :description, rows: 5, placeholder: "Write your job description here.", class: "form-control", required: true, minlength: 10 %>
+                <p><%= form.rich_text_area :description, placeholder: "Write your job description here.", required: true, minlength: 10 %>
               </div>
             </form>
           </div><!-- End Contact Form -->
