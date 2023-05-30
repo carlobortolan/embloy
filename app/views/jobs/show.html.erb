@@ -164,7 +164,7 @@
 
           <!-- Side widget-->
           <div class="card mb-4">
-            <div class="card-header">Side Widget</div>
+            <div class="card-header">Insights</div>
             <div class="card-body">
               <div class="text-muted fst-italic mb-2">Posted on <%= @job.created_at.ctime %>
               </div>
@@ -174,8 +174,9 @@
             </div>
           </div>
           <div class="card mb-4">
-            <div class="card-header">Side Widget</div>
-            <img class="pic1 p-1" src="<%= @job.image_url.nil? ? "https://picsum.photos/200/300?random=#{@job.job_id}" : @job.image_url %>" alt="">
+            <div class="card-header">Posting</div>
+            <%= image_tag(@job.image_url, class: "pic1 p-1") if @job.image_url.attached? %>
+            <%= image_tag("https://picsum.photos/200/300?random=#{@job.job_id}", class: "pic1 p-1") unless @job.image_url.attached? %>
           </div>
         </div>
       </div>

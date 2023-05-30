@@ -57,7 +57,8 @@
         </div>
         <div class="row justify-content-end">
           <div class="product-pic">
-            <img class="pic1" src="<%= job.image_url.nil? ? "https://picsum.photos/200/300?random=#{job.job_id}" : job.image_url %>" alt="">
+            <%= image_tag(job.image_url, class: "pic1") if job.image_url.attached? %>
+            <%= image_tag("https://picsum.photos/200/300?random=#{job.job_id}", class: "pic1") unless job.image_url.attached? %>
           </div>
           <div class="row px-1 justify-content-between">
             <header class="text-center content-center pt-1 pb-2">

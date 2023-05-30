@@ -73,7 +73,7 @@
 
                     // Add updated job markers to map
                     updatedJobs.forEach(function (job) {
-                        var jobInfo = '<b>' + job.title + '</b><br>' + job.description + '<br><a href=<%=root_path %>jobs/' + job.job_id + '>Apply Now</a>';
+                        var jobInfo = '<b>' + job.title + '</b><br>' + job.position + '<br><a href=<%=root_path %>jobs/' + job.job_id + '>Apply Now</a>';
                         var marker = L.marker([job.latitude, job.longitude]).addTo(map);
                         marker.bindPopup(jobInfo);
                         map.setView([userLat, userLng], 8);
@@ -108,7 +108,7 @@
         <% @jobs.each do |u| %>
         var latitude = <%= u.latitude.nil? ? 37.7749 : u.latitude %>;
         var longitude = <%= u.longitude.nil? ? -122.4194 : u.longitude %>;
-        var jobInfo = '<b><%= u.title %></b><br><%= u.description %><br><a href="<%= job_url(u) %>">Apply Now</a>';
+        var jobInfo = '<b><%= u.title %></b><br><%= u.position %><br><a href="<%= job_url(u) %>">Apply Now</a>';
         var marker = L.marker([latitude, longitude]).addTo(map);
         marker.bindPopup(jobInfo);
         <%end %>
