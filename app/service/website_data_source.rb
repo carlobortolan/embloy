@@ -79,10 +79,53 @@ class WebsiteDataSource
 
                     <div class="ext_base ext_ia"></div>
                 </div>
-
-
             </div>
         </div>
+    </div>
+    <div class="ext_base" style="height:250px;"></div>
+    <div class="ext_base ext_pa">
+       <div class="ext_base ext_qa">
+          <h1 class="ext_bigtop" style="width:100%; text-align:left; font-weight:900;">Let everybody know who you are</h1>
+      </div>
+      <div class="ext_base ext_qa">
+          <h1 class="ext_bigsubtop" style="width:100%; text-align:left; font-weight:900;">Embloy helps you to grow your workforce pool.</h1>
+      </div>
+      <div class="ext_base" style="height:100px;"></div>
+      <div class="ext_base ext_ra">
+        <div class="ext_base ext_sa">
+          <img src="http://localhost:5173/src/assets/websitebanner_12.png" style="width:auto; height:750px">
+        </div>
+        <div class="ext_ta">
+
+
+          <div class="ext_ua">
+            <h1 class="ext_bigsubtop ext_va">Last minute? No problem</h1>
+            <p class="ext_wa">Quickly hire people to fill in short-term staff shortages. Like for your usual take out delivery you\'ll be served on time.</p>
+          </div>
+
+          <div class="ext_ua">
+            <h1 class="ext_bigsubtop ext_va">It\'s a match!</h1>
+            <p class="ext_wa">Trust in online dating to get a good date? Trust us to set you up with the best staff for your specific open position.</p>
+          </div>
+
+          <div class="ext_ua">
+            <h1 class="ext_bigsubtop ext_va">Be organized</h1>
+            <p class="ext_wa">Keep track of working hours, stay in direct contact to former employees and claim specific tax and financial documents.</p>
+          </div>
+
+          <div class="ext_ua">
+            <h1 class="ext_bigsubtop ext_va">Boost your productivity</h1>
+            <p class="ext_wa">Hire & Fire with one click. Say good-bye to time consuming back and forth via Email and phone.</p>
+          </div>
+
+          <div class="ext_ua ext_xa">
+            <div class="ext_button-styles" onclick="linkTo(\"https://test.com\")">
+	             <p class="ext_txt">Learn about the Embloy platform</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
     </div>
 </div>
 `'
