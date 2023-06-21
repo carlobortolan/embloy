@@ -35,7 +35,7 @@ class JobsController < ApplicationController
       lng = Current.user.longitude
       @jobs = JobSlicer.fetch(lat, lng)
     else
-      @jobs = Job.all.where(job_id < 100)
+      @jobs = Job.order('random()').limit(100)
     end
   end
 
@@ -53,6 +53,7 @@ class JobsController < ApplicationController
       format.json { render json: @jobs.to_json(except: [:image_url, :description]) }
     end
   end
+
   def show
     @job = Job.find(params[:id])
     @owner = owner
