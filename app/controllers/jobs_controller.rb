@@ -18,7 +18,8 @@ class JobsController < ApplicationController
 
     # Slice jobs
     # jobs = JobSlicer.slice(Current.user, 30000, lat, lng)
-    jobs = JobSlicer.fetch(lat, lng)
+    # jobs = JobSlicer.fetch(lat, lng)
+    jobs = Job.order('random()').limit(10)
     # jobs = Job.all.limit(10)
     # Call FG-API to rank jobs
     if !jobs.nil? && !jobs.empty?
@@ -35,7 +36,8 @@ class JobsController < ApplicationController
     if (lat.nil? || lng.nil?) && !Current.user.nil? && !Current.user.longitude.nil? && !Current.user.latitude.nil?
       lat = Current.user.latitude
       lng = Current.user.longitude
-      @jobs = JobSlicer.fetch(lat, lng)
+      #      @jobs = JobSlicer.fetch(lat, lng)
+      @jobs = Job.order('random()').limit(500)
     else
       @jobs = Job.order('random()').limit(500)
     end
@@ -158,7 +160,7 @@ class JobsController < ApplicationController
       request_body = "{\"pref\": #{Current.user.preferences.to_json}, \"slice\": #{jobs.to_json(except: [:image_url, :description])}}"
     else
       request_body = "{\"slice\": #{jobs.to_json(except: [:image_url, :description])}}"
- end
+    end
     http = Net::HTTP.new(url.host, url.port)
     http.use_ssl = true
     http.verify_mode = OpenSSL::SSL::VERIFY_PEER

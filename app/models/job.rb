@@ -3,7 +3,7 @@ class Job < ApplicationRecord
   after_validation :geocode
   include Visible
   include PgSearch::Model
-  #include ActiveModel::Serialization
+  # include ActiveModel::Serialization
   paginates_per 48
   max_pages 10
   multisearchable against: [:title, :job_type, :position, :key_skills, :description, :city, :postal_code, :address]
@@ -103,9 +103,7 @@ class Job < ApplicationRecord
     end
   end
 
-  def to_partial_path(jobs)
-
-  end
+  def to_partial_path(jobs) end
 
 end
 
