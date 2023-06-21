@@ -31,9 +31,42 @@ class JobSlicer
     res = Job.includes([:image_url_attachment]).within_radius(lat, lng, 1000000, 100).with_all_rich_text
 
     if res.nil? || res.empty?
-      #      res = Job.all.limit(10).with_all_rich_text
       res = Job.includes([:image_url_attachment]).all.limit(10).with_all_rich_text
     end
     return res
   end
+
+  def self.fetch_feed(lat, lng)
+    if lat.nil? || lng.nil? || lat.abs > 90.0 || lng.abs > 180.0
+      puts "CASEA"
+      return Job.order('random()').limit(20)
+    else
+      puts "CASEB"
+      res = Job.within_radius(lat, lng, 50000, 20)
+      #      res = Job.within_radius(lat, lng, 1000000, 20)
+      if res.nil? || res.empty?
+        puts "CASEC"
+        res = Job.all.limit(20)
+      end
+      return res
+    end
+  end
+
+  def self.fetch_map(lat, lng)
+    if lat.nil? || lng.nil? || lat.abs > 90.0 || lng.abs > 180.0
+      puts "CASEA"
+      return Job.order('random()').limit(100)
+    else
+      puts "CASEB"
+      res = Job.within_radius(lat, lng, 1000000, 100)
+      #      res = Job.within_radius(lat, lng, 1000000, 20)
+      if res.nil? || res.empty?
+        puts "CASEC"
+        res = Job.all.limit(100)
+      end
+      return res
+    end
+  end
+
+
 end

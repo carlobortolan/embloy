@@ -11,15 +11,12 @@ class JobsController < ApplicationController
     unless Current.user.nil?
       lat = Current.user.latitude
       lng = Current.user.longitude
-    else
-      lat = 48.1374300
-      lng = 11.5754900
     end
 
     # Slice jobs
     # jobs = JobSlicer.slice(Current.user, 30000, lat, lng)
-    # jobs = JobSlicer.fetch(lat, lng)
-    jobs = Job.order('random()').limit(10)
+    jobs = JobSlicer.fetch_feed(lat, lng)
+    # jobs = Job.order('random()').limit(10)
     # jobs = Job.all.limit(10)
     # Call FG-API to rank jobs
     if !jobs.nil? && !jobs.empty?
@@ -36,10 +33,9 @@ class JobsController < ApplicationController
     if (lat.nil? || lng.nil?) && !Current.user.nil? && !Current.user.longitude.nil? && !Current.user.latitude.nil?
       lat = Current.user.latitude
       lng = Current.user.longitude
-      #      @jobs = JobSlicer.fetch(lat, lng)
-      @jobs = Job.order('random()').limit(500)
+      @jobs = JobSlicer.fetch(lat, lng)
     else
-      @jobs = Job.order('random()').limit(500)
+      @jobs = Job.all.where(job_id < 100)
     end
   end
 
@@ -52,12 +48,11 @@ class JobsController < ApplicationController
       lat = Current.user.latitude
       lng = Current.user.longitude
     end
-    @jobs = JobSlicer.fetch(lat, lng)
+    @jobs = JobSlicer.fetch_map(lat, lng)
     respond_to do |format|
-      format.json { render json: @jobs }
+      format.json { render json: @jobs.to_json(except: [:image_url, :description]) }
     end
   end
-
   def show
     @job = Job.find(params[:id])
     @owner = owner
