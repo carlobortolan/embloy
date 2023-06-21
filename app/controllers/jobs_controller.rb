@@ -17,8 +17,9 @@ class JobsController < ApplicationController
     end
 
     # Slice jobs
-    jobs = JobSlicer.slice(Current.user, 30000, lat, lng)
-
+    # jobs = JobSlicer.slice(Current.user, 30000, lat, lng)
+    # jobs = JobSlicer.fetch(lat, lng)
+    jobs = Job.all.limit(10)
     # Call FG-API to rank jobs
     if !jobs.nil? && !jobs.empty?
       # TODO: Add pagination to feed / slicer @jobs = call_feed(jobs[params[:page]])
@@ -151,24 +152,26 @@ class JobsController < ApplicationController
 
   # Method to communicate with the FG-API by sending a POST-request to tbd
   def call_feed(jobs)
-    url = URI.parse("https://embloy-fg-api.onrender.com/feed")
-
-    if Current.user.nil? || Current.user.preferences.nil?
-      request_body = "{\"slice\": #{jobs.to_json}}"
+    # url = URI.parse("https://embloy-fg-api.onrender.com/feed")
+    url = URI.parse("http://localhost:8080/feed")
+    if !Current.user.nil? && !Current.user.preferences.nil?
+      request_body = "{\"pref\": #{Current.user.preferences.to_json}, \"slice\": #{jobs.to_json(except: [:image_url, :description])}}"
     else
-      request_body = "{\"pref\": #{Current.user.preferences.to_json},\"slice\": #{jobs.to_json}}"
-    end
-
+      request_body = "{\"slice\": #{jobs.to_json(except: [:image_url, :description])}}"
+ end
+    #    puts "B2 = #{request_body}"
     http = Net::HTTP.new(url.host, url.port)
-    http.use_ssl = true
-    http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+    # http.use_ssl = true
+    # http.verify_mode = OpenSSL::SSL::VERIFY_PEER
 
     request = Net::HTTP::Post.new(url)
     request.basic_auth('FG', 'pw')
     request.body = request_body
+    #request.body = ""
     request["Content-Type"] = "application/json"
     response = http.request(request)
 
+    puts "response.code = #{response.code}"
     if response.code == '200'
       feed_json = JSON.parse(response.body)
       @jobs = []
@@ -176,6 +179,7 @@ class JobsController < ApplicationController
         @jobs << Job.new(job_hash)
       end
       @jobs
+      puts "empty res"
     end
   end
 

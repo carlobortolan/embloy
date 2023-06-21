@@ -64,6 +64,12 @@ production:
   database: embloy_prod
   adapter: postgis
   encoding: unicode
+
+  connect_timeout: 2
+  checkout_timeout: 5
+  variables:
+    statement_timeout: 5000 # ms
+
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
   username: <%= ENV["DATABASE_USER"] %>

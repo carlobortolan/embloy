@@ -56,10 +56,12 @@ Rails.application.configure do
   config.log_tags = [:request_id]
 
   # Use a different cache store in production.
-  # config.cache_store = :mem_cache_store
-
-  # Use a real queuing backend for Active Job (and separate queues per environment).
+  # Configure the cache store.  In this case, configure it to use a MemCacheStore, which uses Dalli.
+  # config.cache_store = :mem_cache_store, 'localhost:11211', 'abc.example.com:11211', { pool_size: 10, pool_timeout: 5 }
+  # Enable fragment and page caching in ActionController - optional, assuming the application wants to use page fragment caching
+  config.action_controller.perform_caching = true  # Use a real queuing backend for Active Job (and separate queues per environment).
   # config.active_job.queue_adapter     = :resque
+  # config.active_job.queue_adapter = :sidekiq
   # config.active_job.queue_name_prefix = "embloy_production"
 
   config.action_mailer.perform_deliveries = true
