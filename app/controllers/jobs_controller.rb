@@ -18,8 +18,8 @@ class JobsController < ApplicationController
 
     # Slice jobs
     # jobs = JobSlicer.slice(Current.user, 30000, lat, lng)
-    # jobs = JobSlicer.fetch(lat, lng)
-    jobs = Job.all.limit(10)
+    jobs = JobSlicer.fetch(lat, lng)
+    # jobs = Job.all.limit(10)
     # Call FG-API to rank jobs
     if !jobs.nil? && !jobs.empty?
       # TODO: Add pagination to feed / slicer @jobs = call_feed(jobs[params[:page]])
@@ -159,7 +159,6 @@ class JobsController < ApplicationController
     else
       request_body = "{\"slice\": #{jobs.to_json(except: [:image_url, :description])}}"
  end
-    #    puts "B2 = #{request_body}"
     http = Net::HTTP.new(url.host, url.port)
     http.use_ssl = true
     http.verify_mode = OpenSSL::SSL::VERIFY_PEER
@@ -167,7 +166,6 @@ class JobsController < ApplicationController
     request = Net::HTTP::Post.new(url)
     request.basic_auth('FG', 'pw')
     request.body = request_body
-    #request.body = ""
     request["Content-Type"] = "application/json"
     response = http.request(request)
 
@@ -179,7 +177,6 @@ class JobsController < ApplicationController
         @jobs << Job.new(job_hash)
       end
       @jobs
-      puts "empty res"
     end
   end
 

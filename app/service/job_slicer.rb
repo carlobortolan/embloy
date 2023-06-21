@@ -28,7 +28,7 @@ class JobSlicer
       lng = 11.5754900
     end
 
-    res = Job.includes([:image_url_attachment])   .within_radius(lat, lng, 1000000, 100).with_all_rich_text
+    res = Job.includes([:image_url_attachment]).within_radius(lat, lng, 1000000, 100).with_all_rich_text
 
     if res.nil? || res.empty?
       #      res = Job.all.limit(10).with_all_rich_text
