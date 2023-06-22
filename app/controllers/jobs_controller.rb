@@ -21,7 +21,12 @@ class JobsController < ApplicationController
     # Call FG-API to rank jobs
     if !jobs.nil? && !jobs.empty?
       # TODO: Add pagination to feed / slicer @jobs = call_feed(jobs[params[:page]])
-      @jobs = call_feed(jobs)
+
+      @jobs = []
+      call_feed(jobs).each do |j_id|
+        @jobs << Job.find_by_job_id(j_id)
+      end
+
     else
       render status: 204, json: { "message": "No jobs found!" }
     end
@@ -40,8 +45,6 @@ class JobsController < ApplicationController
   end
 
   def update_jobs
-    puts "PARAA = #{params}"
-
     lat = params[:latitude]
     lng = params[:longitude]
     if (lat.nil? || lng.nil?) && !Current.user.nil? && !Current.user.longitude.nil? && !Current.user.latitude.nil?
@@ -167,14 +170,15 @@ class JobsController < ApplicationController
     request["Content-Type"] = "application/json"
     response = http.request(request)
 
-    puts "response.code = #{response.code}"
     if response.code == '200'
       feed_json = JSON.parse(response.body)
-      @jobs = []
+      res = []
       feed_json.each do |job_hash|
-        @jobs << Job.new(job_hash)
+        # puts job_hash["job_id"]
+        res << job_hash["job_id"]
+        # @jobs << Job.new(job_hash)
       end
-      @jobs
+      res
     end
   end
 
