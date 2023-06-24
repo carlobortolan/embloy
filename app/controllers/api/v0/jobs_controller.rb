@@ -4,7 +4,7 @@ module Api
   module V0
     class JobsController < ApiController
       before_action :verify_access_token
-      before_action :verify_path_job_id, only: [:update,:destroy]
+      before_action :verify_path_job_id, only: [:update, :destroy]
 
       def create
         begin
@@ -21,11 +21,13 @@ module Api
 
           if @job.save
             SpatialJobValue.update_job_value(@job)
+            # Attach image file to job-object
+            @job.image_url.attach(params[:image_url]) if params[:image_url]
             render status: 200, json: { "message": "Job created!" }
           else
             if @job.errors.details != false
               error = @job.errors.details.dup # necessary because @job.errors.details cant be modified manually
-              error.each do |a,b|
+              error.each do |a, b|
                 b.each_with_index do |e, i|
                   b[i] = flatted_first_element(e)
                 end
@@ -69,8 +71,8 @@ module Api
       def destroy
         begin
           must_be_editor!(@decoded_token["sub"])
-          #verified!(@decoded_token["typ"]) #jobs should be removed with job_status = 0 instead of being irreversibly deleted
-          #must_be_owner!(params[:id], @decoded_token["sub"])
+          # verified!(@decoded_token["typ"]) #jobs should be removed with job_status = 0 instead of being irreversibly deleted
+          # must_be_owner!(params[:id], @decoded_token["sub"])
           @job = Job.find(params[:id]) # no must_be_owner! call @job needs to be set manually
           @job.destroy!
           render status: 200, json: { "message": "Job deleted!" }
@@ -87,7 +89,7 @@ module Api
           # request.headers["HTTP_ACCESS_TOKEN"].nil? ? taboo! : @decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
           verified!(@decoded_token["typ"])
           if (params[:latitude].nil? || params[:latitude].blank?) && (params[:longitude].nil? || params[:longitude].blank?)
-            render status: 400, json:{"latitude" => [{error: 'ERR_BLANK', description: 'Attribute can\'t be blank'}], "longitude" => [{error: 'ERR_BLANK', description: 'Attribute can\'t be blank'}]}
+            render status: 400, json: { "latitude" => [{ error: 'ERR_BLANK', description: 'Attribute can\'t be blank' }], "longitude" => [{ error: 'ERR_BLANK', description: 'Attribute can\'t be blank' }] }
             return -1
           end
           return blank_error('latitude') if params[:latitude].nil? || params[:latitude].blank?
@@ -107,7 +109,7 @@ module Api
           jobs = JobSlicer.slice(User.find(@decoded_token["sub"].to_i), 30000, params[:latitude], params[:longitude])
           # Call FG-API to rank jobs
           if !jobs.nil? && !jobs.empty?
-            #feed = call_feed(jobs) # - #
+            # feed = call_feed(jobs) # - #
             # ------------------------- #
             feed = jobs # todo:remove-- #
             # ------------------------- #
@@ -149,11 +151,15 @@ module Api
 
         # =================== API v0 ====================
         # ===============================================
-        params.require(:job).permit(:title, :description, :start_slot, :user_id, :longitude, :latitude, :job_type, :position, :currency, :salary, :key_skills, :duration)
+        # params.require(:job).permit(:title, :description, :start_slot, :user_id, :longitude, :latitude, :job_type, :position, :currency, :salary, :key_skills, :duration)
+        # Updated params to work fith postman form-data
+        params.permit(:title, :description, :start_slot, :user_id, :longitude, :latitude, :job_type, :position, :currency, :salary, :key_skills, :duration)
       end
+
       def update_job_params
         params.require(:job).permit(:title, :description, :start_slot, :user_id, :longitude, :latitude, :job_type, :status, :job_status, :position, :currency, :salary, :key_skills, :duration)
       end
+
       # mark_notifications_as_read is not implemented because i dont understand how it works
 =begin
       def mark_notifications_as_read
