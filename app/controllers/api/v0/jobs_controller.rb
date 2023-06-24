@@ -56,6 +56,8 @@ module Api
           return removed_error('job') if @job.job_status == 0
           if @job.update(update_job_params)
             SpatialJobValue.update_job_value(@job)
+            # Attach image file to job-object
+            @job.image_url.attach(params[:image_url]) if params[:image_url]
             render status: 200, json: { "message": "Job updated!" }
           else
             render status: 400, json: @job.errors.details
@@ -147,17 +149,18 @@ module Api
       end
 
       def job_params
-        # params.require(:job).permit(:title, :description, :content, :job_notifications, :start_slot, :notify, :status, :user_id, :longitude, :latitude, :job_type, :position, :currency, :salary, :key_skills, :duration, :job_type)
-
         # =================== API v0 ====================
         # ===============================================
         # params.require(:job).permit(:title, :description, :start_slot, :user_id, :longitude, :latitude, :job_type, :position, :currency, :salary, :key_skills, :duration)
-        # Updated params to work fith postman form-data
+        # Updated params to work with postman form-data
         params.permit(:title, :description, :start_slot, :user_id, :longitude, :latitude, :job_type, :position, :currency, :salary, :key_skills, :duration)
       end
 
       def update_job_params
-        params.require(:job).permit(:title, :description, :start_slot, :user_id, :longitude, :latitude, :job_type, :status, :job_status, :position, :currency, :salary, :key_skills, :duration)
+        #params.require(:job).permit(:title, :description, :start_slot, :user_id, :longitude, :latitude, :job_type, :status, :job_status, :position, :currency, :salary, :key_skills, :duration)
+        # Updated params to work with postman form-data
+        params.permit(:title, :description, :start_slot, :user_id, :longitude, :latitude, :job_type, :status, :job_status, :position, :currency, :salary, :key_skills, :duration)
+
       end
 
       # mark_notifications_as_read is not implemented because i dont understand how it works
