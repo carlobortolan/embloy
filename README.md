@@ -50,6 +50,14 @@ All notifications are sent via [SMTP](https://en.wikipedia.org/wiki/Simple_Mail_
 To get started, simply visit [our website](http://embloy.com/) and create a new account or log in with an existing
 account. It's that easy!
 
+## Running on Docker
+Go into the project directory and run: \
+`$ docker build -t embloy .`\
+`$ docker run -it -p 3000:3000 embloy `
+
+To deploy to docker-hub: \
+`$ docker tag embloy:latest <docker-username>/<docker-repository>`\
+`$ docker push <docker-username>/<docker-repository>`
 ## Config
 
 > __NOTE__: _You only need to follow these steps if you wish to contribute and need to test your changes locally_
