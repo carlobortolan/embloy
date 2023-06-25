@@ -1,27 +1,35 @@
-# Use an official Ruby runtime as a parent image
+# Base image
 FROM ruby:3.2.2
 
-# Set the working directory in the container to /app
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy the Gemfile and Gemfile.lock from the app root directory into the container
+# Install dependencies
+RUN apt-get update -qq && \
+    apt-get install -y build-essential \
+                       libpq-dev \
+                       nodejs
+
+# Copy the Gemfile and Gemfile.lock into the container
 COPY Gemfile Gemfile.lock ./
 
-# Install any needed packages specified in the Gemfile
-RUN bundle install
+# Install gems
+RUN gem install bundler:2.2.23 && \
+    bundle install
 
-# Copy the rest of the application code into the container
+# Copy the application code into the container
 COPY . .
 
-# Set the default environment variables
-ENV RAILS_ENV=deployment \
-    RACK_ENV=deployment \
+# Set environment variables
+ENV RAILS_ENV=production
+ENV RAILS_SERVE_STATIC_FILES=true
+ENV RAILS_LOG_TO_STDOUT=true
 
-# Precompile the assets
-RUN bundle install; bundle exec rake assets:precompile; bundle exec rake assets:clean;
+# Precompile assets
+RUN bundle exec rake assets:precompile
 
-# Expose port 3000 from the container to the host
+# Expose port 3000
 EXPOSE 3000
 
-# Start the Rails server when the container starts
-CMD ["rails", "server", "-b", "0.0.0.0"]
+# Start the Rails server
+CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0"]
