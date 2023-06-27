@@ -11,7 +11,7 @@ class ApplicationController < ActionController::Base
   # =============== Prototype auth-wall ===============
   def auth_prototype
     unless !Current.user.nil? && must_be_verified
-      redirect_to sign_in_path, alert: 'Not allowed!'
+      redirect_to sign_in_path, alert: 'Not verified!'
     end
   end
 
