@@ -1,4 +1,6 @@
 class RegistrationsController < ApplicationController
+  skip_before_action :auth_prototype
+
   def new
     @user = User.new
   end
@@ -13,6 +15,7 @@ class RegistrationsController < ApplicationController
   def create
     @user = User.new(user_params)
     find_coordinates
+    @user[:verified] = 0
 
     if @user.save
       WelcomeMailer.with(user: @user).welcome_email.deliver_later

@@ -1,5 +1,6 @@
 class WelcomeController < ApplicationController
   require "json"
+  skip_before_action :auth_prototype, only: [:privacy_policy, :help, :terms_of_service]
 
   def index
     if Current.user
@@ -30,4 +31,9 @@ class WelcomeController < ApplicationController
 
   def help
   end
+
+  def terms_of_service
+
+  end
+
 end

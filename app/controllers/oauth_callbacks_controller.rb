@@ -1,4 +1,6 @@
 class OauthCallbacksController < ApplicationController
+  skip_before_action :auth_prototype
+
   def github
     authenticate
     # TODO: FETCH ADDITIONAL METADATA

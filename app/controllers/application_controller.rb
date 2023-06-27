@@ -4,8 +4,17 @@
 class ApplicationController < ActionController::Base
   include SpatialJobValue
   before_action :set_current_user
+  before_action :auth_prototype
   before_action :set_notifications, if: Current.user
   before_action :require_user_not_blacklisted!, if: Current.user
+
+  # =============== Prototype auth-wall ===============
+  def auth_prototype
+    unless !Current.user.nil? && must_be_verified
+      redirect_to sign_in_path, alert: 'Not allowed!'
+    end
+  end
+
 
   def set_current_user
     Current.user = User.find_by(id: session[:user_id]) if session[:user_id]

@@ -1,5 +1,6 @@
 class PasswordsController < ApplicationController
   before_action :require_user_logged_in
+  skip_before_action :auth_prototype
 
   def edit; end
 

@@ -1,4 +1,6 @@
 class SessionsController < ApplicationController
+  skip_before_action :auth_prototype
+
   def new; end
 
   def create

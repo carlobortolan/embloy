@@ -81,7 +81,7 @@ Rails.application.configure do
   # config.assets.prefix = "/assets"
   #
   config.action_mailer.default_url_options = { host: ENV['EMAIL_HOST'] }
-  config.log_level = :fatal
+  #config.log_level = :fatal
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
     address: ENV['EMAIL_ADDRESS'],
