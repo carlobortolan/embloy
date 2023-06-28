@@ -11,10 +11,10 @@ class ApplicationController < ActionController::Base
   # =============== Prototype auth-wall ===============
   def auth_prototype
     unless !Current.user.nil? && must_be_verified
-      redirect_to sign_in_path, alert: 'Unauthorized to access prototype!'
+      #      redirect_to sign_in_path, alert: 'Your account is not verified yet!'
+      redirect_to sign_in_path, alert: 'Your account hasn\'t been activated yet!'
     end
   end
-
 
   def set_current_user
     Current.user = User.find_by(id: session[:user_id]) if session[:user_id]

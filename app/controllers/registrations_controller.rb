@@ -28,7 +28,8 @@ class RegistrationsController < ApplicationController
 
   def verify_account
       @user = User.find_signed!(params[:token], purpose: 'verify_account')
-      if @user.update!(user_role: "verified")
+      # TODO: Change to "verified" when opening prototype to public.
+      if @user.update!(user_role: "spectator")
         redirect_to sign_in_path, notice: 'Your account was verified successfully.'
       else
         render :edit
