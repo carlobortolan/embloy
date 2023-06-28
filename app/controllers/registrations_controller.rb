@@ -15,15 +15,24 @@ class RegistrationsController < ApplicationController
   def create
     @user = User.new(user_params)
     find_coordinates
-    @user[:verified] = 0
+    #    @user[:user_role] = 0
 
     if @user.save
       WelcomeMailer.with(user: @user).welcome_email.deliver_later
       session[:user_id] = @user.id
-      redirect_to root_path, notice: 'Successfully created account'
+      redirect_to root_path, notice: 'Successfully created account. Check your emails to verify your account.'
     else
       render :new
     end
+  end
+
+  def verify_account
+      @user = User.find_signed!(params[:token], purpose: 'verify_account')
+      if @user.update!(user_role: "verified")
+        redirect_to sign_in_path, notice: 'Your account was verified successfully.'
+      else
+        render :edit
+      end
   end
 
   private
