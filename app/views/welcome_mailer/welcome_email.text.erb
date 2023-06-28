@@ -1,7 +1,11 @@
-Welcome to embloy.com, <%= @user.email %>
-===============================================
+Hi <%= params[:user].first_name %>,
 
-You have successfully signed up to embloy.com,
-your user email is: <%= @user.email %>.
+You have successfully signed up to our prototype!
+Your user email is: <%= @user.email %>.
 
-Stay tuned.
+Click on the link below to verify your account. The link expires in 15 minutes.
+<%= verify_account_url(token: @token) %>
+
+Best,
+
+The Embloy Team
