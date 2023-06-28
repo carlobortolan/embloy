@@ -32,7 +32,7 @@ backend. The enhanced FeedGenerator features a single REST API endpoint, which c
 via an authentication barrier. Credentials are provided on a need-to-know basis. The FeedGenerator ranks each element of
 a set of jobs (or "slice") that are provided by the Rails backend. The resulting feed is then displayed to the user.***
 
-The job feed delivers personalized job recommendations based on the users preferences and behavior.
+The job feed delivers personalized job recommendations based on the user's preferences and behavior.
 The user can also utilize our advanced search functionality, which includes comprehensive filtering and sorting options
 for direct job exploration.
 
@@ -113,7 +113,7 @@ To deploy to docker-hub: \
 <details>
   <summary> 3. Start the server </summary>
 
-If you wish to experiment on our backend or contribute to our front end you can test your changes by starting a local
+If you wish to experiment on our backend or contribute to our front end, you can test your changes by starting a local
 server.
 
 1. Create a file 'config/env_var.rb' with the following content:
