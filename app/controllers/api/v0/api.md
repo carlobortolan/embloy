@@ -11,7 +11,7 @@
 
 ### 1. Overview
 
-> **URL**: https://embloy-prototype.onrender.com/api/v0
+> **URL**: https://embloy.onrender.com/api/v0
 >
 ***
 
@@ -42,7 +42,7 @@
    **200: OK**
     ```   
             {
-                "message": "Account registered! Please activate your user account and claim your initial refresh token via GET https://embloy-prototype.onrender.com/api/v0/user/verify."
+                "message": "Account registered! Please activate your user account and claim your initial refresh token via GET https://embloy.onrender.com/api/v0/user/verify."
             }
     ```
    ####

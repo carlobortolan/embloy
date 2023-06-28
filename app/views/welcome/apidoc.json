@@ -19,7 +19,7 @@
   },
   "servers": [
     {
-      "url": "https://embloy-prototype.onrender.com/api/v0/"
+      "url": "https://embloy.onrender.com/api/v0/"
     }
   ],
   "tags": [
