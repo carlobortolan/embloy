@@ -74,6 +74,7 @@ Rails.application.routes.draw do
   get 'sign_in', to: 'sessions#new'
   post 'sign_in', to: 'sessions#create', as: :log_in
   get 'verify', to: 'registrations#verify_account', as: :verify_account
+  get 'activate', to: 'registrations#activate_account', as: :activate_account
   delete 'logout', to: 'sessions#destroy'
 
   get "/auth/github/callback", to: 'oauth_callbacks#github', as: :auth_github_callback
