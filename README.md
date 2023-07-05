@@ -1,5 +1,7 @@
 <h1><a href="https://embloy.com">Embloy</a></h1>
 
+> __NOTE__: _The current prototype deployed at ***[embloy.onrender.com](embloy.onrender.com)*** can take up to 60 seconds to load due to render's server instance having to boot up after being inactive for a while._
+
 This repository contains the backend code for our application and API, including the frontend of our web-application. We
 have recently deployed an initial prototype at
 ***[embloy.onrender.com](embloy.onrender.com)***, although
