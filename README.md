@@ -46,8 +46,7 @@ a visual overview of job opportunities.
 Users can set up an account with their email address and password, or choose to log in using the OAuth2.0 services
 provided by Google and GitHub. Once an account is created, it needs to be verified by clicking on the email.
 
-Passwords are instantly encrypted using [bcryt](https://en.wikipedia.org/wiki/Bcrypt) and stored in the database as an
-encrypted hash. In case a user forgets their password, it can be reset via standard email authentication.
+Passwords are instantly hashed using [bcryt](https://en.wikipedia.org/wiki/Bcrypt) and stored in the database as an hash. In case a user forgets their password, it can be reset via standard email authentication.
 
 For an optimal user experience, it is recommended to fill out the 'Preferences' field under 'My Profile'.
 To log into the application, users can use the aforementioned OAuth2.0 services or enter their password.
