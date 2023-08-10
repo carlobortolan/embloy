@@ -5,6 +5,7 @@ module Api
     class ApiController < ApplicationController
       include ApiExceptionHandler
       protect_from_forgery with: :null_session
+      skip_before_action :auth_prototype
 
       def verify_access_token
         (request.headers["HTTP_ACCESS_TOKEN"].nil? || request.headers["HTTP_ACCESS_TOKEN"].empty?) ? blank_error('token') : @decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
