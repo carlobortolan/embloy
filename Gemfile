@@ -21,7 +21,7 @@ gem 'rgeo'
 gem 'activerecord-postgis-adapter'
 
 # Use ODM (Object Document Mapper) for MongoDB
-gem 'mongoid', '~> 8.1'
+gem 'mongoid'
 
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", "~> 5.0"

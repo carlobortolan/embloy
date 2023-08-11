@@ -405,7 +405,7 @@ DEPENDENCIES
   importmap-rails
   jbuilder
   kaminari
-  mongoid (~> 8.1)
+  mongoid
   noticed (~> 1.6)
   omniauth-github (~> 2.0)
   omniauth-google-oauth2 (~> 1.1)
