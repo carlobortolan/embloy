@@ -4,7 +4,7 @@ development:
     # Defines the default client. (required)
     default:
       # Mongoid can connect to a URI accepted by the driver:
-      uri: mongodb+srv://<%=ENV["MONGO_DATABASE_USER"]%>:<%=ENV["MONGO_DATABASE_PASSWORD"]%>@jobpipeline.yztivdv.mongodb.net/?retryWrites=true&w=majority
+      uri: <%=ENV['MONGO_DATABASE_URI']%>
 
       # Otherwise define the parameters separately.
       # This defines the name of the default database that Mongoid can connect to.
