@@ -50,7 +50,7 @@
     <orderEntry type="library" scope="PROVIDED" name="bson (v4.15.0, ruby-3.2.2-p53) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="builder (v3.2.4, ruby-3.2.2-p53) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="bullet (v7.0.7, ruby-3.2.2-p53) [gem]" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="bundler (v2.4.12, ruby-3.2.2-p53) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="bundler (v2.4.18, ruby-3.2.2-p53) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="capybara (v3.38.0, ruby-3.2.2-p53) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="concurrent-ruby (v1.2.2, ruby-3.2.2-p53) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="crass (v1.0.6, ruby-3.2.2-p53) [gem]" level="application" />
@@ -78,7 +78,7 @@
     <orderEntry type="library" scope="PROVIDED" name="http-cookie (v1.0.5, ruby-3.2.2-p53) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="http-form_data (v2.3.0, ruby-3.2.2-p53) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="httparty (v0.21.0, ruby-3.2.2-p53) [gem]" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="i18n (v1.12.0, ruby-3.2.2-p53) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="i18n (v1.14.1, ruby-3.2.2-p53) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="image_processing (v1.12.2, ruby-3.2.2-p53) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="importmap-rails (v1.1.5, ruby-3.2.2-p53) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="io-console (v0.6.0, ruby-3.2.2-p53) [gem]" level="application" />
@@ -99,9 +99,9 @@
     <orderEntry type="library" scope="PROVIDED" name="mime-types-data (v3.2023.0218.1, ruby-3.2.2-p53) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="mini_magick (v4.12.0, ruby-3.2.2-p53) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="mini_mime (v1.1.2, ruby-3.2.2-p53) [gem]" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="minitest (v5.18.0, ruby-3.2.2-p53) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="minitest (v5.19.0, ruby-3.2.2-p53) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="mongo (v2.19.1, ruby-3.2.2-p53) [gem]" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="mongoid (v8.1.1, ruby-3.2.2-p53) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="mongoid (v7.5.3, ruby-3.2.2-p53) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="msgpack (v1.6.1, ruby-3.2.2-p53) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="multi_xml (v0.6.0, ruby-3.2.2-p53) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="net-imap (v0.3.4, ruby-3.2.2-p53) [gem]" level="application" />

@@ -145,7 +145,7 @@ GEM
     httparty (0.21.0)
       mini_mime (>= 1.0.0)
       multi_xml (>= 0.5.2)
-    i18n (1.12.0)
+    i18n (1.14.1)
       concurrent-ruby (~> 1.0)
     image_processing (1.12.2)
       mini_magick (>= 4.9.5, < 5)
@@ -191,13 +191,12 @@ GEM
     mime-types-data (3.2023.0218.1)
     mini_magick (4.12.0)
     mini_mime (1.1.2)
-    minitest (5.18.0)
+    minitest (5.19.0)
     mongo (2.19.1)
       bson (>= 4.14.1, < 5.0.0)
-    mongoid (8.1.1)
+    mongoid (7.5.3)
       activemodel (>= 5.1, < 7.1, != 7.0.0)
-      concurrent-ruby (>= 1.0.5, < 2.0)
-      mongo (>= 2.18.0, < 3.0.0)
+      mongo (>= 2.10.5, < 3.0.0)
       ruby2_keywords (~> 0.0.5)
     msgpack (1.6.1)
     multi_xml (0.6.0)
@@ -405,7 +404,7 @@ DEPENDENCIES
   importmap-rails
   jbuilder
   kaminari
-  mongoid
+  mongoid (~> 7.5.3)
   noticed (~> 1.6)
   omniauth-github (~> 2.0)
   omniauth-google-oauth2 (~> 1.1)
@@ -431,4 +430,4 @@ RUBY VERSION
    ruby 3.2.2p53
 
 BUNDLED WITH
-   2.4.12
+   2.4.18
