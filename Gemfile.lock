@@ -80,7 +80,6 @@ GEM
     bindex (0.8.1)
     bootsnap (1.16.0)
       msgpack (~> 1.2)
-    bson (4.15.0)
     builder (3.2.4)
     bullet (7.0.7)
       activesupport (>= 3.0.0)
@@ -192,12 +191,6 @@ GEM
     mini_magick (4.12.0)
     mini_mime (1.1.2)
     minitest (5.19.0)
-    mongo (2.19.1)
-      bson (>= 4.14.1, < 5.0.0)
-    mongoid (7.5.3)
-      activemodel (>= 5.1, < 7.1, != 7.0.0)
-      mongo (>= 2.10.5, < 3.0.0)
-      ruby2_keywords (~> 0.0.5)
     msgpack (1.6.1)
     multi_xml (0.6.0)
     net-imap (0.3.4)
@@ -404,7 +397,6 @@ DEPENDENCIES
   importmap-rails
   jbuilder
   kaminari
-  mongoid (~> 7.5.3)
   noticed (~> 1.6)
   omniauth-github (~> 2.0)
   omniauth-google-oauth2 (~> 1.1)
