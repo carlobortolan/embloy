@@ -160,7 +160,6 @@ module Api
         #params.require(:job).permit(:title, :description, :start_slot, :user_id, :longitude, :latitude, :job_type, :status, :job_status, :position, :currency, :salary, :key_skills, :duration)
         # Updated params to work with postman form-data
         params.permit(:title, :description, :start_slot, :user_id, :longitude, :latitude, :job_type, :status, :job_status, :position, :currency, :salary, :key_skills, :duration)
-
       end
 
       # mark_notifications_as_read is not implemented because i dont understand how it works
