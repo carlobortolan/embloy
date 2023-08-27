@@ -28,6 +28,8 @@ class UserController < ApplicationController
     else
       render :index, status: :unprocessable_entity, alert: "Could not save changes"
     end
+  rescue IsoCountryCodes::UnknownCodeError
+    redirect_to @user, alert: "#{user_params[:country_code]} is not a valid ISO country code"
   end
 
   def update_location

@@ -9,7 +9,13 @@ class User < ApplicationRecord
   validates :first_name, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, uniqueness: false
   validates :last_name, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, uniqueness: false
   # TODO: UNDERSTAND UPDATABLE?
-  # validates :password, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, uniqueness: false, length: { minimum: 8, maximum: 72 }
+  validates :password, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" },
+            length: { minimum: 8, maximum: 72, "error": "ERR_LENGTH", "description": "Attribute length is invalid" },
+            if: :password_required?
+
+  validates :password_confirmation, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" },
+            length: { minimum: 8, maximum: 72, "error": "ERR_LENGTH", "description": "Attribute length is invalid" },
+            if: :password_required?
   validates :application_notifications, presence: true
   validates :longitude, presence: false
   validates :latitude, presence: false
@@ -17,8 +23,10 @@ class User < ApplicationRecord
   validates :postal_code, presence: false
   validates :city, presence: false
   validates :address, presence: false
-  validates :user_type, presence: false
+  validates :user_type, inclusion: { in: %w[company private], "error": "ERR_INVALID", "description": "Attribute is invalid" }, presence: false
+  validates :user_role, inclusion: { in: %w[admin editor developer moderator verified spectator], "error": "ERR_INVALID", "description": "Attribute is invalid" }, presence: false
   validates :image_url, presence: false
+  validate :valid_country_code
 
   def full_name
     "#{first_name} #{last_name}"
@@ -33,4 +41,13 @@ class User < ApplicationRecord
     now.year - self.date_of_birth.year - ((now.month > self.date_of_birth.month || (now.month == self.date_of_birth.month && now.day >= self.date_of_birth.day)) ? 0 : 1) unless self.date_of_birth.nil?
   end
 
+  private
+  def password_required?
+    password.present? || password_confirmation.present? || new_record?
+  end
+  def valid_country_code
+    unless country_code.nil? || country_code.empty? || IsoCountryCodes.find(country_code)
+      errors.add(:country_code, "is not a valid ISO country code")
+    end
+  end
 end

@@ -35,7 +35,7 @@
                   <div class="d-flex flex-row align-items-center mb-4">
                     <!--                    <i class="fas fa-lock fa-lg me-3 fa-fw"></i>-->
                     <div class="form-outline flex-fill mb-0">
-                      <%= f.password_field :password, type: "password", class: "form-control form-control-lg", id: 'inputPassword', placeholder: "*************", required: true, minlength: 8 %>
+                      <%= f.password_field :password, type: "password", class: "form-control form-control-lg", id: 'inputPassword', placeholder: "*************", required: true, minlength: 8, maxlength: 72 %>
                       <label class="form-label" for="form3Example4c">Password</label>
                     </div>
                   </div>
@@ -43,7 +43,7 @@
                   <div class="d-flex flex-row align-items-center mb-4">
                     <!--                    <i class="fas fa-key fa-lg me-3 fa-fw"></i>-->
                     <div class="form-outline flex-fill mb-0">
-                      <%= f.password_field :password_confirmation, type: "password", class: "form-control form-control-lg", id: 'inputPassword_repeat', placeholder: "*************", required: true, minlength: 8, oninput: "check()" %>
+                      <%= f.password_field :password_confirmation, type: "password", class: "form-control form-control-lg", id: 'inputPassword_repeat', placeholder: "*************", required: true, minlength: 8, maxlength: 72, oninput: "check()" %>
                       <label class="form-label" for="form3Example4cd">Repeat your password</label>
                     </div>
                   </div>

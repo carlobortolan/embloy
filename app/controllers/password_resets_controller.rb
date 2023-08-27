@@ -1,15 +1,19 @@
 class PasswordResetsController < ApplicationController
   skip_before_action :auth_prototype
+
   def new; end
 
   def create
-    @user = User.find_by(email: params[:email])
-
-    if @user.present?
-      # send mail
-      PasswordMailer.with(user: @user).reset.deliver_later
+    if params[:email].present?
+      @user = User.find_by(email: params[:email])
+      if @user.present?
+        # send mail
+        PasswordMailer.with(user: @user).reset.deliver_later
+      end
+      redirect_to root_path, notice: 'Please check your email to reset the password.'
+    else
+      redirect_to help_path, notice: 'Something went wrong. Try again.'
     end
-    redirect_to root_path, notice: 'Please check your email to reset the password.'
   end
 
   def edit

@@ -17,7 +17,7 @@ class RegistrationsController < ApplicationController
     find_coordinates
     #    @user[:user_role] = 0
 
-    if @user.save
+    if @user.save!
       WelcomeMailer.with(user: @user).welcome_email.deliver_later
       session[:user_id] = @user.id
       redirect_to root_path, notice: 'Successfully created account. Check your emails to verify your account.'
