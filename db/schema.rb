@@ -20,7 +20,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_15_205359) do
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "application_status", ["-1", "0", "1"]
-  create_enum "job_status", ["public", "private", "archieved"]
+  create_enum "job_status", ["public", "private", "archived"]
   create_enum "notify_type", ["0", "1"]
   create_enum "rating_type", ["1", "2", "3", "4", "5"]
   create_enum "user_roles", ["admin", "editor", "developer", "moderator", "verified", "spectator"]

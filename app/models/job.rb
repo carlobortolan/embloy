@@ -25,24 +25,30 @@ class Job < ApplicationRecord
   has_rich_text :description
   has_one_attached :image_url
 
-  validates :title, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
-  validates :description, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, length: { minimum: 10 }
+  validates :title, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, length: { maximum: 100 }
+  validates :description, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, length: { minimum: 10, maximum: 500 }
   validates :start_slot, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validates :longitude, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, :numericality => { "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" }
   validates :latitude, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, :numericality => { "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" }
-
   validates :job_notifications, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, :numericality => { only_integer: true, "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" }
-  validates :position, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
-  validates :key_skills, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
+  validates :position, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, length: { maximum: 100 }
+  validates :key_skills, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, length: { maximum: 100 }
   validates :duration, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, :numericality => { only_integer: true, greater_than: 0, "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" }
   validates :salary, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, :numericality => { only_integer: true, greater_than: 0, "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" }
   validates :currency, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validates :job_type, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
+  validates :status, inclusion: { in: %w[public private archived], "error": "ERR_INVALID", "description": "Attribute is invalid" }, presence: false
   validates :job_type_value, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
-  validate :job_type_verification
+  validates :postal_code, length: { maximum: 45 }
+  validates :country_code, length: { maximum: 45 }
+  validates :city, length: { maximum: 45 }
+  validates :address, length: { maximum: 150 }
+
+  validate :image_format_validation
   validate :employer_rating
   validate :boost
   validate :start_slot_validation
+  validate :job_type_validation
 
   def profile
     @job.update(view_count: @job.view_count + 1)
@@ -86,7 +92,9 @@ class Job < ApplicationRecord
     end
   end
 
-  def job_type_verification
+  private
+
+  def job_type_validation
     job_types_file = File.read(Rails.root.join("app/helpers", "job_types.json"))
     job_types = JSON.parse(job_types_file)
     # Given job_type is not existent in job_types.json
@@ -100,6 +108,15 @@ class Job < ApplicationRecord
       if start_slot - Time.now < -86400
         errors.add(:start_slot, { "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" })
       end
+    end
+  end
+
+  def image_format_validation
+    return unless image_url.attached?
+
+    allowed_formats = %w[image/png image/jpeg image/jpg]
+    unless allowed_formats.include?(image_url.blob.content_type)
+      errors.add(:image_url, "must be a PNG, JPG, or JPEG image")
     end
   end
 

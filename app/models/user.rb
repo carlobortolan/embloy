@@ -26,7 +26,9 @@ class User < ApplicationRecord
   validates :user_type, inclusion: { in: %w[company private], "error": "ERR_INVALID", "description": "Attribute is invalid" }, presence: false
   validates :user_role, inclusion: { in: %w[admin editor developer moderator verified spectator], "error": "ERR_INVALID", "description": "Attribute is invalid" }, presence: false
   validates :image_url, presence: false
-  validate :valid_country_code
+
+  validate :country_code_validation
+  validate :image_format_validation
 
   def full_name
     "#{first_name} #{last_name}"
@@ -42,12 +44,24 @@ class User < ApplicationRecord
   end
 
   private
+
   def password_required?
     password.present? || password_confirmation.present? || new_record?
   end
-  def valid_country_code
+
+  def country_code_validation
     unless country_code.nil? || country_code.empty? || IsoCountryCodes.find(country_code)
       errors.add(:country_code, "is not a valid ISO country code")
     end
   end
+
+  def image_format_validation
+    return unless image_url.attached?
+
+    allowed_formats = %w[image/png image/jpeg image/jpg]
+    unless allowed_formats.include?(image_url.blob.content_type)
+      errors.add(:image_url, "must be a PNG, JPG, or JPEG image")
+    end
+  end
+
 end
