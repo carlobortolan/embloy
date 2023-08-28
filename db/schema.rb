@@ -71,7 +71,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_15_205359) do
     t.datetime "created_at", default: "2023-02-27 23:06:10", null: false
     t.enum "status", default: "0", null: false, enum_type: "application_status"
     t.string "application_text", limit: 1000
-    t.string "application_documents", limit: 100
+    t.string "application_documents", limit: 150
     t.string "response", limit: 500
     t.index ["job_id", "user_id"], name: "application_job_id_user_id_index", unique: true
     t.index ["job_id"], name: "application_job_id_index"

@@ -7,7 +7,9 @@ class User < ApplicationRecord
   has_many :reviews, dependent: :delete_all
   has_many :notifications, as: :recipient, dependent: :destroy
 
-  validates :email, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, uniqueness: { "error": "ERR_TAKEN", "description": "Attribute exists" }, format: { with: /\A[^@\s]+@[^@\s]+\z/, "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" }
+  validates :email, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" },
+            uniqueness: { "error": "ERR_TAKEN", "description": "Attribute exists" },
+            format: { with: /\A[^@\s]+@[^@\s]+\z/, "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" }
   validates :first_name, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, uniqueness: false
   validates :last_name, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, uniqueness: false
   # TODO: UNDERSTAND UPDATABLE?
@@ -18,7 +20,7 @@ class User < ApplicationRecord
   validates :password_confirmation, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" },
             length: { minimum: 8, maximum: 72, "error": "ERR_LENGTH", "description": "Attribute length is invalid" },
             if: :password_required?
-  validates :application_notifications, presence: true
+  validates :application_notifications, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validates :longitude, presence: false
   validates :latitude, presence: false
   validates :country_code, presence: false

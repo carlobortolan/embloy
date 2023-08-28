@@ -25,24 +25,33 @@ class Job < ApplicationRecord
   has_rich_text :description
   has_one_attached :image_url
 
-  validates :title, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, length: { maximum: 100 }
-  validates :description, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, length: { minimum: 10, maximum: 500 }
+  validates :title, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" },
+            length: { minimum: 0, maximum: 100, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
+  validates :description, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" },
+            length: { minimum: 10, maximum: 500, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
   validates :start_slot, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
-  validates :longitude, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, :numericality => { "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" }
-  validates :latitude, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, :numericality => { "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" }
-  validates :job_notifications, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, :numericality => { only_integer: true, "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" }
-  validates :position, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, length: { maximum: 100 }
-  validates :key_skills, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, length: { maximum: 100 }
-  validates :duration, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, :numericality => { only_integer: true, greater_than: 0, "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" }
-  validates :salary, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, :numericality => { only_integer: true, greater_than: 0, "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" }
+  validates :longitude, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" },
+            :numericality => { "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" }
+  validates :latitude, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" },
+            :numericality => { "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" }
+  validates :job_notifications, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" },
+            :numericality => { only_integer: true, "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" }
+  validates :position, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" },
+            length: { minimum: 0, maximum: 100, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
+  validates :key_skills, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" },
+            length: { minimum: 0, maximum: 100, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
+  validates :duration, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" },
+            :numericality => { only_integer: true, greater_than: 0, "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" }
+  validates :salary, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" },
+            :numericality => { only_integer: true, greater_than: 0, "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" }
   validates :currency, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validates :job_type, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validates :status, inclusion: { in: %w[public private archived], "error": "ERR_INVALID", "description": "Attribute is invalid" }, presence: false
   validates :job_type_value, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
-  validates :postal_code, length: { maximum: 45 }
-  validates :country_code, length: { maximum: 45 }
-  validates :city, length: { maximum: 45 }
-  validates :address, length: { maximum: 150 }
+  validates :postal_code, length: { minimum: 0, maximum: 45, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
+  validates :country_code, length: { minimum: 0, maximum: 45, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
+  validates :city, length: { minimum: 0, maximum: 45, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
+  validates :address, length: { minimum: 0, maximum: 150, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
 
   validate :image_format_validation
   validate :employer_rating

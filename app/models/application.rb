@@ -9,10 +9,11 @@ class Application < ApplicationRecord
   belongs_to :job, counter_cache: true
   belongs_to :user, counter_cache: true, :dependent => :destroy
 
-  validates :user_id, presence: true
-  validates :job_id, presence: true
-  validates :application_text, presence: true, length: { minimum: 10 }
-  validates :response, presence: false
+  validates :user_id, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
+  validates :job_id, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
+  validates :application_text, length: { minimum: 0, maximum: 1000, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }, presence: true
+  validates :response, length: { minimum: 0, maximum: 500, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }, presence: false
+  validates :status, inclusion: { in: %w[-1 0 1], "error": "ERR_INVALID", "description": "Attribute is invalid" }, presence: false
 
   def notify_recipient
     return if job.user.eql? user
