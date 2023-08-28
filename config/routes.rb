@@ -55,6 +55,7 @@ Rails.application.routes.draw do
   patch 'jobs/(/:job_id)/applications/(/:application_id)/reject', :to => 'applications#reject', as: :job_application_reject
   patch 'jobs/(/:job_id)/applications_reject_all', :to => 'applications#reject_all', as: :job_applications_reject_all
   delete 'jobs/(/:job_id)/applications/(/:application_id)' => 'applications#destroy'
+  delete 'jobs/(/:id)/remove_image', :to => 'jobs#remove_image', as: :remove_job_image
 
   get 'reviews', :to => 'reviews#index', as: :reviews
   get 'reviews/(/:user_id)', :to => 'reviews#for_user', as: :reviews_user
@@ -93,6 +94,7 @@ Rails.application.routes.draw do
   patch 'user/profile', :to => 'user#update', as: :user
   patch 'user/update_location', :to => 'user#update_location', as: :user_update_location
   delete 'user', to: 'user#destroy', as: :user_delete
+  delete 'user/remove_image', to: 'user#remove_image', as: :remove_user_image
   patch 'user/profile', to: 'user#update', as: :profile_update
   get 'user/edit', :to => 'user#edit', as: :profile_edit
   get 'user/settings', :to => 'user#settings', as: :profile_settings

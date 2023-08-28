@@ -75,21 +75,29 @@ class JobsController < ApplicationController
 
   def create
     @job = Job.new(job_params)
-    @job.image_url.attach(params[:job][:image_url]) if params[:job][:image_url].present?
-
+    @categories_list = JSON.parse(File.read(Rails.root.join('app/helpers', 'job_types.json'))).keys
+    @editing = false
     @job.currency = "EUR"
-    @job.user_id = Current.user.id
 
-    job_types_file = File.read(Rails.root.join('app/helpers', 'job_types.json'))
-    job_types = JSON.parse(job_types_file)
-    job_type = @job.job_type
-    @job.job_type_value = job_types[job_type]
+    begin
+      @job.image_url.attach(params[:job][:image_url]) if params[:job][:image_url].present?
 
-    if @job.save! && @job.update(geocode(@job))
-      SpatialJobValue.update_job_value(@job)
-      redirect_to @job, notice: "Created new job"
-    else
-      render :new, status: :unprocessable_entity, alert: "Job has not been created"
+      @job.currency = "EUR"
+      @job.user_id = Current.user.id
+
+      job_types_file = File.read(Rails.root.join('app/helpers', 'job_types.json'))
+      job_types = JSON.parse(job_types_file)
+      job_type = @job.job_type
+      @job.job_type_value = job_types[job_type]
+
+      if @job.save && @job.update(geocode(@job))
+        SpatialJobValue.update_job_value(@job)
+        redirect_to @job, notice: "Created new job"
+      else
+        render :new, status: :unprocessable_entity, alert: "Job has not been created"
+      end
+    rescue StandardError => e
+      render :new, status: :unprocessable_entity, alert: e.message
     end
   end
 
@@ -118,6 +126,12 @@ class JobsController < ApplicationController
     require_user_be_owner
     @job.destroy
     redirect_to own_jobs_path, status: :see_other, notice: "Job successfully deleted."
+  end
+
+  def remove_image
+    @job = Job.find(params[:id])
+    @job.image_url.purge if @job.image_url.attached?
+    redirect_to @job, notice: "Job image has been removed."
   end
 
   def find

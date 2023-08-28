@@ -24,6 +24,8 @@ class UserController < ApplicationController
   def update
     @user = Current.user
     if @user.update(user_params)
+      @user.image_url.attach(params[:user][:image_url]) if params[:user][:image_url].present?
+
       redirect_to @user, notice: "Updated profile"
     else
       render :index, status: :unprocessable_entity, alert: "Could not save changes"
@@ -44,6 +46,12 @@ class UserController < ApplicationController
     @user = Current.user
     @user.destroy!
     redirect_to root_path, status: :see_other, notice: "Account successfully deleted."
+  end
+
+  def remove_image
+    @user = Current.user
+    @user.image_url.purge if @user.image_url.attached?
+    redirect_to profile_index_path(@user), notice: "Profile image has been removed."
   end
 
   def preferences

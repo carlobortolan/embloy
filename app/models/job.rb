@@ -112,11 +112,10 @@ class Job < ApplicationRecord
   end
 
   def image_format_validation
-    return unless image_url.attached?
-
+    return unless !image_url.nil? && image_url.attached?
     allowed_formats = %w[image/png image/jpeg image/jpg]
     unless allowed_formats.include?(image_url.blob.content_type)
-      errors.add(:image_url, "must be a PNG, JPG, or JPEG image")
+      errors.add(:image_url, { "error": "ERR_INVALID", "description": "must be a PNG, JPG, or JPEG image" })
     end
   end
 

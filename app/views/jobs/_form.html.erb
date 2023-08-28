@@ -4,6 +4,7 @@
 
   <%= form_with model: @job do |form| %>
     <!-- ======= Breadcrumbs ======= -->
+
     <div class="breadcrumbs">
       <div class="page-header d-flex align-items-center" style="background-image: url('../assets/img/hero-bg.png');">
         <div class="container position-relative">
@@ -43,8 +44,8 @@
         </style>
         <div id="mapid"></div>
         <script>
-            var latitude = <%= @job.latitude.nil? ? 37.7749 : @job.latitude %>;
-            var longitude = <%= @job.longitude.nil? ? -122.4194 : @job.longitude %>;
+            var latitude = <%= @job.latitude.nil? ? 47.376419 : @job.latitude %>;
+            var longitude = <%= @job.longitude.nil? ? 8.548307 : @job.longitude %>;
             var southWest = L.latLng(-90, -180);
             var northEast = L.latLng(90, 180);
             var bounds = L.latLngBounds(southWest, northEast);
@@ -88,9 +89,14 @@
               <i class="bi bi-geo-alt flex-shrink-0"></i>
               <div>
                 <h4>Location:</h4>
-                <p id="address"></p>
+                <p id="address">
+                  <% if @job.address.nil? %>
+                    ETH Zürich, Zentrum, Spöndlistrasse, Oberstrass, Kreis 6, Zurich, District Zurich,
+                    Zurich, 8091, Switzerland
+                  <% else %>
+                    <%= @job.address %>
+                  <% end %></p>
                 <% form.text_field :address, id: "address", required: true %><br>
-
               </div>
             </div><!-- End Info Item -->
             <div class="info-item d-flex">
@@ -125,9 +131,15 @@
               </div>
               <div class="form-group mt-3">
                 <p><%= form.rich_text_area :description, placeholder: "Write your job description here.", required: true, minlength: 10, maxlength: 500 %>
-                  <%= form.file_field :image_url, placeholder: "Add a fitting image here.", required: true, accept: 'image/png, image/jpeg, image/jpg' %>
+                <p><%= form.file_field :image_url, placeholder: "Add a fitting image here.", required: true, accept: 'image/png, image/jpeg, image/jpg' %></p>
               </div>
             </form>
+            <% if @job.image_url.attached? %>
+              <%= button_to remove_job_image_path(@job), method: :delete, data: { confirm: "Are you sure you want to remove the job's image?" }, class: "btn btn-danger btn-sm", title: "Remove job image" do %>
+                <i class="bi bi-trash"></i>
+              <% end %>
+            <% end %>
+
           </div><!-- End Contact Form -->
           <div>
             <%= form.label :status %><br>
@@ -149,6 +161,7 @@
               </ul>
             </div>
           <% end %>
+
           <%= form.submit %>
         </div>
         <%= form.label "Do you want to receive a notification when a new application is submitted?" %>
