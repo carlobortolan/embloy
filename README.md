@@ -53,6 +53,13 @@ To log into the application, users can use the aforementioned OAuth2.0 services 
 If a user forgets their password, they can reset it by providing their email address and following the specified
 procedure in the email.
 
+### Job posting
+
+Authenticated user's can create new job listings/postings (including a fitting title, a short description, a high resolution cover-image and more) and, depending on the employer's liking, also define customized CV and motivation letter requirements.
+This customization includes specifying whether a CV or a motivation letter is required for the application, and if required, employers can also indicate their preferred file formats to ensure that the applications meet the employer's expectations.
+
+Other users can then view these job listings and apply for the positions. 
+
 ### Managing Applications for Available Jobs
 
 The system is capable of managing jobs and applications, supporting
