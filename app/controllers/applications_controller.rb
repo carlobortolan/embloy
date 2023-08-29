@@ -34,6 +34,7 @@ class ApplicationsController < ApplicationController
         updated_at: Time.now,
         response: "No response yet..."
       )
+      @application.cv.attach(params[:application][:cv]) if params[:application][:cv].present?
       @application.user = User.find(Current.user.id.to_i)
       @application.save!
       redirect_to job_path(@job), notice: 'Application has been submitted'
@@ -84,6 +85,6 @@ class ApplicationsController < ApplicationController
   end
 
   def application_params
-    params.require(:application).permit(:user_id, :application_text, :application_documents, :response)
+    params.require(:application).permit(:user_id, :application_text, :application_documents, :response, :cv)
   end
 end

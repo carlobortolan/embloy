@@ -75,7 +75,12 @@
             <label for="name">Subject</label>
             <input type="text" class="form-control" name="subject" id="subject" placeholder="Application for <%= @job.title %>" required>
           </div>
-
+          <% if @job.cv_required && !allowed_cv_formats_for_form(@job.allowed_cv_format).nil? %>
+            <div class="form-group">
+              <label for="name">CV attachment</label>
+              <p><%= form.file_field :cv, placeholder: "Add your CV here.", required: @job.cv_required, accept: allowed_cv_formats_for_form(@job.allowed_cv_format).join(','), class: 'form-control' %></p>
+            </div>
+          <% end %>
           <div class=" form-group">
             <label for="name">Message</label>
             <%= form.text_area :application_text, rows: "10", minlength: 10, maxlength: 1000, class: "form-control", placeholder: "Now comes the difficult part ... you can use the following tips to improve your application:-->

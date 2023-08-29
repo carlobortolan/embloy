@@ -48,11 +48,14 @@ class Job < ApplicationRecord
   validates :job_type, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validates :status, inclusion: { in: %w[public private archived], "error": "ERR_INVALID", "description": "Attribute is invalid" }, presence: false
   validates :job_type_value, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
-  validates :postal_code, length: { minimum: 0, maximum: 45, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
-  validates :country_code, length: { minimum: 0, maximum: 45, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
-  validates :city, length: { minimum: 0, maximum: 45, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
-  validates :address, length: { minimum: 0, maximum: 150, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
-
+  # validates :postal_code, length: { minimum: 0, maximum: 45, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
+  # validates :country_code, length: { minimum: 0, maximum: 45, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
+  # validates :city, length: { minimum: 0, maximum: 45, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
+  # validates :address, length: { minimum: 0, maximum: 150, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
+  # TODO: @cb Validate allowed_cv_format, so that user has to select at least one option
+  validates :allowed_cv_format, inclusion: { in: %w[.pdf .docx .txt .xml], message: { error: "ERR_INVALID", description: "Attribute is invalid" } },
+            presence: { message: { error: "ERR_BLANK", description: "Attribute can't be blank" } },
+            if: :cv_required?
   validate :image_format_validation
   validate :employer_rating
   validate :boost

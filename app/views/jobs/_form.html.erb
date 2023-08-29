@@ -82,6 +82,16 @@
             }
 
             map.on('click', onMapClick);
+
+            document.addEventListener("DOMContentLoaded", function () {
+                const cvRequiredCheckbox = document.getElementById("cv_required_checkbox");
+                const cvFormatOptions = document.getElementById("cv_format_options");
+
+                cvRequiredCheckbox.addEventListener("change", function () {
+                    cvFormatOptions.style.display = this.checked ? "block" : "none";
+                });
+            });
+
         </script>
         <div class="row gy-4 mt-4">
           <div class="col-lg-4">
@@ -139,7 +149,22 @@
                 <i class="bi bi-trash"></i>
               <% end %>
             <% end %>
+            <div>
+              <%= form.label "Do you want to require applicants to submit a CV?" %>
+              <%= form.hidden_field :cv_required, value: 'false' %>
+              <%= form.check_box :cv_required, id: "cv_required_checkbox" %>
 
+              <div id="cv_format_options" style="display: none;">
+                <%= form.label "Select allowed CV formats:" %>
+                <%= form.collection_check_boxes :allowed_cv_format, @allowed_cv_formats, :to_s, :to_s do |b| %>
+                  <%= form.hidden_field b, value: 'false' %>
+                  <div class="collection-check-box">
+                    <%= b.check_box %>
+                    <%= b.label %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
           </div><!-- End Contact Form -->
           <div>
             <%= form.label :status %><br>

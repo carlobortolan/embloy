@@ -70,12 +70,14 @@ class JobsController < ApplicationController
     @job = Job.new
     @job.currency = "EUR"
     @categories_list = JSON.parse(File.read(Rails.root.join('app/helpers', 'job_types.json'))).keys
+    @allowed_cv_formats = %w[.pdf .docx .txt .xml]
     @editing = false
   end
 
   def create
     @job = Job.new(job_params)
     @categories_list = JSON.parse(File.read(Rails.root.join('app/helpers', 'job_types.json'))).keys
+    @allowed_cv_formats = %w[.pdf .docx .txt .xml]
     @editing = false
     @job.currency = "EUR"
 
@@ -89,7 +91,7 @@ class JobsController < ApplicationController
       job_types = JSON.parse(job_types_file)
       job_type = @job.job_type
       @job.job_type_value = job_types[job_type]
-
+      params[:job][:allowed_cv_format].reject!(&:empty?)
       if @job.save && @job.update(geocode(@job))
         SpatialJobValue.update_job_value(@job)
         redirect_to @job, notice: "Created new job"
@@ -103,6 +105,7 @@ class JobsController < ApplicationController
 
   def edit
     @job = Job.find(params[:id])
+    @allowed_cv_formats = %w[.pdf .docx .txt .xml]
     require_user_be_owner
     @categories_list = JSON.parse(File.read(Rails.root.join('app/helpers', 'job_types.json'))).keys
     @editing = true
@@ -110,7 +113,10 @@ class JobsController < ApplicationController
 
   def update
     @job = Job.find(params[:id])
+    @categories_list = JSON.parse(File.read(Rails.root.join('app/helpers', 'job_types.json'))).keys
+    @allowed_cv_formats = %w[.pdf .docx .txt .xml]
     require_user_be_owner
+    params[:job][:allowed_cv_format].reject!(&:empty?)
 
     if @job.update(job_params) && @job.update(geocode(@job))
       @job.image_url.attach(params[:job][:image_url]) if params[:job][:image_url].present?
@@ -212,7 +218,12 @@ class JobsController < ApplicationController
   end
 
   def job_params
-    params.require(:job).permit(:title, :description, :content, :job_notifications, :start_slot, :notify, :status, :user_id, :longitude, :latitude, :job_type, :position, :currency, :salary, :key_skills, :duration)
+    params.require(:job).permit(
+      :title, :description, :content, :job_notifications, :start_slot,
+      :notify, :status, :user_id, :longitude, :latitude, :job_type,
+      :position, :currency, :salary, :key_skills, :duration, :image_url, :cv_required,
+      :allowed_cv_format => [] # Permit the array of allowed_cv_format
+    )
   end
 
   def location_params

@@ -25,6 +25,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_15_205359) do
   create_enum "rating_type", ["1", "2", "3", "4", "5"]
   create_enum "user_roles", ["admin", "editor", "developer", "moderator", "verified", "spectator"]
   create_enum "user_type", ["company", "private"]
+  create_enum "application_cv_format", [".pdf", ".txt", ".docx", ".xml"]
 
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
@@ -128,6 +129,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_15_205359) do
     t.integer "employer_rating", default: 0, null: false
     t.text "job_notifications", default: "1", null: false
     t.integer "boost", default: 0, null: false
+    t.boolean "cv_required", null: false, default: false
+    t.enum "allowed_cv_format", default: [".pdf", ".txt", ".docx", ".xml"], null: false, enum_type: "application_cv_format", array: true
     t.index ["country_code"], name: " job_country_code_index "
     t.index ["job_id"], name: "job_job_id_index"
     t.index ["postal_code"], name: " job_postal_code_index "

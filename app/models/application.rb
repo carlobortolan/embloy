@@ -3,6 +3,7 @@ class Application < ApplicationRecord
   # after_update_commit :notify_applicant
   before_destroy :cleanup_notifications
   has_noticed_notifications model_name: 'Notification'
+  has_one_attached :cv
 
   # has_rich_text :application_text
 
