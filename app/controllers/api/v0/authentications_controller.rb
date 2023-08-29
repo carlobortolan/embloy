@@ -34,10 +34,10 @@ module Api
         rescue CustomExceptions::InvalidUser::Unknown
           # The requested token subject (User) doesn't exists BUT user.authenticate(refresh_token_params["password"]) says true
           render status: 500, json: { "error": "Please try again later. If this error persists, we recommend to contact our support team." }
-
         rescue CustomExceptions::InvalidInput::SUB
           # Invalid Input (User Attribute is malformed) BUT user.authenticate(refresh_token_params["password"]) says true
           render status: 500, json: { "error": "Please try again later. If this error persists, we recommend to contact our support team." }
+          # TODO: @jh InvalidUser exeption rescued twice?
         rescue CustomExceptions::InvalidUser::Unknown
           # Invalid User (User.find_by(id: id) == nil) BUT user.present says true
           render status: 500, json: { "error": "Please try again later. If this error persists, we recommend to contact our support team." }

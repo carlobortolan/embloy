@@ -61,6 +61,16 @@ module ApiExceptionHandler
 
     #--------------------------------------
 
+    rescue_from CustomExceptions::InvalidUser::Inactive,
+                with: :user_inactive_error
+
+    #--------------------------------------
+
+    rescue_from CustomExceptions::InvalidUser::Unknown,
+                with: :user_unknown_error
+
+    #--------------------------------------
+
     rescue_from CustomExceptions::Unauthorized::NotOwner,
                 with: :user_not_owner_error
 
@@ -79,6 +89,8 @@ module ApiExceptionHandler
     rescue_from CustomExceptions::Unauthorized::Blocked,
                 with: :user_blocked_error
 
+    #--------------------------------------
+
     rescue_from CustomExceptions::InvalidInput::BlankCredentials,
                 with: :user_pw_blank
 
@@ -94,6 +106,10 @@ module ApiExceptionHandler
     rescue_from CustomExceptions::InvalidInput::CustomEXP,
                 with: :custom_validity_invalid_input_error
 
+    #--------------------------------------
+
+    rescue_from CustomExceptions::InvalidInput::SUB,
+                with: :user_sub_error
   end
 
   private
@@ -114,6 +130,12 @@ module ApiExceptionHandler
 
   #--------------------------------------
 
+  def user_inactive_error
+    access_denied_error('user')
+  end
+
+  #--------------------------------------
+
   def user_not_owner_error
     access_denied_error('user')
   end
@@ -130,8 +152,15 @@ module ApiExceptionHandler
     access_denied_error('user')
   end
 
+  #--------------------------------------
+
   def user_pw_blank
     blank_error('email|password')
+  end
+
+  # TODO: @jh SUB exception meaning?
+  def user_sub_error
+    unauthorized_error('user')
   end
 
   # ========== Token related exceptions ===========
@@ -300,7 +329,7 @@ module ApiExceptionHandler
 
     return new_hash
 
-end
+  end
 
   def flatted_first_element(hash)
     new = {}
@@ -324,9 +353,8 @@ end
     return hash
   end
 
-
   def ok
-    #do nothing
+    # do nothing
     1
   end
 

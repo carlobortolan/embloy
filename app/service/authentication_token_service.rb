@@ -26,7 +26,7 @@ class AuthenticationTokenService
     def self.decode(token)
       # token decoding for a refresh token
       # this method decodes a jwt token
-      decoded_token = JWT.decode(token, HMAC_SECRET, true, { verify_jti: Proc.new { |jti| jti?(jti,token["sub"].to_i) }, iss: ISSUER, verify_iss: true, verify_iat: true, required_claims: ['iss', 'sub', 'exp', 'jti', 'iat'], algorithm: ALGORITHM_TYPE })
+      decoded_token = JWT.decode(token, HMAC_SECRET, true, { verify_jti: Proc.new { |jti| jti?(jti, token["sub"].to_i) }, iss: ISSUER, verify_iss: true, verify_iat: true, required_claims: ['iss', 'sub', 'exp', 'jti', 'iat'], algorithm: ALGORITHM_TYPE })
 
       if User.find_by(id: decoded_token[0]["sub"]).blank?
         raise JWT::InvalidSubError
@@ -41,7 +41,7 @@ class AuthenticationTokenService
       # if exists and is explicitly blacklisted .forbidden? is true if token is allowed .forbidden? is false
       jti = content(token)
       if !jti[0].nil? # if .content returns { "status": status, "token": errors } == nil, because {...}[0] == nil
-        return !(jti?(jti[0]["jti"],token["sub"].to_i)) # if .jti? finds token identifier blacklisted, it returns true. .forbidden? returns false in this case
+        return !(jti?(jti[0]["jti"], token["sub"].to_i)) # if .jti? finds token identifier blacklisted, it returns true. .forbidden? returns false in this case
       else
         return jti # error message from content
       end

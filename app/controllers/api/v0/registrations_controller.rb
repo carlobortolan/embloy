@@ -46,20 +46,22 @@ module Api
         end
       end
 
+      # TODO: @cb [User verification #73]
       def verify
         # verifies that an newly created account was created correctly. if so it issues an initial refresh token ()
+        email, password = ActionController::HttpAuthentication::Basic::user_name_and_password(request)
 
-        if !params[:email].present? && params[:password].present? # checks for fully missing as well as empty params
+        if !email.present? && password.present? # checks for fully missing as well as empty params
           blank_error('email')
-        elsif params[:email].present? && !params[:password].present?
+        elsif email.present? && !password.present?
           blank_error('password')
-        elsif !params[:email].present? && !params[:password].present?
+        elsif !email.present? && !password.present?
           blank_error(%w[email password])
         else
 
-          @user = User.find_by(email: params[:email])
+          @user = User.find_by(email: email)
 
-          if !@user.present? || !@user.authenticate(params[:password])
+          if !@user.present? || !@user.authenticate(password)
             render status: 401, json: { "email||password": [
               {
                 "error": "ERR_INVALID",
