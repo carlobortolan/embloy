@@ -10,8 +10,8 @@ class Application < ApplicationRecord
   # has_one_attached :cv
 
   belongs_to :job, counter_cache: true
-  belongs_to :user, counter_cache: true, :dependent => :destroy
-  has_one :application_attachment
+  belongs_to :user, counter_cache: true
+  has_one :application_attachment, dependent: :destroy
   accepts_nested_attributes_for :application_attachment
   delegate :cv, to: :application_attachment, allow_nil: true
 

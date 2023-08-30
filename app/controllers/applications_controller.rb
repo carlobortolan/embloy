@@ -29,32 +29,47 @@ class ApplicationsController < ApplicationController
   def create
     if require_user_logged_in
       @job = Job.find(params[:job_id])
-      @application = Application.create!(
-        user_id: Current.user.id.to_i,
-        job_id: params[:job_id].to_i,
-        application_text: application_params[:application_text],
-        application_documents: application_params[:application_documents],
-        created_at: Time.now,
-        updated_at: Time.now,
-        response: "No response yet..."
-      )
-      @application.user = User.find(Current.user.id.to_i)
-      @application.job = @job
-
-      if @application.save!
-        if params[:application][:attachment_attributes][:cv].present?
-          puts "USER_ID = #{Current.user.id.to_i}"
-          puts "JOB_ID = #{params[:job_id].to_i}"
-          application_attachment = ApplicationAttachment.create!(
-            user_id: Current.user.id.to_i,
-            job_id: params[:job_id].to_i
-          )
-          application_attachment.save!
+      application_attachment = ""
+      if params[:application][:attachment_attributes][:cv].present?
+        puts "USER_ID = #{Current.user.id.to_i}"
+        puts "JOB_ID = #{params[:job_id].to_i}"
+        application_attachment = ApplicationAttachment.create!(
+          user_id: Current.user.id.to_i,
+          job_id: params[:job_id].to_i
+        )
+        begin
+          "BEGIN1"
           application_attachment.cv.attach(params[:application][:attachment_attributes][:cv])
+          "BEGIN2"
+        rescue ActiveRecord::RecordInvalid
+          puts "DESTROYED ATTACHMENT 1"
+          application_attachment.destroy
         end
       end
-
-      redirect_to job_path(@job), notice: 'Application has been submitted'
+      if application_attachment.save
+        @application = Application.create!(
+          user_id: Current.user.id.to_i,
+          job_id: params[:job_id].to_i,
+          application_text: application_params[:application_text],
+          application_documents: application_params[:application_documents],
+          created_at: Time.now,
+          updated_at: Time.now,
+          response: "No response yet..."
+        )
+        @application.user = User.find(Current.user.id.to_i)
+        @application.job = @job
+        if @application.save
+          redirect_to job_path(@job), notice: 'Application has been submitted'
+        else
+          @application.destroy
+          puts "DESTROYED ATTACHMENT 2"
+          application_attachment.destroy
+          render :new, status: :unprocessable_entity, alert: "Job has not been created due to issue with application"
+        end
+      else
+        application_attachment.destroy
+        render :new, status: :unprocessable_entity, alert: "Job has not been created due to issue with application attachment"
+      end
     end
   end
 

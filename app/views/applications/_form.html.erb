@@ -77,7 +77,8 @@
           </div>
           <% if @job.cv_required && !allowed_cv_formats_for_form(@job.allowed_cv_format).nil? %>
             <div class="form-group">
-              <label for="name">CV attachment</label>
+              <label for="name">CV
+                attachment (<%= @job.allowed_cv_format.join(',') %>)</label>
               <p>
                 <%= form.fields_for :attachment_attributes do |attachment_fields| %>
                   <%= attachment_fields.file_field :cv, placeholder: "Add your CV here.", required: @job.cv_required, accept: allowed_cv_formats_for_form(@job.allowed_cv_format).join(','), class: 'form-control' %>
