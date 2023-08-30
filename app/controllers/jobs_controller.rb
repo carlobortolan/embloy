@@ -62,7 +62,13 @@ class JobsController < ApplicationController
     @owner = owner
     if Current.user
       @application = Application.find_by(user_id: Current.user.id, job_id: params[:id])
-      mark_notifications_as_read
+      unless owner
+        aa = ApplicationAttachment.find_by(user_id: Current.user.id, job_id: params[:id])
+        unless aa.nil?
+          @cv = aa.cv
+        end
+        mark_notifications_as_read
+      end
     end
   end
 
@@ -75,43 +81,36 @@ class JobsController < ApplicationController
   end
 
   def create
+    params[:job][:allowed_cv_format].reject!(&:empty?)
+
     @job = Job.new(job_params)
     @categories_list = JSON.parse(File.read(Rails.root.join('app/helpers', 'job_types.json'))).keys
     @allowed_cv_formats = %w[.pdf .docx .txt .xml]
     @editing = false
     @job.currency = "EUR"
 
-    begin
+    params[:job][:allowed_cv_format]&.reject!(&:empty?)
+
+    puts "REQUIRED #{params[:job][:cv_required]}"
+    if params[:job][:allowed_cv_format].empty? || params[:job][:cv_required] == 0
+      params[:job][:cv_required] = false
+    end
+    puts "REQUIRED #{params[:job][:cv_required]}"
+
+    @job.currency = "EUR"
+    @job.user_id = Current.user.id
+
+    job_types_file = File.read(Rails.root.join('app/helpers', 'job_types.json'))
+    job_types = JSON.parse(job_types_file)
+    job_type = @job.job_type
+    @job.job_type_value = job_types[job_type]
+
+    if @job.save! && @job.update!(geocode(@job))
       @job.image_url.attach(params[:job][:image_url]) if params[:job][:image_url].present?
-
-      @job.currency = "EUR"
-      @job.user_id = Current.user.id
-
-      job_types_file = File.read(Rails.root.join('app/helpers', 'job_types.json'))
-      job_types = JSON.parse(job_types_file)
-      job_type = @job.job_type
-      @job.job_type_value = job_types[job_type]
-      puts "PARAMS = #{params[:job][:allowed_cv_format]}"
-      # params[:job][:allowed_cv_format].reject!(&:empty?).reject!(&:blank?)
-      # Parse the value to extract individual format strings
-      format_strings = allowed_cv_format_param.scan(/"[^"]+"|\w+/)
-
-      # Remove the empty string from the list of format strings
-      format_strings.reject!(&:empty?)
-
-      # Reconstruct the updated :allowed_cv_format parameter
-      updated_allowed_cv_format_param = '[' + format_strings.join(',') + ']'
-
-      # Update the params hash with the updated :allowed_cv_format value
-      params[:allowed_cv_format] = updated_allowed_cv_format_param puts "PARAMS = #{params[:job][:allowed_cv_format]}"
-      if @job.save! && @job.update!(geocode(@job))
-        SpatialJobValue.update_job_value(@job)
-        redirect_to @job, notice: "Created new job"
-      else
-        render :new, status: :unprocessable_entity, alert: "Job has not been created"
-      end
-    rescue StandardError => e
-      render :new, status: :unprocessable_entity, alert: e.message
+      SpatialJobValue.update_job_value(@job)
+      redirect_to @job, notice: "Created new job"
+    else
+      render :new, status: :unprocessable_entity, alert: "Job has not been created"
     end
   end
 
@@ -131,7 +130,7 @@ class JobsController < ApplicationController
     params[:job][:allowed_cv_format].reject!(&:empty?)
 
     puts "#{params[:job][:cv_required]}"
-    if params[:job][:allowed_cv_format].empty?
+    if params[:job][:allowed_cv_format].empty? || params[:job][:cv_required] == 0
       params[:job][:cv_required] = false
     end
     puts "#{params[:job][:cv_required]}"

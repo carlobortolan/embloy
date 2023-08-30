@@ -9,6 +9,10 @@ class ApplicationsController < ApplicationController
     @applications = @job.applications.includes(:user).all
   end
 
+  def attachment
+    ApplicationAttachment.find_by(user_id: user_id, job_id: job_id)
+  end
+
   def show
     require_user_be_owner
     redirect_back(fallback_location: root_path)
@@ -35,9 +39,19 @@ class ApplicationsController < ApplicationController
         response: "No response yet..."
       )
       @application.user = User.find(Current.user.id.to_i)
+      @application.job = @job
 
       if @application.save!
-        @application.cv.attach(params[:application][:cv]) if params[:application][:cv].present?
+        if params[:application][:attachment_attributes][:cv].present?
+          puts "USER_ID = #{Current.user.id.to_i}"
+          puts "JOB_ID = #{params[:job_id].to_i}"
+          application_attachment = ApplicationAttachment.create!(
+            user_id: Current.user.id.to_i,
+            job_id: params[:job_id].to_i
+          )
+          application_attachment.save!
+          application_attachment.cv.attach(params[:application][:attachment_attributes][:cv])
+        end
       end
 
       redirect_to job_path(@job), notice: 'Application has been submitted'

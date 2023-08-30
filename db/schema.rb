@@ -239,8 +239,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_15_205359) do
   end
 
   create_table "application_attachments", id: :serial, force: :cascade do |t|
-    t.datetime "user_id", null: false
-    t.datetime "job_id", null: false
+    t.integer "user_id", null: false
+    t.integer "job_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["job_id", "user_id"], name: "application_attachment_job_id_user_id_index", unique: true
     t.index ["job_id"], name: "application_attachment_job_id_index"
     t.index ["user_id"], name: "application_attachment_user_id_index"
@@ -257,6 +259,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_15_205359) do
   add_foreign_key "reviews", "jobs", primary_key: "job_id"
   add_foreign_key "reviews", "users", column: "created_by"
   add_foreign_key "reviews", "users", column: "user_id"
-  #add_foreign_key "application_attachments", "applications", primary_key: "job_id", column: "job_id", on_delete: :cascade
-  #add_foreign_key "application_attachments", "applications", primary_key: "user_id", on_delete: :cascade
+  # add_foreign_key "application_attachments", "applications", primary_key: "job_id", column: "job_id", on_delete: :cascade
+  # add_foreign_key "application_attachments", "applications", primary_key: "user_id", on_delete: :cascade
 end

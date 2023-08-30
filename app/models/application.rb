@@ -7,10 +7,13 @@ class Application < ApplicationRecord
 
   has_noticed_notifications model_name: 'Notification'
   # has_rich_text :application_text
-  has_one_attached :cv
+  # has_one_attached :cv
 
   belongs_to :job, counter_cache: true
   belongs_to :user, counter_cache: true, :dependent => :destroy
+  has_one :application_attachment
+  accepts_nested_attributes_for :application_attachment
+  delegate :cv, to: :application_attachment, allow_nil: true
 
   validates :user_id, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" },
             uniqueness: { scope: :job_id, "error": "ERR_TAKEN", "description": "You already submitted an application for this job" }

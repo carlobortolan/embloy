@@ -6,7 +6,8 @@ class User < ApplicationRecord
   has_many :jobs, dependent: :delete_all
   has_many :reviews, dependent: :delete_all
   has_many :notifications, as: :recipient, dependent: :destroy
-
+  has_many :applications
+  has_many :application_attachments
   validates :email, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" },
             uniqueness: { "error": "ERR_TAKEN", "description": "Attribute exists" },
             format: { with: /\A[^@\s]+@[^@\s]+\z/, "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" }

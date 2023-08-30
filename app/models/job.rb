@@ -21,6 +21,7 @@ class Job < ApplicationRecord
   }
   belongs_to :user, counter_cache: true
   has_many :applications, dependent: :delete_all
+  has_many :application_attachments, dependent: :delete_all
   has_noticed_notifications model_name: 'Notification'
   has_rich_text :description
   has_one_attached :image_url

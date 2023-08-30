@@ -19,7 +19,13 @@
           <h5 class="fw-bolder"><%= @application.user.full_name %></h5>
           <p class="card-text"><%= @application.application_text %></p>
           <p class="card-text">
-            <i><b> <%= @application.response.nil? ? "No response yet ..." : @application.response %></b></i></p>
+            <i><b> <%= @application.response.nil? ? "No response yet ..." : @application.response %></b></i>
+          </p>
+          <% unless @cv.nil? %>
+            <div>
+              <%= link_to "Download CV", rails_blob_path(@cv, disposition: "attachment"), class: "btn btn-primary" %>
+            </div>
+          <% end %>
           <div class="d-flex justify-content-between align-items-center">
             <small class="text-muted"><%= @application.updated_at %></small>
           </div>
