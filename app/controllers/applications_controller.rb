@@ -34,9 +34,12 @@ class ApplicationsController < ApplicationController
         updated_at: Time.now,
         response: "No response yet..."
       )
-      @application.cv.attach(params[:application][:cv]) if params[:application][:cv].present?
       @application.user = User.find(Current.user.id.to_i)
-      @application.save!
+
+      if @application.save!
+        @application.cv.attach(params[:application][:cv]) if params[:application][:cv].present?
+      end
+
       redirect_to job_path(@job), notice: 'Application has been submitted'
     end
   end

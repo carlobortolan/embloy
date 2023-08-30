@@ -140,7 +140,7 @@
                 <%= form.text_field :currency, value: "EUR", placeholder: "EUR", required: true, disabled: true %>
               </div>
               <div class="form-group mt-3">
-                <p><%= form.rich_text_area :description, placeholder: "Write your job description here.", required: true, minlength: 10, maxlength: 500 %>
+                <p><%= form.rich_text_area :description, placeholder: "Write your job description here.", required: true, minlength: 10, maxlength: 1000 %>
                 <p><%= form.file_field :image_url, placeholder: "Add a fitting image here.", required: true, accept: 'image/png, image/jpeg, image/jpg' %></p>
               </div>
             </form>
@@ -156,14 +156,49 @@
 
               <div id="cv_format_options" style="display: none;">
                 <%= form.label "Select allowed CV formats:" %>
-                <%= form.collection_check_boxes :allowed_cv_format, @allowed_cv_formats, :to_s, :to_s do |b| %>
-                  <%= form.hidden_field b, value: 'false' %>
+                <%= form.collection_check_boxes :allowed_cv_format, @allowed_cv_formats, :to_s, :to_s do |format| %>
+                  <%= form.hidden_field format, value: 'false' %>
                   <div class="collection-check-box">
-                    <%= b.check_box %>
-                    <%= b.label %>
+                    <%= format.check_box %>
+                    <%= format.label %>
                   </div>
                 <% end %>
+                <div class="error" id="allowed_cv_format_error" style="color: red; display: none;">
+                  Please select at least one CV format.
+                </div>
               </div>
+              <script>
+                  document.addEventListener("DOMContentLoaded", function () {
+                      const cvRequiredCheckbox = document.getElementById("cv_required_checkbox");
+                      const cvFormatOptions = document.getElementById("cv_format_options");
+                      const cvFormatError = document.getElementById("allowed_cv_format_error");
+
+                      cvRequiredCheckbox.addEventListener("change", function () {
+                          cvFormatOptions.style.display = this.checked ? "block" : "none";
+                          if (this.checked) {
+                              validateCvFormatSelection();
+                          }
+                      });
+
+                      function validateCvFormatSelection() {
+                          const selectedFormats = document.querySelectorAll("input[name='job[allowed_cv_format][]']:checked");
+                          if (cvRequiredCheckbox.checked && selectedFormats.length === 0) {
+                              cvFormatError.style.display = "block";
+                              return false;
+                          } else {
+                              cvFormatError.style.display = "none";
+                              return true;
+                          }
+                      }
+
+                      const form = document.querySelector("form");
+                      form.addEventListener("submit", function (event) {
+                          if (!validateCvFormatSelection()) {
+                              event.preventDefault();
+                          }
+                      });
+                  });
+              </script>
             </div>
           </div><!-- End Contact Form -->
           <div>

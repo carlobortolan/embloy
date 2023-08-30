@@ -2,15 +2,18 @@ class Application < ApplicationRecord
   after_create_commit :notify_recipient
   # after_update_commit :notify_applicant
   before_destroy :cleanup_notifications
-  has_noticed_notifications model_name: 'Notification'
-  has_one_attached :cv
 
+  self.primary_keys = :user_id, :job_id
+
+  has_noticed_notifications model_name: 'Notification'
   # has_rich_text :application_text
+  has_one_attached :cv
 
   belongs_to :job, counter_cache: true
   belongs_to :user, counter_cache: true, :dependent => :destroy
 
-  validates :user_id, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
+  validates :user_id, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" },
+            uniqueness: { scope: :job_id, "error": "ERR_TAKEN", "description": "You already submitted an application for this job" }
   validates :job_id, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validates :application_text, length: { minimum: 0, maximum: 1000, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }, presence: true
   validates :response, length: { minimum: 0, maximum: 500, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }, presence: false

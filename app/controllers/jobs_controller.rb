@@ -91,8 +91,20 @@ class JobsController < ApplicationController
       job_types = JSON.parse(job_types_file)
       job_type = @job.job_type
       @job.job_type_value = job_types[job_type]
-      params[:job][:allowed_cv_format].reject!(&:empty?)
-      if @job.save && @job.update(geocode(@job))
+      puts "PARAMS = #{params[:job][:allowed_cv_format]}"
+      # params[:job][:allowed_cv_format].reject!(&:empty?).reject!(&:blank?)
+      # Parse the value to extract individual format strings
+      format_strings = allowed_cv_format_param.scan(/"[^"]+"|\w+/)
+
+      # Remove the empty string from the list of format strings
+      format_strings.reject!(&:empty?)
+
+      # Reconstruct the updated :allowed_cv_format parameter
+      updated_allowed_cv_format_param = '[' + format_strings.join(',') + ']'
+
+      # Update the params hash with the updated :allowed_cv_format value
+      params[:allowed_cv_format] = updated_allowed_cv_format_param puts "PARAMS = #{params[:job][:allowed_cv_format]}"
+      if @job.save! && @job.update!(geocode(@job))
         SpatialJobValue.update_job_value(@job)
         redirect_to @job, notice: "Created new job"
       else
@@ -118,7 +130,13 @@ class JobsController < ApplicationController
     require_user_be_owner
     params[:job][:allowed_cv_format].reject!(&:empty?)
 
-    if @job.update(job_params) && @job.update(geocode(@job))
+    puts "#{params[:job][:cv_required]}"
+    if params[:job][:allowed_cv_format].empty?
+      params[:job][:cv_required] = false
+    end
+    puts "#{params[:job][:cv_required]}"
+
+    if @job.update!(job_params) && @job.update!(geocode(@job))
       @job.image_url.attach(params[:job][:image_url]) if params[:job][:image_url].present?
       SpatialJobValue.update_job_value(@job)
       redirect_to @job
@@ -157,13 +175,13 @@ class JobsController < ApplicationController
 
     case params[:sort_by]
     when "salary_asc"
-      @jobs = @jobs.order(salary: :asc)
+      @jobs = @jobs.includes([:user]).includes([:image_url_attachment]).order(salary: :asc)
     when "salary_desc"
-      @jobs = @jobs.order(salary: :desc)
+      @jobs = @jobs.includes([:user]).includes([:image_url_attachment]).order(salary: :desc)
     when "date_asc"
-      @jobs = @jobs.order(created_at: :asc)
+      @jobs = @jobs.includes([:user]).includes([:image_url_attachment]).order(created_at: :asc)
     when "date_desc"
-      @jobs = @jobs.order(created_at: :desc)
+      @jobs = @jobs.includes([:user]).includes([:image_url_attachment]).order(created_at: :desc)
     end
 
     @jobs = @jobs.page(params[:page]).per(24)
@@ -222,7 +240,7 @@ class JobsController < ApplicationController
       :title, :description, :content, :job_notifications, :start_slot,
       :notify, :status, :user_id, :longitude, :latitude, :job_type,
       :position, :currency, :salary, :key_skills, :duration, :image_url, :cv_required,
-      :allowed_cv_format => [] # Permit the array of allowed_cv_format
+      :allowed_cv_format => []
     )
   end
 

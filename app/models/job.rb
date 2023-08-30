@@ -28,7 +28,7 @@ class Job < ApplicationRecord
   validates :title, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" },
             length: { minimum: 0, maximum: 100, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
   validates :description, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" },
-            length: { minimum: 10, maximum: 500, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
+            length: { minimum: 10, maximum: 1000, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
   validates :start_slot, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validates :longitude, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" },
             :numericality => { "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" }
@@ -55,6 +55,7 @@ class Job < ApplicationRecord
   # TODO: @cb Validate allowed_cv_format, so that user has to select at least one option
   validates :allowed_cv_format, inclusion: { in: %w[.pdf .docx .txt .xml], message: { error: "ERR_INVALID", description: "Attribute is invalid" } },
             presence: { message: { error: "ERR_BLANK", description: "Attribute can't be blank" } },
+            # format: { with: /\.(pdf|docx|txt|xml)\z/, allow_blank: true, message: { error: "ERR_INVALID", description: "Attribute is invalid" }},
             if: :cv_required?
   validate :image_format_validation
   validate :employer_rating
