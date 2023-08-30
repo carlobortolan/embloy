@@ -53,7 +53,7 @@ To log into the application, users can use the aforementioned OAuth2.0 services 
 If a user forgets their password, they can reset it by providing their email address and following the specified
 procedure in the email.
 
-### Job posting
+### Job Posting
 
 Authenticated user's can create new job listings/postings (including a fitting title, a short description, a high resolution cover-image and more) and, depending on the employer's liking, also define customized CV and motivation letter requirements.
 This customization includes specifying whether a CV or a motivation letter is required for the application, and if required, employers can also indicate their preferred file formats to ensure that the applications meet the employer's expectations.
@@ -67,7 +67,7 @@ basic [CRUD operations](https://www.javatpoint.com/crud-operations-in-sql), and 
 application is submitted, as well as notifying the applicant when their application is accepted or rejected.
 
 All notifications are sent via [SMTP](https://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol).
-Uploaded images are stored and encrypted on Backblaze B2 Bucket (soon to be migrated to AWS S3).
+Uploaded images are stored and encrypted on a Backblaze B2 Bucket (soon to be migrated to AWS S3).
 
 ## How it Works
 
