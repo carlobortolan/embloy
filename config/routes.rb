@@ -7,7 +7,10 @@ Rails.application.routes.draw do
       patch 'user/password', to: 'passwords#update'
       post 'user/password/reset', to: 'password_resets#create'
 
+      get 'user', to: 'user#show'
       post 'user', to: 'registrations#create'
+      patch 'user', to: 'user#edit'
+      delete 'user', to: 'user#destroy'
       get 'user/verify', to: 'registrations#verify'
       post 'user/auth/token/refresh', to: 'authentications#create_refresh'
       post 'user/auth/token/access', to: 'authentications#create_access'
@@ -15,18 +18,24 @@ Rails.application.routes.draw do
       get 'user/jobs', to: 'user#own_jobs'
       get 'user/applications', to: 'user#own_applications'
       get 'user/reviews', to: 'user#own_reviews'
+      delete 'user/image', to: 'user#remove_image'
+      get 'user/preferences', to: 'user#get_preferences'
+      patch 'user/preferences', to: 'user#update_preferences'
 
       post 'user/(/:id)/reviews', to: 'reviews#create'
       delete 'user/(/:id)/reviews', to: 'reviews#destroy'
       patch 'user/(/:id)/reviews', to: 'reviews#update'
 
       get 'jobs', to: 'jobs#feed'
+      get 'jobs/(/:id)', to: 'jobs#show'
+      get 'jobs_maps', :to => 'jobs#map'
+
       post 'jobs', to: 'jobs#create'
       patch 'jobs', to: 'jobs#update'
       delete 'jobs', to: 'jobs#destroy'
       get 'jobs/(/:id)/applications', to: 'applications#show'
       post 'jobs/(/:id)/applications', to: 'applications#create'
-      #      get 'jobs/(/:id)/applications/(/:user)/accept', to: 'applications#accept'
+      # get 'jobs/(/:id)/applications/(/:user)/accept', to: 'applications#accept'
       # patch 'jobs/(/:id)/applications/(/:user)/accept', to: 'applications#accept'
       # delete 'jobs/(/:id)/applications', to: 'applications#destroy'
 
@@ -91,11 +100,12 @@ Rails.application.routes.draw do
   # -----> User management <-----
   # get 'user/', :to => 'user#index', as: :user_index
   get 'user/profile', :to => 'user#index', as: :profile_index
+  # TODO: @cb check duplicate routes
   patch 'user/profile', :to => 'user#update', as: :user
+  patch 'user/profile', to: 'user#update', as: :profile_update
   patch 'user/update_location', :to => 'user#update_location', as: :user_update_location
   delete 'user', to: 'user#destroy', as: :user_delete
   delete 'user/remove_image', to: 'user#remove_image', as: :remove_user_image
-  patch 'user/profile', to: 'user#update', as: :profile_update
   get 'user/edit', :to => 'user#edit', as: :profile_edit
   get 'user/settings', :to => 'user#settings', as: :profile_settings
   get 'user/applications', :to => 'user#own_applications', as: :own_applications

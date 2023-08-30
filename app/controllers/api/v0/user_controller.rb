@@ -42,6 +42,62 @@ module Api
           not_found_error('user')
         end
       end
+
+      def get_preferences
+        begin
+          verified!(@decoded_token["typ"])
+          user = User.find(@decoded_token["sub"].to_i)
+          preferences = Preferences.find_by_user_id(user.id)
+          if preferences.nil?
+            not_found_error('preferences')
+          else
+            preferences.blank? ? render(status: 204, json: { "preferences": preferences }) : render(status: 200, json: { "preferences": preferences })
+          end
+        rescue ActiveRecord::RecordNotFound
+          not_found_error('user')
+        end
+      end
+
+      def update_preferences
+        # TODO
+      end
+
+      def remove_image
+        begin
+          verified!(@decoded_token["typ"])
+          user = User.find(@decoded_token["sub"].to_i)
+          user.image_url.purge if user.image_url.attached?
+          render status: 200, json: { "message": "Profile image successfully removed." }
+        rescue ActiveRecord::RecordNotFound
+          not_found_error('user')
+        end
+      end
+
+      def show
+        begin
+          verified!(@decoded_token["typ"])
+          user = User.find(@decoded_token["sub"].to_i)
+          render(status: 200, json: { "user": user })
+        rescue ActiveRecord::RecordNotFound
+          not_found_error('user')
+        end
+      end
+
+      def edit
+        # TODO
+      end
+
+      def destroy
+        begin
+          verified!(@decoded_token["typ"])
+          user = User.find(@decoded_token["sub"].to_i)
+          user.destroy!
+          render status: 200, json: { "message": "User deleted!" }
+        rescue ActiveRecord::RecordNotFound
+          not_found_error('user')
+        end
+
+      end
     end
   end
 end

@@ -4,7 +4,7 @@ module Api
   module V0
     class JobsController < ApiController
       before_action :verify_access_token
-      before_action :verify_path_job_id, only: [:update, :destroy]
+      before_action :verify_path_job_id, only: [:update, :destroy, :show]
 
       def create
         begin
@@ -72,6 +72,7 @@ module Api
 
       def destroy
         begin
+          # TODO: @jh: Why use `must_be_editor!` and not `owner!`?
           must_be_editor!(@decoded_token["sub"])
           # verified!(@decoded_token["typ"]) #jobs should be removed with job_status = 0 instead of being irreversibly deleted
           # must_be_owner!(params[:id], @decoded_token["sub"])
@@ -96,7 +97,6 @@ module Api
           end
           return blank_error('latitude') if params[:latitude].nil? || params[:latitude].blank?
           return blank_error('longitude') if params[:longitude].nil? || params[:longitude].blank?
-          return malformed_error('latitude') unless params[:latitude].to_f.class == Float
           begin
             params[:latitude] = Float(params[:latitude])
           rescue ArgumentError
@@ -120,6 +120,39 @@ module Api
             render status: 204, json: { "message": "No jobs found!" } # message will not show with 204, just for maintainability
           end
         end
+      end
+
+      # Returns jobs near given coordinates
+      def map
+        lat = params[:latitude]
+        lng = params[:longitude]
+
+        return blank_error('latitude') if lat.nil? || lat.blank?
+        return blank_error('longitude') if lng.nil? || lng.blank?
+        begin
+          lat = Float(lat)
+        rescue ArgumentError
+          return malformed_error('latitude')
+        end
+        begin
+          lng = Float(lng)
+        rescue ArgumentError
+          return malformed_error('longitude')
+        end
+
+        user = User.find(@decoded_token["sub"].to_i)
+        if !user.nil? && !user.longitude.nil? && !user.latitude.nil?
+          lat = user.latitude
+          lng = user.longitude
+        end
+        jobs = JobSlicer.fetch_map(lat, lng)
+        jobs.empty? ? render(status: 204, json: { "jobs": jobs }) : render(status: 200, json: "jobs: #{jobs.to_json(except: [:image_url])}")
+      end
+
+      # Returns a specific job
+      def show
+        job = Job.find(params[:id])
+        job.nil? ? render(status: 204, json: { "job": job }) : render(status: 200, json: "job: #{job.to_json(except: [:image_url])}")
       end
 
       private
@@ -157,7 +190,7 @@ module Api
       end
 
       def update_job_params
-        #params.require(:job).permit(:title, :description, :start_slot, :user_id, :longitude, :latitude, :job_type, :status, :job_status, :position, :currency, :salary, :key_skills, :duration)
+        # params.require(:job).permit(:title, :description, :start_slot, :user_id, :longitude, :latitude, :job_type, :status, :job_status, :position, :currency, :salary, :key_skills, :duration)
         # Updated params to work with postman form-data
         params.permit(:title, :description, :start_slot, :user_id, :longitude, :latitude, :job_type, :status, :job_status, :position, :currency, :salary, :key_skills, :duration)
       end

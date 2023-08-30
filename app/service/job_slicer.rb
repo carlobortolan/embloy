@@ -22,6 +22,7 @@ class JobSlicer
   end
 
   # Fetches a limited number of jobs depending on the user's coordinates (map)
+  # @deprecated
   def self.fetch(lat, lng)
     if lat.nil? || lng.nil? || lat.abs > 90.0 || lng.abs > 180.0
       lat = 48.1374300
@@ -54,19 +55,15 @@ class JobSlicer
 
   def self.fetch_map(lat, lng)
     if lat.nil? || lng.nil? || lat.abs > 90.0 || lng.abs > 180.0
-      puts "CASEA"
       return Job.order('random()').limit(100)
     else
-      puts "CASEB"
       res = Job.within_radius(lat, lng, 1000000, 100)
       #      res = Job.within_radius(lat, lng, 1000000, 20)
       if res.nil? || res.empty?
-        puts "CASEC"
         res = Job.all.limit(100)
       end
       return res
     end
   end
-
 
 end
