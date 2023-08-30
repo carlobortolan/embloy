@@ -12,10 +12,10 @@
 
 ActiveRecord::Schema[7.0].define(version: 2023_04_15_205359) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "pg_trgm"
+  # enable_extension "pg_trgm"
   enable_extension "plpgsql"
   enable_extension "postgis"
-  enable_extension "unaccent"
+  # enable_extension "unaccent"
 
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
@@ -25,7 +25,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_15_205359) do
   create_enum "rating_type", ["1", "2", "3", "4", "5"]
   create_enum "user_roles", ["admin", "editor", "developer", "moderator", "verified", "spectator"]
   create_enum "user_type", ["company", "private"]
-  create_enum "application_cv_format", [".pdf", ".txt", ".docx", ".xml"]
+  create_enum "allowed_cv_format", [".pdf", ".txt", ".docx", ".xml"]
 
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
@@ -130,7 +130,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_15_205359) do
     t.text "job_notifications", default: "1", null: false
     t.integer "boost", default: 0, null: false
     t.boolean "cv_required", null: false, default: false
-    t.enum "allowed_cv_format", default: [".pdf", ".txt", ".docx", ".xml"], null: false, enum_type: "application_cv_format", array: true
+    # t.enum "allowed_cv_format", default: [".pdf", ".txt", ".docx", ".xml"], null: false, enum_type: "allowed_cv_format", array: true
     t.index ["country_code"], name: " job_country_code_index "
     t.index ["job_id"], name: "job_job_id_index"
     t.index ["postal_code"], name: " job_postal_code_index "
@@ -238,6 +238,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_15_205359) do
     t.index ["user_type"], name: "user_user_type_index"
   end
 
+  create_table "application_attachments", id: :serial, force: :cascade do |t|
+    t.datetime "user_id", null: false
+    t.datetime "job_id", null: false
+    t.index ["job_id", "user_id"], name: "application_attachment_job_id_user_id_index", unique: true
+    t.index ["job_id"], name: "application_attachment_job_id_index"
+    t.index ["user_id"], name: "application_attachment_user_id_index"
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "applications", "jobs", primary_key: "job_id", on_delete: :cascade
@@ -249,4 +257,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_15_205359) do
   add_foreign_key "reviews", "jobs", primary_key: "job_id"
   add_foreign_key "reviews", "users", column: "created_by"
   add_foreign_key "reviews", "users", column: "user_id"
+  #add_foreign_key "application_attachments", "applications", primary_key: "job_id", column: "job_id", on_delete: :cascade
+  #add_foreign_key "application_attachments", "applications", primary_key: "user_id", on_delete: :cascade
 end
