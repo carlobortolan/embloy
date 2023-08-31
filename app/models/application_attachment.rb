@@ -6,8 +6,8 @@ class ApplicationAttachment < ApplicationRecord
   has_one_attached :cv, dependent: :destroy
 
   def cv_format_validation
-    return unless !cv.nil? && cv.attached?
-    allowed_formats = %w[application/pdf text/plain application/vnd.openxmlformats-officedocument.wordprocessingml.document text/xml]
+    return unless !cv.nil? && cv.attached? && job.cv_required && !job.allowed_cv_format.nil?
+    allowed_formats = ApplicationHelper.allowed_cv_formats_for_form(job.allowed_cv_format)
     unless allowed_formats.include?(cv.blob.content_type)
       errors.add(:cv, { "error": "ERR_INVALID", "description": "must be a #{job.allowed_cv_format.join(',')} file" })
     end

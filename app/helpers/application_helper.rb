@@ -1,5 +1,5 @@
 module ApplicationHelper
-  def allowed_cv_formats_for_form(allowed_formats)
+  def self.allowed_cv_formats_for_form(allowed_formats)
     formats_mapping = {
       ".pdf" => "application/pdf",
       ".txt" => "text/plain",
@@ -9,4 +9,5 @@ module ApplicationHelper
     }
     allowed_formats.map { |format| formats_mapping[format] }
   end
+
 end
