@@ -89,13 +89,9 @@ class JobsController < ApplicationController
     @editing = false
     @job.currency = "EUR"
 
-    params[:job][:allowed_cv_format]&.reject!(&:empty?)
-
-    puts "REQUIRED #{params[:job][:cv_required]}"
     if params[:job][:allowed_cv_format].empty? || params[:job][:cv_required] == 0
       params[:job][:cv_required] = false
     end
-    puts "REQUIRED #{params[:job][:cv_required]}"
 
     @job.currency = "EUR"
     @job.user_id = Current.user.id
@@ -105,11 +101,12 @@ class JobsController < ApplicationController
     job_type = @job.job_type
     @job.job_type_value = job_types[job_type]
 
-    if @job.save! && @job.update!(geocode(@job))
+    if @job.save && @job.update(geocode(@job))
       @job.image_url.attach(params[:job][:image_url]) if params[:job][:image_url].present?
       SpatialJobValue.update_job_value(@job)
       redirect_to @job, notice: "Created new job"
     else
+      flash[:alert] = "Job has not been created"
       render :new, status: :unprocessable_entity, alert: "Job has not been created"
     end
   end
@@ -129,17 +126,16 @@ class JobsController < ApplicationController
     require_user_be_owner
     params[:job][:allowed_cv_format].reject!(&:empty?)
 
-    puts "#{params[:job][:cv_required]}"
     if params[:job][:allowed_cv_format].empty? || params[:job][:cv_required] == 0
       params[:job][:cv_required] = false
     end
-    puts "#{params[:job][:cv_required]}"
 
-    if @job.update!(job_params) && @job.update!(geocode(@job))
+    if @job.update(job_params) && @job.update(geocode(@job))
       @job.image_url.attach(params[:job][:image_url]) if params[:job][:image_url].present?
       SpatialJobValue.update_job_value(@job)
       redirect_to @job
     else
+      flash[:alert] = "Job has not been created"
       render :edit, status: :unprocessable_entity
     end
   end
@@ -147,14 +143,18 @@ class JobsController < ApplicationController
   def destroy
     @job = Job.find(params[:id])
     require_user_be_owner
-    @job.destroy
-    redirect_to own_jobs_path, status: :see_other, notice: "Job successfully deleted."
+    if @job.destroy
+      redirect_to own_jobs_path, status: :see_other, notice: "Job successfully deleted"
+    else
+      flash[:alert] = "Job has not been deleted"
+      render :show, status: :unprocessable_entity
+    end
   end
 
   def remove_image
     @job = Job.find(params[:id])
     @job.image_url.purge if @job.image_url.attached?
-    redirect_to @job, notice: "Job image has been removed."
+    redirect_to @job, notice: "Job image has been removed"
   end
 
   def find

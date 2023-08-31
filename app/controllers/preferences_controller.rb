@@ -3,7 +3,6 @@ class PreferencesController < ApplicationController
 
   def update
     # TODO: Fix null pointer
-    puts "PREF PARAMS = #{params}"
     @user = Current.user
     @preferences = Current.user.preferences
 
@@ -34,7 +33,8 @@ class PreferencesController < ApplicationController
       # if !@preferences.nil? && @preferences.update(spontaneity: params[:spontaneity]) && @preferences.update(job_type: job_type)
       redirect_to @user, notice: "Updated preferences"
     else
-      render :index, status: :unprocessable_entity, alert: "Could not save preferences"
+      flash[:alert] = "Could not save preferences"
+      render :'user/preferences', status: :unprocessable_entity
     end
   end
 

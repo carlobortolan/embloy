@@ -31,44 +31,47 @@ class ApplicationsController < ApplicationController
       @job = Job.find(params[:job_id])
       application_attachment = ""
       if params[:application][:attachment_attributes][:cv].present?
-        puts "USER_ID = #{Current.user.id.to_i}"
-        puts "JOB_ID = #{params[:job_id].to_i}"
-        application_attachment = ApplicationAttachment.create!(
-          user_id: Current.user.id.to_i,
-          job_id: params[:job_id].to_i
-        )
         begin
-          "BEGIN1"
+          application_attachment = ApplicationAttachment.create!(
+            user_id: Current.user.id.to_i,
+            job_id: params[:job_id].to_i
+          )
           application_attachment.cv.attach(params[:application][:attachment_attributes][:cv])
-          "BEGIN2"
         rescue ActiveRecord::RecordInvalid
-          puts "DESTROYED ATTACHMENT 1"
-          application_attachment.destroy
+          application_attachment.destroy!
+          flash[:alert] = "Application could not be submitted due to invalid file attachment"
+          render :new, status: :unprocessable_entity, alert: "Application could not be submitted due to invalid file attachment"
         end
       end
       if application_attachment.save
-        @application = Application.create!(
-          user_id: Current.user.id.to_i,
-          job_id: params[:job_id].to_i,
-          application_text: application_params[:application_text],
-          application_documents: application_params[:application_documents],
-          created_at: Time.now,
-          updated_at: Time.now,
-          response: "No response yet..."
-        )
+        begin
+          @application = Application.create(
+            user_id: Current.user.id.to_i,
+            job_id: params[:job_id].to_i,
+            application_text: application_params[:application_text],
+            application_documents: application_params[:application_documents],
+            created_at: Time.now,
+            updated_at: Time.now,
+            response: "No response yet..."
+          )
+        rescue RecordInvalid
+          application_attachment.destroy
+          flash[:alert] = "Application could not be submitted due to invalid input"
+          render :new, status: :unprocessable_entity
+        end
         @application.user = User.find(Current.user.id.to_i)
         @application.job = @job
         if @application.save
           redirect_to job_path(@job), notice: 'Application has been submitted'
         else
-          @application.destroy
-          puts "DESTROYED ATTACHMENT 2"
           application_attachment.destroy
-          render :new, status: :unprocessable_entity, alert: "Job has not been created due to issue with application"
+          flash[:alert] = "Application could not be submitted due to issue with application"
+          render :new, status: :unprocessable_entity
         end
       else
         application_attachment.destroy
-        render :new, status: :unprocessable_entity, alert: "Job has not been created due to issue with application attachment"
+        flash[:alert] = "Application could not be submitted due to issue with application attachment"
+        render :new, status: :unprocessable_entity
       end
     end
   end
@@ -79,7 +82,6 @@ class ApplicationsController < ApplicationController
       redirect_to job_path(@job), alert: 'Not allowed!' if Current.user.id != @job.user_id
       @application = @job.applications.find(params[:user_id])
       @application.destroy
-
       redirect_to job_path(@job), status: :see_other
     end
   end

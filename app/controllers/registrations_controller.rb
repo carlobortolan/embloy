@@ -15,36 +15,50 @@ class RegistrationsController < ApplicationController
   def create
     @user = User.new(user_params)
     find_coordinates
-    #    @user[:user_role] = 0
-
-    if @user.save!
+    if @user.save
       WelcomeMailer.with(user: @user).welcome_email.deliver_later
       session[:user_id] = @user.id
       redirect_to root_path, notice: 'Successfully created account. Check your emails to verify your account.'
     else
-      render :new
+      flash[:alert] = "Could not save user"
+      render :new, status: :unprocessable_entity
     end
   end
 
   def verify_account
-    @user = User.find_signed!(params[:token], purpose: 'verify_account')
-
+    begin
+      @user = User.find_signed!(params[:token], purpose: 'verify_account')
+    rescue ActiveRecord::RecordNotFound
+      flash[:alert] = "User does not exist"
+      render :new, status: :not_found
+    rescue ActiveSupport::MessageVerifier::InvalidSignature
+      flash[:alert] = "Token has either expired, has a purpose mismatch, is for another record, or has been tampered with"
+      render :new, status: :unprocessable_entity
+    end
     # TODO: Change to "verified" when opening prototype to public.
-    if @user.update!(user_role: "spectator")
+    # TODO: @cb: check activity_status
+    if @user.update(user_role: "spectator") && @user.update(activity_status: "1")
       WelcomeMailer.with(user: @user).notify_team.deliver_later
       redirect_to sign_in_path, notice: 'Your account was verified successfully.'
     else
-      render :edit
+      flash[:alert] = "Could not verify user"
+      render :new, status: :unprocessable_entity
     end
   end
 
   def activate_account
-    @user = User.find_signed!(params[:token], purpose: 'activate_account')
+    begin
+      @user = User.find_signed!(params[:token], purpose: 'activate_account')
+    rescue ActiveRecord::RecordNotFound
+      redirect_to activate_account_path, status: :not_found, alert: "User does not exist"
+    rescue ActiveSupport::MessageVerifier::InvalidSignature
+      redirect_to activate_account_path, status: :unprocessable_entity, alert: "Token has either expired, has a purpose mismatch, is for another record, or has been tampered with"
+    end
 
-    if @user.update!(user_role: "verified")
+    if @user.update(user_role: "verified")
       redirect_to sign_in_path, notice: 'Account was verified successfully.'
     else
-      render :edit
+      redirect_to sign_in_path, status: :unprocessable_entity, alert: "Could not activate user"
     end
   end
 

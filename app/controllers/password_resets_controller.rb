@@ -10,24 +10,39 @@ class PasswordResetsController < ApplicationController
         # send mail
         PasswordMailer.with(user: @user).reset.deliver_later
       end
-      redirect_to root_path, notice: 'Please check your email to reset the password.'
+      redirect_to root_path, notice: 'Please check your email to reset the password'
     else
-      redirect_to help_path, notice: 'Something went wrong. Try again.'
+      flash[:alert] = "Bad request, email missing"
+      render :'welcome/help', status: :bad_request
     end
   end
 
   def edit
     @user = User.find_signed!(params[:token], purpose: 'password_reset')
+  rescue ActiveRecord::RecordNotFound
+    flash[:alert] = "User does not exist"
+    render 'welcome/help', status: :not_found
   rescue ActiveSupport::MessageVerifier::InvalidSignature
-    redirect_to sign_in_path, alert: 'Your token has expired. Please try again.'
+    flash[:alert] = "Token has either expired, has a purpose mismatch, is for another record, or has been tampered with"
+    render 'welcome/help', status: :bad_request
   end
 
   def update
-    @user = User.find_signed!(params[:token], purpose: 'password_reset')
-    if @user.update!(password_params)
-      redirect_to sign_in_path, notice: 'Your password was reset successfully. Please sign in.'
+    begin
+      @user = User.find_signed!(params[:token], purpose: 'password_reset')
+    rescue ActiveRecord::RecordNotFound
+      flash[:alert] = "User does not exist"
+      render 'welcome/help', status: :not_found
+    rescue ActiveSupport::MessageVerifier::InvalidSignature
+      flash[:alert] = "Token has either expired, has a purpose mismatch, is for another record, or has been tampered with"
+      render 'welcome/help', status: :bad_request
+    end
+
+    if @user.update(password_params)
+      redirect_to sign_in_path, notice: 'Your password was reset successfully. Please sign in'
     else
-      render :edit
+      flash[:alert] = "Changes could not be saved"
+      render 'welcome/help', status: :unprocessable_entity
     end
   end
 

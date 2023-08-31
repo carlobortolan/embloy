@@ -15,8 +15,11 @@ class User < ApplicationRecord
   validates :last_name, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, uniqueness: false
   # TODO: UNDERSTAND UPDATABLE?
   validates :password, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" },
-            length: { minimum: 8, maximum: 72, "error": "ERR_LENGTH", "description": "Attribute length is invalid" },
-            if: :password_required?
+            allow_blank: false,
+            allow_nil: false,
+            length: { minimum: 8, maximum: 72, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
+  #,
+  #                      if: :password_required?
 
   validates :password_confirmation, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" },
             length: { minimum: 8, maximum: 72, "error": "ERR_LENGTH", "description": "Attribute length is invalid" },

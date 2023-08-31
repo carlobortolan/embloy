@@ -25,40 +25,48 @@ class UserController < ApplicationController
     @user = Current.user
     if @user.update(user_params)
       @user.image_url.attach(params[:user][:image_url]) if params[:user][:image_url].present?
-
       redirect_to @user, notice: "Updated profile"
     else
-      render :index, status: :unprocessable_entity, alert: "Could not save changes"
+      flash[:alert] = "Could not save changes"
+      render :index, status: :unprocessable_entity
     end
   rescue IsoCountryCodes::UnknownCodeError
-    redirect_to @user, alert: "#{user_params[:country_code]} is not a valid ISO country code"
+    flash[:alert] = "#{user_params[:country_code]} is not a valid ISO country code"
+    render :index, status: :bad_request
   end
 
   def update_location
     if params[:latitude].present? && params[:longitude].present?
       Current.user.update(latitude: params[:latitude], longitude: params[:longitude])
     elsif params[:location_denied]
-      redirect_to root_path, alert: "Unable to update location as location access was denied."
+      redirect_to root_path, alert: "Unable to update location as location access was denied"
     end
   end
 
   def destroy
     @user = Current.user
-    @user.destroy!
-    redirect_to root_path, status: :see_other, notice: "Account successfully deleted."
+    if @user.destroy
+      redirect_to root_path, status: :see_other, notice: "Account successfully deleted"
+    else
+      flash[:alert] = 'Account could not be deleted'
+      render :index, status: :unprocessable_entity
+    end
   end
 
   def remove_image
     @user = Current.user
     @user.image_url.purge if @user.image_url.attached?
-    redirect_to profile_index_path(@user), notice: "Profile image has been removed."
+    redirect_to profile_index_path(@user), notice: "Profile image has been removed"
   end
 
   def preferences
     @user = Current.user
     if @user.preferences.nil?
       @user.create_preferences
-      @user.save
+      unless @user.save
+        flash[:alert] = 'Preferences could not be saved'
+        render :preferences, status: :unprocessable_entity
+      end
     end
     @preferences = Current.user.preferences
     @categories_list = JSON.parse(File.read(Rails.root.join('app/helpers', 'job_types.json'))).keys

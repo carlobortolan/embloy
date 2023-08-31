@@ -8,7 +8,8 @@ class PasswordsController < ApplicationController
     if Current.user.update(password_params)
       redirect_to root_path, notice: 'Password Updated'
     else
-      render :edit
+      flash[:alert] = "Changes could not be saved"
+      render :edit, status: :unprocessable_entity
     end
   end
 

@@ -49,6 +49,7 @@ class Job < ApplicationRecord
   validates :job_type, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validates :status, inclusion: { in: %w[public private archived], "error": "ERR_INVALID", "description": "Attribute is invalid" }, presence: false
   validates :job_type_value, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
+
   # validates :postal_code, length: { minimum: 0, maximum: 45, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
   # validates :country_code, length: { minimum: 0, maximum: 45, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
   # validates :city, length: { minimum: 0, maximum: 45, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }

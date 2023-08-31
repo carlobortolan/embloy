@@ -17,6 +17,7 @@ class ReviewsController < ApplicationController
       if @review.save
         redirect_to @review
       else
+        flash[:alert] = "Review has not been created"
         render :new, status: :unprocessable_entity
       end
 

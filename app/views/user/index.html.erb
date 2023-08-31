@@ -169,7 +169,7 @@
                         <%= image_tag(@user.image_url, style: "width: 400px; height: 400px; border-radius:100%", class: "card-img-top") if !@user.nil? && @user.image_url.attached? %>
 
                         <div class="pt-2">
-                          <%= f.file_field :image_url, placeholder: "Add a fitting image here.", required: true, accept: 'image/png, image/jpeg, image/jpg' %>
+                          <%= f.file_field :image_url, placeholder: "Add a fitting image here.", accept: 'image/png, image/jpeg, image/jpg' %>
                           <% if @user.image_url.attached? %>
                             <%= link_to remove_user_image_path(@user), method: :delete, data: { confirm: "Are you sure you want to remove your profile image?" }, class: "btn btn-danger btn-sm", title: "Remove my profile image" do %>
                               <i class="bi bi-trash"></i>
