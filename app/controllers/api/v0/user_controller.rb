@@ -10,12 +10,8 @@ module Api
           # Cache attachment (should also be done with image_url)
           jobs = User.find(@decoded_token["sub"].to_i).jobs.includes([:rich_text_description]).order(created_at: :desc)
 
-          # TODO: image_url currently not working with JSON.
-          # This doesn't work:
-          # jobs.empty? ? render(status: 204, json: { "jobs": jobs }) : render(status: 200, json: { "jobs": jobs })
-
           # This works, but sends job without image_url:
-          jobs.empty? ? render(status: 204, json: { "jobs": jobs }) : render(status: 200, json: "jobs: #{jobs.to_json(except: [:image_url])}")
+          jobs.empty? ? render(status: 204, json: { "jobs": jobs }) : render(status: 200, json: "jobs: #{Job.get_jsons(jobs)}")
         rescue ActiveRecord::RecordNotFound
           not_found_error('user')
         end

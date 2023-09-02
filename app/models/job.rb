@@ -107,6 +107,27 @@ class Job < ApplicationRecord
     end
   end
 
+  # Current approach; - TODO: @cb find easier way to serialize job JSONs
+  def self.get_json(job)
+    if !job.nil? && !job.image_url.url.nil?
+      # Parse the JSON to a hash
+      res_hash = JSON.parse(job.to_json(except: [:image_url]))
+      # Add the 'image_url' field with the value 'job.image_url.url'
+      res_hash['image_url'] = job.image_url.url
+      res_hash.to_json
+    end
+  end
+
+  def self.get_jsons(jobs)
+    res_json = []
+    unless jobs.nil?
+      jobs.each do |job|
+        res_json << Job.get_json(job)
+      end
+      res_json.join(",")
+    end
+  end
+
   private
 
   def job_type_validation

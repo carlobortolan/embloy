@@ -111,9 +111,9 @@ module Api
           jobs = JobSlicer.slice(User.find(@decoded_token["sub"].to_i), 30000, params[:latitude], params[:longitude])
           # Call FG-API to rank jobs
           if !jobs.nil? && !jobs.empty?
-            # feed = call_feed(jobs) # - #
+            feed = call_feed(jobs) # - #
             # ------------------------- #
-            feed = jobs # todo:remove-- #
+            #feed = jobs # todo:remove-- #
             # ------------------------- #
             feed.nil? || feed.empty? ? render(status: 500, json: { "message": "Please try again later. If this error persists, we recommend to contact our support team" }) : render(status: 200, json: { "feed": feed })
           else
@@ -146,39 +146,57 @@ module Api
           lng = user.longitude
         end
         jobs = JobSlicer.fetch_map(lat, lng)
-        jobs.empty? ? render(status: 204, json: { "jobs": jobs }) : render(status: 200, json: "jobs: #{jobs.to_json(except: [:image_url])}")
+        # jobs.empty? ? render(status: 204, json: { "jobs": jobs }) : render(status: 200, json: "jobs: #{jobs.to_json(except: [:image_url])}")
+        jobs.empty? ? render(status: 204, json: { "jobs": jobs }) : render(status: 200, json: "jobs: [#{Job.get_jsons(jobs)}]")
       end
 
       # Returns a specific job
       def show
-        job = Job.find(params[:id])
-        job.nil? ? render(status: 204, json: { "job": job }) : render(status: 200, json: "job: #{job.to_json(except: [:image_url])}")
+        begin
+          job = Job.find(params[:id])
+        rescue ActiveRecord::RecordNotFound
+          render(status: 404, json: { "message": "Job with id #{params[:id]} does not exist!" })
+          return
+        end
+        if job.nil?
+          render(status: 204, json: { "job": job })
+        else
+          render(status: 200, json: "job: #{Job.get_json(job)}")
+        end
       end
 
       private
 
       # Method to communicate with the FG-API by sending a POST-request to tbd
       def call_feed(jobs)
-        # url = URI.parse("https://embloy-fg-api.onrender.com/feed")
-        url = URI.parse("http://localhost:8080/feed")
-        if Current.user.nil? || Current.user.preferences.nil?
-          request_body = "{\"slice\": #{jobs.to_json}}"
+        url = URI.parse("https://embloy-fg-api.onrender.com/feed")
+        # url = URI.parse("http://localhost:8080/feed")
+        if !Current.user.nil? && !Current.user.preferences.nil?
+          request_body = "{\"pref\": #{Current.user.preferences.to_json}, \"slice\": [#{Job.get_jsons(jobs)}]}"
         else
-          request_body = "{\"pref\": #{Current.user.preferences.to_json},\"slice\": #{jobs.to_json}}"
+          request_body = "{\"slice\": [#{Job.get_jsons(jobs)}]}"
         end
-        puts request_body
         http = Net::HTTP.new(url.host, url.port)
-        # http.use_ssl = true
+        http.use_ssl = true
         http.verify_mode = OpenSSL::SSL::VERIFY_PEER
 
         request = Net::HTTP::Post.new(url)
         request.basic_auth('FG', 'pw')
         request.body = request_body
         request["Content-Type"] = "application/json"
-
+        puts "Request = #{request.body}"
         response = http.request(request)
-
-        JSON.parse(response.body)
+        puts "Response = #{response.body}"
+        if response.code == '200'
+          feed_json = JSON.parse(response.body)
+          res = []
+          feed_json.each do |job_hash|
+            # puts job_hash["job_id"]
+            res << job_hash["job_id"]
+            # @jobs << Job.new(job_hash)
+          end
+          res
+        end
       end
 
       def job_params
