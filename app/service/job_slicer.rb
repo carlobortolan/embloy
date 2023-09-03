@@ -2,6 +2,7 @@ require_relative '../../config/environment'
 
 class JobSlicer
   # Fetches a slice (=partition) containing all relevant jobs for the current user's  (feed)
+  # Used by API
   # TODO: Implement using postgis
   def self.slice(user = nil, rad, lat, lng)
     # `user` could be used for logging or special slicing (categories etc.) ...
@@ -13,10 +14,9 @@ class JobSlicer
       lng = 11.5754900
     end
     # TODO: Add functionality that dynamically adapts rad according to the density of jobs in the area (to better consider differences between very densely populated urban areas and rural areas)
-    res = Job.within_radius(lat, lng, rad, 500)
-
+    res = Job.includes(:rich_text_description, image_url_attachment: :blob).within_radius(lat, lng, rad, 20)
     if res.nil? || res.empty?
-      res = Job.all.limit(100)
+      res = Job.includes(:rich_text_description, image_url_attachment: :blob).all.limit(20)
     end
     return res
   end
@@ -29,25 +29,22 @@ class JobSlicer
       lng = 11.5754900
     end
 
-    res = Job.includes([:image_url_attachment]).within_radius(lat, lng, 1000000, 100).with_all_rich_text
+    res = Job.within_radius(lat, lng, 1000000, 100).with_all_rich_text.includes(:rich_text_description, image_url_attachment: :blob)
 
     if res.nil? || res.empty?
-      res = Job.includes([:image_url_attachment]).all.limit(10).with_all_rich_text
+      res = Job.all.limit(10).with_all_rich_text.includes(:rich_text_description, image_url_attachment: :blob)
     end
     return res
   end
 
-  def self.fetch_feed(lat, lng)
+  # Used by web app
+   def self.fetch_feed(lat, lng)
     if lat.nil? || lng.nil? || lat.abs > 90.0 || lng.abs > 180.0
-      puts "CASEA"
-      return Job.order('random()').limit(20)
+      return Job.includes(image_url_attachment: :blob).order('random()').limit(20)
     else
-      puts "CASEB"
-      res = Job.within_radius(lat, lng, 50000, 20)
-      #      res = Job.within_radius(lat, lng, 1000000, 20)
+      res = Job.includes(image_url_attachment: :blob).within_radius(lat, lng, 50000, 20)
       if res.nil? || res.empty?
-        puts "CASEC"
-        res = Job.all.limit(20)
+        res = Job.includes( image_url_attachment: :blob).all.limit(20)
       end
       return res
     end

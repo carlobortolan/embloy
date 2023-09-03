@@ -111,11 +111,15 @@ module Api
           jobs = JobSlicer.slice(User.find(@decoded_token["sub"].to_i), 30000, params[:latitude], params[:longitude])
           # Call FG-API to rank jobs
           if !jobs.nil? && !jobs.empty?
-            feed = call_feed(jobs) # - #
-            # ------------------------- #
-            #feed = jobs # todo:remove-- #
-            # ------------------------- #
-            feed.nil? || feed.empty? ? render(status: 500, json: { "message": "Please try again later. If this error persists, we recommend to contact our support team" }) : render(status: 200, json: { "feed": feed })
+            #            feed = call_feed(jobs)
+            # feed.nil? || feed.empty? ? render(status: 500, json: { "message": "Please try again later. If this error persists, we recommend to contact our support team" }) : render(status: 200, json: { "feed": feed })
+
+            feed = []
+            call_feed(jobs).each do |j_id|
+              feed << Job.find_by_job_id(j_id)
+            end
+            feed.nil? || feed.empty? ? render(status: 500, json: { "message": "Please try again later. If this error persists, we recommend to contact our support team" }) : render(status: 200, json: "feed: [#{Job.get_jsons(feed)}]")
+
           else
             render status: 204, json: { "message": "No jobs found!" } # message will not show with 204, just for maintainability
           end
@@ -184,9 +188,7 @@ module Api
         request.basic_auth('FG', 'pw')
         request.body = request_body
         request["Content-Type"] = "application/json"
-        puts "Request = #{request.body}"
         response = http.request(request)
-        puts "Response = #{response.body}"
         if response.code == '200'
           feed_json = JSON.parse(response.body)
           res = []

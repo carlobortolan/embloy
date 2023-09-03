@@ -161,26 +161,26 @@ class JobsController < ApplicationController
     @categories_list = JSON.parse(File.read(Rails.root.join('app/helpers', 'job_types.json'))).keys
 
     # @jobs = Job.search_for(params[:query])
-    @jobs = Job.includes([:user]).includes([:image_url_attachment]).where("title ILIKE :query OR description ILIKE :query OR position ILIKE :query OR job_type ILIKE :query OR key_skills ILIKE :query OR address ILIKE :query OR city ILIKE :query OR postal_code ILIKE :query OR start_slot::text ILIKE :query", query: "%#{params[:query]}%")
+    @jobs = Job.includes([:user]).includes(image_url_attachment: :blob).where("title ILIKE :query OR description ILIKE :query OR position ILIKE :query OR job_type ILIKE :query OR key_skills ILIKE :query OR address ILIKE :query OR city ILIKE :query OR postal_code ILIKE :query OR start_slot::text ILIKE :query", query: "%#{params[:query]}%")
                .page(params[:page])
 
     if @jobs.nil? || @jobs.empty?
-      @jobs = Job.includes([:user]).includes([:image_url_attachment]).all
+      @jobs = Job.includes([:user]).includes(image_url_attachment: :blob).all
     end
 
     unless params[:job_type].nil? || params[:job_type].blank?
-      @jobs = @jobs.includes([:user]).includes([:image_url_attachment]).where(job_type: params[:job_type])
+      @jobs = @jobs.includes([:user]).includes(image_url_attachment: :blob).where(job_type: params[:job_type])
     end
 
     case params[:sort_by]
     when "salary_asc"
-      @jobs = @jobs.includes([:user]).includes([:image_url_attachment]).order(salary: :asc)
+      @jobs = @jobs.includes([:user]).includes(image_url_attachment: :blob).order(salary: :asc)
     when "salary_desc"
-      @jobs = @jobs.includes([:user]).includes([:image_url_attachment]).order(salary: :desc)
+      @jobs = @jobs.includes([:user]).includes(image_url_attachment: :blob).order(salary: :desc)
     when "date_asc"
-      @jobs = @jobs.includes([:user]).includes([:image_url_attachment]).order(created_at: :asc)
+      @jobs = @jobs.includes([:user]).includes(image_url_attachment: :blob).order(created_at: :asc)
     when "date_desc"
-      @jobs = @jobs.includes([:user]).includes([:image_url_attachment]).order(created_at: :desc)
+      @jobs = @jobs.includes([:user]).includes(image_url_attachment: :blob).order(created_at: :desc)
     end
 
     @jobs = @jobs.page(params[:page]).per(24)
