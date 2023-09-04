@@ -18,7 +18,7 @@ class PreferencesController < ApplicationController
     key_skills = params[:key_skills]
     salary_range = [params[:salary_range_min], params[:salary_range_max]]
     cv_url = params[:cvupload]
-    if !@preferences.nil? && @preferences.update(
+    if !@preferences.nil? && @preferences.update!(
       interests: interests,
       experience: experience,
       degree: degree,

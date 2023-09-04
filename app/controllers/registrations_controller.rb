@@ -37,7 +37,7 @@ class RegistrationsController < ApplicationController
     end
     # TODO: Change to "verified" when opening prototype to public.
     # TODO: @cb: check activity_status
-    if @user.update(user_role: "spectator") && @user.update(activity_status: "1")
+    if @user.update(user_role: "spectator") && @user.update(activity_status: 1)
       WelcomeMailer.with(user: @user).notify_team.deliver_later
       redirect_to sign_in_path, notice: 'Your account was verified successfully.'
     else

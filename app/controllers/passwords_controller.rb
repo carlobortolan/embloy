@@ -5,7 +5,7 @@ class PasswordsController < ApplicationController
   def edit; end
 
   def update
-    if Current.user.update(password_params)
+    if Current.user.update(password_params) && !password_params[:password].nil? && !password_params[:password].blank?
       redirect_to root_path, notice: 'Password Updated'
     else
       flash[:alert] = "Changes could not be saved"

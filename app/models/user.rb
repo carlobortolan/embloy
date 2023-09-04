@@ -13,17 +13,12 @@ class User < ApplicationRecord
             format: { with: /\A[^@\s]+@[^@\s]+\z/, "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" }
   validates :first_name, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, uniqueness: false
   validates :last_name, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }, uniqueness: false
-  # TODO: UNDERSTAND UPDATABLE?
-  validates :password, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" },
-            allow_blank: false,
-            allow_nil: false,
-            length: { minimum: 8, maximum: 72, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
-  #,
-  #                      if: :password_required?
-
-  validates :password_confirmation, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" },
-            length: { minimum: 8, maximum: 72, "error": "ERR_LENGTH", "description": "Attribute length is invalid" },
-            if: :password_required?
+  validates :password, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank", if: :password_required? },
+            length: { minimum: 8, maximum: 72, "error": "ERR_LENGTH", "description": "Attribute length is invalid", if: :password_required? }
+  validates :password_confirmation, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank", if: :password_required? },
+            length: { minimum: 8, maximum: 72, "error": "ERR_LENGTH", "description": "Attribute length is invalid", if: :password_required? }
+            # allow_nil: false,
+            # allow_blank: false
   validates :application_notifications, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validates :longitude, presence: false
   validates :latitude, presence: false
@@ -68,6 +63,12 @@ class User < ApplicationRecord
     allowed_formats = %w[image/png image/jpeg image/jpg]
     unless allowed_formats.include?(image_url.blob.content_type)
       errors.add(:image_url, { "error": "ERR_INVALID", "description": "must be a PNG, JPG, or JPEG image" })
+    end
+  end
+
+  def password_validation
+    if password_required?
+      password == password_confirmation
     end
   end
 
