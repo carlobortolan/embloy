@@ -28,8 +28,8 @@ Rails.application.routes.draw do
 
       get 'jobs', to: 'jobs#feed'
       get 'jobs/(/:id)', to: 'jobs#show'
-      get 'maps', :to => 'jobs#map'
-      get 'find', :to => 'jobs#find'
+      get 'jobs/maps', :to => 'jobs#map'
+      get 'jobs/find', :to => 'jobs#find'
       post 'jobs', to: 'jobs#create'
       patch 'jobs', to: 'jobs#update'
       delete 'jobs', to: 'jobs#destroy'
