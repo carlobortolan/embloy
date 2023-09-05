@@ -118,7 +118,7 @@ module Api
             call_feed(jobs).each do |j_id|
               feed << Job.find_by_job_id(j_id)
             end
-            feed.nil? || feed.empty? ? render(status: 500, json: { "message": "Please try again later. If this error persists, we recommend to contact our support team" }) : render(status: 200, json: "{feed: [#{Job.get_jsons(feed)}]}")
+            feed.nil? || feed.empty? ? render(status: 500, json: { "message": "Please try again later. If this error persists, we recommend to contact our support team" }) : render(status: 200, json: "{\"feed\": [#{Job.get_jsons(feed)}]}")
 
           else
             render status: 204, json: { "message": "No jobs found!" } # message will not show with 204, just for maintainability
@@ -151,7 +151,7 @@ module Api
         end
         jobs = JobSlicer.fetch_map(lat, lng)
         # jobs.empty? ? render(status: 204, json: { "jobs": jobs }) : render(status: 200, json: "jobs: #{jobs.to_json(except: [:image_url])}")
-        jobs.empty? ? render(status: 204, json: { "jobs": jobs }) : render(status: 200, json: "jobs: [#{Job.get_jsons(jobs)}]")
+        jobs.empty? ? render(status: 204, json: { "jobs": jobs }) : render(status: 200, json: "\"jobs\": [#{Job.get_jsons(jobs)}]")
       end
 
       # Returns a specific job
@@ -165,7 +165,7 @@ module Api
         if job.nil?
           render(status: 204, json: { "job": job })
         else
-          render(status: 200, json: "{job: #{Job.get_json(job)}}")
+          render(status: 200, json: "{\"job\": #{Job.get_json(job)}}")
         end
       end
 
@@ -193,7 +193,7 @@ module Api
         end
 
         if !jobs.nil? && !jobs.empty?
-          render(status: 200, json: "{jobs: [#{Job.get_jsons(jobs.page(params[:page]).per(24))}]}")
+          render(status: 200, json: "{\"jobs\": [#{Job.get_jsons(jobs.page(params[:page]).per(24))}]}")
         else
           render status: 204, json: { "message": "No jobs found!" } # message will not show with 204, just for maintainability
         end
