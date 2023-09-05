@@ -169,6 +169,36 @@ module Api
         end
       end
 
+      def find
+        jobs = Job.includes(image_url_attachment: :blob).includes([:rich_text_description]).where("title ILIKE :query OR description ILIKE :query OR position ILIKE :query OR job_type ILIKE :query OR key_skills ILIKE :query OR address ILIKE :query OR city ILIKE :query OR postal_code ILIKE :query OR start_slot::text ILIKE :query", query: "%#{params[:query]}%")
+                  .page(params[:page])
+
+        if jobs.nil? || jobs.empty?
+          jobs = Job.includes(image_url_attachment: :blob).includes([:rich_text_description]).all
+        end
+
+        unless params[:job_type].nil? || params[:job_type].blank?
+          jobs = jobs.includes(image_url_attachment: :blob).includes([:rich_text_description]).where(job_type: params[:job_type])
+        end
+
+        case params[:sort_by]
+        when "salary_asc"
+          jobs = jobs.includes(image_url_attachment: :blob).includes([:rich_text_description]).order(salary: :asc)
+        when "salary_desc"
+          jobs = jobs.includes(image_url_attachment: :blob).includes([:rich_text_description]).order(salary: :desc)
+        when "date_asc"
+          jobs = jobs.includes(image_url_attachment: :blob).includes([:rich_text_description]).order(created_at: :asc)
+        when "date_desc"
+          jobs = jobs.includes(image_url_attachment: :blob).includes([:rich_text_description]).order(created_at: :desc)
+        end
+
+        if !jobs.nil? && !jobs.empty?
+          render(status: 200, json: "jobs: #{Job.get_jsons(jobs.page(params[:page]).per(24))}")
+        else
+          render status: 204, json: { "message": "No jobs found!" } # message will not show with 204, just for maintainability
+        end
+      end
+
       private
 
       # Method to communicate with the FG-API by sending a POST-request to tbd
