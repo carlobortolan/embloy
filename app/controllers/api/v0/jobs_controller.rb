@@ -193,7 +193,7 @@ module Api
         end
 
         if !jobs.nil? && !jobs.empty?
-          render(status: 200, json: "jobs: #{Job.get_jsons(jobs.page(params[:page]).per(24))}")
+          render(status: 200, json: "jobs: [#{Job.get_jsons(jobs.page(params[:page]).per(24))}]")
         else
           render status: 204, json: { "message": "No jobs found!" } # message will not show with 204, just for maintainability
         end
