@@ -107,14 +107,22 @@ class Job < ApplicationRecord
     end
   end
 
-  # Current approach; - TODO: @cb find easier way to serialize job JSONs
+  # Current approach; - TODO: @cb find easier way to serialize job JSONs & remove commented code when switching to S3
   def self.get_json(job)
-    if !job.nil? && !job.image_url.url.nil?
-      # Parse the JSON to a hash
-      res_hash = JSON.parse(job.to_json(except: [:image_url]))
-      # Add the 'image_url' field with the value 'job.image_url.url'
-      res_hash['image_url'] = job.image_url.url
-      res_hash.to_json
+    unless job.nil?
+      # begin
+      #   unless job.image_url.url.nil?
+      #     # Parse the JSON to a hash
+      #     res_hash = JSON.parse(job.to_json(except: [:image_url]))
+      #     # Add the 'image_url' field with the value 'job.image_url.url'
+      #     res_hash['image_url'] = job.image_url.url
+      #     res_hash.to_json
+      #   end
+      # rescue Fog::Errors::Error
+        res_hash = JSON.parse(job.to_json(except: [:image_url]))
+        res_hash['image_url'] = "https://embloy.onrender.com/assets/img/features_3.png"
+        res_hash.to_json
+      # end
     end
   end
 
