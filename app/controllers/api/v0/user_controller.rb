@@ -43,12 +43,14 @@ module Api
         begin
           verified!(@decoded_token["typ"])
           user = User.find(@decoded_token["sub"].to_i)
-          preferences = Preferences.find_by_user_id(user.id)
-          if preferences.nil?
-            not_found_error('preferences')
-          else
-            preferences.blank? ? render(status: 204, json: { "preferences": preferences }) : render(status: 200, json: { "preferences": preferences })
+          if user.preferences.nil?
+            user.create_preferences
+            unless user.save
+              flash[:alert] = 'Preferences could not be saved'
+              render :preferences, status: :unprocessable_entity
+            end
           end
+          render(status: 200, json: { "preferences": user.preferences })
         rescue ActiveRecord::RecordNotFound
           not_found_error('user')
         end
