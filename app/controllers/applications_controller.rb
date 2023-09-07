@@ -30,7 +30,7 @@ class ApplicationsController < ApplicationController
     if require_user_logged_in
       @job = Job.find(params[:job_id])
       application_attachment = ""
-      if params[:application][:attachment_attributes][:cv].present?
+      if params[:application].present? && params[:application][:attachment_attributes].present? && params[:application][:attachment_attributes][:cv].present?
         begin
           application_attachment = ApplicationAttachment.create!(
             user_id: Current.user.id.to_i,
@@ -43,7 +43,7 @@ class ApplicationsController < ApplicationController
           render :new, status: :unprocessable_entity, alert: "Application could not be submitted due to invalid file attachment"
         end
       end
-      if application_attachment.save
+      if application_attachment == "" || application_attachment.save
         begin
           @application = Application.create(
             user_id: Current.user.id.to_i,
@@ -55,7 +55,9 @@ class ApplicationsController < ApplicationController
             response: "No response yet..."
           )
         rescue RecordInvalid
-          application_attachment.destroy
+          if application_attachment != ""
+            application_attachment.destroy
+          end
           flash[:alert] = "Application could not be submitted due to invalid input"
           render :new, status: :unprocessable_entity
         end
@@ -64,12 +66,16 @@ class ApplicationsController < ApplicationController
         if @application.save
           redirect_to job_path(@job), notice: 'Application has been submitted'
         else
-          application_attachment.destroy
+          if application_attachment != ""
+            application_attachment.destroy
+          end
           flash[:alert] = "Application could not be submitted due to issue with application"
           render :new, status: :unprocessable_entity
         end
       else
-        application_attachment.destroy
+        if application_attachment != ""
+          application_attachment.destroy
+        end
         flash[:alert] = "Application could not be submitted due to issue with application attachment"
         render :new, status: :unprocessable_entity
       end

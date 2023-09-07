@@ -20,6 +20,9 @@ class ApplicationStatusNotification < Noticed::Base
   end
 
   def url
-    "#{job_path(params[:job][:id])}#applicationForm"
+    puts "PARAMS = #{params}"
+    if params[:job].present? && params[:id].present?
+      "#{job_path(params[:job][:id])}#applicationForm"
+    end
   end
 end
