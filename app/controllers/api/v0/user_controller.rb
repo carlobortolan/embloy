@@ -75,7 +75,12 @@ module Api
         begin
           verified!(@decoded_token["typ"])
           user = User.find(@decoded_token["sub"].to_i)
-          render(status: 200, json: { "user": user })
+          if user.nil?
+            render(status: 204)
+          else
+            puts "Json = #{User.get_json(user)}"
+            render(status: 200, json: "{\"user\": #{User.get_json(user)}}")
+          end
         rescue ActiveRecord::RecordNotFound
           not_found_error('user')
         end

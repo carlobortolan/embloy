@@ -17,8 +17,8 @@ class User < ApplicationRecord
             length: { minimum: 8, maximum: 72, "error": "ERR_LENGTH", "description": "Attribute length is invalid", if: :password_required? }
   validates :password_confirmation, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank", if: :password_required? },
             length: { minimum: 8, maximum: 72, "error": "ERR_LENGTH", "description": "Attribute length is invalid", if: :password_required? }
-            # allow_nil: false,
-            # allow_blank: false
+  # allow_nil: false,
+  # allow_blank: false
   validates :application_notifications, presence: { "error": "ERR_BLANK", "description": "Attribute can't be blank" }
   validates :longitude, presence: false
   validates :latitude, presence: false
@@ -44,6 +44,30 @@ class User < ApplicationRecord
   def age
     now = Time.now.utc.to_date
     now.year - self.date_of_birth.year - ((now.month > self.date_of_birth.month || (now.month == self.date_of_birth.month && now.day >= self.date_of_birth.day)) ? 0 : 1) unless self.date_of_birth.nil?
+  end
+
+  # Current approach; - TODO: @cb find easier way to serialize job JSONs & remove commented code when switching to S3
+  def self.get_json(user)
+    unless user.nil?
+      puts "A"
+      begin
+        puts "B"
+        unless user.image_url.url.nil?
+          puts "C"
+          # Parse the JSON to a hash
+          res_hash = JSON.parse(user.to_json(except: [:image_url]))
+          # Add the 'image_url' field with the value 'user.image_url.url'
+          res_hash['image_url'] = user.image_url.url
+          res_hash.to_json
+        else
+          JSON.parse(user.to_json(except: [:image_url])).to_json
+        end
+      rescue Fog::Errors::Error
+        res_hash = JSON.parse(user.to_json(except: [:image_url]))
+        res_hash['image_url'] = "https://embloy.onrender.com/assets/img/features_3.png"
+        res_hash.to_json
+      end
+    end
   end
 
   private
