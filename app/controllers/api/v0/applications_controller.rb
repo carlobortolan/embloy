@@ -24,7 +24,7 @@ module Api
           application = Application.create!(
             user_id: @decoded_token["sub"],
             job_id: job.job_id,
-            application_text: "This application was submitted through the v.0 Embloy API",
+            application_text: application_params[:application_text],
             created_at: Time.now,
             updated_at: Time.now,
             response: "null"
