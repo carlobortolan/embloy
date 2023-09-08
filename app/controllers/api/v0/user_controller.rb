@@ -87,7 +87,21 @@ module Api
       end
 
       def edit
-        # TODO
+        begin
+          verified!(@decoded_token["typ"])
+          user = User.find(@decoded_token["sub"].to_i)
+          if user.nil?
+            render(status: 204)
+          else
+            if user.update(user_params)
+              render(status: 200, json: { "message": "Successfully updated user." })
+            else
+              render(status: 422, json: { "message": "Failed to update user.", "errors": user.errors.full_messages })
+            end
+          end
+        rescue ActiveRecord::RecordNotFound
+          not_found_error('user')
+        end
       end
 
       def destroy
@@ -105,4 +119,6 @@ module Api
   end
 end
 
-# frozen_string_literal: true
+def user_params
+  params.require(:user).permit(:first_name, :last_name, :email, :phone, :degree, :date_of_birth, :country_code, :city, :postal_code, :address, :twitter_url, :facebook_url, :linkedin_url, :instagram_url)
+end
