@@ -21,10 +21,13 @@ module Api
         begin
           verified!(@decoded_token["typ"])
           job = Job.find(params[:id])
+          puts "PARAMS = #{params}"
+          puts "PARAMS = #{application_params}"
+          puts "PARAMS = #{application_params[:application_text]}"
           application = Application.create!(
             user_id: @decoded_token["sub"],
             job_id: job.job_id,
-            application_text: params[:application],
+            application_text: application_params[:application_text],
             created_at: Time.now,
             updated_at: Time.now,
             response: "null"
@@ -169,7 +172,7 @@ module Api
 =end
 
       def application_params
-        params.permit(:user_id, :application_text, :application_documents, :response, :cv)
+        params.require(:application).permit(:user_id, :application_text, :application_documents, :response, :cv)
       end
     end
   end
