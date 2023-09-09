@@ -4,13 +4,32 @@ module Api
     class UserController < ApiController
       before_action :verify_access_token
 
+      def upcoming
+        begin
+          verified!(@decoded_token["typ"])
+
+          user = User.find(@decoded_token["sub"].to_i)
+          applications = Application.all.where(user_id: user.id, status: "1")
+
+          if !applications.empty?
+            upcoming_jobs = []
+            applications.each do |i|
+              upcoming_jobs << Job.find(i.job_id)
+            end
+            upcoming_jobs.empty? ? render(status: 204, json: { "jobs": upcoming_jobs }) : render(status: 200, json: "{\"jobs\": [#{Job.get_jsons(upcoming_jobs)}]}")
+          else
+            render(status: 204, json: { "jobs": jobs })
+          end
+        rescue ActiveRecord::RecordNotFound
+          not_found_error('user')
+        end
+      end
+
       def own_jobs
         begin
           verified!(@decoded_token["typ"])
-          # Cache attachment (should also be done with image_url)
           jobs = User.find(@decoded_token["sub"].to_i).jobs.includes([:rich_text_description]).order(created_at: :desc)
 
-          # This works, but sends job without image_url:
           jobs.empty? ? render(status: 204, json: { "jobs": jobs }) : render(status: 200, json: "{\"jobs\": [#{Job.get_jsons(jobs)}]}")
         rescue ActiveRecord::RecordNotFound
           not_found_error('user')
