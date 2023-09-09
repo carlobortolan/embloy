@@ -17,6 +17,21 @@ module Api
         end
       end
 
+      def show_single
+        begin
+          verified!(@decoded_token["typ"])
+          set_at_job(params[:id])
+          application = @job.applications.find_by_sql("SELECT * FROM applications a WHERE a.job_id = #{@job.job_id} AND a.user_id = #{@decoded_token["sub"].to_i}")
+
+          if application.empty? || application.nil?
+            render status: 204, json: { "application": application }
+          else
+            render status: 200, json: { "application": application }
+          end
+        end
+      end
+
+
       def create
         begin
           verified!(@decoded_token["typ"])
