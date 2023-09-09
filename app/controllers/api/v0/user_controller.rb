@@ -18,7 +18,7 @@ module Api
             end
             upcoming_jobs.empty? ? render(status: 204, json: { "jobs": upcoming_jobs }) : render(status: 200, json: "{\"jobs\": [#{Job.get_jsons(upcoming_jobs)}]}")
           else
-            render(status: 204, json: { "jobs": jobs })
+            render(status: 204, json: { "jobs": "" })
           end
         rescue ActiveRecord::RecordNotFound
           not_found_error('user')
