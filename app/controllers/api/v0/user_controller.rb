@@ -16,7 +16,7 @@ module Api
             applications.each do |i|
               upcoming_jobs << Job.find(i.job_id)
             end
-            upcoming_jobs.empty? ? render(status: 204, json: { "jobs": upcoming_jobs }) : render(status: 200, json: "{\"jobs\": [#{Job.get_jsons(upcoming_jobs)}]}")
+            upcoming_jobs.empty? ? render(status: 204, json: { "jobs": upcoming_jobs }) : render(status: 200, json: "{\"jobs\": [#{Job.get_jsons_include_user(upcoming_jobs)}]}")
           else
             render(status: 204, json: { "jobs": "" })
           end

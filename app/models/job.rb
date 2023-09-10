@@ -125,12 +125,43 @@ class Job < ApplicationRecord
       end
     end
   end
+  def self.get_json_include_user(job)
+    unless job.nil?
+      begin
+        unless job.image_url.url.nil?
+          res_hash = JSON.parse(job.to_json(except: [:image_url]))
+          res_hash['image_url'] = job.image_url.url
+          res_hash['employer_email'] = job.user.email
+          res_hash['employer_email'] = "#{job.user.first_name} + #{job.user.first_name}"
+          res_hash['employer_email'] = job.user.phone
+          res_hash.to_json
+        end
+      rescue Fog::Errors::Error
+        res_hash = JSON.parse(job.to_json(except: [:image_url]))
+        res_hash['image_url'] = "https://picsum.photos/200/300.jpg"
+        res_hash['employer_email'] = job.user.email
+        res_hash['employer_email'] = "#{job.user.first_name} + #{job.user.first_name}"
+        res_hash['employer_email'] = job.user.phone
+        res_hash.to_json
+      end
+    end
+  end
 
   def self.get_jsons(jobs)
     res_json = []
     unless jobs.nil?
       jobs.each do |job|
         res_json << Job.get_json(job)
+      end
+      res_json.join(",")
+    end
+  end
+
+  def self.get_jsons_include_user(jobs)
+    res_json = []
+    unless jobs.nil?
+      jobs.each do |job|
+        res_json << Job.get_json_include_user(job)
       end
       res_json.join(",")
     end

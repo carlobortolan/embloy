@@ -151,7 +151,7 @@ module Api
         end
         jobs = JobSlicer.fetch_map(lat, lng)
         # jobs.empty? ? render(status: 204, json: { "jobs": jobs }) : render(status: 200, json: "jobs: #{jobs.to_json(except: [:image_url])}")
-        jobs.empty? ? render(status: 204, json: { "jobs": jobs }) : render(status: 200, json: "{\"jobs\": [#{Job.get_jsons(jobs)}]}")
+        jobs.empty? ? render(status: 204, json: { "jobs": jobs }) : render(status: 200, json: "{\"jobs\": [#{Job.get_jsons_include_user(jobs)}]}")
       end
 
       # Returns a specific job
