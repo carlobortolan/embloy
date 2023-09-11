@@ -20,6 +20,7 @@ Rails.application.routes.draw do
       get 'user/reviews', to: 'user#own_reviews'
       get 'user/upcoming', to: 'user#upcoming'
       delete 'user/image', to: 'user#remove_image'
+      post 'user/image', to: 'user#upload_image'
       get 'user/preferences', to: 'user#get_preferences'
       patch 'user/preferences', to: 'user#update_preferences'
 
