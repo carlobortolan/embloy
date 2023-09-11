@@ -140,7 +140,7 @@ module Api
           verified!(@decoded_token["typ"])
           user = User.find(@decoded_token["sub"].to_i)
           user.image_url.attach(params[:image_url]) if params[:image_url].present?
-          render status: 200, json: { "message": "Profile image uploaded!" }
+          render status: 200, json: { "image_url": "#{user.image_url.url}" }
         rescue ActiveRecord::RecordNotFound
           not_found_error('user')
         end
