@@ -22,7 +22,7 @@
               <%= link_to "Download CV", rails_blob_path(@attachment.cv, disposition: "attachment"), class: "btn btn-primary" %>
             </div>
           <% end %>
-
+          <br>
           <button type="button" class="btn btn-success" data-toggle="modal" data-target="#acceptModal<%= @application.user_id %>" data-whatever="<%= @application.user.email %>">Accept
           </button>
           <div class="modal fade" id="acceptModal<%= @application.user_id %>" tabindex="-1" role="dialog" aria-labelledby="acceptModal<%= @application.user_id %>Label" aria-hidden="true">
@@ -43,7 +43,7 @@
                       </div>
                       <div class="form-group">
                         <label for="message-text" class="col-form-label">Feedback:</label>
-                        <%= f.text_area :response, type: "text", class: "form-control", default: "ACCEPTED", maxlength: 500  %>
+                        <%= f.text_area :response, type: "text", class: "form-control", default: "ACCEPTED", maxlength: 500 %>
                       </div>
                     </form>
                   </div>
