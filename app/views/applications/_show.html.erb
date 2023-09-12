@@ -14,9 +14,9 @@
         <div class="text-center ">
           <h5 class="fw-bolder"><%= @application.user.full_name %></h5>
           <p class="card-text"><%= @application.application_text %></p>
-          <% unless @cv.nil? %>
+          <% unless @application.cv.nil? %>
             <div>
-              <%= link_to "Download CV", rails_blob_path(@cv, disposition: "attachment"), class: "btn btn-primary" %>
+              <%= link_to "Download CV", rails_blob_path(@application.cv, disposition: "attachment"), class: "btn btn-primary" %>
             </div>
           <% end %>
 
