@@ -54,7 +54,7 @@ class ApplicationsController < ApplicationController
             updated_at: Time.now,
             response: "No response yet..."
           )
-        rescue RecordInvalid
+        rescue ActiveRecord::RecordInvalid
           if application_attachment != ""
             application_attachment.destroy
           end

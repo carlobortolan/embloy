@@ -31,18 +31,51 @@ module Api
         end
       end
 
-
+      # TODO: Improve in future versions
       def create
-        begin
-          verified!(@decoded_token["typ"])
-          job = Job.find(params[:id])
-          puts "PARAMS = #{params}"
-          puts "PARAMS = #{application_params}"
-          puts "PARAMS = #{application_params[:application_text]}"
+        verified!(@decoded_token["typ"])
+        job = Job.find(params[:id])
+
+        if job.cv_required
+          if params[:application_attachment].present?
+            application_attachment = ""
+            begin
+              application_attachment = ApplicationAttachment.create!(
+                user_id: @decoded_token["sub"],
+                job_id: params[:id].to_i
+              )
+
+              application_attachment.cv.attach(params[:application_attachment])
+              application_attachment.save!
+
+              application = Application.create!(
+                user_id: @decoded_token["sub"],
+                job_id: job.job_id,
+                application_text: params[:application_text],
+                application_documents: "empty",
+                created_at: Time.now,
+                updated_at: Time.now,
+                response: "No response yet ..."
+              )
+
+              application.user = User.find(@decoded_token["sub"])
+              application.job = job
+              render status: 200, json: { "message": "Application submitted!" }
+
+            rescue ActiveRecord::RecordInvalid
+              if application_attachment != ""
+                application_attachment.destroy
+              end
+              render status: 400, json: { "message": "Application could not be submitted due to invalid file attachment" }
+            end
+          else
+            malformed_error('application attachment')
+          end
+        else
           application = Application.create!(
             user_id: @decoded_token["sub"],
             job_id: job.job_id,
-            application_text: application_params[:application_text],
+            application_text: params[:application_text],
             created_at: Time.now,
             updated_at: Time.now,
             response: "null"
@@ -53,19 +86,17 @@ module Api
             raise CustomExceptions::InvalidUser::Unknown
           end
 
-          application.save!
-          render status: 200, json: { "message": "Application submitted!" }
-
-        rescue ActiveRecord::RecordNotUnique
-          unnecessary_error('application')
-
-        rescue ActiveRecord::RecordNotFound
-          raise CustomExceptions::InvalidJob::Unknown
-
-        rescue ActiveRecord::RecordInvalid
-          malformed_error('application')
-
+          if application.save!
+            render status: 200, json: { "message": "Application submitted!" }
+          else
+            malformed_error('application')
+          end
         end
+      rescue ActiveRecord::RecordNotUnique
+        unnecessary_error('application')
+
+      rescue ActiveRecord::RecordNotFound
+        raise CustomExceptions::InvalidJob::Unknown
       end
 
       def accept
@@ -189,6 +220,11 @@ module Api
       def application_params
         params.require(:application).permit(:user_id, :application_text, :application_documents, :response, :cv)
       end
+
+      def application_params2
+        params.permit(:user_id, :application_text, :application_documents, :response, :cv)
+      end
+
     end
   end
 end
