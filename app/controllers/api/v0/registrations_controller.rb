@@ -52,23 +52,17 @@ module Api
         email, password = ActionController::HttpAuthentication::Basic::user_name_and_password(request)
 
         if !email.present? && password.present? # checks for fully missing as well as empty params
-          blank_error('email')
+          return blank_error('email')
         elsif email.present? && !password.present?
-          blank_error('password')
+          return blank_error('password')
         elsif !email.present? && !password.present?
-          blank_error(%w[email password])
+          return blank_error(%w[email password])
         else
 
           @user = User.find_by(email: email)
 
           if !@user.present? || !@user.authenticate(password)
-            render status: 401, json: { "email||password": [
-              {
-                "error": "ERR_INVALID",
-                "description": "Attribute is malformed or unknown"
-              }
-            ]
-            }
+            return unauthorized_error("email|password")
           else
 
             if @user.activity_status == 0
@@ -83,13 +77,7 @@ module Api
               # render status: 500, json: { "error": "Something went wrong while issuing your initial refresh token. Please try again later. If this error persists, we recommend to contact our support team." }
             else
               # is user already listed as active/is user verified?
-              render status: 422, json: { "user": [
-                {
-                  "error": "ERR_UNNECESSARY",
-                  "description": "Attribute is already verified"
-                }
-              ]
-              }
+              return unnecessary_error("user")
             end
 
           end
