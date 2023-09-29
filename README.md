@@ -192,7 +192,7 @@ server.
 - Migrate Backblaze B2 to AWS S3
 - Implement review function
 - ~~Create seeds for jobs, users and applications~~
-- Develop a first mobile-app prototype
+- ~~Develop a first mobile-app prototype~~
 - ...
 
 ---
