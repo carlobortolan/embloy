@@ -20,9 +20,10 @@ module Api
           @job.job_status = 1
 
           if @job.save
-            SpatialJobValue.update_job_value(@job)
+            #SpatialJobValue.update_job_value(@job)
             # Attach image file to job-object
-            @job.image_url.attach(params[:image_url]) if params[:image_url]
+
+            # @job.image_url.attach(params[:image_url]) if params[:image_url]
             render status: 200, json: { "message": "Job created!" }
           else
             if @job.errors.details != false
@@ -53,7 +54,7 @@ module Api
         begin
           verified!(@decoded_token["typ"])
           must_be_owner!(params[:id], @decoded_token["sub"])
-          return removed_error('job') if @job.job_status == 0
+          return removed_error('job') if @job.job_status == 0 # TODO @jh: Set default job_status = 1 / make sure that job can be set to (de-)activated by owner
           if @job.update(update_job_params)
             SpatialJobValue.update_job_value(@job)
             # Attach image file to job-object

@@ -151,17 +151,20 @@ class Job < ApplicationRecord
     res_json = []
     unless jobs.nil?
       jobs.each do |job|
-        res_json << Job.get_json(job)
+        json = Job.get_json(job)
+        res_json << json unless json.nil? || json.empty?
       end
       res_json.join(",")
     end
   end
 
+
   def self.get_jsons_include_user(jobs)
     res_json = []
     unless jobs.nil?
       jobs.each do |job|
-        res_json << Job.get_json_include_user(job)
+        json = Job.get_json_include_user(job)
+        res_json << json unless json.nil? || json.empty?
       end
       res_json.join(",")
     end
