@@ -23,7 +23,7 @@ module Api
             #SpatialJobValue.update_job_value(@job)
             # Attach image file to job-object
 
-            # @job.image_url.attach(params[:image_url]) if params[:image_url]
+            @job.image_url.attach(params[:image_url]) if params[:image_url]
             render status: 200, json: { "message": "Job created!" }
           else
             if @job.errors.details != false
