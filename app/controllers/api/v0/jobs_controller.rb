@@ -20,7 +20,7 @@ module Api
           @job.job_status = 1
 
           if @job.save
-            #SpatialJobValue.update_job_value(@job)
+            SpatialJobValue.update_job_value(@job)
             # Attach image file to job-object
 
             @job.image_url.attach(params[:image_url]) if params[:image_url]
