@@ -4,7 +4,6 @@ module Api
       def create_refresh
         begin
           email, password = ActionController::HttpAuthentication::Basic::user_name_and_password(request)
-
           # ============ Are all essential ===============
           # ============ credentials there? ==============
           if !email.present? && password.present? # checks for fully missing as well as empty params
