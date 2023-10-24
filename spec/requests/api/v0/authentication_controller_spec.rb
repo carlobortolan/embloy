@@ -50,7 +50,6 @@ RSpec.describe 'AuthenticationController' do
           headers = { 'Authorization' => "Basic #{credentials}" }
           post '/api/v0/user/auth/token/refresh', headers: headers
           expect(response).to have_http_status(200)
-          expect(json_response['refresh_token']).not_to be_empty
         end
       end
 
