@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require "uri"
-require "net/http"
 
 RSpec.describe 'AuthenticationController' do
-  before do
-    @valid_user = User.create(
+  before(:all) do
+    charset = ('a'..'z').to_a + ('A'..'Z').to_a
+
+    @valid_user = User.create!(
       "first_name": "Max",
       "last_name": "Mustermann",
-      "email": "validUser@embloy.com",
+      "email": "#{(0...16).map { charset.sample }.join}@embloy.com",
       "password": "password",
       "password_confirmation": "password",
       "user_role": "verified",
@@ -20,7 +20,7 @@ RSpec.describe 'AuthenticationController' do
     @blacklisted_user = User.create!(
       "first_name": "Max",
       "last_name": "Mustermann",
-      "email": "blacklistedUser@embloy.com",
+      "email": "#{(0...16).map { charset.sample }.join}@embloy.com",
       "password": "password",
       "password_confirmation": "password",
       "user_role": "verified"
@@ -34,7 +34,7 @@ RSpec.describe 'AuthenticationController' do
     @unverified_user = User.create!(
       "first_name": "Max",
       "last_name": "Mustermann",
-      "email": "unverified@embloy.com",
+      "email": "#{(0...16).map { charset.sample }.join}@embloy.com",
       "password": "password",
       "password_confirmation": "password",
       "user_role": "spectator"
@@ -51,8 +51,7 @@ RSpec.describe 'AuthenticationController' do
 
   describe "Refresh Token", type: :request do
     describe "(POST: /api/v0/user/auth/token/refresh)" do
-
-      context 'valid normal inputs' do
+      context 'valid inputs' do
         it 'returns [200 OK] and a new refresh token' do
           credentials = Base64.strict_encode64("#{@valid_user.email}:password")
           headers = { 'Authorization' => "Basic #{credentials}" }
@@ -62,7 +61,7 @@ RSpec.describe 'AuthenticationController' do
       end
 
       context 'invalid inputs' do
-        it 'returns a [400 Bad Request] for missing authentication' do
+        it 'returns [400 Bad Request] for missing authentication' do
           post '/api/v0/user/auth/token/refresh'
           expect(response).to have_http_status(400)
         end
@@ -100,7 +99,6 @@ RSpec.describe 'AuthenticationController' do
     end
   end
 
-
   describe "Access Token", type: :request do
     describe "(POST: /api/v0/user/auth/token/access)" do
       context 'valid normal inputs' do
@@ -111,16 +109,13 @@ RSpec.describe 'AuthenticationController' do
         end
       end
 
-      context 'invalid normal inputs' do
+      context 'invalid inputs' do
         it 'returns [401 Unauthorized] for expired/invalid refresh token' do
           headers = { "HTTP_REFRESH_TOKEN" => @invalid_refresh_token }
           post '/api/v0/user/auth/token/access', headers: headers
           expect(response).to have_http_status(401)
         end
-      end
-
-      context 'invalid inputs' do
-        it 'returns a [400 Bad Request] for missing refresh token in header' do
+        it 'returns [400 Bad Request] for missing refresh token in header' do
           post '/api/v0/user/auth/token/access'
           expect(response).to have_http_status(400)
         end
