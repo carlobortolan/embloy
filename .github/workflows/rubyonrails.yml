@@ -93,9 +93,9 @@ jobs:
           ruby-version: 3.2.2
       - name: Install dependencies
         run: |
-      #    sudo apt-get update
-      #    sudo apt-get install -y postgresql-client
-           bundle install
+          #    sudo apt-get update
+          #    sudo apt-get install -y postgresql-client
+               bundle install
       - name: Setup environment variables
         env:
           RAILS_ENV: test
@@ -112,7 +112,7 @@ jobs:
 
       - name: Setup database
         run: |
-           bundle exec rails db:reset
+          bundle exec rails db:reset
 
       #- name: Run tests
       #  run: |
