@@ -289,16 +289,15 @@ RSpec.describe 'UserController' do
 
     describe "(GET: /api/v0/user/reviews)" do
       context 'valid normal inputs' do
+        pending "GET:/user/review specs not implemented yet: #{__FILE__}"
         it 'returns [200 Ok] and user reviews' do
-          'Not implemented'
         end
       end
       context 'invalid inputs' do
+        pending "GET:/user/review specs not implemented yet: #{__FILE__}"
         it 'returns [400 Bad Request] for missing access token in header' do
-          'Not implemented'
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
-          'Not implemented'
         end
       end
     end
@@ -420,6 +419,7 @@ RSpec.describe 'UserController' do
     # TODO
     describe "(POST: /api/v0/user/image)" do
       context 'valid normal inputs' do
+        pending "POST:/user/image specs not implemented yet: #{__FILE__}"
         it 'returns [200 Ok] and new image url' do
           'Not implemented'
         end
@@ -440,6 +440,7 @@ RSpec.describe 'UserController' do
     # TODO: Test in depth
     describe "(PATCH: /api/v0/user)" do
       context 'valid normal inputs' do
+        pending "PATCH:/user specs not implemented yet: #{__FILE__}"
         it 'returns [200 Ok] and updates the user' do
           'Not implemented'
         end
