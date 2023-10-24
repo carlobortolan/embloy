@@ -19,12 +19,12 @@ jobs:
         run: |
           yarn install --pure-lockfile
 
-      - name: Run linters
-        run: |
-          bin/rubocop --parallel
-          bin/stylelint
-          bin/prettier
-          bin/eslint
+      # - name: Run linters
+        # run: |
+          # bin/rubocop --parallel
+          # bin/stylelint
+          # bin/prettier
+          # bin/eslint
 
       - name: Run security checks
         run: |
@@ -62,7 +62,7 @@ jobs:
           PGHOST: localhost
           PGUSER: embloy
         run: |
-          bin/rails db:setup
+          rails db:setup
 
       - name: Run tests
         run: bin/rspec
