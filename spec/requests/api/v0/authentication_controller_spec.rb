@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
+require "uri"
+require "net/http"
 
 RSpec.describe 'AuthenticationController' do
   before do
@@ -13,7 +15,7 @@ RSpec.describe 'AuthenticationController' do
       "user_role": "verified",
       "activity_status": "1"
     )
-    puts"Created valid user: #{@valid_user.id}"
+    puts "Created valid user: #{@valid_user.id}"
 
     @blacklisted_user = User.create!(
       "first_name": "Max",
@@ -22,8 +24,8 @@ RSpec.describe 'AuthenticationController' do
       "password": "password",
       "password_confirmation": "password",
       "user_role": "verified"
-      )
-    puts"Created blacklisted user: #{@blacklisted_user.id}"
+    )
+    puts "Created blacklisted user: #{@blacklisted_user.id}"
     UserBlacklist.create!(
       "user_id": @blacklisted_user.id,
       "reason": "Test blacklist"
@@ -36,9 +38,15 @@ RSpec.describe 'AuthenticationController' do
       "password": "password",
       "password_confirmation": "password",
       "user_role": "spectator"
-      )
-    puts"Created unverified user: #{@unverified_user.id}"
+    )
+    puts "Created unverified user: #{@unverified_user.id}"
 
+    credentials = Base64.strict_encode64("#{@valid_user.email}:password")
+    headers = { 'Authorization' => "Basic #{credentials}" }
+    post '/api/v0/user/auth/token/refresh', headers: headers
+    @valid_refresh_token = JSON.parse(response.body)['refresh_token']
+    puts "Valid refresh token: #{@valid_refresh_token}"
+    @invalid_refresh_token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWILOjQ5LCJleHAiOjE2OTgxNzk0MjgsImp0aSI6IjQ1NDMyZWUyNWE4YWUyMjc1ZGY0YTE2ZTNlNmQ0YTY4IiwiaWF0IjoxNjk4MTY1MDI4LCJpc3MiOiJDQl9TdXJmYWNlUHJvOCJ9.nqGgQ6Z52CbaHZzPGcwQG6U-nMDxb1yIe7HQMxjoDTs"
   end
 
   describe "Refresh Token", type: :request do
@@ -58,35 +66,30 @@ RSpec.describe 'AuthenticationController' do
           post '/api/v0/user/auth/token/refresh'
           expect(response).to have_http_status(400)
         end
-
         it 'returns [400 Bad Request] for missing email field' do
           credentials = Base64.strict_encode64(":password")
           headers = { 'Authorization' => "Basic #{credentials}" }
           post '/api/v0/user/auth/token/refresh', headers: headers
           expect(response).to have_http_status(400)
         end
-
         it 'returns [400 Bad Request] for missing password field' do
           credentials = Base64.strict_encode64("#{@valid_user.email}")
           headers = { 'Authorization' => "Basic #{credentials}" }
           post '/api/v0/user/auth/token/refresh', headers: headers
           expect(response).to have_http_status(400)
         end
-
-        it 'returns [400 Bad Request] for non-existing user' do
+        it 'returns [401 Unauthorized] for non-existing user' do
           credentials = Base64.strict_encode64("nonexistinguser@embloy.com:password")
           headers = { 'Authorization' => "Basic #{credentials}" }
           post '/api/v0/user/auth/token/refresh', headers: headers
           expect(response).to have_http_status(401)
         end
-
-        it 'returns [401 Unauthorized] for unverified user' do
+        it 'returns [403 Forbidden] for unverified user' do
           credentials = Base64.strict_encode64("#{@unverified_user.email}:password")
           headers = { 'Authorization' => "Basic #{credentials}" }
           post '/api/v0/user/auth/token/refresh', headers: headers
           expect(response).to have_http_status(403)
         end
-
         it 'returns [403 Forbidden] for blacklisted user' do
           credentials = Base64.strict_encode64("#{@blacklisted_user.email}:password")
           headers = { 'Authorization' => "Basic #{credentials}" }
@@ -97,10 +100,31 @@ RSpec.describe 'AuthenticationController' do
     end
   end
 
-  context 'when fetching access token' do
-    it 'succeeds' do
-      'Not implemented'
+
+  describe "Access Token", type: :request do
+    describe "(POST: /api/v0/user/auth/token/access)" do
+      context 'valid normal inputs' do
+        it 'returns [200 Ok] and new access token' do
+          headers = { "HTTP_REFRESH_TOKEN" => @valid_refresh_token }
+          post '/api/v0/user/auth/token/access', headers: headers
+          expect(response).to have_http_status(200)
+        end
+      end
+
+      context 'invalid normal inputs' do
+        it 'returns [401 Unauthorized] for expired/invalid refresh token' do
+          headers = { "HTTP_REFRESH_TOKEN" => @invalid_refresh_token }
+          post '/api/v0/user/auth/token/access', headers: headers
+          expect(response).to have_http_status(401)
+        end
+      end
+
+      context 'invalid inputs' do
+        it 'returns a [400 Bad Request] for missing refresh token in header' do
+          post '/api/v0/user/auth/token/access'
+          expect(response).to have_http_status(400)
+        end
+      end
     end
   end
-
 end
