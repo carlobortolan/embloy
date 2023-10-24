@@ -3,35 +3,78 @@
 name: CI
 on: [push, pull_request]
 jobs:
-  test:
+  linters:
+    name: Linters
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Ruby and install gems
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+          cache: yarn
+
+      - name: Install packages
+        run: |
+          yarn install --pure-lockfile
+
+      - name: Run linters
+        run: |
+          bin/rubocop --parallel
+          bin/stylelint
+          bin/prettier
+          bin/eslint
+
+      - name: Run security checks
+        run: |
+          bin/bundler-audit --update
+          bin/brakeman -q -w2
+
+  tests:
+    name: Tests
     runs-on: ubuntu-latest
     services:
-      db:
-        image: postgres:16
-        ports: ['5432:5432']
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+      postgres:
+        image: postgres:12.7
+        env:
+          POSTGRES_USER: embloy
+          POSTGRES_DB: embloy_test
+          POSTGRES_PASSWORD: ""
+        ports: ["5432:5432"]
 
     steps:
-      - uses: actions/checkout@v1
-      - name: Setup Ruby
-        uses: actions/setup-ruby@v1
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Ruby and install gems
+        uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.6.x
-      - uses: borales/actions-yarn@v2.0.0
+          bundler-cache: true
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
         with:
-          cmd: install
-      - name: Build and run tests
-        env:
-          DATABASE_URL: postgres://postgres:@localhost:5432/embloy_test
-          RAILS_ENV: test
-          RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+          node-version: 16
+          cache: yarn
+
+      - name: Install packages
         run: |
-          sudo apt-get -yqq install libpq-dev
-          gem install bundler
-          bundle install --jobs 4 --retry 3
-          bundle exec rails db:prepare
-          rake
+          yarn install --pure-lockfile
+
+      - name: Setup test database
+        env:
+          RAILS_ENV: test
+          PGHOST: localhost
+          PGUSER: embloy
+        run: |
+          bin/rails db:setup
+
+      - name: Run tests
+        run: bin/rspec
