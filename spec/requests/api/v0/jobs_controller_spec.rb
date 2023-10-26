@@ -83,6 +83,11 @@ RSpec.describe 'JobsController' do
           get "/api/v0/jobs/#{@job.id}", headers: headers
           expect(response).to have_http_status(401)
         end
+        it 'returns [404 Not Found] if job does not exist' do
+          headers = { "HTTP_ACCESS_TOKEN" => @valid_at }
+          get "/api/v0/jobs/12312312312312312", headers: headers
+          expect(response).to have_http_status(404)
+        end
       end
     end
 

@@ -146,6 +146,7 @@ RSpec.describe 'UserController' do
   end
 
   describe "User", type: :request do
+
     describe "(GET: /api/v0/user)" do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and user JSON' do
