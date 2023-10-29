@@ -91,6 +91,7 @@ RSpec.describe 'ApplicationsController' do
     cv_required = [false, true, true, true, true, false]
     allowed_cv_formats = [%w[.pdf .docx .txt .xml], [".pdf"], [".docx"], [".txt"], ["xml"], %w[.pdf .docx .txt .xml]]
     @jobs = []
+    @applications = []
     6.times do |i|
       @jobs << Job.create!(
         user_id: @valid_user_has_own_jobs.id,
@@ -112,7 +113,7 @@ RSpec.describe 'ApplicationsController' do
       puts "Created new job for: #{@valid_user_has_own_jobs.id}"
     end
     5.times do |i|
-      @application = Application.create!(
+      @applications << Application.create!(
         user_id: @valid_user_has_applications.id,
         job_id: @jobs[i].id,
         application_text: "TestUpcomingApplicationText",
@@ -161,14 +162,146 @@ RSpec.describe 'ApplicationsController' do
         end
       end
     end
-    # TODO
-    describe "(GET: /api/v0/jobs/{id}/applications/{id})" do
+
+    describe "(GET: /api/v0/jobs/{id}/application)" do
+      context 'valid normal inputs' do
+        it 'returns [200 Ok] and JSON job JSONs if job has applications' do
+          headers = { "HTTP_ACCESS_TOKEN" => @valid_at_has_applications }
+          5.times do |i|
+            get "/api/v0/jobs/#{@jobs[i].id}/application", headers: headers
+            expect(response).to have_http_status(200)
+          end
+        end
+        it 'returns [204 No Content] if job does not have any applications' do
+          headers = { "HTTP_ACCESS_TOKEN" => @valid_at_has_applications }
+          get "/api/v0/jobs/#{@jobs[5].id}/application", headers: headers
+          expect(response).to have_http_status(204)
+        end
+        it 'returns [204 No Content] if user is has not submitted an application' do
+          headers = { "HTTP_ACCESS_TOKEN" => @valid_access_token }
+          get "/api/v0/jobs/#{@jobs[5].id}/application", headers: headers
+          expect(response).to have_http_status(204)
+          headers = { "HTTP_ACCESS_TOKEN" => @valid_at_has_own_jobs }
+          get "/api/v0/jobs/#{@jobs[5].id}/application", headers: headers
+          expect(response).to have_http_status(204)
+        end
+      end
+      context 'invalid inputs' do
+        it 'returns [400 Bad Request] for missing access token in header' do
+          get "/api/v0/jobs/#{@jobs[5].id}/application"
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [401 Unauthorized] for expired/invalid access token' do
+          headers = { "HTTP_ACCESS_TOKEN" => @invalid_access_token }
+          get "/api/v0/jobs/#{@jobs[5].id}/application", headers: headers
+          expect(response).to have_http_status(401)
+        end
+        it 'returns [404 Not Found] if job does not exist' do
+          headers = { "HTTP_ACCESS_TOKEN" => @valid_at_has_applications }
+          get "/api/v0/jobs/131231231231231312312/application", headers: headers
+          expect(response).to have_http_status(404)
+        end
+      end
     end
     # TODO
     describe "(PATCH: /api/v0/jobs/{id}/applications/{id}/accept)" do
+      context 'valid normal inputs' do
+        it 'returns [200 Ok] and accepts application' do
+          headers = { "HTTP_ACCESS_TOKEN" => @valid_at_has_own_jobs }
+          5.times do |i|
+            patch "/api/v0/jobs/#{@jobs[i].id}/applications/#{@valid_user_has_applications.id}/accept", headers: headers
+            expect(response).to have_http_status(200)
+          end
+        end
+        it 'returns [404 Not found] if job does not have any applications' do
+          headers = { "HTTP_ACCESS_TOKEN" => @valid_at_has_own_jobs }
+          patch "/api/v0/jobs/#{@jobs[5].id}/applications/#{@valid_user_has_applications.id}/accept", headers: headers
+          expect(response).to have_http_status(404)
+        end
+      end
+      context 'invalid inputs' do
+        it 'returns [400 Bad Request] for missing access token in header' do
+          patch "/api/v0/jobs/#{@jobs[0].id}/applications/#{@valid_user_has_applications.id}/accept"
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] if application already accepted' do
+          headers = { "HTTP_ACCESS_TOKEN" => @valid_at_has_own_jobs }
+          @applications[0].accept("Accepted")
+          patch "/api/v0/jobs/#{@jobs[0].id}/applications/#{@valid_user_has_applications.id}/accept", headers: headers
+          @applications[0].reject("Rejected")
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [401 Unauthorized] for expired/invalid access token' do
+          headers = { "HTTP_ACCESS_TOKEN" => @invalid_access_token }
+          patch "/api/v0/jobs/#{@jobs[0].id}/applications/#{@valid_user_has_applications.id}/accept", headers: headers
+          expect(response).to have_http_status(401)
+        end
+        it 'returns [403 Forbidden] if user is not owner' do
+          headers = { "HTTP_ACCESS_TOKEN" => @valid_access_token }
+          patch "/api/v0/jobs/#{@jobs[0].id}/applications/#{@valid_user_has_applications.id}/accept", headers: headers
+          expect(response).to have_http_status(403)
+        end
+        it 'returns [404 Not Found] if job does not exist' do
+          headers = { "HTTP_ACCESS_TOKEN" => @valid_access_token }
+          patch "/api/v0/jobs/123123123/applications/#{@valid_user_has_applications.id}/accept", headers: headers
+          expect(response).to have_http_status(404)
+        end
+        it 'returns [404 Not Found] if application does not exist' do
+          headers = { "HTTP_ACCESS_TOKEN" => @valid_at_has_own_jobs }
+          patch "/api/v0/jobs/#{@jobs[0].id}/applications/123123123123123123132/accept", headers: headers
+          expect(response).to have_http_status(404)
+        end
+      end
     end
     # TODO
     describe "(PATCH: /api/v0/jobs/{id}/applications/{id}/reject)" do
+      context 'valid normal inputs' do
+        it 'returns [200 Ok] and rejects application' do
+          headers = { "HTTP_ACCESS_TOKEN" => @valid_at_has_own_jobs }
+          5.times do |i|
+            patch "/api/v0/jobs/#{@jobs[i].id}/applications/#{@valid_user_has_applications.id}/reject", headers: headers
+            expect(response).to have_http_status(200)
+          end
+        end
+        it 'returns [404 Not found] if job does not have any applications' do
+          headers = { "HTTP_ACCESS_TOKEN" => @valid_at_has_own_jobs }
+          patch "/api/v0/jobs/#{@jobs[5].id}/applications/#{@valid_user_has_applications.id}/reject", headers: headers
+          expect(response).to have_http_status(404)
+        end
+      end
+      context 'invalid inputs' do
+        it 'returns [400 Bad Request] for missing access token in header' do
+          patch "/api/v0/jobs/#{@jobs[0].id}/applications/#{@valid_user_has_applications.id}/reject"
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] if application already rejected' do
+          headers = { "HTTP_ACCESS_TOKEN" => @valid_at_has_own_jobs }
+          @applications[0].reject("Accepted")
+          patch "/api/v0/jobs/#{@jobs[0].id}/applications/#{@valid_user_has_applications.id}/reject", headers: headers
+          @applications[0].accept("Rejected")
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [401 Unauthorized] for expired/invalid access token' do
+          headers = { "HTTP_ACCESS_TOKEN" => @invalid_access_token }
+          patch "/api/v0/jobs/#{@jobs[0].id}/applications/#{@valid_user_has_applications.id}/reject", headers: headers
+          expect(response).to have_http_status(401)
+        end
+        it 'returns [403 Forbidden] if user is not owner' do
+          headers = { "HTTP_ACCESS_TOKEN" => @valid_access_token }
+          patch "/api/v0/jobs/#{@jobs[0].id}/applications/#{@valid_user_has_applications.id}/reject", headers: headers
+          expect(response).to have_http_status(403)
+        end
+        it 'returns [404 Not Found] if job does not exist' do
+          headers = { "HTTP_ACCESS_TOKEN" => @valid_access_token }
+          patch "/api/v0/jobs/123123123/applications/#{@valid_user_has_applications.id}/reject", headers: headers
+          expect(response).to have_http_status(404)
+        end
+        it 'returns [404 Not Found] if application does not exist' do
+          headers = { "HTTP_ACCESS_TOKEN" => @valid_at_has_own_jobs }
+          patch "/api/v0/jobs/#{@jobs[0].id}/applications/123123123123123123132/reject", headers: headers
+          expect(response).to have_http_status(404)
+        end
+      end
     end
     # TODO
     describe "(POST: /api/v0/jobs/{id}/applications)" do

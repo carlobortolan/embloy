@@ -218,7 +218,7 @@ module Api
 =end
 
       def application_params
-        params.require(:application).permit(:user_id, :application_text, :application_documents, :response, :cv)
+        params.permit(:application).permit(:user_id, :application_text, :application_documents, :response, :cv)
       end
 
       def application_params2
