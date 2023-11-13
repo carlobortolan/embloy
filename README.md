@@ -1,3 +1,5 @@
+[![Ruby on Rails CI](https://github.com/Embloy/Embloy-Core/actions/workflows/rubyonrails.yml/badge.svg)](https://github.com/Embloy/Embloy-Core/actions/workflows/rubyonrails.yml)
+
 <h1><a href="https://embloy.com">Embloy</a></h1>
 
 > __NOTE__: _The current prototype deployed at ***[embloy.onrender.com](embloy.onrender.com)*** can take up to 60 seconds to load due to render's server instance having to boot up after being inactive for a while._

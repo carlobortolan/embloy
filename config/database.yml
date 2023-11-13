@@ -54,7 +54,7 @@ test:
 #
 production:
   <<: *default
-  database: embloy_dev2
+  database: embloy_prod
 
   connect_timeout: 2
   checkout_timeout: 5

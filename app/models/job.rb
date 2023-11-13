@@ -55,7 +55,8 @@ class Job < ApplicationRecord
   # validates :city, length: { minimum: 0, maximum: 45, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
   # validates :address, length: { minimum: 0, maximum: 150, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
   # TODO: @cb Validate allowed_cv_format, so that user has to select at least one option
-  validates :allowed_cv_format, inclusion: { in: %w[.pdf .docx .txt .xml], message: { error: "ERR_INVALID", description: "Attribute is invalid" } },
+  validates :allowed_cv_format,
+            # inclusion: { in: %w[.pdf .docx .txt .xml], message: { error: "ERR_INVALID", description: "Attribute is invalid" } },
             presence: { message: { error: "ERR_BLANK", description: "Attribute can't be blank" } },
             # format: { with: /\.(pdf|docx|txt|xml)\z/, allow_blank: true, message: { error: "ERR_INVALID", description: "Attribute is invalid" }},
             if: :cv_required?
@@ -125,6 +126,7 @@ class Job < ApplicationRecord
       end
     end
   end
+
   def self.get_json_include_user(job)
     unless job.nil?
       begin
@@ -157,7 +159,6 @@ class Job < ApplicationRecord
       res_json.join(",")
     end
   end
-
 
   def self.get_jsons_include_user(jobs)
     res_json = []

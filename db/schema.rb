@@ -130,7 +130,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_15_205359) do
     t.text "job_notifications", default: "1", null: false
     t.integer "boost", default: 0, null: false
     t.boolean "cv_required", null: false, default: false
-    # t.enum "allowed_cv_format", default: [".pdf", ".docx", ".txt", ".xml"], null: false, enum_type: "allowed_cv_format", array: true
+    t.string "allowed_cv_format", default: [".pdf", ".docx", ".txt", ".xml"], null: false, array: true
     t.index ["country_code"], name: " job_country_code_index "
     t.index ["job_id"], name: "job_job_id_index"
     t.index ["postal_code"], name: " job_postal_code_index "

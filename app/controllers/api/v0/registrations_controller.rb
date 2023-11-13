@@ -7,7 +7,7 @@ module Api
           @user = User.new(user_params)
 
           if @user.save
-            render status: 200, json: { "message": "Account registered! Please activate your account and claim your refresh token via GET #{api_v0_user_verify_path} " }
+            render status: 201, json: { "message": "Account registered! Please activate your account and claim your refresh token via GET #{api_v0_user_verify_path} " }
           else
             # horrible code follows TODO: make prettier for v1
             # the problem is that I dont know a way to customize the error messages from bycrypt verification and i want to morphe them into the standard error render format

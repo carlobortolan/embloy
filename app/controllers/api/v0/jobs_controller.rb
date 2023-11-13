@@ -134,6 +134,7 @@ module Api
 
         return blank_error('latitude') if lat.nil? || lat.blank?
         return blank_error('longitude') if lng.nil? || lng.blank?
+
         begin
           lat = Float(lat)
         rescue ArgumentError
@@ -143,6 +144,13 @@ module Api
           lng = Float(lng)
         rescue ArgumentError
           return malformed_error('longitude')
+        end
+
+        if lat.abs > 90.0
+          return malformed_error("latitude")
+        end
+        if lng.abs > 180.0
+          return malformed_error("longitude")
         end
 
         user = User.find(@decoded_token["sub"].to_i)
@@ -171,6 +179,7 @@ module Api
       end
 
       def find
+        # TODO: Input validation
         jobs = Job.includes(image_url_attachment: :blob).includes([:rich_text_description]).where("title ILIKE :query OR description ILIKE :query OR position ILIKE :query OR job_type ILIKE :query OR key_skills ILIKE :query OR address ILIKE :query OR city ILIKE :query OR postal_code ILIKE :query OR start_slot::text ILIKE :query", query: "%#{params[:query]}%")
                   .page(params[:page])
 
@@ -181,16 +190,19 @@ module Api
         unless params[:job_type].nil? || params[:job_type].blank?
           jobs = jobs.includes(image_url_attachment: :blob).includes([:rich_text_description]).where(job_type: params[:job_type])
         end
-
-        case params[:sort_by]
-        when "salary_asc"
-          jobs = jobs.includes(image_url_attachment: :blob).includes([:rich_text_description]).order(salary: :asc)
-        when "salary_desc"
-          jobs = jobs.includes(image_url_attachment: :blob).includes([:rich_text_description]).order(salary: :desc)
-        when "date_asc"
-          jobs = jobs.includes(image_url_attachment: :blob).includes([:rich_text_description]).order(created_at: :asc)
-        when "date_desc"
-          jobs = jobs.includes(image_url_attachment: :blob).includes([:rich_text_description]).order(created_at: :desc)
+        unless params[:sort_by].nil? || params[:sort_by].blank?
+          case params[:sort_by]
+          when "salary_asc"
+            jobs = jobs.includes(image_url_attachment: :blob).includes([:rich_text_description]).order(salary: :asc)
+          when "salary_desc"
+            jobs = jobs.includes(image_url_attachment: :blob).includes([:rich_text_description]).order(salary: :desc)
+          when "date_asc"
+            jobs = jobs.includes(image_url_attachment: :blob).includes([:rich_text_description]).order(created_at: :asc)
+          when "date_desc"
+            jobs = jobs.includes(image_url_attachment: :blob).includes([:rich_text_description]).order(created_at: :desc)
+          else
+            jobs = []
+          end
         end
 
         if !jobs.nil? && !jobs.empty?

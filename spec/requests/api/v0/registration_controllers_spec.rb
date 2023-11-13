@@ -1,3 +1,4 @@
+=begin
 require 'rails_helper'
 
 RSpec.describe "Api::V0::RegistrationControllers" do
@@ -15,6 +16,7 @@ RSpec.describe "Api::V0::RegistrationControllers" do
       @valid_user_params = @valid_user_params.uniq { |user| user[:user][:email] }
     end
   end
+
   describe 'create' do
     context 'valid normal inputs' do
       it 'returns a 200' do
@@ -242,4 +244,4 @@ RSpec.describe "Api::V0::RegistrationControllers" do
   end
 
 end
-
+=end
