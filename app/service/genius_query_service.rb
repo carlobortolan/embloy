@@ -9,6 +9,11 @@ class GeniusQueryService < AuthenticationTokenService
     payload = { sub: sub, exp: exp, jti: jti, iat: iat }.merge(args)
     return AuthenticationTokenService.call(HMAC_SECRET, ALGORITHM_TYPE, ISSUER, payload)
   end
+
+  def self.decode(token)
+    return true # TODO fill
+  end
+
   class Encoder
     MAX_INTERVAL = 31557600 # == 12 months == 1 year
     MIN_INTERVAL = 60 # == 1 min
@@ -29,6 +34,18 @@ class GeniusQueryService < AuthenticationTokenService
       jti = AuthenticationTokenService::Refresh.jti(iat)
       return GeniusQueryService.encode(sub, exp, jti, iat, args)
 
+    end
+  end
+
+  class Decoder
+    def self.call(token)
+      if token.class != String || token.blank? # rough check whether
+        raise CustomExceptions::InvalidInput::Token
+
+      else
+        return GeniusQueryService.decode(token)
+
+      end
     end
   end
 end
