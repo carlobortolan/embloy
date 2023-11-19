@@ -158,7 +158,7 @@ class AuthenticationTokenService
             raise CustomExceptions::InvalidInput::CustomEXP
           end
 =end
-          bin_exp = iat + AuthenticationTokenService::Refresh.verify_expiration(man_interval, MAX_INTERVAL, MIN_INTERVAL, iat)
+          bin_exp = iat + AuthenticationTokenService::Refresh.verify_expiration(man_interval, MAX_INTERVAL, MIN_INTERVAL)
 
         end
         exp = bin_exp # placeholder for a standard value or a manually set value
