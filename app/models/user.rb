@@ -49,11 +49,8 @@ class User < ApplicationRecord
   # Current approach; - TODO: @cb find easier way to serialize job JSONs & remove commented code when switching to S3
   def self.get_json(user)
     unless user.nil?
-      puts "A"
       begin
-        puts "B"
         unless user.image_url.url.nil?
-          puts "C"
           # Parse the JSON to a hash
           res_hash = JSON.parse(user.to_json(except: [:image_url]))
           # Add the 'image_url' field with the value 'user.image_url.url'
