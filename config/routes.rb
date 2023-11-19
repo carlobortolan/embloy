@@ -45,6 +45,9 @@ Rails.application.routes.draw do
       # patch 'jobs/(/:id)/applications/(/:user)/accept', to: 'applications#accept'
       # delete 'jobs/(/:id)/applications', to: 'applications#destroy'
 
+      get 'resource', to: 'genius_queries#query'
+      post 'resource', to: 'genius_queries#create'
+
     end
   end
 
