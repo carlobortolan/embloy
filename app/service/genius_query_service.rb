@@ -4,14 +4,16 @@ class GeniusQueryService < AuthenticationTokenService
   HMAC_SECRET = ENV['GENIUS_QUERY_TOKEN_SECRET']
   ALGORITHM_TYPE = 'HS256'
   ISSUER = Socket.gethostname
+  REPLACEMENT_CHARACTER = '°'
 
   def self.encode(sub, exp, jti, iat, args)
     payload = { sub: sub, exp: exp, jti: jti, iat: iat }.merge(args)
     return AuthenticationTokenService.call(HMAC_SECRET, ALGORITHM_TYPE, ISSUER, payload)
   end
 
+
   def self.decode(token)
-    return true # TODO fill
+    return token
   end
 
   class Encoder
@@ -32,18 +34,20 @@ class GeniusQueryService < AuthenticationTokenService
       end
       exp = bin_exp
       jti = AuthenticationTokenService::Refresh.jti(iat)
-      return GeniusQueryService.encode(sub, exp, jti, iat, args)
+      return GeniusQueryService.encode(sub, exp, jti, iat, args).gsub('.', REPLACEMENT_CHARACTER)
+
 
     end
   end
 
   class Decoder
-    def self.call(token)
+    def self.call(user_id, token)
+      AuthenticationTokenService::Refresh.verify_user_id(user_id) # this belongs to the user making the request (from the access token)
       if token.class != String || token.blank? # rough check whether
         raise CustomExceptions::InvalidInput::Token
 
       else
-        return GeniusQueryService.decode(token)
+        return GeniusQueryService.decode(token.gsub(REPLACEMENT_CHARACTER, '.'))
 
       end
     end

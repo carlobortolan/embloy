@@ -15,9 +15,8 @@ module Api
         begin
           verified!(@decoded_token["typ"])
           token = params[:token]
-          # res = GeniusQueryService::Decoder.call(@decoded_token["sub"], token)
-          # render status: 200, json: { "query_result" => res } #TODO: Enlarge status handling
-          render status: 200, json: { "query_result" => token }
+          res = GeniusQueryService::Decoder.call(@decoded_token["sub"], token)
+          render status: 200, json: { "query_result" => res }
         end
       end
 
