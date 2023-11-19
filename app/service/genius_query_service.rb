@@ -13,7 +13,8 @@ class GeniusQueryService < AuthenticationTokenService
 
 
   def self.decode(token)
-    return token
+    decoded_token = JWT.decode(token, HMAC_SECRET, true, { verify_jti: Proc.new { |jti| AuthenticationTokenService::Refresh.jti?(jti, token["sub"].to_i) }, iss: ISSUER, verify_iss: true, verify_iat: true, required_claims: ['iss', 'sub', 'exp', 'jti', 'iat'], algorithm: ALGORITHM_TYPE })
+    return decoded_token
   end
 
   class Encoder
