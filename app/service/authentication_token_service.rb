@@ -9,6 +9,8 @@ class AuthenticationTokenService
     return JWT.encode payload, secret, algorithm
   end
 
+
+
   #########################################################
   ############### En-/Decoding Refresh token ##############
   #########################################################
@@ -61,6 +63,41 @@ class AuthenticationTokenService
       end
     end
 
+    def self.verify_user_id(user_id)
+      if user_id.class != Integer || !user_id.positive? # is user_id parameter not an integer?
+        raise CustomExceptions::InvalidInput::SUB
+
+      elsif User.find_by(id: user_id).blank? # is the given id referencing an non-existing user?
+        raise CustomExceptions::InvalidUser::Unknown
+
+      elsif User.find_by(id: user_id).activity_status == 0 # is the user for the given id deactivated?
+        raise CustomExceptions::InvalidUser::Inactive
+
+      elsif UserBlacklist.find_by(user_id: user_id).present? # is the user for the given id blacklisted/actively blocked?
+        raise CustomExceptions::Unauthorized::Blocked
+      end
+      return true
+    end
+
+    def self.verify_expiration(man_interval, max, min)
+      if man_interval.class == Integer && man_interval.positive? # is man_interval a positive integer?
+
+        if man_interval <= max && man_interval >= min # is the given required validity interval not longer than MAX_INTERVAL and not shorter than MIN_INTERVAL?
+          return man_interval # the given required validity interval is sufficient
+
+        elsif man_interval > max # the given required validity interval is too long, so the token validity interval gets set to MAX_INTERVAL
+          return max
+
+        elsif man_interval < min # the given required validity interval is too short, so the token validity interval gets set to MIN_INTERVAL
+          return min
+        end
+
+      else
+        # man_interval is no integer or either negative or 0
+        raise CustomExceptions::InvalidInput::CustomEXP
+      end
+    end
+
     # TODO: ISSUE #25
 =begin
     def self.sub?(sub)
@@ -75,7 +112,11 @@ class AuthenticationTokenService
     class Encoder # helper class for token generation
       MAX_INTERVAL = 1209600 # == 336 hours == 2 weeks
       MIN_INTERVAL = 1800 # == 0.5 hours == 30 min
+
+
+
       def self.call(user_id, man_interval = nil)
+=begin
         if user_id.class != Integer || !user_id.positive? # is user_id parameter not an integer?
           raise CustomExceptions::InvalidInput::SUB
 
@@ -87,41 +128,44 @@ class AuthenticationTokenService
 
         elsif UserBlacklist.find_by(user_id: user_id).present? # is the user for the given id blacklisted/actively blocked?
           raise CustomExceptions::Unauthorized::Blocked
+=end
+        AuthenticationTokenService::Refresh.verify_user_id(user_id)
+        ApplicationController.must_be_verified!(user_id) # if not: ApplicationController::InvalidUser::Taboo is risen
+        # the given id references an existing user, who is active and not blacklisted
+        iat = Time.now.to_i # timestamp
+        sub = user_id # who "owns" the token
+
+        if man_interval.nil? # the man_interval parameter is not given/used
+          bin_exp = iat + 14400 # standard validity interval (4 hours == 240 min == 14400 sec)
 
         else
-          ApplicationController.must_be_verified!(user_id) # if not: ApplicationController::InvalidUser::Taboo is risen
-          # the given id references an existing user, who is active and not blacklisted
-          iat = Time.now.to_i # timestamp
-          sub = user_id # who "owns" the token
+=begin
+          # the man_interval parameter is given/user -> a manual token expiration time is required
+          if man_interval.class == Integer && man_interval.positive? # is man_interval a positive integer?
 
-          if man_interval.nil? # the man_interval parameter is not given/used
-            bin_exp = iat + 14400 # standard validity interval (4 hours == 240 min == 14400 sec)
+            if man_interval <= MAX_INTERVAL && man_interval >= MIN_INTERVAL # is the given required validity interval not longer than MAX_INTERVAL and not shorter than MIN_INTERVAL?
+              bin_exp = iat + man_interval # the given required validity interval is sufficient
 
-          else
-            # the man_interval parameter is given/user -> a manual token expiration time is required
-            if man_interval.class == Integer && man_interval.positive? # is man_interval a positive integer?
+            elsif man_interval > MAX_INTERVAL # the given required validity interval is too long, so the token validity interval gets set to MAX_INTERVAL
+              bin_exp = iat + MAX_INTERVAL
 
-              if man_interval <= MAX_INTERVAL && man_interval >= MIN_INTERVAL # is the given required validity interval not longer than MAX_INTERVAL and not shorter than MIN_INTERVAL?
-                bin_exp = iat + man_interval # the given required validity interval is sufficient
-
-              elsif man_interval > MAX_INTERVAL # the given required validity interval is too long, so the token validity interval gets set to MAX_INTERVAL
-                bin_exp = iat + MAX_INTERVAL
-
-              elsif man_interval < MIN_INTERVAL # the given required validity interval is too short, so the token validity interval gets set to MIN_INTERVAL
-                bin_exp = iat + MIN_INTERVAL
-              end
-
-            else
-              # man_interval is no integer or either negative or 0
-              raise CustomExceptions::InvalidInput::CustomEXP
+            elsif man_interval < MIN_INTERVAL # the given required validity interval is too short, so the token validity interval gets set to MIN_INTERVAL
+              bin_exp = iat + MIN_INTERVAL
             end
 
+          else
+            # man_interval is no integer or either negative or 0
+            raise CustomExceptions::InvalidInput::CustomEXP
           end
-          exp = bin_exp # placeholder for a standard value or a manually set value
-          jti = AuthenticationTokenService::Refresh.jti(iat) # unique token identifier based on the issuing time and the issuer (more info above)
-          return AuthenticationTokenService::Refresh.encode(sub, exp, jti, iat) # make a refresh token
+=end
+          bin_exp = iat + AuthenticationTokenService::Refresh.verify_expiration(man_interval, MAX_INTERVAL, MIN_INTERVAL, iat)
 
         end
+        exp = bin_exp # placeholder for a standard value or a manually set value
+        jti = AuthenticationTokenService::Refresh.jti(iat) # unique token identifier based on the issuing time and the issuer (more info above)
+        return AuthenticationTokenService::Refresh.encode(sub, exp, jti, iat) # make a refresh token
+
+
       end
     end
 
