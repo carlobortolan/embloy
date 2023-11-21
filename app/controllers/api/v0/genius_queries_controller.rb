@@ -6,8 +6,8 @@ module Api
       def create
         begin
           verified!(@decoded_token["typ"])
-          token = GeniusQueryService::Encoder.call(@decoded_token["sub"], create_params)
-          render status: 200, json: { "query_token" => token }
+          res = GeniusQueryService::Encoder.call(@decoded_token["sub"], create_params)
+          render status: 200, json: { "query_token" => res }
         end
       end
 
@@ -17,6 +17,8 @@ module Api
           token = params[:token]
           res = GeniusQueryService::Decoder.call(@decoded_token["sub"], token)
           render status: 200, json: { "query_result" => res }
+        rescue ActiveRecord::RecordNotFound
+          return not_found_error("genius_query")
         end
       end
 

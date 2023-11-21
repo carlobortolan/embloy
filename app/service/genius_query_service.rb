@@ -17,6 +17,24 @@ class GeniusQueryService < AuthenticationTokenService
     return decoded_token
   end
 
+  def self.query(args)
+    if args.key?("job_id") && !args.key("user_id")
+      job = Job.find(args["job_id"])
+      res = Job.get_json(job)
+
+      return {"job": res}
+
+    elsif !args.key?("job_id") && args.key("user_id")
+      # TODO: query users
+      return []
+    elsif args.key?("job_id") && args.key("user_id")
+      # TODO: query applications
+      return []
+    else
+      return []
+    end
+  end
+
   class Encoder
     MAX_INTERVAL = 31557600 # == 12 months == 1 year
     MIN_INTERVAL = 60 # == 1 min
@@ -48,8 +66,9 @@ class GeniusQueryService < AuthenticationTokenService
         raise CustomExceptions::InvalidInput::Token
 
       else
-        return GeniusQueryService.decode(token.gsub(REPLACEMENT_CHARACTER, '.'))
-
+        # TODO: implement impicit querying & send updated .env to cb
+        decoded_token = GeniusQueryService.decode(token.gsub(REPLACEMENT_CHARACTER, '.'))[0]
+        return GeniusQueryService.query(decoded_token)
       end
     end
   end
