@@ -113,17 +113,20 @@ class Job < ApplicationRecord
     unless job.nil?
       begin
         unless job.image_url.url.nil?
+          # use custom url
           # Parse the JSON to a hash
           res_hash = JSON.parse(job.to_json(except: [:image_url]))
           # Add the 'image_url' field with the value 'job.image_url.url'
           res_hash['image_url'] = job.image_url.url
-          res_hash.to_json
+          return res_hash.to_json
         end
       rescue Fog::Errors::Error
-        res_hash = JSON.parse(job.to_json(except: [:image_url]))
-        res_hash['image_url'] = "https://embloy.onrender.com/assets/img/features_3.png"
-        res_hash.to_json
+        # do nothing & continue with default url
       end
+      # use default url
+      res_hash = JSON.parse(job.to_json(except: [:image_url]))
+      res_hash['image_url'] = "https://embloy.onrender.com/assets/img/features_3.png"
+      return res_hash.to_json
     end
   end
 
