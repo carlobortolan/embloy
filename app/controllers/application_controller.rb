@@ -20,13 +20,6 @@ class ApplicationController < ActionController::Base
     Current.user = User.find_by(id: session[:user_id]) if session[:user_id]
   end
 
-  ####################################################################################################
-  # TODO: @janhummel: (code style => this todo can be ignored for now)
-  # Will all must_be_ methods (static / non-static / boolean / exc) be needed for API-development?                                                 #
-  # If not, consider removing unused must_be methods
-  # (If we don't use them, there is no need to have them)
-  ####################################################################################################
-
   # =============== User Role Check ===============
   # ============ WITH DATABASE LOOKUP =============
 

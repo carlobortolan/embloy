@@ -14,7 +14,7 @@ module Api
       def query
         begin
           verified!(@decoded_token["typ"])
-          token = params[:token]
+          token = params[:genius]
           res = GeniusQueryService::Decoder.call(@decoded_token["sub"], token)
           render status: 200, json: { "query_result" => res }
         rescue ActiveRecord::RecordNotFound

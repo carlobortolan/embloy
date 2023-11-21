@@ -35,6 +35,9 @@ class GeniusQueryService < AuthenticationTokenService
     end
   end
 
+
+
+
   class Encoder
     MAX_INTERVAL = 31557600 # == 12 months == 1 year
     MIN_INTERVAL = 60 # == 1 min
@@ -42,6 +45,7 @@ class GeniusQueryService < AuthenticationTokenService
     def self.call(user_id, args)
       AuthenticationTokenService::Refresh.verify_user_id(user_id)
       ApplicationController.must_be_verified!(user_id)
+      ApplicationController.must_be_owner!(args["job_id"], user_id) if args.key?("job_id")
       iat = Time.now.to_i
       sub = user_id
 
