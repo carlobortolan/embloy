@@ -53,6 +53,14 @@ class CustomExceptions < StandardError
     class Token < StandardError # Invalid token?
     end
 
+    class GeniusQuery < StandardError # Invalid token?
+      class Blank < StandardError
+      end
+      class Malformed < StandardError
+      end
+
+    end
+
     class SUB < StandardError # Token has wrong format?
     end
 

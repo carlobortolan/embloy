@@ -48,7 +48,6 @@ class GeniusQueryService < AuthenticationTokenService
       ApplicationController.must_be_owner!(args["job_id"], user_id) if args.key?("job_id")
       iat = Time.now.to_i
       sub = user_id
-
       unless args.include?("expires_at") && !args["expires_at"].nil?
         bin_exp = iat + 3600 # standard validity interval (1 hour == 60 min == 3600 sec)
       else
@@ -58,22 +57,20 @@ class GeniusQueryService < AuthenticationTokenService
       exp = bin_exp
       jti = AuthenticationTokenService::Refresh.jti(iat)
       return GeniusQueryService.encode(sub, exp, jti, iat, args).gsub('.', REPLACEMENT_CHARACTER)
-
-
     end
   end
 
   class Decoder
     def self.call(user_id, token)
       AuthenticationTokenService::Refresh.verify_user_id(user_id) # this belongs to the user making the request (from the access token)
-      if token.class != String || token.blank? # rough check whether
-        raise CustomExceptions::InvalidInput::Token
-
-      else
-        # TODO: implement impicit querying & send updated .env to cb
+      raise CustomExceptions::InvalidInput::GeniusQuery::Malformed if token.class != String
+      raise CustomExceptions::InvalidInput::GeniusQuery::Blank if token[0] == ":" || token.blank?
+      begin # necessary to shortcut actual JWT errors to prevent frontend from logging out due to 401s
         decoded_token = GeniusQueryService.decode(token.gsub(REPLACEMENT_CHARACTER, '.'))[0]
-        return GeniusQueryService.query(decoded_token)
+      rescue StandardError
+        raise CustomExceptions::InvalidInput::GeniusQuery::Malformed
       end
+      return GeniusQueryService.query(decoded_token)
     end
   end
 end

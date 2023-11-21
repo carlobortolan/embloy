@@ -17,6 +17,7 @@ module Api
           token = params[:genius]
           res = GeniusQueryService::Decoder.call(@decoded_token["sub"], token)
           render status: 200, json: { "query_result" => res }
+
         rescue ActiveRecord::RecordNotFound
           return not_found_error("genius_query")
         end

@@ -110,6 +110,11 @@ module ApiExceptionHandler
 
     rescue_from CustomExceptions::InvalidInput::SUB,
                 with: :user_sub_error
+
+    rescue_from CustomExceptions::InvalidInput::GeniusQuery::Malformed,
+                with: :genius_query_malformed_error
+    rescue_from CustomExceptions::InvalidInput::GeniusQuery::Blank,
+                with: :genius_query_blank_error
   end
 
   private
@@ -158,7 +163,7 @@ module ApiExceptionHandler
     blank_error('email|password')
   end
 
-  # TODO: @jh SUB exception meaning?
+  # sub: subject of a token is not authorized to act (token specific 401s => exists for internal troubleshooting reasons)
   def user_sub_error
     unauthorized_error('user')
   end
@@ -168,6 +173,13 @@ module ApiExceptionHandler
 
   def token_invalid_input_error
     malformed_error('token')
+  end
+  def genius_query_malformed_error
+    malformed_error('genius_query')
+  end
+
+  def genius_query_blank_error
+    blank_error('genius_query')
   end
 
   def custom_validity_invalid_input_error
