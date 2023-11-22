@@ -61,8 +61,7 @@ class GeniusQueryService < AuthenticationTokenService
   end
 
   class Decoder
-    def self.call(user_id, token)
-      AuthenticationTokenService::Refresh.verify_user_id(user_id) # this belongs to the user making the request (from the access token)
+    def self.call(token)
       raise CustomExceptions::InvalidInput::GeniusQuery::Malformed if token.class != String
       raise CustomExceptions::InvalidInput::GeniusQuery::Blank if token[0] == ":" || token.blank?
       begin # necessary to shortcut actual JWT errors to prevent frontend from logging out due to 401s

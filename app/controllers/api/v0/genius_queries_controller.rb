@@ -2,7 +2,7 @@
 module Api
   module V0
     class GeniusQueriesController < ApiController
-      before_action :verify_access_token
+      before_action :verify_access_token, except: :query
       def create
         begin
           verified!(@decoded_token["typ"])
@@ -13,9 +13,8 @@ module Api
 
       def query
         begin
-          verified!(@decoded_token["typ"])
           token = params[:genius]
-          res = GeniusQueryService::Decoder.call(@decoded_token["sub"], token)
+          res = GeniusQueryService::Decoder.call(token)
           render status: 200, json: { "query_result" => res }
 
         rescue ActiveRecord::RecordNotFound
