@@ -108,6 +108,28 @@ class Job < ApplicationRecord
     end
   end
 
+  # Creates a externally managed job with placeholder fields
+  def self.create_emj(job_slug, user_id)
+    job = Job.create!(
+      user_id: user_id,
+      title: job_slug,
+      # TODO: Save referrer URL
+      description: "HERE IS THE URL OF THE REFERRER",
+      longitude: "0.0",
+      latitude: "0.0",
+      position: "EMJ",
+      salary: "1",
+      start_slot: Time.now,
+      key_skills: "EMJ",
+      duration: "1",
+      currency: "0",
+      job_type: "EMJ",
+      job_type_value: "1"
+    )
+    puts "Created new job for"
+    return job
+  end 
+
   # Current approach; - TODO: @cb find easier way to serialize job JSONs & remove commented code when switching to S3
   def self.get_json(job)
     unless job.nil?
@@ -180,7 +202,7 @@ class Job < ApplicationRecord
     job_types_file = File.read(Rails.root.join("app/helpers", "job_types.json"))
     job_types = JSON.parse(job_types_file)
     # Given job_type is not existent in job_types.json
-    unless job_types.key?(job_type)
+    unless job_types.key?(job_type) || job_type == "EMJ"
       errors.add(:job_type, { "error": "ERR_INVALID", "description": "Attribute is malformed or unknown" })
     end
   end

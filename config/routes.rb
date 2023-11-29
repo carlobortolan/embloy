@@ -4,17 +4,21 @@ Rails.application.routes.draw do
   #= <<<<< *API* >>>>>>
   namespace :api, defaults: { format: 'json' } do
     namespace :v0 do
+      # -----> PASSWORDS <-----
       patch 'user/password', to: 'passwords#update'
       post 'user/password/reset', to: 'password_resets#create'
 
+      # -----> AUTH <-----
+      post 'user/auth/token/refresh', to: 'authentications#create_refresh'
+      post 'user/auth/token/access', to: 'authentications#create_access'
+
+  
+      # -----> USER <-----
       get 'user', to: 'user#show'
       post 'user', to: 'registrations#create'
       patch 'user', to: 'user#edit'
       delete 'user', to: 'user#destroy'
       get 'user/verify', to: 'registrations#verify'
-      post 'user/auth/token/refresh', to: 'authentications#create_refresh'
-      post 'user/auth/token/access', to: 'authentications#create_access'
-
       get 'user/jobs', to: 'user#own_jobs'
       get 'user/applications', to: 'user#own_applications'
       get 'user/reviews', to: 'user#own_reviews'
@@ -28,6 +32,7 @@ Rails.application.routes.draw do
       delete 'user/(/:id)/reviews', to: 'reviews#destroy'
       patch 'user/(/:id)/reviews', to: 'reviews#update'
 
+      # -----> JOBS <-----
       get 'jobs', to: 'jobs#feed'
       get 'jobs/(/:id)', to: 'jobs#show'
       get 'maps', :to => 'jobs#map'
@@ -44,7 +49,13 @@ Rails.application.routes.draw do
       # get 'jobs/(/:id)/applications/(/:user)/accept', to: 'applications#accept'
       # patch 'jobs/(/:id)/applications/(/:user)/accept', to: 'applications#accept'
       # delete 'jobs/(/:id)/applications', to: 'applications#destroy'
+      
+      # -----> QUICKLINK <-----
+      post 'quick/token/client', to: 'quicklink#create_client'
+      post 'quick/token/request', to: 'quicklink#create_request'
+      post 'quick/applications', to: 'quicklink#apply'
 
+      # -----> GENIUS-QUERIES <-----
       get 'resource/(/:genius)', to: 'genius_queries#query'
       post 'resource', to: 'genius_queries#create'
 
