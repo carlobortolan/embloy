@@ -41,10 +41,12 @@ class QuicklinkService < AuthenticationTokenService
     class Decoder
       # Decodes a client token.
       def self.call(token)
-        if token.class != String || token.blank? # rough check whether input is malformed
-          raise CustomExceptions::InvalidInput::Token
-        else
+        raise CustomExceptions::InvalidInput::Quicklink::Client::Malformed if token.class != String
+        raise CustomExceptions::InvalidInput::Quicklink::Client::Blank if token[0] == ":" || token.blank?  
+        begin
           return QuicklinkService::Client.decode(token)
+        rescue StandardError
+          raise CustomExceptions::InvalidInput::Quicklink::Client::Malformed
         end
       end
     end
@@ -76,7 +78,7 @@ class QuicklinkService < AuthenticationTokenService
         sub = user_id
         AuthenticationTokenService::Refresh.verify_user_id(user_id)
         ApplicationController.must_be_verified!(user_id)
-        # TODO: @cb verify job_id
+        # TODO: @cb verify job / account validity / price category?
         job = job_slug
         exp = Time.now.to_i + 60 * 60 * 30 # standard validity interval: 30 minutes
         iat = Time.now.to_i
@@ -87,10 +89,12 @@ class QuicklinkService < AuthenticationTokenService
     class Decoder
       # Decodes a request token.
       def self.call(token)
-        if token.class != String || token.blank? # rough check whether input is malformed
-          raise CustomExceptions::InvalidInput::Token
-        else
+        raise CustomExceptions::InvalidInput::Quicklink::Request::Malformed if token.class != String
+        raise CustomExceptions::InvalidInput::Quicklink::Request::Blank if token[0] == ":" || token.blank?  
+        begin  
           return QuicklinkService::Request.decode(token)
+        rescue StandardError
+          raise CustomExceptions::InvalidInput::Quicklink::Request::Malformed
         end
       end
     end

@@ -94,7 +94,6 @@ module ApiExceptionHandler
     rescue_from CustomExceptions::InvalidInput::BlankCredentials,
                 with: :user_pw_blank
 
-    #--------------------------------------
     # ========== Token related exceptions ===========
     # ===============================================
 
@@ -110,6 +109,19 @@ module ApiExceptionHandler
 
     rescue_from CustomExceptions::InvalidInput::SUB,
                 with: :user_sub_error
+
+    #--------------------------------------
+    rescue_from CustomExceptions::InvalidInput::Quicklink::Client::Malformed,
+                with: :client_token_malformed_error
+    rescue_from CustomExceptions::InvalidInput::Quicklink::Client::Blank,
+                with: :client_token_blank_error
+
+    rescue_from CustomExceptions::InvalidInput::Quicklink::Request::Malformed,
+                with: :request_token_malformed_error
+    rescue_from CustomExceptions::InvalidInput::Quicklink::Request::Blank,
+                with: :request_token_blank_error
+
+    #--------------------------------------
 
     rescue_from CustomExceptions::InvalidInput::GeniusQuery::Malformed,
                 with: :genius_query_malformed_error
@@ -173,6 +185,22 @@ module ApiExceptionHandler
 
   def token_invalid_input_error
     malformed_error('token')
+  end
+
+  def client_token_blank_error
+    malformed_error('client_token')
+  end
+
+  def client_token_malformed_error
+    malformed_error('client_token')
+  end
+
+  def request_token_blank_error
+    malformed_error('request_token')
+  end
+
+  def request_token_malformed_error
+    malformed_error('request_token')
   end
 
   def genius_query_malformed_error

@@ -59,7 +59,24 @@ class CustomExceptions < StandardError
 
       class Malformed < StandardError
       end
+    end
 
+    class Quicklink < StandardError
+      class Client < StandardError # Invalid token?
+        class Blank < StandardError
+        end
+
+        class Malformed < StandardError
+        end
+      end
+
+      class Request < StandardError # Invalid token?
+        class Blank < StandardError
+        end
+
+        class Malformed < StandardError
+        end
+      end
     end
 
     class SUB < StandardError # Token has wrong format?
