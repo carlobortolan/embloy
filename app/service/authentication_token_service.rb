@@ -9,8 +9,6 @@ class AuthenticationTokenService
     return JWT.encode payload, secret, algorithm
   end
 
-
-
   #########################################################
   ############### En-/Decoding Refresh token ##############
   #########################################################
@@ -113,8 +111,6 @@ class AuthenticationTokenService
       MAX_INTERVAL = 1209600 # == 336 hours == 2 weeks
       MIN_INTERVAL = 1800 # == 0.5 hours == 30 min
 
-
-
       def self.call(user_id, man_interval = nil)
 =begin
         if user_id.class != Integer || !user_id.positive? # is user_id parameter not an integer?
@@ -164,7 +160,6 @@ class AuthenticationTokenService
         exp = bin_exp # placeholder for a standard value or a manually set value
         jti = AuthenticationTokenService::Refresh.jti(iat) # unique token identifier based on the issuing time and the issuer (more info above)
         return AuthenticationTokenService::Refresh.encode(sub, exp, jti, iat) # make a refresh token
-
 
       end
     end

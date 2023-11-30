@@ -5,6 +5,7 @@ import "trix"
 import "@rails/actiontext"
 import "./main"
 import Rails from 'rails-ujs'
+
 Rails.start();
 
 // import { Application } from "@hotwired/stimulus"

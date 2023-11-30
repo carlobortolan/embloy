@@ -56,6 +56,7 @@ class CustomExceptions < StandardError
     class GeniusQuery < StandardError # Invalid token?
       class Blank < StandardError
       end
+
       class Malformed < StandardError
       end
 
@@ -67,7 +68,7 @@ class CustomExceptions < StandardError
     class CustomEXP < StandardError # Token expired?
     end
 
-    class BlankCredentials < StandardError #Blank email || password
+    class BlankCredentials < StandardError # Blank email || password
     end
 
   end

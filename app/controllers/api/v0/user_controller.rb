@@ -135,7 +135,7 @@ module Api
       end
 
       def upload_image
-        puts"PARAMS = #{params}"
+        puts "PARAMS = #{params}"
         begin
           verified!(@decoded_token["typ"])
           user = User.find(@decoded_token["sub"].to_i)

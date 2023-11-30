@@ -1,15 +1,19 @@
 ## 1. Endpoint
+
 GET: http://localhost:3000/api/v0/user/preferences
 
 ### Functionality
+
 Fetches user preferences.
 
 ### Requestheader
+
 ```
 access_token: ...
 ```
 
 ### Responsebody
+
 ```
 {
     "preferences": {
@@ -39,17 +43,21 @@ access_token: ...
 ---
 
 ## 2. Endpoint
+
 GET: http://localhost:3000/api/v0/user/jobs
 
 ### Functionality
+
 Fetches own jobs (= jobs created by user).
 
 ### Requestheader
+
 ```
 access_token: ...
 ```
 
 ### Responsebody
+
 ```
 {
     "jobs": [
@@ -66,17 +74,21 @@ access_token: ...
 ---
 
 ## 3. Endpoint
+
 GET: http://localhost:3000/api/v0/user/applications
 
 ### Functionality
+
 Fetches own applications (= applications submitted by user).
 
 ### Requestheader
+
 ```
 access_token: ...
 ```
 
 ### Responsebody
+
 ```
 ...TODO
 ```
@@ -84,17 +96,21 @@ access_token: ...
 ---
 
 ## 4. Endpoint
+
 GET: http://localhost:3000/api/v0/user/upcoming
 
 ### Functionality
+
 Fetches upcoming jobs (= jobs that the user applied for and got accepted).
 
 ### Requestheader
+
 ```
 access_token: ...
 ```
 
 ### Responsebody
+
 ```
 {
     "jobs": [
@@ -111,17 +127,21 @@ access_token: ...
 ---
 
 ## 5. Endpoint
+
 POST: http://localhost:3000/api/v0/user/image
 
 ### Functionality
+
 Uploads a new profile image for a user.
 
 ### Requestheader
+
 ```
 access_token: ...
 ```
 
 ### Requestbody (form-data)
+
 ```
 image_url=<new profile image>
 ```
@@ -129,17 +149,21 @@ image_url=<new profile image>
 ---
 
 ## 6. Endpoint
+
 GET: http://localhost:3000/api/v0/jobs/66
 
 ### Functionality
+
 Fetches single job.
 
 ### Requestheader
+
 ```
 access_token: ...
 ```
 
 ### Responsebody
+
 ```
 {
     "job": {
@@ -197,17 +221,21 @@ access_token: ...
 ---
 
 ## 7. Endpoint
+
 PATCH: http://localhost:3000/api/v0/jobs?id=66
 
 ### Functionality
+
 Updates a job given an id.
 
 ### Requestheader
+
 ```
 access_token: ...
 ```
 
 ### Requestbody (form-data)
+
 ```
 title:TestTitle
 job_type:Retail
@@ -228,17 +256,21 @@ image_url: <file>
 ---
 
 ## 8. Endpoint
+
 GET: http://localhost:3000/api/v0/jobs?longitude=-0.1293754&latitude=51.5207794
 
 ### Functionality
+
 Fetches feed.
 
 ### Requestheader
+
 ```
 access_token: ...
 ```
 
 ### Responsebody
+
 ```
 {
     "feed": [
@@ -255,23 +287,28 @@ access_token: ...
 ---
 
 ## 9. Endpoint
+
 GET: http://localhost:3000/api/v0/find?query=searchtest&job_type=Retail&sort_by=date_desc
 
 ### Functionality
+
 Queries job based on query text ('query='), job_type ('job_type=') and sorts result ('sort_by=').
 Valid values:
 'query=<String>'
 'job_type=<Job category e.g., retail, healthcare, food, ...>'
 'sort_by=<date_desc, date_asc, salary_desc, salary_asc>'
 
-If no job_type is present, it returns the query for all job_types; if sort_by is empty, it automatically sorts the result by relevance (=matching the query) 
+If no job_type is present, it returns the query for all job_types; if sort_by is empty, it automatically sorts the
+result by relevance (=matching the query)
 
 ### Requestheader
+
 ```
 access_token: ...
 ```
 
 ### Responsebody
+
 ```
 {
     "jobs": [
@@ -288,17 +325,21 @@ access_token: ...
 ---
 
 ## 10. Endpoint
+
 GET: http://localhost:3000/api/v0/maps?longitude=0&latitude=0
 
 ### Functionality
+
 Returns job map (= jobs near the user's position: 'longitude', 'latitude')
 
 ### Requestheader
+
 ```
 access_token: ...
 ```
 
 ### Responsebody
+
 ```
 {
     "jobs": [
@@ -315,17 +356,21 @@ access_token: ...
 ---
 
 ## 11. Endpoint
+
 GET: http://localhost:3000/api/v0/jobs/66/applications
 
 ### Functionality
+
 Fetches all applications for a given job.
 
 ### Requestheader
+
 ```
 access_token: ...
 ```
 
 ### Responsebody
+
 ```
 {
     "applications": [
@@ -342,18 +387,22 @@ access_token: ...
 ---
 
 ## 12. Endpoint
+
 GET: http://localhost:3000/api/v0/jobs/39/application
 
 ### Functionality
+
 Fetches a single application for a given job (here job 39) and user (here 37; id contained in token).
-Is called whenever user clicks on a job he applied to and wants to check his submitted application. 
+Is called whenever user clicks on a job he applied to and wants to check his submitted application.
 
 ### Requestheader
+
 ```
 access_token: ...
 ```
 
 ### Responsebody
+
 ```
 {
     "application": [
@@ -374,17 +423,21 @@ access_token: ...
 ---
 
 ## 13. Endpoint
+
 PATCH: http://localhost:3000/api/v0/jobs/39/applications/37/accept
 
 ### Functionality
+
 Accepts an applications for a given job.
 
 ### Requestheader
+
 ```
 access_token: ...
 ```
 
 ### Requestbody
+
 ```
 {
     "response": "Good job!"
@@ -399,17 +452,21 @@ access_token: ...
 ---
 
 ## 14. Endpoint
+
 PATCH: http://localhost:3000/api/v0/jobs/39/applications/37/reject
 
 ### Functionality
+
 Rejects an application for a given job.
 
 ### Requestheader
+
 ```
 access_token: ...
 ```
 
 ### Requestbody
+
 ```
 {
     "response": "Not good enough!"
@@ -424,23 +481,28 @@ access_token: ...
 ---
 
 ## 15. Endpoint
+
 POST: http://localhost:3000/api/v0/jobs/38/applications
 
 ### Functionality
+
 Submits an application for a given job.
 
 ### Requestheader
+
 ```
 access_token: ...
 ```
 
 ### Requestbody (form-data)
+
 ```
 application_text:HelloWorld
 application_attachmetn: <file, if needed and according to the file format specified in the given job>
 ```
 
 ### Responsebody (200 OK)
+
 ```
 {
     "message": "Application submitted!"
@@ -450,16 +512,21 @@ application_attachmetn: <file, if needed and according to the file format specif
 ---
 
 ## 16. Endpoint
+
 DELETE: http://localhost:3000/api/v0/user/image
 
 ### Functionality
+
 Removes the user's profile image.
 
 ### Requestheader
+
 ```
 access_token: ...
 ```
+
 ### Responsebody (200 OK)
+
 ```
 ...TODO
 ```
@@ -467,21 +534,27 @@ access_token: ...
 ---
 
 ## 17. Endpoint
+
 PATCH: http://localhost:3000/api/v0/user/preferences
 
 ### Functionality
+
 Updates the user's preferences.
 
 ### Requestheader
+
 ```
 access_token: ...
 ```
+
 ### Requestbody
+
 ```
 ...TODO
 ```
 
 ### Responsebody (200 OK)
+
 ```
 ...TODO
 ```

@@ -12,7 +12,6 @@ Rails.application.routes.draw do
       post 'user/auth/token/refresh', to: 'authentications#create_refresh'
       post 'user/auth/token/access', to: 'authentications#create_access'
 
-  
       # -----> USER <-----
       get 'user', to: 'user#show'
       post 'user', to: 'registrations#create'
@@ -49,7 +48,7 @@ Rails.application.routes.draw do
       # get 'jobs/(/:id)/applications/(/:user)/accept', to: 'applications#accept'
       # patch 'jobs/(/:id)/applications/(/:user)/accept', to: 'applications#accept'
       # delete 'jobs/(/:id)/applications', to: 'applications#destroy'
-      
+
       # -----> QUICKLINK <-----
       post 'quick/token/client', to: 'quicklink#create_client'
       post 'quick/token/request', to: 'quicklink#create_request'

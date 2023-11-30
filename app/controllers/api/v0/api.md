@@ -1,6 +1,3 @@
-
-
-
 #### <div style="text-align:right">P-XJH-0006 </div>
 
 ####
@@ -64,7 +61,7 @@
     + ``blank``: When the password attribute is blank
     + ``confirmation``: When password != password_confirmation
     + ``ERR_INVALID``: When a required attribute is malformed or unknown
-   ####      
+   ####       
    **422: Unprocessable entity**
     ```   
             {
@@ -91,7 +88,8 @@
 
 2. Verify user credentials
    >  <span style="color:lawngreen"> GET </span> /user/verify
-   Test to make sure the registration worked and to claim the initial refresh token. Verification is mandatory to use any function of the plattform.
+   Test to make sure the registration worked and to claim the initial refresh token. Verification is mandatory to use
+   any function of the plattform.
    ####
    ###### Data parameters
     1. **email** *<span style="color:crimson">REQUIRED </span>*

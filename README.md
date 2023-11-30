@@ -2,7 +2,8 @@
 
 <h1><a href="https://embloy.com">Embloy</a></h1>
 
-> __NOTE__: _The current prototype deployed at ***[embloy.onrender.com](embloy.onrender.com)*** can take up to 60 seconds to load due to render's server instance having to boot up after being inactive for a while._
+> __NOTE__: _The current prototype deployed at ***[embloy.onrender.com](embloy.onrender.com)*** can take up to 60
+seconds to load due to render's server instance having to boot up after being inactive for a while._
 
 This repository contains the backend code for our application and API, including the frontend of our web-application. We
 have recently deployed an initial prototype at
@@ -48,7 +49,8 @@ a visual overview of job opportunities.
 Users can set up an account with their email address and password, or choose to log in using the OAuth2.0 services
 provided by Google and GitHub. Once an account is created, it needs to be verified by clicking on the email.
 
-Passwords are instantly hashed using [bcryt](https://en.wikipedia.org/wiki/Bcrypt) and stored in the database as an hash. In case a user forgets their password, it can be reset via standard email authentication.
+Passwords are instantly hashed using [bcryt](https://en.wikipedia.org/wiki/Bcrypt) and stored in the database as an
+hash. In case a user forgets their password, it can be reset via standard email authentication.
 
 For an optimal user experience, it is recommended to fill out the 'Preferences' field under 'My Profile'.
 To log into the application, users can use the aforementioned OAuth2.0 services or enter their password.
@@ -57,10 +59,14 @@ procedure in the email.
 
 ### Job Posting
 
-Authenticated user's can create new job listings/postings (including a fitting title, a short description, a high resolution cover-image and more) and, depending on the employer's liking, also define customized CV and motivation letter requirements.
-This customization includes specifying whether a CV or a motivation letter is required for the application, and if required, employers can also indicate their preferred file formats to ensure that the applications meet the employer's expectations.
+Authenticated user's can create new job listings/postings (including a fitting title, a short description, a high
+resolution cover-image and more) and, depending on the employer's liking, also define customized CV and motivation
+letter requirements.
+This customization includes specifying whether a CV or a motivation letter is required for the application, and if
+required, employers can also indicate their preferred file formats to ensure that the applications meet the employer's
+expectations.
 
-Other users can then view these job listings and apply for the positions. 
+Other users can then view these job listings and apply for the positions.
 
 ### Managing Applications for Available Jobs
 

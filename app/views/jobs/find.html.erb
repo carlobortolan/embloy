@@ -2,23 +2,23 @@
 
   <div class="container"><h1>Search all jobs</h1>
     <form action="<%= jobs_find_path %>" method="get" class="form-search d-flex align-items-stretch mb-3">
-        <input type="text" class="form-control flex-grow-1" placeholder="ZIP, city or keywords" name="query" style="height: 60px;">
-        <!-- Filter by job type -->
-        <select name="job_type" class="form-select flex-grow-1" aria-label="Filter by job type">
-          <option value="">All job types</option>
-          <% @categories_list.each do |type| %>
-            <option value="<%= type %>"><%= type %></option>
-          <% end %>
-        </select>
-        <!-- Sort by -->
-        <select name="sort_by" class="form-select flex-grow-1" aria-label="Sort by">
-          <option value="">Sort by relevance</option>
-          <option value="salary_desc">Salary - High to Low</option>
-          <option value="salary_asc">Salary - Low to High</option>
-          <option value="date_desc">Date - Newest first</option>
-          <option value="date_asc">Date - Oldest first</option>
-        </select>
-        <button type="submit" class="btn btn-primary flex-grow-1">Search</button>
+      <input type="text" class="form-control flex-grow-1" placeholder="ZIP, city or keywords" name="query" style="height: 60px;">
+      <!-- Filter by job type -->
+      <select name="job_type" class="form-select flex-grow-1" aria-label="Filter by job type">
+        <option value="">All job types</option>
+        <% @categories_list.each do |type| %>
+          <option value="<%= type %>"><%= type %></option>
+        <% end %>
+      </select>
+      <!-- Sort by -->
+      <select name="sort_by" class="form-select flex-grow-1" aria-label="Sort by">
+        <option value="">Sort by relevance</option>
+        <option value="salary_desc">Salary - High to Low</option>
+        <option value="salary_asc">Salary - Low to High</option>
+        <option value="date_desc">Date - Newest first</option>
+        <option value="date_asc">Date - Oldest first</option>
+      </select>
+      <button type="submit" class="btn btn-primary flex-grow-1">Search</button>
     </form>
   </div>
 </section>

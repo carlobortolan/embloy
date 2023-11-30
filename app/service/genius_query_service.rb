@@ -11,7 +11,6 @@ class GeniusQueryService < AuthenticationTokenService
     return AuthenticationTokenService.call(HMAC_SECRET, ALGORITHM_TYPE, ISSUER, payload)
   end
 
-
   def self.decode(token)
     decoded_token = JWT.decode(token, HMAC_SECRET, true, { verify_jti: Proc.new { |jti| AuthenticationTokenService::Refresh.jti?(jti, token["sub"].to_i) }, iss: ISSUER, verify_iss: true, verify_iat: true, required_claims: ['iss', 'sub', 'exp', 'jti', 'iat'], algorithm: ALGORITHM_TYPE })
     return decoded_token
@@ -22,7 +21,7 @@ class GeniusQueryService < AuthenticationTokenService
       job = Job.find(args["job_id"])
       res = Job.get_json(job)
 
-      return {"job": res}
+      return { "job": res }
 
     elsif !args.key?("job_id") && args.key("user_id")
       # TODO: query users
@@ -34,9 +33,6 @@ class GeniusQueryService < AuthenticationTokenService
       return []
     end
   end
-
-
-
 
   class Encoder
     MAX_INTERVAL = 31557600 # == 12 months == 1 year
@@ -64,7 +60,8 @@ class GeniusQueryService < AuthenticationTokenService
     def self.call(token)
       raise CustomExceptions::InvalidInput::GeniusQuery::Malformed if token.class != String
       raise CustomExceptions::InvalidInput::GeniusQuery::Blank if token[0] == ":" || token.blank?
-      begin # necessary to shortcut actual JWT errors to prevent frontend from logging out due to 401s
+      begin
+        # necessary to shortcut actual JWT errors to prevent frontend from logging out due to 401s
         decoded_token = GeniusQueryService.decode(token.gsub(REPLACEMENT_CHARACTER, '.'))[0]
       rescue StandardError
         raise CustomExceptions::InvalidInput::GeniusQuery::Malformed

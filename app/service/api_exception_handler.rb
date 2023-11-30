@@ -174,6 +174,7 @@ module ApiExceptionHandler
   def token_invalid_input_error
     malformed_error('token')
   end
+
   def genius_query_malformed_error
     malformed_error('genius_query')
   end

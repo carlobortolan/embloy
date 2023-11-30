@@ -128,7 +128,7 @@ class Job < ApplicationRecord
     )
     puts "Created new job for"
     return job
-  end 
+  end
 
   # Current approach; - TODO: @cb find easier way to serialize job JSONs & remove commented code when switching to S3
   def self.get_json(job)

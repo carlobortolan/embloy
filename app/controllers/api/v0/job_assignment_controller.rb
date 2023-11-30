@@ -14,7 +14,7 @@ module Api
             return blank_error('assignment')
           end
 
-          #verify user_id claim (the user that is assigned to a job)
+          # verify user_id claim (the user that is assigned to a job)
           begin
             review_params[:user_id] = Integer(assignment_params[:user_id])
             raise ArgumentError unless review_params[:user_id] > 0

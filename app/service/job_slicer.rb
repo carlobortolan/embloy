@@ -38,13 +38,13 @@ class JobSlicer
   end
 
   # Used by web app
-   def self.fetch_feed(lat, lng)
+  def self.fetch_feed(lat, lng)
     if lat.nil? || lng.nil? || lat.abs > 90.0 || lng.abs > 180.0
       return Job.includes(image_url_attachment: :blob).order('random()').limit(20)
     else
       res = Job.includes(image_url_attachment: :blob).within_radius(lat, lng, 50000, 20)
       if res.nil? || res.empty?
-        res = Job.includes( image_url_attachment: :blob).all.limit(20)
+        res = Job.includes(image_url_attachment: :blob).all.limit(20)
       end
       return res
     end

@@ -3,6 +3,7 @@ module Api
   module V0
     class GeniusQueriesController < ApiController
       before_action :verify_access_token, except: :query
+
       def create
         begin
           verified!(@decoded_token["typ"])

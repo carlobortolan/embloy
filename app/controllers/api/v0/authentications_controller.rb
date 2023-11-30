@@ -69,7 +69,7 @@ module Api
       private
 
       def refresh_token_params
-        #params.fetch(:refresh_token).permit(:validity)
+        # params.fetch(:refresh_token).permit(:validity)
         if params.key?(:refresh_token)
           params.require(:refresh_token).permit(:validity)
         else

@@ -1,27 +1,27 @@
 @media (prefers-color-scheme: dark) {
     body {
-        margin:0;
+        margin: 0;
         overflow-y: scroll;
         overflow-x: hidden;
         background: black
     }
 
     .screenmation:hover {
-        background: linear-gradient(-45deg,#f1b7aa,#C7D7D9,#C7D7D9,#f1b7aa);
+        background: linear-gradient(-45deg, #f1b7aa, #C7D7D9, #C7D7D9, #f1b7aa);
         animation: gradient 10s ease infinite
     }
 }
 
 @media (prefers-color-scheme: light) {
     body {
-        margin:0;
+        margin: 0;
         overflow-y: scroll;
         overflow-x: hidden;
         background: #ffffff
     }
 
     .screenmation:hover {
-        background: linear-gradient(-45deg,rgba(29,212,226,.5),rgba(76,222,121,.5),rgba(76,222,121,.5),rgba(29,212,226,.5));
+        background: linear-gradient(-45deg, rgba(29, 212, 226, .5), rgba(76, 222, 121, .5), rgba(76, 222, 121, .5), rgba(29, 212, 226, .5));
         animation: gradient 10s ease infinite;
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px)
@@ -38,7 +38,7 @@
 
 @media (orientation: landscape) {
     .base.lvnoly_af:not(#_) {
-        flex-direction:row;
+        flex-direction: row;
         justify-content: space-between;
         align-items: center;
         height: 45px
@@ -47,7 +47,7 @@
 
 @media (orientation: portrait) and (min-width: 768px) {
     .base.lvnoly_af:not(#_) {
-        flex-direction:row;
+        flex-direction: row;
         justify-content: flex-start;
         align-items: center;
         height: 45px;
@@ -59,7 +59,7 @@
 
 @media (orientation: portrait) and (max-width: 767px) {
     .base.lvnoly_af:not(#_) {
-        flex-direction:column;
+        flex-direction: column;
         align-items: flex-start;
         justify-content: flex-end;
         gap: 15px;
@@ -80,7 +80,7 @@
 
 @media (orientation: landscape) {
     .base.lvnoly_af .subbase.lvnoly_af:not(#_) {
-        align-items:center;
+        align-items: center;
         width: 33vw;
         justify-content: center
     }
@@ -88,13 +88,13 @@
 
 @media (orientation: portrait) and (min-width: 768px) {
     .base.lvnoly_af .subbase.lvnoly_af:not(#_) {
-        align-items:center
+        align-items: center
     }
 }
 
 @media (orientation: portrait) and (max-width: 767px) {
     .base.lvnoly_af .subbase.lvnoly_af:not(#_) {
-        align-items:flex-start;
+        align-items: flex-start;
         margin-left: 15px;
         margin-right: unset;
         width: fit-content
@@ -112,62 +112,62 @@
 
 @media (prefers-color-scheme: dark) {
     .button-style:is(:hover,.\@hover).lvnoly_af:not(#_) {
-        color:#e4e4e7
+        color: #e4e4e7
     }
 }
 
 @media (prefers-color-scheme: dark) {
     .button-style:is(:active,.\@active).lvnoly_af:not(#_) {
-        color:#71717a
+        color: #71717a
     }
 }
 
 @media (prefers-color-scheme: light) {
     .button-style:is(:hover,.\@hover).lvnoly_af:not(#_) {
-        color:#d4d4d8
+        color: #d4d4d8
     }
 }
 
 @media (prefers-color-scheme: light) {
     .button-style:is(:active,.\@active).lvnoly_af:not(#_) {
-        color:#71717a
+        color: #71717a
     }
 }
 
 .text-button-style.lvnoly_af:not(#_) {
-    font-family: var(--font-sans,system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");
+    font-family: var(--font-sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");
     font-size: 11pt;
-    text-decoration: hsla(100,100%,100%,0%)
+    text-decoration: hsla(100, 100%, 100%, 0%)
 }
 
 @media (orientation: landscape) {
     .lvnoly-ai:not(#_):not(#_):not(#_) {
-        margin-left:20px;
+        margin-left: 20px;
         justify-content: flex-start
     }
 }
 
 @media (orientation: portrait) {
     .lvnoly-ai:not(#_):not(#_):not(#_) {
-        justify-content:flex-start
+        justify-content: flex-start
     }
 }
 
 .lvnoly-aj:not(#_):not(#_):not(#_) {
-    text-decoration: hsla(100,100%,100%,0%);
+    text-decoration: hsla(100, 100%, 100%, 0%);
     color: #9ca3af
 }
 
 @media (orientation: landscape) {
     .lvnoly-ap:not(#_):not(#_):not(#_) {
-        margin-right:20px;
+        margin-right: 20px;
         justify-content: flex-end
     }
 }
 
 @media (orientation: portrait) and (max-width: 767px) {
     .lvnoly-ap:not(#_):not(#_):not(#_) {
-        margin-bottom:15px
+        margin-bottom: 15px
     }
 }
 
@@ -188,19 +188,19 @@
 
 @media (orientation: portrait) and (max-width: 767px) {
     .lvnoly-as:not(#_):not(#_):not(#_) {
-        display:none
+        display: none
     }
 }
 
 @media (prefers-color-scheme: dark) {
     .lvnoly-as:not(#_):not(#_):not(#_) {
-        color:#000
+        color: #000
     }
 }
 
 @media (prefers-color-scheme: light) {
     .lvnoly-as:not(#_):not(#_):not(#_) {
-        color:#fff
+        color: #fff
     }
 }
 
@@ -214,7 +214,7 @@
 
 @media (orientation: portrait) and (max-width: 767px) {
     .lvnoly-at:not(#_):not(#_):not(#_) {
-        display:none
+        display: none
     }
 }
 
@@ -230,7 +230,7 @@
 
 @media (orientation: portrait) and (max-width: 767px) {
     .lvnoly-au:not(#_):not(#_):not(#_) {
-        display:none
+        display: none
     }
 }
 
@@ -257,13 +257,13 @@ footer-bar {
 
 @media (orientation: landscape) {
     .base.z1w9459u_af .subbase.z1w9459u_af:not(#_) {
-        width:70%
+        width: 70%
     }
 }
 
 @media (orientation: portrait) {
     .base.z1w9459u_af .subbase.z1w9459u_af:not(#_) {
-        width:85%
+        width: 85%
     }
 }
 
@@ -289,7 +289,7 @@ footer-bar {
 }
 
 .top.z1w9459u_af:not(#_) {
-    font-family: var(--font-sans,system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");
+    font-family: var(--font-sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");
     font-weight: 500;
     font-size: 20pt;
     text-align: center
@@ -297,37 +297,37 @@ footer-bar {
 
 @media (prefers-color-scheme: light) {
     .top.z1w9459u_af:not(#_) {
-        color:#000
+        color: #000
     }
 }
 
 @media (prefers-color-scheme: dark) {
     .top.z1w9459u_af:not(#_) {
-        color:#fff
+        color: #fff
     }
 }
 
 @media (max-width: 1440px) {
     .top.z1w9459u_af:not(#_) {
-        font-size:17pt
+        font-size: 17pt
     }
 }
 
 @media (max-width: 794px) {
     .top.z1w9459u_af:not(#_) {
-        display:none
+        display: none
     }
 }
 
 @media (min-width: 795px) {
     .top.z1w9459u_af:not(#_) {
-        display:block
+        display: block
     }
 }
 
 .subtop.z1w9459u_af:not(#_) {
     text-align: left;
-    font-family: var(--font-sans,system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");
+    font-family: var(--font-sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");
     font-weight: 400;
     font-size: 15pt;
     width: 100%;
@@ -336,25 +336,25 @@ footer-bar {
 
 @media (prefers-color-scheme: light) {
     .subtop.z1w9459u_af:not(#_) {
-        color:#000
+        color: #000
     }
 }
 
 @media (prefers-color-scheme: dark) {
     .subtop.z1w9459u_af:not(#_) {
-        color:#fff
+        color: #fff
     }
 }
 
 @media (max-width: 1440px) {
     .subtop.z1w9459u_af:not(#_) {
-        font-size:12pt
+        font-size: 12pt
     }
 }
 
 .subsubtop.z1w9459u_af:not(#_) {
     text-align: left;
-    font-family: var(--font-sans,system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");
+    font-family: var(--font-sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");
     font-size: 11pt;
     width: 100%;
     margin-bottom: -10px
@@ -362,35 +362,35 @@ footer-bar {
 
 @media (prefers-color-scheme: light) {
     .subsubtop.z1w9459u_af:not(#_) {
-        color:#000;
+        color: #000;
         font-weight: 400
     }
 }
 
 @media (prefers-color-scheme: dark) {
     .subsubtop.z1w9459u_af:not(#_) {
-        color:#fff;
+        color: #fff;
         font-weight: 100
     }
 }
 
 .block.z1w9459u_af:not(#_) {
     text-align: justify;
-    font-family: var(--font-sans,system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");
+    font-family: var(--font-sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");
     font-size: 11pt;
     width: 100%
 }
 
 @media (prefers-color-scheme: light) {
     .block.z1w9459u_af:not(#_) {
-        color:#000;
+        color: #000;
         font-weight: 400
     }
 }
 
 @media (prefers-color-scheme: dark) {
     .block.z1w9459u_af:not(#_) {
-        color:#fff;
+        color: #fff;
         font-weight: 100
     }
 }
@@ -408,13 +408,13 @@ footer-bar {
 
 @media (max-width: 794px) {
     .z1w9459u-am:not(#_):not(#_):not(#_) {
-        display:block
+        display: block
     }
 }
 
 @media (min-width: 795px) {
     .z1w9459u-am:not(#_):not(#_):not(#_) {
-        display:none
+        display: none
     }
 }
 
@@ -426,13 +426,13 @@ footer-bar {
 
 @media (max-width: 794px) {
     .z1w9459u-an:not(#_):not(#_):not(#_) {
-        display:block
+        display: block
     }
 }
 
 @media (min-width: 795px) {
     .z1w9459u-an:not(#_):not(#_):not(#_) {
-        display:none
+        display: none
     }
 }
 
@@ -477,8 +477,8 @@ legal-notice {
 }
 
 :root {
-    --dark-gradient-shadow: linear-gradient( 45deg, #001ba0, #9800fd, #ff00d4, #D90B1C, #ff00d4, #9800fd, #001ba0 );
-    --light-gradient-shadow: linear-gradient( 45deg, #ffc400, #d1ff02, #6cf494, #4ac6ce, #6cf494, #d1ff02, #ffc400 )
+    --dark-gradient-shadow: linear-gradient(45deg, #001ba0, #9800fd, #ff00d4, #D90B1C, #ff00d4, #9800fd, #001ba0);
+    --light-gradient-shadow: linear-gradient(45deg, #ffc400, #d1ff02, #6cf494, #4ac6ce, #6cf494, #d1ff02, #ffc400)
 }
 
 .shadow {
@@ -490,12 +490,12 @@ legal-notice {
     text-align: center;
     font-size: 50px;
     font-weight: 700;
-    background: linear-gradient(0deg,#000,#262626)
+    background: linear-gradient(0deg, #000, #262626)
 }
 
 @media (prefers-color-scheme: dark) {
-    .shadow:before,.shadow:after {
-        content:"";
+    .shadow:before, .shadow:after {
+        content: "";
         position: absolute;
         background: var(--dark-gradient-shadow);
         background-size: 400%;
@@ -511,15 +511,15 @@ legal-notice {
     }
 
     .runback {
-        background: linear-gradient(270deg,#ff0000,#ff00da,#e100ff,#9e00ff,#3500ff,#0046ff);
+        background: linear-gradient(270deg, #ff0000, #ff00da, #e100ff, #9e00ff, #3500ff, #0046ff);
         background-size: 400% 400%;
         animation: gradient 5s ease infinite
     }
 }
 
 @media (prefers-color-scheme: light) {
-    .shadow:before,.shadow:after {
-        content:"";
+    .shadow:before, .shadow:after {
+        content: "";
         position: absolute;
         background: var(--light-gradient-shadow);
         background-size: 400%;
@@ -535,7 +535,7 @@ legal-notice {
     }
 
     .runback {
-        background: linear-gradient(270deg,#ffc400,#d1ff02,#6cf494,#4ac6ce,#3e93e2);
+        background: linear-gradient(270deg, #ffc400, #d1ff02, #6cf494, #4ac6ce, #3e93e2);
         background-size: 400% 400%;
         animation: gradient 5s ease infinite
     }
@@ -579,7 +579,7 @@ legal-notice {
     top: 50%;
     left: 50%;
     margin-right: -50%;
-    transform: translate(-50%,-50%);
+    transform: translate(-50%, -50%);
     border-radius: 2rem;
     width: 30vw;
     height: 28vh
@@ -587,14 +587,14 @@ legal-notice {
 
 @media (orientation: portrait) and (max-width: 424px) {
     .field.l1mb27_af .screen.l1mb27_af:not(#_) {
-        width:70vw;
+        width: 70vw;
         height: 60vh
     }
 }
 
 @media (orientation: portrait) and (min-width: 426px) {
     .field.l1mb27_af .screen.l1mb27_af:not(#_) {
-        width:60vw
+        width: 60vw
     }
 }
 
@@ -608,37 +608,37 @@ legal-notice {
     justify-content: center;
     align-items: center;
     font-weight: 600;
-    font-family: var(--font-sans,system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji")
+    font-family: var(--font-sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji")
 }
 
 @media (orientation: landscape) {
     .field.l1mb27_af .front.l1mb27_af:not(#_) {
-        font-size:4.5vw
+        font-size: 4.5vw
     }
 }
 
 @media (orientation: portrait) and (max-width: 424px) {
     .field.l1mb27_af .front.l1mb27_af:not(#_) {
-        font-size:5vh
+        font-size: 5vh
     }
 }
 
 @media (orientation: portrait) and (min-width: 426px) {
     .field.l1mb27_af .front.l1mb27_af:not(#_) {
-        font-size:5vw
+        font-size: 5vw
     }
 }
 
 @media (prefers-color-scheme: dark) {
     .field.l1mb27_af .front.l1mb27_af:not(#_) {
-        background-color:#000;
+        background-color: #000;
         color: #fff
     }
 }
 
 @media (prefers-color-scheme: light) {
     .field.l1mb27_af .front.l1mb27_af:not(#_) {
-        background-color:#fff;
+        background-color: #fff;
         color: #000
     }
 }
@@ -650,13 +650,13 @@ legal-notice {
 
 @media (prefers-color-scheme: dark) {
     .field.l1mb27_af .runfront.l1mb27_af:not(#_) {
-        box-shadow:0 4px 30px #fff6
+        box-shadow: 0 4px 30px #fff6
     }
 }
 
 @media (prefers-color-scheme: light) {
     .field.l1mb27_af .runfront.l1mb27_af:not(#_) {
-        box-shadow:0 4px 30px #6cf49499;
+        box-shadow: 0 4px 30px #6cf49499;
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px)
     }
