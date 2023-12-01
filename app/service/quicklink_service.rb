@@ -30,7 +30,7 @@ class QuicklinkService < AuthenticationTokenService
         sub = user_id
         AuthenticationTokenService::Refresh.verify_user_id(user_id)
         ApplicationController.must_be_verified!(user_id)
-
+        # TODO: Implement p. verification
         exp = Time.now.to_i + 60 * 60 * 24 * 31 * 3 # standard validity interval: 3 months
         typ = User.find_by(id: sub).user_role # could be changed to price_category / company_class
         iat = Time.now.to_i

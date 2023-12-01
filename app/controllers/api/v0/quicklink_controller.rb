@@ -32,7 +32,7 @@ module Api
           raise CustomExceptions::InvalidUser::Unknown
         end
 
-        if application.save!
+        if application.save
           render status: 200, json: { "message": "Application submitted!" }
         else
           malformed_error('application')
@@ -44,18 +44,20 @@ module Api
       # If the job does not exist, it is created with the `job_slug` and `client.id`.
       # The job is then added to the client's jobs.
       def update_or_create_job(job_slug)
-        if @client.jobs.nil?
-          @client.jobs = []
-        end
-        puts "client id = #{@client.id}"
-        puts "job_slug = #{job_slug}"
+        begin
+          if @client.jobs.nil?
+            @client.jobs = []
+          end
 
-        # TODO: Update to use shell / EMJ / job_slug
-        @job = @client.jobs.find_by(title: job_slug)
-        unless @job
-          @job = Job.create_emj(job_slug, @client.id) # Create externally managed job, if it hasn't been created yet
-          @job.user = @client
-          @client.jobs << @job
+          # TODO: Update to use shell / EMJ / job_slug
+          @job = @client.jobs.find_by(title: job_slug)
+          unless @job
+            @job = Job.create_emj(job_slug, @client.id) # Create externally managed job, if it hasn't been created yet
+            @job.user = @client
+            @client.jobs << @job
+          end
+        rescue RecordNotFound
+          not_found_error("job")
         end
       end
 
@@ -66,10 +68,16 @@ module Api
       def apply
         begin
           @user = User.find(@decoded_token["sub"].to_i)
-          @client = User.find(@decoded_request_token["sub"].to_i)
-          update_or_create_job(@decoded_request_token["job"])
-          apply_for_job
         end
+        not_found_error("user")
+        begin 
+          @client = User.find(@decoded_request_token["sub"].to_i)
+        rescue
+          not_found_error("client")
+        end
+          
+        update_or_create_job(@decoded_request_token["job"])
+        apply_for_job
       end
 
       # The create_request method is responsible for creating a `request_token`.
@@ -91,9 +99,10 @@ module Api
           verified!(@decoded_token["typ"])
           token = QuicklinkService::Client::Encoder.call(@decoded_token["sub"].to_i)
           render status: 200, json: { "client_token" => token }
+        rescue
+          CustomExceptions::Unauthorized::InsufficientRole
         end
       end
     end
-
   end
 end
