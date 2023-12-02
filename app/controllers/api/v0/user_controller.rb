@@ -2,14 +2,9 @@
 module Api
   module V0
     class UserController < ApiController
-      before_action :verify_access_token
-
       def upcoming
-        begin
           verified!(@decoded_token["typ"])
-
-          user = User.find(@decoded_token["sub"].to_i)
-          applications = Application.all.where(user_id: user.id, status: "1")
+          applications = Application.all.where(user_id: Current.user.id, status: "1")
 
           if !applications.empty?
             upcoming_jobs = []
@@ -20,59 +15,37 @@ module Api
           else
             render(status: 204, json: { "jobs": "" })
           end
-        rescue ActiveRecord::RecordNotFound
-          not_found_error('user')
-        end
       end
 
       def own_jobs
-        begin
           verified!(@decoded_token["typ"])
-          jobs = User.find(@decoded_token["sub"].to_i).jobs.includes([:rich_text_description]).order(created_at: :desc)
-
+          jobs = Current.user.jobs.includes([:rich_text_description]).order(created_at: :desc)
           jobs.empty? ? render(status: 204, json: { "jobs": jobs }) : render(status: 200, json: "{\"jobs\": [#{Job.get_jsons(jobs)}]}")
-        rescue ActiveRecord::RecordNotFound
-          not_found_error('user')
-        end
       end
 
       def own_applications
-        begin
           verified!(@decoded_token["typ"])
-          user = User.find(@decoded_token["sub"].to_i)
-          applications = Application.all.where(user_id: user.id)
+          applications = Application.all.where(user_id: Current.user.id)
           applications.empty? ? render(status: 204, json: { "applications": applications }) : render(status: 200, json: { "applications": applications })
-        rescue ActiveRecord::RecordNotFound
-          not_found_error('user')
-        end
       end
 
       def own_reviews
-        begin
           verified!(@decoded_token["typ"])
-          user = User.find(@decoded_token["sub"].to_i)
-          reviews = Review.all.where(subject: user.id)
+          reviews = Review.all.where(subject: Current.user.id)
           reviews.empty? ? render(status: 204, json: { "reviews": reviews }) : render(status: 200, json: { "reviews": reviews })
-        rescue ActiveRecord::RecordNotFound
-          not_found_error('user')
-        end
       end
 
       def get_preferences
-        begin
           verified!(@decoded_token["typ"])
-          user = User.find(@decoded_token["sub"].to_i)
-          if user.preferences.nil?
-            user.create_preferences
-            unless user.save
+          
+          if Current.user.preferences.nil?
+            Current.user.create_preferences
+            unless Current.user.save
               flash[:alert] = 'Preferences could not be saved'
               render :preferences, status: :unprocessable_entity
             end
           end
-          render(status: 200, json: { "preferences": user.preferences })
-        rescue ActiveRecord::RecordNotFound
-          not_found_error('user')
-        end
+          render(status: 200, json: { "preferences": Current.user.preferences })
       end
 
       def update_preferences
@@ -80,70 +53,50 @@ module Api
       end
 
       def remove_image
-        begin
-          verified!(@decoded_token["typ"])
-          user = User.find(@decoded_token["sub"].to_i)
-          user.image_url.purge if user.image_url.attached?
-          render status: 200, json: { "message": "Profile image successfully removed." }
-        rescue ActiveRecord::RecordNotFound
-          not_found_error('user')
-        end
+        verified!(@decoded_token["typ"])
+        
+        Current.user.image_url.purge if Current.user.image_url.attached?
+        render status: 200, json: { "message": "Profile image successfully removed." }
       end
 
       def show
-        begin
           verified!(@decoded_token["typ"])
-          user = User.find(@decoded_token["sub"].to_i)
-          if user.nil?
+          
+          if Current.user.nil?
             render(status: 204)
           else
-            puts "Json = #{User.get_json(user)}"
-            render(status: 200, json: "{\"user\": #{User.get_json(user)}}")
+            puts "Json = #{User.get_json(Current.user)}"
+            render(status: 200, json: "{\"user\": #{User.get_json(Current.user)}}")
           end
-        rescue ActiveRecord::RecordNotFound
-          not_found_error('user')
-        end
       end
 
       def edit
-        begin
           verified!(@decoded_token["typ"])
-          user = User.find(@decoded_token["sub"].to_i)
-          if user.nil?
+          
+          if Current.user.nil?
             render(status: 204)
           else
-            if user.update(user_params)
+            if Current.user.update(user_params)
               render(status: 200, json: { "message": "Successfully updated user." })
             else
-              render(status: 422, json: { "message": "Failed to update user.", "errors": user.errors.full_messages })
+              render(status: 422, json: { "message": "Failed to update user.", "errors": Current.user.errors.full_messages })
             end
           end
-        rescue ActiveRecord::RecordNotFound
-          not_found_error('user')
-        end
       end
 
       def destroy
-        begin
           verified!(@decoded_token["typ"])
-          user = User.find(@decoded_token["sub"].to_i)
-          user.destroy!
+          
+          Current.user.destroy!
           render status: 200, json: { "message": "User deleted!" }
-        rescue ActiveRecord::RecordNotFound
-          not_found_error('user')
-        end
       end
 
       def upload_image
         puts "PARAMS = #{params}"
-        begin
           verified!(@decoded_token["typ"])
-          user = User.find(@decoded_token["sub"].to_i)
-          user.image_url.attach(params[:image_url]) if params[:image_url].present?
-          render status: 200, json: { "image_url": "#{user.image_url.url}" }
-        rescue ActiveRecord::RecordNotFound
-          not_found_error('user')
-        end
+          
+          Current.user.image_url.attach(params[:image_url]) if params[:image_url].present?
+          render status: 200, json: { "image_url": "#{Current.user.image_url.url}" }
       end
     end
   end

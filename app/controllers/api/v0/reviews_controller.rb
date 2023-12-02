@@ -2,13 +2,12 @@ module Api
   module V0
 
     class ReviewsController < ApiController
-      before_action :verify_access_token
       before_action :verify_path_user_id, only: [:create, :update]
 
       def create
         # todo: test review update, review delete method, adapt doc
         begin
-          must_be_verified!(@decoded_token["sub"])
+          must_be_verified!(Current.user.id)
           # verify strong param input
           if (review_params[:rating].nil? || review_params[:rating].blank?) && review_params[:job_id].present?
             return blank_error('rating')
@@ -46,12 +45,12 @@ module Api
           #--------------------------------------
 
           # verify user_id path input & user_id from job
-          return biased_error('user') if @decoded_token["sub"] == params[:id]
-          if @decoded_token["sub"] == job.user_id # employer rates employee
+          return biased_error('user') if Current.user.id == params[:id]
+          if Current.user.id == job.user_id # employer rates employee
             application = job.applications.find_by_sql("SELECT * FROM applications a WHERE a.job_id = #{job.job_id} AND a.user_id = #{params[:id]}")
             return access_denied_error('user') if application.nil? || application.empty? || application[0].status.to_i != 1 # only reviews between employers and emplyees are allowed #todo: add way to know who is an actual employee
           elsif params[:id] == job.user_id # employee rates employer
-            application = job.applications.find_by_sql("SELECT * FROM applications a WHERE a.job_id = #{job.job_id} AND a.user_id = #{@decoded_token["sub"]}")
+            application = job.applications.find_by_sql("SELECT * FROM applications a WHERE a.job_id = #{job.job_id} AND a.user_id = #{Current.user.id}")
             return access_denied_error('user') if application.nil? || application.empty? || application[0].status.to_i != 1 # only reviews between employers and emplyees are allowed #todo: add way to know who is an actual employee
           else
             # only an employee can rate its employer based on a given job and vice versa
@@ -61,13 +60,13 @@ module Api
           #--------------------------------------
 
           # verify whether this specific review already exists
-          return unnecessary_error('review') if Review.all.where(:user_id => @decoded_token["sub"], :subject => params[:id], :job_id => review_params[:job_id]).present?
+          return unnecessary_error('review') if Review.all.where(:user_id => Current.user.id, :subject => params[:id], :job_id => review_params[:job_id]).present?
 
           # make review
           review = Review.new(review_params)
           review.subject = params[:id]
-          review.user_id = @decoded_token["sub"]
-          review.created_by = @decoded_token["sub"] # todo migrate to drop column
+          review.user_id = Current.user.id
+          review.created_by = Current.user.id # todo migrate to drop column
           review.save!
           render status: 200, json: { "message": "Review submitted!" }
         rescue ActionController::ParameterMissing # full review_params strong parameter missing
@@ -77,7 +76,7 @@ module Api
 
       def update
         begin
-          must_be_verified!(@decoded_token["sub"])
+          must_be_verified!(Current.user.id)
           # verify strong param input
           return blank_error('job_id') if review_params[:job_id].nil? || review_params[:job_id].blank?
 
@@ -110,7 +109,7 @@ module Api
           #--------------------------------------
 
           # verify whether this specific review really exists
-          review = Review.all.where(:user_id => @decoded_token["sub"], :subject => params[:id], :job_id => review_params[:job_id])
+          review = Review.all.where(:user_id => Current.user.id, :subject => params[:id], :job_id => review_params[:job_id])
           return not_found_error('review') unless review.present?
 
           #--------------------------------------
@@ -136,7 +135,7 @@ module Api
 
           # TODO: Replace with general must_be_owner! method (if it then exist)
           ###############################################################################################################################
-          review.created_by.to_i == User.find(@decoded_token["sub"].to_i).id ? true : raise(CustomExceptions::Unauthorized::NotOwner) #
+          review.created_by.to_i == Current.user.id ? true : raise(CustomExceptions::Unauthorized::NotOwner) #
           ###############################################################################################################################
 
           review.destroy!

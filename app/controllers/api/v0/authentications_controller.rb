@@ -1,6 +1,8 @@
 module Api
   module V0
     class AuthenticationsController < ApiController
+      skip_before_action :set_current_user
+      
       def create_refresh
         begin
           email, password = ActionController::HttpAuthentication::Basic::user_name_and_password(request)

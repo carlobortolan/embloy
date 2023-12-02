@@ -2,12 +2,12 @@
 module Api
   module V0
     class GeniusQueriesController < ApiController
-      before_action :verify_access_token, except: :query
+      skip_before_action :set_current_user, only: :query
 
       def create
         begin
           verified!(@decoded_token["typ"])
-          res = GeniusQueryService::Encoder.call(@decoded_token["sub"], create_params)
+          res = GeniusQueryService::Encoder.call(Current.user.id, create_params)
           render status: 200, json: { "query_token" => res }
         end
       end

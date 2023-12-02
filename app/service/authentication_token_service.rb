@@ -61,7 +61,7 @@ class AuthenticationTokenService
       end
     end
 
-    def self.verify_user_id(user_id)
+    def self.verify_user_id!(user_id)
       if user_id.class != Integer || !user_id.positive? # is user_id parameter not an integer?
         raise CustomExceptions::InvalidInput::SUB
 
@@ -74,7 +74,6 @@ class AuthenticationTokenService
       elsif UserBlacklist.find_by(user_id: user_id).present? # is the user for the given id blacklisted/actively blocked?
         raise CustomExceptions::Unauthorized::Blocked
       end
-      return true
     end
 
     def self.verify_expiration(man_interval, max, min)
@@ -125,7 +124,7 @@ class AuthenticationTokenService
         elsif UserBlacklist.find_by(user_id: user_id).present? # is the user for the given id blacklisted/actively blocked?
           raise CustomExceptions::Unauthorized::Blocked
 =end
-        AuthenticationTokenService::Refresh.verify_user_id(user_id)
+        AuthenticationTokenService::Refresh.verify_user_id!(user_id)
         ApplicationController.must_be_verified!(user_id) # if not: ApplicationController::InvalidUser::Taboo is risen
         # the given id references an existing user, who is active and not blacklisted
         iat = Time.now.to_i # timestamp
@@ -201,7 +200,9 @@ class AuthenticationTokenService
     class Encoder
       def self.call(refresh_token)
         decoded_token = AuthenticationTokenService::Refresh::Decoder.call(refresh_token)[0]
-        sub = decoded_token["sub"] # who "owns" the token
+        sub = Current.user.id # who "owns" the token
+        # AuthenticationTokenService::Refresh.verify_user_id!(sub)
+        # ApplicationController.must_be_verified!(sub)
         typ = User.find_by(id: sub).user_role
         exp = Time.now.to_i + 1200 # standard validity interval;: 1200 sec == 20 min
         return AuthenticationTokenService::Access.encode(sub, exp, typ)
@@ -210,15 +211,10 @@ class AuthenticationTokenService
 
     class Decoder
       def self.call(token)
-        if token.class != String || token.blank? # rough check whether input is malformed
-          raise CustomExceptions::InvalidInput::Token
-        else
-          return AuthenticationTokenService::Access.decode(token)
-        end
+        raise CustomExceptions::InvalidInput::Access::Malformed if token.class != String
+        raise CustomExceptions::InvalidInput::Access::Blank if token[0] == ":" || token.blank?  
+        return AuthenticationTokenService::Access.decode(token)
       end
-
     end
-
   end
-
 end
