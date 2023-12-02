@@ -28,9 +28,9 @@ class QuicklinkService < AuthenticationTokenService
       # Encodes a client token for a given user ID.
       def self.call(user_id)
         sub = user_id
-        AuthenticationTokenService::Refresh.verify_user_id(user_id)
+        AuthenticationTokenService::Refresh.verify_user_id!(user_id)
         ApplicationController.must_be_verified!(user_id)
-
+        # TODO: Implement p. verification
         exp = Time.now.to_i + 60 * 60 * 24 * 31 * 3 # standard validity interval: 3 months
         typ = User.find_by(id: sub).user_role # could be changed to price_category / company_class
         iat = Time.now.to_i
@@ -43,11 +43,7 @@ class QuicklinkService < AuthenticationTokenService
       def self.call(token)
         raise CustomExceptions::InvalidInput::Quicklink::Client::Malformed if token.class != String
         raise CustomExceptions::InvalidInput::Quicklink::Client::Blank if token[0] == ":" || token.blank?  
-        begin
-          return QuicklinkService::Client.decode(token)
-        rescue StandardError
-          raise CustomExceptions::InvalidInput::Quicklink::Client::Malformed
-        end
+        return QuicklinkService::Client.decode(token)
       end
     end
   end
@@ -76,7 +72,7 @@ class QuicklinkService < AuthenticationTokenService
       # Encodes a request token for a given job slug and user ID.
       def self.call(user_id, job_slug)
         sub = user_id
-        AuthenticationTokenService::Refresh.verify_user_id(user_id)
+        AuthenticationTokenService::Refresh.verify_user_id!(user_id)
         ApplicationController.must_be_verified!(user_id)
         # TODO: @cb verify job / account validity / price category?
         job = job_slug
@@ -91,11 +87,7 @@ class QuicklinkService < AuthenticationTokenService
       def self.call(token)
         raise CustomExceptions::InvalidInput::Quicklink::Request::Malformed if token.class != String
         raise CustomExceptions::InvalidInput::Quicklink::Request::Blank if token[0] == ":" || token.blank?  
-        begin  
-          return QuicklinkService::Request.decode(token)
-        rescue StandardError
-          raise CustomExceptions::InvalidInput::Quicklink::Request::Malformed
-        end
+        return QuicklinkService::Request.decode(token)
       end
     end
   end

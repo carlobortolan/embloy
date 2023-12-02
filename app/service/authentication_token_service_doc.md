@@ -215,3 +215,192 @@ happen.
    ####
 
 ***
+
+### 4. Client token
+
+1. Claim a client token
+    ```   
+    AuthenticationTokenService::Quicklink::Client::Encoder.call(<user_id>)
+    ```
+   This creates a client token for a given user_id.
+   ####
+   ###### Data parameters
+    1. ``<user_id>`` *<span style="color:crimson">REQUIRED </span>*
+        + String
+        + ``<refresh_token>`` must be a JWT, solely issued by the ``AuthenticationTokenService::Refresh::Encoder`` class
+        + ``<refresh_token>`` must not be blocked (listed on ``AuthBlacklist``)
+
+   ####
+   ###### Pipeline
+   First, the inputs are checked for correct formatting. Then ``<refresh_token>`` gets decoded.
+   Third, ``<refresh_token>`` and its claims get verified. Finally a client_token is generated based on the claims
+   of ``<user_id>``:
+    + ``sub`` - who owns the token?:``<user_id>``
+    + ``exp`` - when does the token expire?: A client token is valid for 3 months
+    + ``typ`` - specifies the access rights of the token based on ``user_type``
+    + ``iat`` - specifies the time of when the token has been issued``
+    + ``iss`` - who issued the token?: The name of the machine that issues this token
+   ####
+   ###### Return
+    ```   
+    "<client_token>"
+    ``` 
+   ####
+   ###### Exceptions
+   ```
+   AuthenticationTokenService::InvalidInput
+   ```
+   You should only expect the following subclasses:
+    + ``::Quicklink::Client``: When ``<client_token>`` is malformed
+   ####    
+     ```
+   JWT
+   ```
+   You should only expect the following subclasses:
+    + ``::ExpiredSignature``: When ``<client_token>`` has expired
+    + ``::InvalidIssuerError``: When ``<client_token>`` was issued by an unknown issuer
+    + ``::InvalidJtiError``: When ``<client_token>`` has a record on ``AuthBlacklist`` (the token is blocked)
+    + ``::InvalidIatError``: When ``<client_token>`` was timestamped incorrectly
+    + ``::InvalidSubError``: When the owner of ``<client_token>`` is unknown
+    + ``::VerificationError``: When ``<client_token>`` was encoded with an unknown secret key and/or was tampered with
+    + ``::IncorrectAlgorithm``: When ``<client_token>`` was encoded using a unknown/incompatible algorithm
+    + ``::DecodeError``: When ``<client_token>`` was falsely segmented
+   ####
+
+***
+
+2. Decipher an client token
+    ```   
+    QuicklinkService::Quicklink::Client::Decoder.call(<user_id>)
+    ```
+   This decodes an client token and returns its claims.
+   ####
+   ###### Data parameters
+    1. ``<client_token>`` *<span style="color:crimson">REQUIRED </span>*
+        + String
+        + ``<client_token>`` must be a JWT, solely issued by the ``QuicklinkService::Quicklink::Client::Encoder`` class
+
+   ####
+   ###### Pipeline
+   First, the inputs are checked for correct formatting. Then ``<client_token>`` gets decoded.
+   Neither ``<client_token>`` nor its claimed get further verified.
+   ####
+   ###### Return
+    ```   
+    [{<client_token_claims>}]
+    ``` 
+   ####
+   ###### Exceptions
+   ```
+   AuthenticationTokenService::InvalidInput
+   ```
+   You should only expect the following subclasses:
+    + ``::Quicklink::Client``: When ``<client_token>`` is malformed
+   ####    
+     ```
+   JWT
+   ```
+   You should only expect the following subclasses:
+    + ``::ExpiredSignature``: When ``<access_token>`` has expired
+    + ``::InvalidIssuerError``: When ``<access_token>`` was issued by an unknown issuer
+    + ``::VerificationError``: When ``<access_token>`` was encoded with an unknown secret key and/or was tampered with
+    + ``::IncorrectAlgorithm``: When ``<access_token>`` was encoded using a unknown/incompatible algorithm
+    + ``::DecodeError``: When ``<access_token>`` was falsely segmented
+   ####
+
+***
+
+
+***
+
+### 5. Request token
+
+1. Claim a request token
+    ```   
+    AuthenticationTokenService::Quicklink::Request::Encoder.call(<client_token>)
+    ```
+   This creates a request token for a given client token.
+   ####
+   ###### Data parameters
+    1. ``<client_token>`` *<span style="color:crimson">REQUIRED </span>*
+        + String
+        + ``<client_token>`` must be a JWT, solely issued by the ``QuicklinkService::Quicklink::Request::Encoder`` class
+        + ``<client_token>`` must not be blocked (listed on ``AuthBlacklist``)
+Client
+   ####
+   ###### Pipeline
+   First, the inputs are checked for correct formatting. Then ``<client_token>`` gets decoded.
+   Third, ``<client_token>`` and its claims get verified. Finally a request_token is generated based on the claims
+   of ``<user_id>``:
+    + ``sub`` - who owns the token?:``<user_id>``
+    + ``exp`` - when does the token expire?: A client token is valid for 30 minutes
+    + ``job`` - specifies the `job_slug`
+    + ``iat`` - specifies the time of when the token has been issued``
+    + ``iss`` - who issued the token?: The name of the machine that issues this token
+   ####
+   ###### Return
+    ```   
+    "<client_token>"
+    ``` 
+   ####
+   ###### Exceptions
+   ```
+   AuthenticationTokenService::InvalidInput
+   ```
+   You should only expect the following subclasses:
+    + ``::Quicklink::Request``: When ``<client_token>`` is malformed
+   ####    
+     ```
+   JWT
+   ```
+   You should only expect the following subclasses:
+    + ``::ExpiredSignature``: When ``<client_token>`` has expired
+    + ``::InvalidIssuerError``: When ``<client_token>`` was issued by an unknown issuer
+    + ``::InvalidJtiError``: When ``<client_token>`` has a record on ``AuthBlacklist`` (the token is blocked)
+    + ``::InvalidIatError``: When ``<client_token>`` was timestamped incorrectly
+    + ``::InvalidSubError``: When the owner of ``<client_token>`` is unknown
+    + ``::VerificationError``: When ``<client_token>`` was encoded with an unknown secret key and/or was tampered with
+    + ``::IncorrectAlgorithm``: When ``<client_token>`` was encoded using a unknown/incompatible algorithm
+    + ``::DecodeError``: When ``<client_token>`` was falsely segmented
+   ####
+
+***
+
+2. Decipher an request token
+    ```   
+    QuicklinkService::Quicklink::Request::Decoder.call(<client_token>)
+    ```
+   This decodes an client token and returns its claims.
+   ####
+   ###### Data parameters
+    1. ``<request_token>`` *<span style="color:crimson">REQUIRED </span>*
+        + String
+        + ``<request_token>`` must be a JWT, solely issued by the ``QuicklinkService::Quicklink::Request::Encoder`` class
+
+   ####
+   ###### Pipeline
+   First, the inputs are checked for correct formatting. Then ``<request_token>`` gets decoded.
+   Neither ``<request_token>`` nor its claimed get further verified.
+   ####
+   ###### Return
+    ```   
+    [{<request_token_claims>}]
+    ``` 
+   ####
+   ###### Exceptions
+   ```
+   AuthenticationTokenService::InvalidInput
+   ```
+   You should only expect the following subclasses:
+    + ``::Quicklink::Request``: When ``<request_token>`` is malformed
+   ####    
+     ```
+   JWT
+   ```
+   You should only expect the following subclasses:
+    + ``::ExpiredSignature``: When ``<request_token>`` has expired
+    + ``::InvalidIssuerError``: When ``<request_token>`` was issued by an unknown issuer
+    + ``::VerificationError``: When ``<request_token>`` was encoded with an unknown secret key and/or was tampered with
+    + ``::IncorrectAlgorithm``: When ``<request_token>`` was encoded using a unknown/incompatible algorithm
+    + ``::DecodeError``: When ``<request_token>`` was falsely segmented
+   ####
