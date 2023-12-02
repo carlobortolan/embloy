@@ -242,11 +242,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_15_205359) do
   end
 
   create_table "subscriptions", id: :serial, force: :cascade do |t|
-    t.enum "tier", default: "basic", null: false, enum_type: "subscription_type"
-    t.boolean "active", default: true, null: false
+    t.enum "tier", null: false, enum_type: "subscription_type"
+    t.boolean "active", null: false
     t.datetime "expiration_date", null: false
     t.datetime "start_date", null: false
-    t.boolean "auto_renew", default: true, null: false
+    t.boolean "auto_renew", null: false
     t.datetime "renew_date"
     t.integer "user_id", null: false
     t.datetime "created_at", null: false

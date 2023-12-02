@@ -6,12 +6,12 @@ module Api
 
         def create
             verified!(@decoded_token["typ"])
-            subscription = Subscription.new(subscription_params)
+            subscription = Subscription.new(create_subscription_params)
             subscription.user = Current.user
             if subscription.save
-                render status: 200, json: { "message": "Subscription created!" }
+                render status: 201, json: { "message": "Subscription created!" }
             else
-                malformed_error('subscription')
+                render status: 400, json: { "subscription": subscription.errors}
             end
         end
 
@@ -26,7 +26,7 @@ module Api
         end
 
         def cancel_subscription
-            if @subscription.update(active: false)
+            if @subscription.cancel
                 render status: 200, json: { "message": "Subscription cancelled!" }
             else
                 malformed_error('subscription')
@@ -43,7 +43,7 @@ module Api
         end
 
         def renew_subscription
-            if @subscription.update(subscription_params)
+            if @subscription.renew
                 render status: 200, json: { "message": "Subscription renewed!" }
             else
                 malformed_error('subscription')
@@ -59,9 +59,10 @@ module Api
         end
 
         private
-            def subscription_params
-                params.permit(:type, :active, :expiration_date, :start_date, :auto_renew, :renew_date)
-            end
+          def create_subscription_params
+            params.require(:subscription).permit(:tier, :active, :expiration_date, :start_date, :auto_renew, :renew_date, :user_id)
+          end
+        
         end
     end
 end

@@ -343,7 +343,7 @@ RSpec.describe 'UserController' do
 
     describe "(POST: /api/v0/user)" do
       context 'valid normal inputs' do
-        it 'returns [201 Ok] and creates new user' do
+        it 'returns [201 Created] and creates new user' do
           user_data = {
             user: {
               email: "PostUserValidNormal@embloy.com",
