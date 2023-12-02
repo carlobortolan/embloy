@@ -121,7 +121,7 @@ RSpec.describe 'UserController' do
     puts "Valid user who will be blacklisted access token: #{@valid_at_blacklisted}"
 
     headers = { "HTTP_ACCESS_TOKEN" => @valid_at_blacklisted }
-    post '/api/v0/quick/token/client', headers: headers
+    post '/api/v0/client/auth/token', headers: headers
     @valid_ct_blacklisted = JSON.parse(response.body)['client_token']
     puts "Valid user who will be blacklisted access token: #{@valid_ct_blacklisted}"
 
