@@ -22,6 +22,44 @@ class Application < ApplicationRecord
   validates :response, length: { minimum: 0, maximum: 500, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }, presence: false
   validates :status, inclusion: { in: %w[-1 0 1], "error": "ERR_INVALID", "description": "Attribute is invalid" }, presence: false
 
+  def create_from(user_id, job_id, params)
+    job = Job.find(job_id)
+    application_attachment = ""
+    begin
+      application_attachment = ApplicationAttachment.create!(
+        user_id: user_id,
+        job_id: job_id.to_i
+      )
+
+      if params[:application_attachment].present?
+        application_attachment.cv.attach(params[:application_attachment])
+        application_attachment.save!
+      end
+      application = Application.create!(
+        user_id: user_id,
+        job_id: job.id,
+        application_text: params[:application_text],
+        application_documents: "empty",
+        created_at: Time.now,
+        updated_at: Time.now,
+        response: "No response yet ..."
+      )
+
+      application.user = User.find(user_id)
+      application.job = job
+      render status: 200, json: { "message": "Application submitted!" }
+    rescue ActiveRecord::RecordInvalid
+      if application_attachment != ""
+        application_attachment.destroy
+      end
+      render status: 400, json: { "message": "Application could not be submitted due to invalid file attachment" }
+    rescue ActiveRecord::RecordNotUnique
+      unnecessary_error('application')
+    rescue ActiveRecord::RecordNotFound
+      not_found_error("application")
+    end
+  end
+
   def notify_recipient
     return if job.user.eql? user
     ApplicationNotification.with(application: [:user_id, :job_id], job: job).deliver_later(job.user)
