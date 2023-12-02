@@ -3,7 +3,6 @@ require 'net/http'
 module Api
   module V0
     class JobsController < ApiController
-      before_action :verify_access_token
       before_action :verify_path_job_id, only: [:update, :destroy, :show]
 
       def create
@@ -11,7 +10,7 @@ module Api
           verified!(@decoded_token["typ"])
           job_params["status"] = 0
           @job = Job.new(job_params)
-          @job.user_id = @decoded_token["sub"]
+          @job.user_id = Current.user.id
 
           job_types_file = File.read(Rails.root.join('app/helpers', 'job_types.json'))
           job_types = JSON.parse(job_types_file)
@@ -53,7 +52,7 @@ module Api
       def update
         begin
           verified!(@decoded_token["typ"])
-          must_be_owner!(params[:id], @decoded_token["sub"])
+          must_be_owner!(params[:id], Current.user.id)
           return removed_error('job') if @job.job_status == 0 # TODO @jh: Set default job_status = 1 / make sure that job can be set to (de-)activated by owner
           if @job.update(update_job_params)
             SpatialJobValue.update_job_value(@job)
@@ -74,9 +73,9 @@ module Api
       def destroy
         begin
           # TODO: @jh: Why use `must_be_editor!` and not `owner!`?
-          must_be_editor!(@decoded_token["sub"])
+          must_be_editor!(Current.user.id)
           # verified!(@decoded_token["typ"]) #jobs should be removed with job_status = 0 instead of being irreversibly deleted
-          # must_be_owner!(params[:id], @decoded_token["sub"])
+          # must_be_owner!(params[:id], Current.user.id)
           @job = Job.find(params[:id]) # no must_be_owner! call @job needs to be set manually
           @job.destroy!
           render status: 200, json: { "message": "Job deleted!" }
@@ -109,7 +108,7 @@ module Api
             return malformed_error('longitude')
           end
           # Create slice to find possible jobs
-          jobs = JobSlicer.slice(User.find(@decoded_token["sub"].to_i), 30000, params[:latitude], params[:longitude])
+          jobs = JobSlicer.slice(Current.user, 30000, params[:latitude], params[:longitude])
           # Call FG-API to rank jobs
           if !jobs.nil? && !jobs.empty?
             #            feed = call_feed(jobs)
@@ -153,10 +152,9 @@ module Api
           return malformed_error("longitude")
         end
 
-        user = User.find(@decoded_token["sub"].to_i)
-        if !user.nil? && !user.longitude.nil? && !user.latitude.nil?
-          lat = user.latitude
-          lng = user.longitude
+        if !Current.user.nil? && !Current.user.longitude.nil? && !Current.user.latitude.nil?
+          lat = Current.user.latitude
+          lng = Current.user.longitude
         end
         jobs = JobSlicer.fetch_map(lat, lng)
         # jobs.empty? ? render(status: 204, json: { "jobs": jobs }) : render(status: 200, json: "jobs: #{jobs.to_json(except: [:image_url])}")

@@ -2,13 +2,12 @@
 module Api
   module V0
     class JobAssignmentController < ApiController
-      before_action :verify_access_token
       before_action :verify_path_job_id, only: [:create]
       before_action :verify_path_user_id, only: [:create]
 
       def create
         begin
-          must_be_verified!(@decoded_token["sub"])
+          must_be_verified!(Current.user.id)
           # verify strong param input
           if (assignment_params[:user_id].nil? || assignment_params[:user_id].blank?)
             return blank_error('assignment')

@@ -1,13 +1,12 @@
 module Api
   module V0
     class ApplicationsController < ApiController
-      before_action :verify_access_token
       before_action :verify_path_job_id
 
       def show
         begin
           verified!(@decoded_token["typ"])
-          must_be_owner!(params[:id], @decoded_token["sub"])
+          must_be_owner!(params[:id], Current.user.id)
           applications = @job.applications.find_by_sql("SELECT * FROM applications a WHERE a.job_id = #{@job.job_id}")
           if applications.empty?
             render status: 204, json: { "applications": applications }
@@ -21,7 +20,7 @@ module Api
         begin
           verified!(@decoded_token["typ"])
           set_at_job(params[:id])
-          application = @job.applications.find_by_sql("SELECT * FROM applications a WHERE a.job_id = #{@job.job_id} AND a.user_id = #{@decoded_token["sub"].to_i}")
+          application = @job.applications.find_by_sql("SELECT * FROM applications a WHERE a.job_id = #{@job.job_id} AND a.user_id = #{Current.user.id}")
 
           if application.empty? || application.nil?
             render status: 204, json: { "application": application }
@@ -41,7 +40,7 @@ module Api
             application_attachment = ""
             begin
               application_attachment = ApplicationAttachment.create!(
-                user_id: @decoded_token["sub"],
+                user_id: Current.user.id,
                 job_id: params[:id].to_i
               )
 
@@ -49,7 +48,7 @@ module Api
               application_attachment.save!
 
               application = Application.create!(
-                user_id: @decoded_token["sub"],
+                user_id: Current.user.id,
                 job_id: job.job_id,
                 application_text: params[:application_text],
                 application_documents: "empty",
@@ -57,8 +56,8 @@ module Api
                 updated_at: Time.now,
                 response: "No response yet ..."
               )
-
-              application.user = User.find(@decoded_token["sub"])
+              
+              application.user = Current.user
               application.job = job
               render status: 200, json: { "message": "Application submitted!" }
 
@@ -73,7 +72,7 @@ module Api
           end
         else
           application = Application.create!(
-            user_id: @decoded_token["sub"],
+            user_id: Current.user.id,
             job_id: job.job_id,
             application_text: params[:application_text],
             created_at: Time.now,
@@ -81,7 +80,7 @@ module Api
             response: "null"
           )
           begin
-            application.user = User.find(@decoded_token["sub"])
+            application.user = Current.user
           rescue ActiveRecord::RecordNotFound
             raise CustomExceptions::InvalidUser::Unknown
           end
@@ -102,7 +101,7 @@ module Api
       def accept
         begin
           verified!(@decoded_token["typ"])
-          must_be_owner!(params[:id], @decoded_token["sub"])
+          must_be_owner!(params[:id], Current.user.id)
           job = Job.find(params[:id])
           application = job.applications.where(user_id: params[:application_id]).first
 
@@ -131,7 +130,7 @@ module Api
       def reject
         begin
           verified!(@decoded_token["typ"])
-          must_be_owner!(params[:id], @decoded_token["sub"])
+          must_be_owner!(params[:id], Current.user.id)
           job = Job.find(params[:id])
           application = job.applications.where(user_id: params[:application_id]).first
 
@@ -173,11 +172,11 @@ module Api
             decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
             verified!(decoded_token["typ"])
             job = Job.find(params[:id])
-            application = job.applications.find(decoded_token["sub"])
+            application = job.applications.find(Current.user.id)
 
 
 
-            application = Application.find_by_sql("SELECT * FROM applications a WHERE a.user_id = #{decoded_token["sub"]} and a.job_id = #{params[:id]}")[0]
+            application = Application.find_by_sql("SELECT * FROM applications a WHERE a.user_id = #{Current.user.id} and a.job_id = #{params[:id]}")[0]
             application.destroy!
 
 

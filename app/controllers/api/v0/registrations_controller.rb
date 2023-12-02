@@ -1,7 +1,8 @@
 module Api
   module V0
     class RegistrationsController < ApiController
-
+      skip_before_action :set_current_user
+      
       def create
         begin
           @user = User.new(user_params)

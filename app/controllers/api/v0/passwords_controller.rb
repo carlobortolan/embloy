@@ -2,7 +2,6 @@
 module Api
   module V0
     class PasswordsController < ApiController
-      before_action :verify_access_token
 
       def update
         begin
@@ -37,19 +36,13 @@ module Api
             }
           else
             verified!(@decoded_token["typ"])
-            User.find(@decoded_token["sub"]).update!(password_params)
+            Current.user.update!(password_params)
             render status: 200, json: { "message": "Password updated" }
           end
-
         rescue ActionController::ParameterMissing
           blank_error('user') # should not be thrown
-
-        rescue ActiveRecord::RecordNotFound # Thrown when there is no User for id token["sub"]
-          not_found_error('user')
-
         rescue ActiveRecord::RecordInvalid # Thrown when password != password_confirmation
           mismatch_error('password|password_confirmation')
-
         end
       end
 
