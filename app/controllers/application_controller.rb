@@ -1,8 +1,10 @@
 #########################################################
-################## SUPER CONTROLLER #####################
+################### SUPER CONTROLLER ####################
 #########################################################
 class ApplicationController < ActionController::Base
   include SpatialJobValue
+
+  # ============ WEB-APP BEFORE ACTIONS ==============
   before_action :set_current_user
   before_action :auth_prototype
   before_action :set_notifications, if: Current.user
@@ -17,7 +19,29 @@ class ApplicationController < ActionController::Base
   end
 
   def set_current_user
-    Current.user = User.find_by(id: session[:user_id]) if session[:user_id]
+      Current.user = User.find_by(id: session[:user_id]) if session[:user_id]
+  end
+
+  # =============== Blacklisted User Check ===============
+  # ================ WITH DATABASE LOOKUP ================
+  def require_user_not_blacklisted(id = nil)
+    set_current_id(id)
+    user_is_blacklisted(id)
+  end
+
+  def self.require_user_not_blacklisted(id = nil)
+    set_current_id(id)
+    user_is_blacklisted(id)
+  end
+
+  def require_user_not_blacklisted!(id = nil)
+    set_current_id(id)
+    user_is_blacklisted!(id)
+  end
+
+  def self.require_user_not_blacklisted!(id = nil)
+    set_current_id(id)
+    user_is_blacklisted!(id)
   end
 
   # =============== User Role Check ===============
@@ -141,7 +165,6 @@ class ApplicationController < ActionController::Base
   protected
 
   # ====== that set Current to user for id  =======
-
   def set_current_id(id = nil)
     if id.nil?
       if Current.user.nil?
@@ -299,6 +322,19 @@ class ApplicationController < ActionController::Base
     owner!
   end
 
+  # =============== Blacklist Check ===============
+  # ============ WITH DATABASE LOOKUP =============
+
+  def user_is_blacklisted(id = nil)
+    !id.nil? && !UserBlacklist.find_by_user_id(id).nil?
+  end
+
+  def user_is_blacklisted!(id = nil)
+    if !id.nil? && !UserBlacklist.find_by_user_id(id).nil?
+      raise CustomExceptions::Unauthorized::Blocked
+    end
+  end
+  
   # ============== Helper methods =================
   # ===============================================
 
@@ -346,6 +382,11 @@ class ApplicationController < ActionController::Base
 
   public
 
+  ####################################################################################################
+  # Methods from above are used for the checks & exceptions
+  # Methods below are needed for the redirects in the web-app
+  ####################################################################################################
+
   # ============== Exceptions =============
 
   def require_user_not_blacklisted!
@@ -353,11 +394,7 @@ class ApplicationController < ActionController::Base
       raise CustomExceptions::Unauthorized::Blocked
     end
   end
-
-  ####################################################################################################
-  # Methods from above are used for the checks & exceptions
-  # 3 Methods below are needed for the redirects in the web-app
-  ####################################################################################################
+ 
   def require_user_logged_in
     if Current.user.nil?
       redirect_to sign_in_path, alert: 'You must be logged in!'
@@ -375,9 +412,7 @@ class ApplicationController < ActionController::Base
   # This method only checks whether the currently signed in user is the owner of the job that is being requested
   # and only returns a boolean.
   def user_is_blacklisted
-    if !Current.user.nil? && !UserBlacklist.find_by_user_id(Current.user.id).nil?
-      true
-    end
+    !Current.user.nil? && !UserBlacklist.find_by_user_id(Current.user.id).nil?
   end
 
   # ============== Standard error catching =============

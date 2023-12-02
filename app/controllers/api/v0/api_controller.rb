@@ -1,12 +1,38 @@
 # frozen_string_literal: true
+
+#########################################################
+#################### API CONTROLLER #####################
+#########################################################
 require_relative '../../../service/api_exception_handler.rb'
 module Api
   module V0
     class ApiController < ApplicationController
       include ApiExceptionHandler
       protect_from_forgery with: :null_session
+      
+      # Ignore Web-App before actions
       skip_before_action :auth_prototype
+    
+      # ============== API BEFORE ACTIONS ================
+      before_action :set_current_user
+      before_action :require_user_not_blacklisted!, if: Current.user
 
+      # Set current user of the API to the user found in the access_token
+      # Set current user to nil if no token is provided
+      def set_current_user
+        if request.headers["HTTP_ACCESS_TOKEN"].nil? || request.headers["HTTP_ACCESS_TOKEN"].empty?
+          blank_error('token')
+        else
+          @decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
+          begin
+          @decoded_token["sub"].to_i == 0 ? Current.user = nil : Current.user = User.find(@decoded_token["sub"].to_i)
+          rescue ActiveRecord::RecordNotFound
+            not_found_error('user')
+          end
+        end
+      end
+
+      # Deprecated method - replaced by set_current_user
       def verify_access_token
         (request.headers["HTTP_ACCESS_TOKEN"].nil? || request.headers["HTTP_ACCESS_TOKEN"].empty?) ? blank_error('token') : @decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
       end
@@ -41,7 +67,6 @@ module Api
           return malformed_error('user')
         end
       end
-
     end
   end
 end
