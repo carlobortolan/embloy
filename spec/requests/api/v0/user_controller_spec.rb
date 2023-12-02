@@ -65,13 +65,10 @@ RSpec.describe 'UserController' do
       "email": "#{(0...16).map { charset.sample }.join}@embloy.com",
       "password": "password",
       "password_confirmation": "password",
-      "user_role": "verified"
+      "user_role": "verified",
+      "activity_status": "1"
     )
     puts "Created blacklisted user: #{@blacklisted_user.id}"
-    UserBlacklist.create!(
-      "user_id": @blacklisted_user.id,
-      "reason": "Test blacklist"
-    )
 
     ### ACCESS / REFRESH TOKENS ###
 
@@ -110,6 +107,30 @@ RSpec.describe 'UserController' do
     post '/api/v0/user/auth/token/access', headers: headers
     @valid_at_has_upcoming_jobs = JSON.parse(response.body)['access_token']
     puts "Valid user with own jobs access token: #{@valid_at_has_upcoming_jobs}"
+
+    # Blacklisted user refresh/access/client tokens
+    credentials = Base64.strict_encode64("#{@blacklisted_user.email}:password")
+    headers = { 'Authorization' => "Basic #{credentials}" }
+    post '/api/v0/user/auth/token/refresh', headers: headers
+    @valid_rt_blacklisted = JSON.parse(response.body)['refresh_token']
+    puts "Valid user who will be blacklisted refresh token: #{@valid_rt_blacklisted}"
+
+    headers = { "HTTP_REFRESH_TOKEN" => @valid_rt_blacklisted }
+    post '/api/v0/user/auth/token/access', headers: headers
+    @valid_at_blacklisted = JSON.parse(response.body)['access_token']
+    puts "Valid user who will be blacklisted access token: #{@valid_at_blacklisted}"
+
+    headers = { "HTTP_ACCESS_TOKEN" => @valid_at_blacklisted }
+    post '/api/v0/quick/token/client', headers: headers
+    @valid_ct_blacklisted = JSON.parse(response.body)['client_token']
+    puts "Valid user who will be blacklisted access token: #{@valid_ct_blacklisted}"
+
+    UserBlacklist.create!(
+      "user_id": @blacklisted_user.id,
+      "reason": "Test blacklist"
+    )
+    puts "Blacklisted user #{@blacklisted_user.id}}"
+
 
     # Invalid/expired access tokens
     @invalid_access_token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWILOjQ6LCJleHAiOjE2OTgxNzk0MjgsImp0aSI6IjQ1NDMyZWUyNWE4YWUyMjc1ZGY0YTE2ZTNlNmQ0YTY4IiwiaWF0IjoxNjk4MTY1MDI4LCJpc3MiOiJDQl9TdXJmYWNlUHJvOCJ9.nqGgQ6Z52CbaHZzPGcwQG6U-nMDxb1yIe7HQMxjoDTs"
@@ -156,14 +177,19 @@ RSpec.describe 'UserController' do
         end
       end
       context 'invalid inputs' do
+        it 'returns [400 Bad Request] for missing access token in header' do
+          get '/api/v0/user'
+          expect(response).to have_http_status(400)
+        end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
           headers = { "HTTP_ACCESS_TOKEN" => @invalid_access_token }
           get '/api/v0/user', headers: headers
           expect(response).to have_http_status(401)
         end
-        it 'returns [400 Bad Request] for missing access token in header' do
-          get '/api/v0/user'
-          expect(response).to have_http_status(400)
+        it 'returns [403 Forbidden] for blacklisted user' do
+          headers = { "HTTP_ACCESS_TOKEN" => @valid_at_blacklisted }
+          get '/api/v0/user', headers: headers
+          expect(response).to have_http_status(403)
         end
       end
     end
@@ -238,6 +264,11 @@ RSpec.describe 'UserController' do
           get '/api/v0/user/jobs', headers: headers
           expect(response).to have_http_status(401)
         end
+        it 'returns [403 Forbidden] for blacklisted user' do
+          headers = { "HTTP_ACCESS_TOKEN" => @valid_at_blacklisted }
+          get '/api/v0/user/jobs', headers: headers
+          expect(response).to have_http_status(403)
+        end
       end
     end
 
@@ -264,6 +295,11 @@ RSpec.describe 'UserController' do
           get '/api/v0/user/upcoming', headers: headers
           expect(response).to have_http_status(401)
         end
+        it 'returns [403 Forbidden] for blacklisted user' do
+          headers = { "HTTP_ACCESS_TOKEN" => @valid_at_blacklisted }
+          get '/api/v0/user/upcoming', headers: headers
+          expect(response).to have_http_status(403)
+        end
       end
     end
 
@@ -285,6 +321,11 @@ RSpec.describe 'UserController' do
           get '/api/v0/user/preferences', headers: headers
           expect(response).to have_http_status(401)
         end
+        it 'returns [403 Forbidden] for blacklisted user' do
+          headers = { "HTTP_ACCESS_TOKEN" => @valid_at_blacklisted }
+          get '/api/v0/user/preferences', headers: headers
+          expect(response).to have_http_status(403)
+        end
       end
     end
 
@@ -299,6 +340,8 @@ RSpec.describe 'UserController' do
         it 'returns [400 Bad Request] for missing access token in header' do
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
+        end
+        it 'returns [403 Forbidden] for blacklisted user' do
         end
       end
     end
@@ -435,6 +478,11 @@ RSpec.describe 'UserController' do
           post '/api/v0/user/image', headers: headers
           expect(response).to have_http_status(401)
         end
+        it 'returns [403 Forbidden] for blacklisted user' do
+          headers = { "HTTP_ACCESS_TOKEN" => @valid_at_blacklisted }
+          post '/api/v0/user/image', headers: headers
+          expect(response).to have_http_status(403)
+        end
       end
     end
 
@@ -456,6 +504,11 @@ RSpec.describe 'UserController' do
           patch '/api/v0/user', headers: headers
           expect(response).to have_http_status(401)
         end
+        it 'returns [403 Forbidden] for blacklisted user' do
+          headers = { "HTTP_ACCESS_TOKEN" => @valid_at_blacklisted }
+          patch '/api/v0/user', headers: headers
+          expect(response).to have_http_status(403)
+        end
       end
     end
 
@@ -476,6 +529,11 @@ RSpec.describe 'UserController' do
           headers = { "HTTP_ACCESS_TOKEN" => @invalid_access_token }
           delete '/api/v0/user', headers: headers
           expect(response).to have_http_status(401)
+        end
+        it 'returns [403 Forbidden] for blacklisted user' do
+          headers = { "HTTP_ACCESS_TOKEN" => @valid_at_blacklisted }
+          delete '/api/v0/user', headers: headers
+          expect(response).to have_http_status(403)
         end
       end
     end
