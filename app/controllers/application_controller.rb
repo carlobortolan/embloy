@@ -26,22 +26,22 @@ class ApplicationController < ActionController::Base
   # ================ WITH DATABASE LOOKUP ================
   def require_user_not_blacklisted(id = nil)
     set_current_id(id)
-    user_is_blacklisted(id)
+    user_not_blacklisted(id)
   end
 
   def self.require_user_not_blacklisted(id = nil)
     set_current_id(id)
-    user_is_blacklisted(id)
+    user_not_blacklisted(id)
   end
 
   def require_user_not_blacklisted!(id = nil)
     set_current_id(id)
-    user_is_blacklisted!(id)
+    user_not_blacklisted!(id)
   end
 
   def self.require_user_not_blacklisted!(id = nil)
     set_current_id(id)
-    user_is_blacklisted!(id)
+    user_not_blacklisted!(id)
   end
 
   # =============== User Role Check ===============
@@ -325,11 +325,11 @@ class ApplicationController < ActionController::Base
   # =============== Blacklist Check ===============
   # ============ WITH DATABASE LOOKUP =============
 
-  def user_is_blacklisted(id = nil)
+  def user_not_blacklisted(id = nil)
     !id.nil? && !UserBlacklist.find_by_user_id(id).nil?
   end
 
-  def user_is_blacklisted!(id = nil)
+  def user_not_blacklisted!(id = nil)
     if !id.nil? && !UserBlacklist.find_by_user_id(id).nil?
       raise CustomExceptions::Unauthorized::Blocked
     end
@@ -390,7 +390,7 @@ class ApplicationController < ActionController::Base
   # ============== Exceptions =============
 
   def require_user_not_blacklisted!
-    if user_is_blacklisted
+    if user_not_blacklisted
       raise CustomExceptions::Unauthorized::Blocked
     end
   end
@@ -411,7 +411,7 @@ class ApplicationController < ActionController::Base
 
   # This method only checks whether the currently signed in user is the owner of the job that is being requested
   # and only returns a boolean.
-  def user_is_blacklisted
+  def user_not_blacklisted
     !Current.user.nil? && !UserBlacklist.find_by_user_id(Current.user.id).nil?
   end
 

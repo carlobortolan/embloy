@@ -66,6 +66,7 @@ module Api
             return unauthorized_error("email|password")
           else
 
+            user_not_blacklisted!(@user.id)
             if @user.activity_status == 0
               # TODO: Exception handling
               @user.update_column("user_role", "verified")
