@@ -10,7 +10,7 @@
 #   https://dev.mysql.com/doc/refman/5.7/en/password-hashing.html
 #
 default: &default
-  database: embloy_dev
+  database: embloy_dev_beta
   adapter: postgis
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
@@ -24,13 +24,13 @@ default: &default
 
 development:
   <<: *default
-  database: embloy_dev
+  database: embloy_dev_beta
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: embloy_test
+  database: embloy_test_beta
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -54,7 +54,7 @@ test:
 #
 production:
   <<: *default
-  database: embloy_prod
+  database: embloy_prod_beta
 
   connect_timeout: 2
   checkout_timeout: 5

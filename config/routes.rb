@@ -49,6 +49,15 @@ Rails.application.routes.draw do
       # patch 'jobs/(/:id)/applications/(/:user)/accept', to: 'applications#accept'
       # delete 'jobs/(/:id)/applications', to: 'applications#destroy'
 
+      # -----> SUBSCRIPTIONS <-----
+      get 'client/subscriptions', to: 'subscriptions#get_all_subscriptions'
+      get 'client/subscriptions/(:id)', to: 'subscriptions#get_subscription'
+      post 'client/subscriptions', to: 'subscriptions#create'
+      patch 'client/subscriptions/(:id)/activate', to: 'subscriptions#activate_subscription'
+      patch 'client/subscriptions/(:id)/renew', to: 'subscriptions#renew_subscription'
+      patch 'client/subscriptions/(:id)/cancel', to: 'subscriptions#cancel_subscription'
+      delete 'client/subscriptions/(:id)', to: 'subscriptions#delete_subscription'
+      
       # -----> QUICKLINK <-----
       post 'client/auth/token', to: 'quicklink#create_client'
       post 'sdk/request/auth/token', to: 'quicklink#create_request'

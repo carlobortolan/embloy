@@ -23,9 +23,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_15_205359) do
   create_enum "job_status", ["public", "private", "archived"]
   create_enum "notify_type", ["0", "1"]
   create_enum "rating_type", ["1", "2", "3", "4", "5"]
-  create_enum "user_roles", ["admin", "editor", "developer", "moderator", "verified", "spectator"]
+  create_enum "user_role", ["admin", "editor", "developer", "moderator", "verified", "spectator"]
   create_enum "user_type", ["company", "private"]
   create_enum "allowed_cv_format", [".pdf", ".docx", ".txt", ".xml"]
+  create_enum "subscription_type", ["basic", "premium", "enterprise_1", "enterprise_2", "enterprise_3"]
+  create_enum "payment_method", ["credit_card", "debit_card", "bank_transfer", "paypal"]
+  create_enum "payment_status", ["pending", "paid", "failed", "cancelled"]
 
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
@@ -225,7 +228,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_15_205359) do
     t.datetime "updated_at", null: false
     t.integer "applications_count", default: 0
     t.integer "jobs_count", default: 0
-    t.enum "user_role", default: "spectator", null: false, enum_type: "user_roles"
+    t.enum "user_role", default: "spectator", null: false, enum_type: "user_role"
     t.boolean "application_notifications", default: true, null: false
     t.string "twitter_url", limit: 500
     t.string "facebook_url", limit: 500
@@ -236,6 +239,33 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_15_205359) do
     t.index ["email"], name: "user_email_index", unique: true
     t.index ["first_name", "last_name"], name: "user_name_index"
     t.index ["user_type"], name: "user_user_type_index"
+  end
+
+  create_table "subscriptions", id: :serial, force: :cascade do |t|
+    t.enum "tier", null: false, enum_type: "subscription_type"
+    t.boolean "active", null: false
+    t.datetime "expiration_date", null: false
+    t.datetime "start_date", null: false
+    t.boolean "auto_renew", null: false
+    t.datetime "renew_date"
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "subscription_user_id_index"
+    t.index ["expiration_date"], name: "subscription_expiration_date_index"
+  end
+
+  create_table "payments", id: :serial, force: :cascade do |t|
+    t.enum "payment_method", default: "credit_card", null: false, enum_type: "payment_method"
+    t.enum "payment_status", default: "pending", null: false, enum_type: "payment_status"
+    t.datetime "payment_date", null: false
+    t.float "payment_amount", null: false
+    t.string "payment_currency", limit: 3, null: false
+    t.string "payment_description", limit: 500, null: false
+    t.integer "subscription_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["subscription_id"], name: "payment_subscription_id_index"
   end
 
   create_table "application_attachments", id: :serial, force: :cascade do |t|
@@ -256,9 +286,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_15_205359) do
   add_foreign_key "jobs", "users", on_delete: :cascade
   add_foreign_key "preferences", "users", on_delete: :cascade
   add_foreign_key "private_users", "users", column: "id", on_delete: :cascade
+  add_foreign_key "user_blacklists", "users", on_delete: :cascade
   add_foreign_key "reviews", "jobs", primary_key: "job_id"
   add_foreign_key "reviews", "users", column: "created_by"
   add_foreign_key "reviews", "users", column: "user_id"
   # add_foreign_key "application_attachments", "applications", primary_key: "job_id", column: "job_id", on_delete: :cascade
   # add_foreign_key "application_attachments", "applications", primary_key: "user_id", on_delete: :cascade
+  add_foreign_key "subscriptions", "users", on_delete: :cascade
+  add_foreign_key "payments", "subscriptions", on_delete: :cascade
 end

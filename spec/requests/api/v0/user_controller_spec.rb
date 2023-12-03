@@ -120,11 +120,6 @@ RSpec.describe 'UserController' do
     @valid_at_blacklisted = JSON.parse(response.body)['access_token']
     puts "Valid user who will be blacklisted access token: #{@valid_at_blacklisted}"
 
-    headers = { "HTTP_ACCESS_TOKEN" => @valid_at_blacklisted }
-    post '/api/v0/quick/token/client', headers: headers
-    @valid_ct_blacklisted = JSON.parse(response.body)['client_token']
-    puts "Valid user who will be blacklisted access token: #{@valid_ct_blacklisted}"
-
     UserBlacklist.create!(
       "user_id": @blacklisted_user.id,
       "reason": "Test blacklist"
@@ -348,7 +343,7 @@ RSpec.describe 'UserController' do
 
     describe "(POST: /api/v0/user)" do
       context 'valid normal inputs' do
-        it 'returns [201 Ok] and creates new user' do
+        it 'returns [201 Created] and creates new user' do
           user_data = {
             user: {
               email: "PostUserValidNormal@embloy.com",

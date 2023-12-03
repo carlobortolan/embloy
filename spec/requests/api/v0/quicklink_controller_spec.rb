@@ -85,7 +85,7 @@ RSpec.describe 'QuicklinkController' do
     puts "Valid user access token: #{@valid_access_token}"
 
     headers = { "HTTP_ACCESS_TOKEN" => @valid_access_token }
-    post '/api/v0/quick/token/client', headers: headers
+    post '/api/v0/client/auth/token', headers: headers
     @valid_client_token = JSON.parse(response.body)['client_token']
     puts "Valid user client token: #{@valid_client_token}"
 
@@ -102,7 +102,7 @@ RSpec.describe 'QuicklinkController' do
     puts "Valid user with own jobs access token: #{@valid_at_has_own_jobs}"
 
     headers = { "HTTP_ACCESS_TOKEN" => @valid_at_has_own_jobs }
-    post '/api/v0/quick/token/client', headers: headers
+    post '/api/v0/client/auth/token', headers: headers
     @valid_ct_has_own_jobs = JSON.parse(response.body)['client_token']
     puts "Valid user with own jobs client token: #{@valid_ct_has_own_jobs}"
 
@@ -119,7 +119,7 @@ RSpec.describe 'QuicklinkController' do
     puts "Valid user who has applied access token: #{@valid_at_has_applied}"
 
     headers = { "HTTP_ACCESS_TOKEN" => @valid_at_has_applied }
-    post '/api/v0/quick/token/client', headers: headers
+    post '/api/v0/client/auth/token', headers: headers
     @valid_ct_has_applied = JSON.parse(response.body)['client_token']
     puts "Valid user who has applied client token: #{@valid_ct_has_applied}"
 
@@ -136,7 +136,7 @@ RSpec.describe 'QuicklinkController' do
     puts "Valid user who will be blacklisted access token: #{@valid_at_blacklisted}"
 
     headers = { "HTTP_ACCESS_TOKEN" => @valid_at_blacklisted }
-    post '/api/v0/quick/token/client', headers: headers
+    post '/api/v0/client/auth/token', headers: headers
     @valid_ct_blacklisted = JSON.parse(response.body)['client_token']
     puts "Valid user who will be blacklisted access token: #{@valid_ct_blacklisted}"
 
@@ -182,53 +182,53 @@ RSpec.describe 'QuicklinkController' do
   end
 
   describe "Quicklink", type: :request do
-    describe "(POST: /api/v0/quick/token/client)" do
+    describe "(POST: /api/v0/client/auth/token)" do
         context 'valid normal inputs' do
             it 'returns [200 Ok] and new access token' do
                 headers = { "HTTP_ACCESS_TOKEN" => @valid_access_token }
-                post '/api/v0/quick/token/client', headers: headers
+                post '/api/v0/client/auth/token', headers: headers
                 expect(response).to have_http_status(200)
             end
         end
         context 'invalid inputs' do
             it 'returns [400 Bad Request] for missing refresh token in header' do
-                post '/api/v0/quick/token/client'
+                post '/api/v0/client/auth/token'
                 expect(response).to have_http_status(400)
             end
             it 'returns [401 Unauthorized] for expired/invalid refresh token' do
                 headers = { "HTTP_ACCESS_TOKEN" => @invalid_token }
-                post '/api/v0/quick/token/client', headers: headers
+                post '/api/v0/client/auth/token', headers: headers
                 expect(response).to have_http_status(401)
             end
             it 'returns [403 Forbidden] for blacklisted user' do
                 headers = { "HTTP_ACCESS_TOKEN" => @valid_at_blacklisted }
-                post '/api/v0/quick/token/client', headers: headers
+                post '/api/v0/client/auth/token', headers: headers
                 expect(response).to have_http_status(403)
             end
         end
     end
 
-    describe "(POST: /api/v0/quick/token/request)" do
+    describe "(POST: /api/v0/sdk/request/auth/token)" do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and job JSONs if user has own jobs' do
             headers = { "HTTP_CLIENT_TOKEN" => @valid_ct_has_own_jobs }
-            post '/api/v0/quick/token/request', headers: headers
+            post '/api/v0/sdk/request/auth/token', headers: headers
             expect(response).to have_http_status(200)
         end
       end
       context 'invalid inputs' do
         it 'returns [400 Bad Request] for missing client token in header' do
-            post '/api/v0/quick/token/request'
+            post '/api/v0/sdk/request/auth/token'
             expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid client token' do
             headers = { "HTTP_CLIENT_TOKEN" => @invalid_token }
-            post '/api/v0/quick/token/request', headers: headers
+            post '/api/v0/sdk/request/auth/token', headers: headers
             expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
             headers = { "HTTP_CLIENT_TOKEN" => @valid_ct_blacklisted }
-            post '/api/v0/quick/token/request', headers: headers
+            post '/api/v0/sdk/request/auth/token', headers: headers
             expect(response).to have_http_status(403)
         end
       end
@@ -236,27 +236,27 @@ RSpec.describe 'QuicklinkController' do
 
     # TODO: Test application via quicklink
 =begin
-    describe "(POST: /api/v0/quick/applications)" do
+    describe "(POST: /api/v0/sdk/applications)" do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and JSON job JSONs if user has upcoming jobs' do
           headers = { "HTTP_ACCESS_TOKEN" => @valid_at_has_upcoming_jobs }
-          get '/api/v0/quick/applications', headers: headers
+          get '/api/v0/sdk/applications', headers: headers
           expect(response).to have_http_status(200)
         end
         it 'returns [204 No Content] if user does not have any jobs' do
           headers = { "HTTP_ACCESS_TOKEN" => @valid_access_token }
-          get '/api/v0/quick/applications', headers: headers
+          get '/api/v0/sdk/applications', headers: headers
           expect(response).to have_http_status(204)
         end
       end
       context 'invalid inputs' do
         it 'returns [400 Bad Request] for missing access token in header' do
-          get '/api/v0/quick/applications'
+          get '/api/v0/sdk/applications'
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
           headers = { "HTTP_ACCESS_TOKEN" => @invalid_access_token }
-          get '/api/v0/quick/applications', headers: headers
+          get '/api/v0/sdk/applications', headers: headers
           expect(response).to have_http_status(401)
         end
       end
