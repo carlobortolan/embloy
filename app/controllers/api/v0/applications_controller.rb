@@ -56,7 +56,7 @@ module Api
                 updated_at: Time.now,
                 response: "No response yet ..."
               )
-              
+
               application.user = Current.user
               application.job = job
               render status: 200, json: { "message": "Application submitted!" }

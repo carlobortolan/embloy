@@ -212,7 +212,7 @@ class AuthenticationTokenService
     class Decoder
       def self.call(token)
         raise CustomExceptions::InvalidInput::Access::Malformed if token.class != String
-        raise CustomExceptions::InvalidInput::Access::Blank if token[0] == ":" || token.blank?  
+        raise CustomExceptions::InvalidInput::Access::Blank if token[0] == ":" || token.blank?
         return AuthenticationTokenService::Access.decode(token)
       end
     end

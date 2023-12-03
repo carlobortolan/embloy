@@ -61,7 +61,7 @@
     + ``blank``: When the password attribute is blank
     + ``confirmation``: When password != password_confirmation
     + ``ERR_INVALID``: When a required attribute is malformed or unknown
-   ####       
+   ####        
    **422: Unprocessable entity**
     ```   
             {

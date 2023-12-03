@@ -44,7 +44,6 @@ RSpec.describe 'AuthenticationController' do
     @valid_refresh_token = JSON.parse(response.body)['refresh_token']
     puts "Valid refresh token: #{@valid_refresh_token}"
 
-
     credentials = Base64.strict_encode64("#{@blacklisted_user.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
     post '/api/v0/user/auth/token/refresh', headers: headers
@@ -128,7 +127,8 @@ RSpec.describe 'AuthenticationController' do
           post '/api/v0/user/auth/token/access', headers: headers
           expect(response).to have_http_status(401)
         end
-        it 'returns [200 OK] for blacklisted user' do # TODO: Should this return 200 OK or 403 Forbidden?
+        it 'returns [200 OK] for blacklisted user' do
+          # TODO: Should this return 200 OK or 403 Forbidden?
           headers = { "HTTP_REFRESH_TOKEN" => @valid_rt_blacklisted }
           post '/api/v0/user/auth/token/access', headers: headers
           expect(response).to have_http_status(200)

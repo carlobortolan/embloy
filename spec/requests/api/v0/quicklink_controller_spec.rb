@@ -146,7 +146,6 @@ RSpec.describe 'QuicklinkController' do
     )
     puts "Blacklisted user #{@blacklisted_user.id}}"
 
-
     # Invalid/expired access tokens
     @invalid_token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWILOjQ6LCJleHAiOjE2OTgxNzk0MjgsImp0aSI6IjQ1NDMyZWUyNWE4YWUyMjc1ZGY0YTE2ZTNlNmQ0YTY4IiwiaWF0IjoxNjk4MTY1MDI4LCJpc3MiOiJDQl9TdXJmYWNlUHJvOCJ9.nqGgQ6Z52CbaHZzPGcwQG6U-nMDxb1yIe7HQMxjoDTs"
 
@@ -183,53 +182,53 @@ RSpec.describe 'QuicklinkController' do
 
   describe "Quicklink", type: :request do
     describe "(POST: /api/v0/client/auth/token)" do
-        context 'valid normal inputs' do
-            it 'returns [200 Ok] and new access token' do
-                headers = { "HTTP_ACCESS_TOKEN" => @valid_access_token }
-                post '/api/v0/client/auth/token', headers: headers
-                expect(response).to have_http_status(200)
-            end
+      context 'valid normal inputs' do
+        it 'returns [200 Ok] and new access token' do
+          headers = { "HTTP_ACCESS_TOKEN" => @valid_access_token }
+          post '/api/v0/client/auth/token', headers: headers
+          expect(response).to have_http_status(200)
         end
-        context 'invalid inputs' do
-            it 'returns [400 Bad Request] for missing refresh token in header' do
-                post '/api/v0/client/auth/token'
-                expect(response).to have_http_status(400)
-            end
-            it 'returns [401 Unauthorized] for expired/invalid refresh token' do
-                headers = { "HTTP_ACCESS_TOKEN" => @invalid_token }
-                post '/api/v0/client/auth/token', headers: headers
-                expect(response).to have_http_status(401)
-            end
-            it 'returns [403 Forbidden] for blacklisted user' do
-                headers = { "HTTP_ACCESS_TOKEN" => @valid_at_blacklisted }
-                post '/api/v0/client/auth/token', headers: headers
-                expect(response).to have_http_status(403)
-            end
+      end
+      context 'invalid inputs' do
+        it 'returns [400 Bad Request] for missing refresh token in header' do
+          post '/api/v0/client/auth/token'
+          expect(response).to have_http_status(400)
         end
+        it 'returns [401 Unauthorized] for expired/invalid refresh token' do
+          headers = { "HTTP_ACCESS_TOKEN" => @invalid_token }
+          post '/api/v0/client/auth/token', headers: headers
+          expect(response).to have_http_status(401)
+        end
+        it 'returns [403 Forbidden] for blacklisted user' do
+          headers = { "HTTP_ACCESS_TOKEN" => @valid_at_blacklisted }
+          post '/api/v0/client/auth/token', headers: headers
+          expect(response).to have_http_status(403)
+        end
+      end
     end
 
     describe "(POST: /api/v0/sdk/request/auth/token)" do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and job JSONs if user has own jobs' do
-            headers = { "HTTP_CLIENT_TOKEN" => @valid_ct_has_own_jobs }
-            post '/api/v0/sdk/request/auth/token', headers: headers
-            expect(response).to have_http_status(200)
+          headers = { "HTTP_CLIENT_TOKEN" => @valid_ct_has_own_jobs }
+          post '/api/v0/sdk/request/auth/token', headers: headers
+          expect(response).to have_http_status(200)
         end
       end
       context 'invalid inputs' do
         it 'returns [400 Bad Request] for missing client token in header' do
-            post '/api/v0/sdk/request/auth/token'
-            expect(response).to have_http_status(400)
+          post '/api/v0/sdk/request/auth/token'
+          expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid client token' do
-            headers = { "HTTP_CLIENT_TOKEN" => @invalid_token }
-            post '/api/v0/sdk/request/auth/token', headers: headers
-            expect(response).to have_http_status(401)
+          headers = { "HTTP_CLIENT_TOKEN" => @invalid_token }
+          post '/api/v0/sdk/request/auth/token', headers: headers
+          expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-            headers = { "HTTP_CLIENT_TOKEN" => @valid_ct_blacklisted }
-            post '/api/v0/sdk/request/auth/token', headers: headers
-            expect(response).to have_http_status(403)
+          headers = { "HTTP_CLIENT_TOKEN" => @valid_ct_blacklisted }
+          post '/api/v0/sdk/request/auth/token', headers: headers
+          expect(response).to have_http_status(403)
         end
       end
     end

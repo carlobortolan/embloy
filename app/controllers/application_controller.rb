@@ -19,7 +19,7 @@ class ApplicationController < ActionController::Base
   end
 
   def set_current_user
-      Current.user = User.find_by(id: session[:user_id]) if session[:user_id]
+    Current.user = User.find_by(id: session[:user_id]) if session[:user_id]
   end
 
   # =============== Blacklisted User Check ===============
@@ -334,7 +334,7 @@ class ApplicationController < ActionController::Base
       raise CustomExceptions::Unauthorized::Blocked
     end
   end
-  
+
   # ============== Helper methods =================
   # ===============================================
 
@@ -394,7 +394,7 @@ class ApplicationController < ActionController::Base
       raise CustomExceptions::Unauthorized::Blocked
     end
   end
- 
+
   def require_user_logged_in
     if Current.user.nil?
       redirect_to sign_in_path, alert: 'You must be logged in!'
