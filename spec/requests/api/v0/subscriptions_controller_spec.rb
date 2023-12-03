@@ -105,8 +105,8 @@ RSpec.describe 'SubscriptionsController' do
   
     # SUBSCRIPTIONS
     # Create subscriptions for valid verified user (valid_user_has_subscriptions)
-    @subscription = Subscription.create!(
-        user_id: @valid_user_has_subscriptions.id,
+    @forbidden_subscription = Subscription.create!(
+        user_id: @blacklisted_user.id,
         tier: "basic",
         active: true,
         expiration_date: Time.now,
@@ -114,6 +114,16 @@ RSpec.describe 'SubscriptionsController' do
         auto_renew: true,
         start_date: Time.now,
     )  
+   @subscription = Subscription.create!(
+      user_id: @valid_user_has_subscriptions.id,
+      tier: "basic",
+      active: true,
+      expiration_date: Time.now,
+      start_date: Time.now,
+      auto_renew: true,
+      start_date: Time.now,
+    )  
+
   end
 
   describe "Subscription", type: :request do
@@ -171,6 +181,16 @@ RSpec.describe 'SubscriptionsController' do
           get "/api/v0/client/subscriptions/#{@subscription.id}", headers: headers
           expect(response).to have_http_status(403)
         end
+        it 'returns [404 Not Found] for trying to access someone else\'s submission' do
+          headers = { "HTTP_ACCESS_TOKEN" => @valid_at_has_subscriptions }
+          get "/api/v0/client/subscriptions/#{@forbidden_subscription.id}", headers: headers
+          expect(response).to have_http_status(404)
+        end
+        it 'returns [404 Not Found] for non existing subscription' do
+          headers = { "HTTP_ACCESS_TOKEN" => @valid_at_has_subscriptions }
+          get "/api/v0/client/subscriptions/#{@subscription.id+1}", headers: headers
+          expect(response).to have_http_status(404)
+        end  
       end
     end
 
@@ -233,7 +253,7 @@ RSpec.describe 'SubscriptionsController' do
 
     describe "(PATCH: /api/v0/client/subscriptions/{id}/activate)" do
         context 'valid normal inputs' do
-          it 'returns [200 Ok] and user JSON' do
+          it 'returns [200 Ok] and activates subscription' do
             headers = { "HTTP_ACCESS_TOKEN" => @valid_at_has_subscriptions }
             patch "/api/v0/client/subscriptions/#{@subscription.id}/activate", headers: headers
             expect(response).to have_http_status(200)
@@ -254,6 +274,11 @@ RSpec.describe 'SubscriptionsController' do
             patch "/api/v0/client/subscriptions/#{@subscription.id}/activate", headers: headers
             expect(response).to have_http_status(403)
           end
+          it 'returns [404 Not Found] for trying to activate someone else\'s submission' do
+            headers = { "HTTP_ACCESS_TOKEN" => @valid_at_has_subscriptions }
+            patch "/api/v0/client/subscriptions/#{@forbidden_subscription.id}/activate", headers: headers
+            expect(response).to have_http_status(404)
+          end
           it 'returns [404 Not Found] for non existing subscription' do
             headers = { "HTTP_ACCESS_TOKEN" => @valid_at_has_subscriptions }
             patch "/api/v0/client/subscriptions/#{@subscription.id+1}/renew", headers: headers
@@ -264,7 +289,7 @@ RSpec.describe 'SubscriptionsController' do
 
       describe "(PATCH: /api/v0/client/subscriptions/{id})/renew" do
         context 'valid normal inputs' do
-          it 'returns [200 Ok] and user JSON' do
+          it 'returns [200 Ok] and renews subscription' do
             headers = { "HTTP_ACCESS_TOKEN" => @valid_at_has_subscriptions }
             patch "/api/v0/client/subscriptions/#{@subscription.id}/renew", headers: headers
             expect(response).to have_http_status(200)
@@ -285,6 +310,11 @@ RSpec.describe 'SubscriptionsController' do
             patch "/api/v0/client/subscriptions/#{@subscription.id}/renew", headers: headers
             expect(response).to have_http_status(403)
           end
+          it 'returns [404 Not Found] for trying to renew someone else\'s submission' do
+            headers = { "HTTP_ACCESS_TOKEN" => @valid_at_has_subscriptions }
+            patch "/api/v0/client/subscriptions/#{@forbidden_subscription.id}/renew", headers: headers
+            expect(response).to have_http_status(404)
+          end
           it 'returns [404 Not Found] for non existing subscription' do
             headers = { "HTTP_ACCESS_TOKEN" => @valid_at_has_subscriptions }
             patch "/api/v0/client/subscriptions/#{@subscription.id+1}/renew", headers: headers
@@ -295,7 +325,7 @@ RSpec.describe 'SubscriptionsController' do
       
       describe "(PATCH: /api/v0/client/subscriptions/{id})/cancel" do
         context 'valid normal inputs' do
-            it 'returns [200 Ok] and user JSON' do
+            it 'returns [200 Ok] and cancels subscription' do
               headers = { "HTTP_ACCESS_TOKEN" => @valid_at_has_subscriptions }
               patch "/api/v0/client/subscriptions/#{@subscription.id}/cancel", headers: headers
               expect(response).to have_http_status(200)
@@ -316,6 +346,11 @@ RSpec.describe 'SubscriptionsController' do
               patch "/api/v0/client/subscriptions/#{@subscription.id}/cancel", headers: headers
               expect(response).to have_http_status(403)
             end
+            it 'returns [404 Not Found] for trying to cancel someone else\'s submission' do
+              headers = { "HTTP_ACCESS_TOKEN" => @valid_at_has_subscriptions }
+              patch "/api/v0/client/subscriptions/#{@forbidden_subscription.id}/cancel", headers: headers
+              expect(response).to have_http_status(404)
+            end
             it 'returns [404 Not Found] for non existing subscription' do
                 headers = { "HTTP_ACCESS_TOKEN" => @valid_at_has_subscriptions }
                 patch "/api/v0/client/subscriptions/#{@subscription.id+1}/renew", headers: headers
@@ -323,5 +358,41 @@ RSpec.describe 'SubscriptionsController' do
             end  
         end
       end
+
+      describe "(DELETE: /api/v0/client/subscriptions/{id})" do
+        context 'valid normal inputs' do
+          it 'returns [200 Ok] and deletes subscription' do
+            headers = { "HTTP_ACCESS_TOKEN" => @valid_at_has_subscriptions }
+            delete "/api/v0/client/subscriptions/#{@subscription.id}", headers: headers
+            expect(response).to have_http_status(200)
+          end
+        end
+        context 'invalid inputs' do
+          it 'returns [400 Bad Request] for missing access token in header' do
+            delete "/api/v0/client/subscriptions/#{@subscription.id}"
+            expect(response).to have_http_status(400)
+          end
+          it 'returns [401 Unauthorized] for expired/invalid access token' do
+            headers = { "HTTP_ACCESS_TOKEN" => @invalid_access_token }
+            delete "/api/v0/client/subscriptions/#{@subscription.id}", headers: headers
+            expect(response).to have_http_status(401)
+          end
+          it 'returns [403 Forbidden] for blacklisted user' do
+            headers = { "HTTP_ACCESS_TOKEN" => @valid_at_blacklisted }
+            delete "/api/v0/client/subscriptions/#{@subscription.id}", headers: headers
+            expect(response).to have_http_status(403)
+          end
+          it 'returns [404 Not Found] for trying to delete someone else\'s submission' do
+            headers = { "HTTP_ACCESS_TOKEN" => @valid_at_has_subscriptions }
+            delete "/api/v0/client/subscriptions/#{@forbidden_subscription.id}", headers: headers
+            expect(response).to have_http_status(404)
+          end
+          it 'returns [404 Not Found] for non existing subscription' do
+            headers = { "HTTP_ACCESS_TOKEN" => @valid_at_has_subscriptions }
+            delete "/api/v0/client/subscriptions/#{@subscription.id+1}", headers: headers
+            expect(response).to have_http_status(404)
+          end  
+        end
+      end  
     end
   end
