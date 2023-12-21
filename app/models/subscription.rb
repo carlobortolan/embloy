@@ -16,9 +16,9 @@ class Subscription < ApplicationRecord
   end
 
   def cancel
-    # TODO: Cancel payment if possible
-    self.active = false
-    self.save!
+      # TODO: Cancel payment if possible
+      self.active = false
+      self.save
   end
 
   def renew

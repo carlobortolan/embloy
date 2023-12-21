@@ -121,6 +121,9 @@ module ApiExceptionHandler
     rescue_from CustomExceptions::InvalidInput::Quicklink::Request::Blank,
                 with: :request_token_blank_error
 
+    rescue_from CustomExceptions::Subscription::ExpiredOrMissing,
+                with: :subscription_expired_or_missing_error
+
     #--------------------------------------
 
     rescue_from CustomExceptions::InvalidInput::GeniusQuery::Malformed,
@@ -178,6 +181,10 @@ module ApiExceptionHandler
   # sub: subject of a token is not authorized to act (token specific 401s => exists for internal troubleshooting reasons)
   def user_sub_error
     unauthorized_error('user')
+  end
+
+  def subscription_expired_or_missing_error
+    unauthorized_error('subscription')
   end
 
   # ========== Token related exceptions ===========

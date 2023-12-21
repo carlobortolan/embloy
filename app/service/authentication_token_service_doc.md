@@ -2,7 +2,7 @@
 
 ####
 
-# <div style="text-align: center"><span style="color:crimson"> < CONFIDENTIAL >   < CONFIDENTIAL >  < CONFIDENTIAL ></span> </div>
+# <div style="text-align: center"><span style="color:crimson"> <~~CONFIDENTIAL >   < CONFIDENTIAL >  < CONFIDENTIAL >~~</span> </div>
 
 ####
 
@@ -226,19 +226,26 @@ happen.
    ####
    ###### Data parameters
     1. ``<user_id>`` *<span style="color:crimson">REQUIRED </span>*
-        + String
-        + ``<refresh_token>`` must be a JWT, solely issued by the ``AuthenticationTokenService::Refresh::Encoder`` class
-        + ``<refresh_token>`` must not be blocked (listed on ``AuthBlacklist``)
+        + Integer
+        + The user ``id`` of the subject of the token (``sub`` claim)
+        + A user to this ``id`` must exist
+        + The user to this ``id`` must be verified (``activity_status`` == 1)
+        + The user to this ``id`` must not be blocked (listed on ``UserBlacklist``)
+    2. ``<subscription>`` *<span style="color:crimson">REQUIRED </span>*
+        + Subscription
+        + ``<subscription>`` must be a valid subscription
+    3. ``<custom_exp>`` *<span style="color:grey">OPTIONAL </span>*
+        + Date
+        + ``<custom_exp>`` Describes a custom expiriation date and must be in the future. If it exceeds the subscriptions expiration date, the earlier of the two will be used instead.
 
    ####
    ###### Pipeline
-   First, the inputs are checked for correct formatting. Then ``<refresh_token>`` gets decoded.
-   Third, ``<refresh_token>`` and its claims get verified. Finally a client_token is generated based on the claims
-   of ``<user_id>``:
+   First, the inputs are checked for correct formatting. Then ``<access_token>`` gets decoded.
+   Third, ``<access_token>`` and its claims get verified. Finally a client_token is generated based on the claims
+   of ``<access_token>``:
     + ``sub`` - who owns the token?:``<user_id>``
-    + ``exp`` - when does the token expire?: A client token is valid for 3 months
+    + ``exp`` - when does the token expire?: An access token is valid for 0.3333 hours (20 min)
     + ``typ`` - specifies the access rights of the token based on ``user_type``
-    + ``iat`` - specifies the time of when the token has been issued``
     + ``iss`` - who issued the token?: The name of the machine that issues this token
    ####
    ###### Return
@@ -269,11 +276,11 @@ happen.
 
 ***
 
-2. Decipher an client token
+2. Decipher a client token
     ```   
-    QuicklinkService::Quicklink::Client::Decoder.call(<user_id>)
+    QuicklinkService::Quicklink::Client::Decoder.call(<client_token>)
     ```
-   This decodes an client token and returns its claims.
+   This decodes a client token and returns its claims.
    ####
    ###### Data parameters
     1. ``<client_token>`` *<span style="color:crimson">REQUIRED </span>*
@@ -310,9 +317,6 @@ happen.
 
 ***
 
-
-***
-
 ### 5. Request token
 
 1. Claim a request token
@@ -324,23 +328,21 @@ happen.
    ###### Data parameters
     1. ``<client_token>`` *<span style="color:crimson">REQUIRED </span>*
         + String
-        + ``<client_token>`` must be a JWT, solely issued by the ``QuicklinkService::Quicklink::Request::Encoder`` class
-        + ``<client_token>`` must not be blocked (listed on ``AuthBlacklist``)
-          Client
+        + ``<client_token>`` must be a JWT, solely issued by the ``QuicklinkService::Quicklink::Client::Encoder`` class
    ####
    ###### Pipeline
    First, the inputs are checked for correct formatting. Then ``<client_token>`` gets decoded.
    Third, ``<client_token>`` and its claims get verified. Finally a request_token is generated based on the claims
-   of ``<user_id>``:
+   of ``<client_token>``:
     + ``sub`` - who owns the token?:``<user_id>``
-    + ``exp`` - when does the token expire?: A client token is valid for 30 minutes
-    + ``job`` - specifies the `job_slug`
+    + ``exp`` - when does the token expire?: A client token is valid for 3 months per default or for a custom duration based on ``<exp>``. In both cases, the date has to be before the current subscriptions expiration date.
+    + ``typ`` - specifies the access rights of the token based on ``subscription.tier``
     + ``iat`` - specifies the time of when the token has been issued``
     + ``iss`` - who issued the token?: The name of the machine that issues this token
    ####
    ###### Return
     ```   
-    "<client_token>"
+    "<request_token>"
     ``` 
    ####
    ###### Exceptions
@@ -370,7 +372,7 @@ happen.
     ```   
     QuicklinkService::Quicklink::Request::Decoder.call(<client_token>)
     ```
-   This decodes an client token and returns its claims.
+   This decodes a request token and returns its claims.
    ####
    ###### Data parameters
     1. ``<request_token>`` *<span style="color:crimson">REQUIRED </span>*
@@ -405,3 +407,6 @@ happen.
     + ``::IncorrectAlgorithm``: When ``<request_token>`` was encoded using a unknown/incompatible algorithm
     + ``::DecodeError``: When ``<request_token>`` was falsely segmented
    ####
+
+***
+****
