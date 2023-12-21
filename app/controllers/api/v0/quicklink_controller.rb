@@ -61,12 +61,12 @@ module Api
       # The apply method is responsible for handling the application process.
       # It finds the user and client based on the decoded tokens, updates or creates the job, and applies for the job.
       def apply
-        begin 
+        begin
           @client = User.find(@decoded_request_token["sub"].to_i)
         rescue
           not_found_error("client")
         end
-          
+
         update_or_create_job(@decoded_request_token["job"])
         apply_for_job
       end

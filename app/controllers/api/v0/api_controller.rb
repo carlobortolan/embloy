@@ -9,10 +9,10 @@ module Api
     class ApiController < ApplicationController
       include ApiExceptionHandler
       protect_from_forgery with: :null_session
-      
+
       # Ignore Web-App before actions
       skip_before_action :auth_prototype
-    
+
       # ============== API BEFORE ACTIONS ================
       before_action :set_current_user
       before_action :require_user_not_blacklisted!, if: Current.user
@@ -26,7 +26,7 @@ module Api
         else
           @decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
           begin
-          @decoded_token["sub"].to_i == 0 ? Current.user = nil : Current.user = User.find(@decoded_token["sub"].to_i)
+            @decoded_token["sub"].to_i == 0 ? Current.user = nil : Current.user = User.find(@decoded_token["sub"].to_i)
           rescue ActiveRecord::RecordNotFound
             not_found_error('user')
           end
@@ -39,7 +39,7 @@ module Api
           verified!(@decoded_token["typ"])
           begin
             @subscription = Current.user.subscriptions.find(params[:id])
-          rescue ActiveRecord::RecordNotFound 
+          rescue ActiveRecord::RecordNotFound
             not_found_error('subscription')
           end
         end
@@ -69,7 +69,6 @@ module Api
           return malformed_error('job')
         end
       end
-
 
       def verify_path_user_id
         return blank_error('user') if params[:id].nil? || params[:id].empty? || params[:id].blank? || params[:id] == ":id"

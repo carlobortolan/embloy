@@ -51,7 +51,7 @@ class QuicklinkService < AuthenticationTokenService
       # Decodes a client token.
       def self.call(token)
         raise CustomExceptions::InvalidInput::Quicklink::Client::Malformed if token.class != String
-        raise CustomExceptions::InvalidInput::Quicklink::Client::Blank if token[0] == ":" || token.blank?  
+        raise CustomExceptions::InvalidInput::Quicklink::Client::Blank if token[0] == ":" || token.blank?
         return QuicklinkService::Client.decode(token)
       end
     end
@@ -95,7 +95,7 @@ class QuicklinkService < AuthenticationTokenService
       # Decodes a request token.
       def self.call(token)
         raise CustomExceptions::InvalidInput::Quicklink::Request::Malformed if token.class != String
-        raise CustomExceptions::InvalidInput::Quicklink::Request::Blank if token[0] == ":" || token.blank?  
+        raise CustomExceptions::InvalidInput::Quicklink::Request::Blank if token[0] == ":" || token.blank?
         return QuicklinkService::Request.decode(token)
       end
     end

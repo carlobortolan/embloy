@@ -57,7 +57,7 @@ Rails.application.routes.draw do
       patch 'client/subscriptions/(:id)/renew', to: 'subscriptions#renew_subscription'
       patch 'client/subscriptions/(:id)/cancel', to: 'subscriptions#cancel_subscription'
       delete 'client/subscriptions/(:id)', to: 'subscriptions#delete_subscription'
-      
+
       # -----> QUICKLINK <-----
       post 'client/auth/token', to: 'quicklink#create_client'
       post 'sdk/request/auth/token', to: 'quicklink#create_request'
