@@ -25,16 +25,25 @@ class QuicklinkService < AuthenticationTokenService
     end
 
     class Encoder
-      # Encodes a client token for a given user ID.
-      def self.call(user_id)
+      # Encodes a client token for a given user ID and subscription and expiration date.
+      def self.call(user_id, subscription, custom_exp)
         sub = user_id
         AuthenticationTokenService::Refresh.verify_user_id!(user_id)
         ApplicationController.must_be_verified!(user_id)
-        # TODO: Implement p. verification
-        exp = Time.now.to_i + 60 * 60 * 24 * 31 * 3 # standard validity interval: 3 months
-        typ = User.find_by(id: sub).user_role # could be changed to price_category / company_class
+
+        if custom_exp.nil? || custom_exp < Time.now
+          exp = Time.now.to_i + 60 * 60 * 24 * 31 * 3 # standard validity interval: 3 months or end of subscription
+        else
+          exp = custom_exp # Set custom expiration date if available 
+        end
+
+        if exp > subscription.expiration_date
+          exp = subscription.expiration_date # Token can't be valid longer than subscription
+        end
+
+        typ = subscription.tier # Needed for quick authorization when token is used
         iat = Time.now.to_i
-        return QuicklinkService::Client.encode(sub, exp, typ, iat)
+        return QuicklinkService::Client.encode(123, exp.to_i, typ, iat)
       end
     end
 

@@ -69,6 +69,10 @@ class User < ApplicationRecord
     end
   end
 
+  def get_current_subscription
+    self.subscriptions.where('expiration_date > ?', Time.now).where(active: true).first
+  end
+
   private
 
   def password_required?

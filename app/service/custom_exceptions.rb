@@ -53,6 +53,15 @@ class CustomExceptions < StandardError
     class Token < StandardError # Invalid token?
     end
 
+    class SUB < StandardError # Token has wrong format?
+    end
+
+    class CustomEXP < StandardError # Token expired?
+    end
+
+    class BlankCredentials < StandardError # Blank email || password
+    end
+
     class GeniusQuery < StandardError # Invalid token?
       class Blank < StandardError
       end
@@ -77,17 +86,8 @@ class CustomExceptions < StandardError
         class Malformed < StandardError
         end
       end
-    end
 
-    class SUB < StandardError # Token has wrong format?
     end
-
-    class CustomEXP < StandardError # Token expired?
-    end
-
-    class BlankCredentials < StandardError # Blank email || password
-    end
-
   end
 
   # ============== Job - Exceptions =============
@@ -96,4 +96,9 @@ class CustomExceptions < StandardError
     end
   end
 
+  # ============== Subscription - Exceptions =============
+  class Subscription < StandardError
+    class ExpiredOrMissing < StandardError # Subscription is either expired or not existent
+    end
+  end
 end

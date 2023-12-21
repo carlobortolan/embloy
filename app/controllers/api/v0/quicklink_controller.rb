@@ -85,7 +85,15 @@ module Api
       # It then returns the token in the response.
       def create_client
         verified!(@decoded_token["typ"])
-        token = QuicklinkService::Client::Encoder.call(Current.user.id)
+
+        date = params[:exp] ? Date.parse(params[:exp]) : nil # Parse custom expiration date
+
+        subscription = Current.user.get_current_subscription # Check for active subscription
+        if subscription.nil? 
+          raise CustomExceptions::Subscription::ExpiredOrMissing  
+        end
+
+        token = QuicklinkService::Client::Encoder.call(Current.user.id, subscription, params[:exp])
         render status: 200, json: { "client_token" => token }
       end
     end

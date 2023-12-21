@@ -2,9 +2,9 @@
 
 class AuthenticationTokenService
 
-  def self.call (secret, algorithm, issuer, payload)
-    # generates a generic token (=> is used to generate refresh and access token)
-    # CAUTION: NO INPUT VERIFICATION ETC. PROVIDED BY THIS METHOD
+  # generates a generic token (=> is used to generate refresh and access token)
+  # CAUTION: NO INPUT VERIFICATION ETC. PROVIDED BY THIS METHOD
+  def self.call(secret, algorithm, issuer, payload)
     payload["iss"] = issuer.to_s
     return JWT.encode payload, secret, algorithm
   end

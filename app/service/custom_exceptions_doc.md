@@ -1,4 +1,4 @@
-# CustomExceptionss INTERNAL Documentation
+# CustomExceptions INTERNAL Documentation
 
 > This document provides further information for the [custom_exceptions.rb](./custom_exceptions.rb) class.
 ***
@@ -38,6 +38,17 @@ You should only expect the following subclasses of ``::InvalidInput``
 + ``::Token``: When the``<refresh_token>`` is invalid
 + ``::SUB``: When the ``<refresh_token>`` is malformed (e.g., ``user_id`` not an Integer)
 + ``::CustomEXP``: When the ``<refresh_token>`` expired
++ ``::BlankCredentials``: For missing credentials (email, password)
++ ``::GeniusQuery``: Related to genius queries
+    + ``::Blank`` 
+    + ``::Malformed``
++ ``::Quicklink``: Related to quicklink
+    + ``::Client`` Related to client tokens
+        + ``::Blank`` 
+        + ``::Malformed`` 
+    + ``::Request`` Related to request tokens
+        + ``::Blank`` 
+        + ``::Malformed`` 
   ####
 
 ***
@@ -51,4 +62,13 @@ You should only expect the following subclasses of ``::InvalidJob``
 
 ***
 
-### 5. Additional ideas ... 
+### 5. Subscription
+
+You should only expect the following subclasses of ``::Subscription``
+
++ ``::ExpiredOrMissing``: Subscription is either expired or not existent ``job_id``
+  ####
+
+***
+
+### 6. Additional ideas ... 
