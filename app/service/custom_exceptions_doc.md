@@ -1,3 +1,8 @@
+#### <div style="text-align:right">C-XJH-0005 </div>
+
+####
+
+# <div style="text-align: center"><span style="color:crimson"> <~~CONFIDENTIAL >   < CONFIDENTIAL >  < CONFIDENTIAL >~~</span> </div>
 # CustomExceptions INTERNAL Documentation
 
 > This document provides further information for the [custom_exceptions.rb](./custom_exceptions.rb) class.
