@@ -19,6 +19,8 @@ jobs:
           POSTGRES_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
     env:
       RAILS_ENV: test
+      CORS_CLIENT_URL: ${{ secrets.CORS_CLIENT_URL }}
+      CORS_GENIUS_CLIENT_URL: ${{ secrets.CORS_GENIUS_CLIENT_URL }}      
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
     steps:
