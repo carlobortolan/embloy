@@ -5,6 +5,43 @@ on:
   pull_request:
     branches: [ "master" ]
 jobs:
+  build:
+    environment: CI
+    runs-on: ubuntu-latest
+    env:
+      CORS_CLIENT_URL: ${{ secrets.CORS_CLIENT_URL }}
+      CORS_GENIUS_CLIENT_URL: ${{ secrets.CORS_GENIUS_CLIENT_URL }}      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install Ruby and gems
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2.2
+          bundler-cache: true
+      - name: Install dependencies
+        run: bundle install
+      - name: Build
+        run: bundle exec rake assets:precompile
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Install Ruby and gems
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Install bundler-audit
+        run: gem install bundler-audit
+      - name: Security audit dependencies
+        run: bundle audit check --update
+      - name: Install brakeman
+        run: gem install brakeman
+      - name: Security audit application code
+        run: brakeman -q -w2
+      - name: Lint Ruby files
+        run: bundle exec rubocop --parallel
   test:
     environment: CI
     runs-on: ubuntu-latest
@@ -41,42 +78,3 @@ jobs:
       #  run: bundle exec rails db:setup
       - name: Run tests
         run: bundle exec rspec
-
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Install Ruby and gems
-        uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
-      - name: Install bundler-audit
-        run: gem install bundler-audit
-      - name: Security audit dependencies
-        run: bundle audit check --update
-      - name: Install brakeman
-        run: gem install brakeman
-      - name: Security audit application code
-        run: brakeman -q -w2
-      - name: Lint Ruby files
-        run: bundle exec rubocop --parallel
-      
-  build:
-    environment: CI
-    runs-on: ubuntu-latest
-    env:
-      CORS_CLIENT_URL: ${{ secrets.CORS_CLIENT_URL }}
-      CORS_GENIUS_CLIENT_URL: ${{ secrets.CORS_GENIUS_CLIENT_URL }}      
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Install Ruby and gems
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.2.2
-          bundler-cache: true
-      - name: Install dependencies
-        run: bundle install
-      - name: Build
-        run: bundle exec rake assets:precompile

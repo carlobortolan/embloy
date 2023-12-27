@@ -1,6 +1,11 @@
 # .rubocop.yml
 AllCops:
   TargetRubyVersion: 3.2.2
+  NewCops: enable 
+  Gemspec/DeprecatedAttributeAssignment:
+    Enabled: true
+  Gemspec/DevelopmentDependencies:
+    Enabled: true
   Include:
     - '**/*.rb'
   Exclude:
