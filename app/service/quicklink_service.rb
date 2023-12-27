@@ -24,6 +24,7 @@ class QuicklinkService < AuthenticationTokenService
     def self.decode(token)
       JWT.decode(token, HMAC_SECRET, true, { iss: ISSUER, verify_iss: true, verify_iat: true, required_claims: %w[iss sub exp typ iat], algorithm: ALGORITHM_TYPE })
     end
+
     # The Encoder class is responsible for encoding client tokens.
     class Encoder
       # Encodes a client token for a given user ID and subscription and expiration date.
