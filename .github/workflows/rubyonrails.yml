@@ -46,10 +46,10 @@ jobs:
         run: gem install reek
       - name: Code smell detection
         run: reek
-      - name: Install flog
-        run: gem install flog
-      - name: Complexity analysis
-        run: ruby flog_check.rb
+      - name: Run Flog complexity analysis
+        run: |
+          gem install flog
+          ruby flog_check.rb
   test:
     environment: CI
     runs-on: ubuntu-latest
