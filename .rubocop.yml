@@ -1,0 +1,11 @@
+# .rubocop.yml
+AllCops:
+  TargetRubyVersion: 3.2.2
+  Include:
+    - '**/*.rb'
+  Exclude:
+    - 'lib/**/*'
+    - 'spec/**/*'
+    - 'db/**/*'
+    - 'config/**/*'
+    - 'bin/**/*'
