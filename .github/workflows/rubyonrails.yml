@@ -65,6 +65,9 @@ jobs:
   build:
     environment: CI
     runs-on: ubuntu-latest
+    env:
+      CORS_CLIENT_URL: ${{ secrets.CORS_CLIENT_URL }}
+      CORS_GENIUS_CLIENT_URL: ${{ secrets.CORS_GENIUS_CLIENT_URL }}      
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
