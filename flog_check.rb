@@ -2,9 +2,15 @@
 
 require 'open3'
 
+puts "Current directory: #{Dir.pwd}"
 output, = Open3.capture2('find . -name "*.rb" | xargs flog')
 
 lines = output.lines
+if lines.empty?
+  puts 'No Ruby files found or flog command failed'
+  exit 1
+end
+
 total_score = lines.first.split.last.to_f
 
 puts "Flog total score: #{total_score}"
