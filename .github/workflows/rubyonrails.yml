@@ -49,7 +49,7 @@ jobs:
       - name: Install flog
         run: gem install flog
       - name: Complexity analysis
-        run: flog .
+        run: ruby flog_check.rb
   test:
     environment: CI
     runs-on: ubuntu-latest
