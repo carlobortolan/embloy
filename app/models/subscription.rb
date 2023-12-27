@@ -6,20 +6,20 @@ class Subscription < ApplicationRecord
   belongs_to :user
   has_many :payments, dependent: :delete_all
 
-  validates :tier, presence: { "error": 'ERR_BLANK', "description": "Attribute can't be blank" },
-                   inclusion: { in: %w[basic premium enterprise_1 enterprise_2 enterprise_3], "error": 'ERR_INVALID', "description": 'Attribute is invalid' }
+  validates :tier, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
+                   inclusion: { in: %w[basic premium enterprise_1 enterprise_2 enterprise_3], error: 'ERR_INVALID', description: 'Attribute is invalid' }
   validates :active,
             inclusion: { in: [true, false],
                          message: 'ERR_NOT_BOOL' }
   validates :expiration_date,
-            presence: { "error": 'ERR_BLANK',
-                        "description": "Attribute can't be blank" }
+            presence: { error: 'ERR_BLANK',
+                        description: "Attribute can't be blank" }
   validates :start_date,
-            presence: { "error": 'ERR_BLANK',
-                        "description": "Attribute can't be blank" }
+            presence: { error: 'ERR_BLANK',
+                        description: "Attribute can't be blank" }
   validates :auto_renew,
-            presence: { "error": 'ERR_BLANK',
-                        "description": "Attribute can't be blank" }
+            presence: { error: 'ERR_BLANK',
+                        description: "Attribute can't be blank" }
 
   def activate
     # TODO: Check if payment was successful

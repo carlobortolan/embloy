@@ -14,7 +14,7 @@ class AuthenticationTokenService
   #########################################################
   # The Refresh class is responsible for handling refresh tokens.
   class Refresh
-    HMAC_SECRET = ENV['REFRESH_TOKEN_SECRET']
+    HMAC_SECRET = ENV.fetch('REFRESH_TOKEN_SECRET', nil)
     ALGORITHM_TYPE = 'HS256'
     ISSUER = Socket.gethostname
 
@@ -62,11 +62,7 @@ class AuthenticationTokenService
 
     def self.jti?(jti, sub = nil)
       # checks whether a specifc (refresh) token is blacklisted (via its identifier "jti")
-      if AuthBlacklist.find_by(token: jti).present? || User.find_by(id: sub).present?
-        false # user is blacklisted
-      else
-        true # user isn't blacklisted
-      end
+      !(AuthBlacklist.find_by(token: jti).present? || User.find_by(id: sub).present?)
     end
 
     def self.must_be_verified_id!(user_id)
@@ -180,7 +176,7 @@ class AuthenticationTokenService
   #########################################################
   # The Access class is responsible for handling access tokens.
   class Access
-    HMAC_SECRET = ENV['ACCESS_TOKEN_SECRET']
+    HMAC_SECRET = ENV.fetch('ACCESS_TOKEN_SECRET', nil)
     ALGORITHM_TYPE = 'HS256'
     ISSUER = Socket.gethostname
 

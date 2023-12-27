@@ -10,37 +10,37 @@ RSpec.describe 'ApplicationsController' do
 
     # Create valid verified user without jobs, applications, ...
     @valid_user = User.create!(
-      "first_name": 'Max',
-      "last_name": 'Mustermann',
-      "email": "#{(0...16).map { charset.sample }.join}@embloy.com",
-      "password": 'password',
-      "password_confirmation": 'password',
-      "user_role": 'verified',
-      "activity_status": '1'
+      first_name: 'Max',
+      last_name: 'Mustermann',
+      email: "#{(0...16).map { charset.sample }.join}@embloy.com",
+      password: 'password',
+      password_confirmation: 'password',
+      user_role: 'verified',
+      activity_status: '1'
     )
     puts "Created verified user without jobs, applications: #{@valid_user.id}"
 
     # Create valid verified user with own jobs
     @valid_user_has_own_jobs = User.create!(
-      "first_name": 'Max',
-      "last_name": 'Mustermann',
-      "email": "#{(0...16).map { charset.sample }.join}@embloy.com",
-      "password": 'password',
-      "password_confirmation": 'password',
-      "user_role": 'verified',
-      "activity_status": '1'
+      first_name: 'Max',
+      last_name: 'Mustermann',
+      email: "#{(0...16).map { charset.sample }.join}@embloy.com",
+      password: 'password',
+      password_confirmation: 'password',
+      user_role: 'verified',
+      activity_status: '1'
     )
     puts "Created valid verified user with own jobs: #{@valid_user_has_own_jobs.id}"
 
     # Create valid verified user with applications
     @valid_user_has_applications = User.create!(
-      "first_name": 'Max',
-      "last_name": 'Mustermann',
-      "email": "#{(0...16).map { charset.sample }.join}@embloy.com",
-      "password": 'password',
-      "password_confirmation": 'password',
-      "user_role": 'verified',
-      "activity_status": '1'
+      first_name: 'Max',
+      last_name: 'Mustermann',
+      email: "#{(0...16).map { charset.sample }.join}@embloy.com",
+      password: 'password',
+      password_confirmation: 'password',
+      user_role: 'verified',
+      activity_status: '1'
     )
     puts "Created valid verified user with applications: #{@valid_user_has_applications.id}"
 

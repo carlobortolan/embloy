@@ -41,38 +41,38 @@ module Validators
       has_rich_text :description
       has_one_attached :image_url
 
-      validates :title, presence: { "error": 'ERR_BLANK', "description": "Attribute can't be blank" },
-                        length: { minimum: 0, maximum: 100, "error": 'ERR_LENGTH', "description": 'Attribute length is invalid' }
-      validates :description, presence: { "error": 'ERR_BLANK', "description": "Attribute can't be blank" },
-                              length: { minimum: 10, maximum: 1000, "error": 'ERR_LENGTH', "description": 'Attribute length is invalid' }
+      validates :title, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
+                        length: { minimum: 0, maximum: 100, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
+      validates :description, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
+                              length: { minimum: 10, maximum: 1000, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
       validates :start_slot,
-                presence: { "error": 'ERR_BLANK',
-                            "description": "Attribute can't be blank" }
-      validates :longitude, presence: { "error": 'ERR_BLANK', "description": "Attribute can't be blank" },
-                            numericality: { "error": 'ERR_INVALID', "description": 'Attribute is malformed or unknown' }
-      validates :latitude, presence: { "error": 'ERR_BLANK', "description": "Attribute can't be blank" },
-                           numericality: { "error": 'ERR_INVALID', "description": 'Attribute is malformed or unknown' }
-      validates :job_notifications, presence: { "error": 'ERR_BLANK', "description": "Attribute can't be blank" },
-                                    numericality: { only_integer: true, "error": 'ERR_INVALID', "description": 'Attribute is malformed or unknown' }
-      validates :position, presence: { "error": 'ERR_BLANK', "description": "Attribute can't be blank" },
-                           length: { minimum: 0, maximum: 100, "error": 'ERR_LENGTH', "description": 'Attribute length is invalid' }
-      validates :key_skills, presence: { "error": 'ERR_BLANK', "description": "Attribute can't be blank" },
-                             length: { minimum: 0, maximum: 100, "error": 'ERR_LENGTH', "description": 'Attribute length is invalid' }
-      validates :duration, presence: { "error": 'ERR_BLANK', "description": "Attribute can't be blank" },
-                           numericality: { only_integer: true, greater_than: 0, "error": 'ERR_INVALID', "description": 'Attribute is malformed or unknown' }
-      validates :salary, presence: { "error": 'ERR_BLANK', "description": "Attribute can't be blank" },
-                         numericality: { only_integer: true, greater_than: 0, "error": 'ERR_INVALID', "description": 'Attribute is malformed or unknown' }
+                presence: { error: 'ERR_BLANK',
+                            description: "Attribute can't be blank" }
+      validates :longitude, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
+                            numericality: { error: 'ERR_INVALID', description: 'Attribute is malformed or unknown' }
+      validates :latitude, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
+                           numericality: { error: 'ERR_INVALID', description: 'Attribute is malformed or unknown' }
+      validates :job_notifications, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
+                                    numericality: { only_integer: true, error: 'ERR_INVALID', description: 'Attribute is malformed or unknown' }
+      validates :position, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
+                           length: { minimum: 0, maximum: 100, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
+      validates :key_skills, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
+                             length: { minimum: 0, maximum: 100, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
+      validates :duration, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
+                           numericality: { only_integer: true, greater_than: 0, error: 'ERR_INVALID', description: 'Attribute is malformed or unknown' }
+      validates :salary, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
+                         numericality: { only_integer: true, greater_than: 0, error: 'ERR_INVALID', description: 'Attribute is malformed or unknown' }
       validates :currency,
-                presence: { "error": 'ERR_BLANK',
-                            "description": "Attribute can't be blank" }
+                presence: { error: 'ERR_BLANK',
+                            description: "Attribute can't be blank" }
       validates :job_type,
-                presence: { "error": 'ERR_BLANK',
-                            "description": "Attribute can't be blank" }
+                presence: { error: 'ERR_BLANK',
+                            description: "Attribute can't be blank" }
       validates :status,
-                inclusion: { in: %w[public private archived], "error": 'ERR_INVALID', "description": 'Attribute is invalid' }, presence: false
+                inclusion: { in: %w[public private archived], error: 'ERR_INVALID', description: 'Attribute is invalid' }, presence: false
       validates :job_type_value,
-                presence: { "error": 'ERR_BLANK',
-                            "description": "Attribute can't be blank" }
+                presence: { error: 'ERR_BLANK',
+                            description: "Attribute can't be blank" }
 
       # validates :postal_code, length: { minimum: 0, maximum: 45, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
       # validates :country_code, length: { minimum: 0, maximum: 45, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
@@ -105,16 +105,16 @@ module Validators
       return if job_types.key?(job_type) || job_type == 'EMJ'
 
       errors.add(:job_type,
-                 { "error": 'ERR_INVALID',
-                   "description": 'Attribute is malformed or unknown' })
+                 { error: 'ERR_INVALID',
+                   description: 'Attribute is malformed or unknown' })
     end
 
     def start_slot_validation
       return unless start_slot - Time.now < -86_400
 
       errors.add(:start_slot,
-                 { "error": 'ERR_INVALID',
-                   "description": 'Attribute is malformed or unknown' })
+                 { error: 'ERR_INVALID',
+                   description: 'Attribute is malformed or unknown' })
     end
 
     def image_format_validation
@@ -125,8 +125,8 @@ module Validators
       return if allowed_formats.include?(image_url.blob.content_type)
 
       errors.add(:image_url,
-                 { "error": 'ERR_INVALID',
-                   "description": 'must be a PNG, JPG, or JPEG image' })
+                 { error: 'ERR_INVALID',
+                   description: 'must be a PNG, JPG, or JPEG image' })
     end
   end
 end

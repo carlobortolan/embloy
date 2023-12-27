@@ -29,7 +29,7 @@ module Api
 
           @job.image_url.attach(params[:image_url]) if params[:image_url]
           render status: 200,
-                 json: { "message": 'Job created!' }
+                 json: { message: 'Job created!' }
         elsif @job.errors.details != false
           error = @job.errors.details.dup # necessary because @job.errors.details cant be modified manually
           error.each_value do |b|
@@ -64,7 +64,7 @@ module Api
           # Attach image file to job-object
           @job.image_url.attach(params[:image_url]) if params[:image_url]
           render status: 200,
-                 json: { "message": 'Job updated!' }
+                 json: { message: 'Job updated!' }
         else
           render status: 400,
                  json: @job.errors.details
@@ -81,7 +81,7 @@ module Api
         @job = Job.find(params[:id]) # no must_be_owner! call @job needs to be set manually
         @job.destroy!
         render status: 200,
-               json: { "message": 'Job deleted!' }
+               json: { message: 'Job deleted!' }
       rescue ActiveRecord::RecordNotFound
         not_found_error('job') # ok to be this specific because onöy editors can delete jobs
       end
@@ -128,7 +128,7 @@ module Api
           end
           if feed.nil? || feed.empty?
             render(status: 500,
-                   json: { "message": 'Please try again later. If this error persists, we recommend to contact our support team' })
+                   json: { message: 'Please try again later. If this error persists, we recommend to contact our support team' })
           else
             render(
               status: 200, json: "{\"feed\": [#{Job.jsons_for(feed)}]}"
@@ -136,7 +136,7 @@ module Api
           end
 
         else
-          render status: 204, json: { "message": 'No jobs found!' } # message will not show with 204, just for maintainability
+          render status: 204, json: { message: 'No jobs found!' } # message will not show with 204, just for maintainability
         end
       end
 
@@ -170,7 +170,7 @@ module Api
         # jobs.empty? ? render(status: 204, json: { "jobs": jobs }) : render(status: 200, json: "jobs: #{jobs.to_json(except: [:image_url])}")
         if jobs.empty?
           render(status: 204,
-                 json: { "jobs": jobs })
+                 json: { jobs: })
         else
           render(status: 200,
                  json: "{\"jobs\": [#{Job.get_jsons_include_user(jobs)}]}")
@@ -183,12 +183,12 @@ module Api
           job = Job.find(params[:id])
         rescue ActiveRecord::RecordNotFound
           render(status: 404,
-                 json: { "message": "Job with id #{params[:id]} does not exist!" })
+                 json: { message: "Job with id #{params[:id]} does not exist!" })
           return
         end
         if job.nil?
           render(status: 204,
-                 json: { "job": job })
+                 json: { job: })
         else
           render(status: 200,
                  json: "{\"job\": #{Job.json_for(job)}}")
@@ -224,7 +224,7 @@ module Api
           render(status: 200,
                  json: "{\"jobs\": [#{Job.jsons_for(jobs.page(params[:page]).per(24))}]}")
         else
-          render status: 204, json: { "message": 'No jobs found!' } # message will not show with 204, just for maintainability
+          render status: 204, json: { message: 'No jobs found!' } # message will not show with 204, just for maintainability
         end
       end
 

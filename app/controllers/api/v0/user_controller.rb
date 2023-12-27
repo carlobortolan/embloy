@@ -10,7 +10,7 @@ module Api
         upcoming_jobs = fetch_upcoming_jobs
 
         if upcoming_jobs.empty?
-          render(status: 204, json: { "jobs": upcoming_jobs })
+          render(status: 204, json: { jobs: upcoming_jobs })
         else
           render(status: 200, json: "{\"jobs\": [#{Job.get_jsons_include_user(upcoming_jobs)}]}")
         end
@@ -20,7 +20,7 @@ module Api
         jobs = Current.user.jobs.includes([:rich_text_description]).order(created_at: :desc)
         if jobs.empty?
           render(status: 204,
-                 json: { "jobs": jobs })
+                 json: { jobs: })
         else
           render(status: 200,
                  json: "{\"jobs\": [#{Job.jsons_for(jobs)}]}")
@@ -31,10 +31,10 @@ module Api
         applications = Application.all.where(user_id: Current.user.id)
         if applications.empty?
           render(status: 204,
-                 json: { "applications": applications })
+                 json: { applications: })
         else
           render(
-            status: 200, json: { "applications": applications }
+            status: 200, json: { applications: }
           )
         end
       end
@@ -43,10 +43,10 @@ module Api
         reviews = Review.all.where(subject: Current.user.id)
         if reviews.empty?
           render(status: 204,
-                 json: { "reviews": reviews })
+                 json: { reviews: })
         else
           render(status: 200,
-                 json: { "reviews": reviews })
+                 json: { reviews: })
         end
       end
 
@@ -58,7 +58,7 @@ module Api
             render :preferences, status: :unprocessable_entity
           end
         end
-        render(status: 200, json: { "preferences": Current.user.preferences })
+        render(status: 200, json: { preferences: Current.user.preferences })
       end
 
       def update_preferences
@@ -68,7 +68,7 @@ module Api
       def remove_image
         Current.user.image_url.purge if Current.user.image_url.attached?
         render status: 200,
-               json: { "message": 'Profile image successfully removed.' }
+               json: { message: 'Profile image successfully removed.' }
       end
 
       def show
@@ -86,23 +86,23 @@ module Api
           render(status: 204)
         elsif Current.user.update(user_params)
           render(status: 200,
-                 json: { "message": 'Successfully updated user.' })
+                 json: { message: 'Successfully updated user.' })
         else
           render(status: 422,
-                 json: { "message": 'Failed to update user.',
-                         "errors": Current.user.errors.full_messages })
+                 json: { message: 'Failed to update user.',
+                         errors: Current.user.errors.full_messages })
         end
       end
 
       def destroy
         Current.user.destroy!
         render status: 200,
-               json: { "message": 'User deleted!' }
+               json: { message: 'User deleted!' }
       end
 
       def upload_image
         attach_image if params[:image_url].present?
-        render status: 200, json: { "image_url": Current.user.image_url.url.to_s }
+        render status: 200, json: { image_url: Current.user.image_url.url.to_s }
       end
 
       private

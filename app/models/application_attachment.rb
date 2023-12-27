@@ -15,8 +15,8 @@ class ApplicationAttachment < ApplicationRecord
     return if allowed_formats.include?(cv.blob.content_type)
 
     errors.add(:cv,
-               { "error": 'ERR_INVALID',
-                 "description": "must be a #{job.allowed_cv_format.join(',')} file" })
+               { error: 'ERR_INVALID',
+                 description: "must be a #{job.allowed_cv_format.join(',')} file" })
   end
 
   private

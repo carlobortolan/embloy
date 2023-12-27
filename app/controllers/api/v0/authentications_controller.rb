@@ -38,19 +38,19 @@ module Api
         # ======== Overwrite APIExceptionHandler =======
       rescue CustomExceptions::InvalidUser::Unknown
         # The requested token subject (User) doesn't exists BUT user.authenticate(refresh_token_params["password"]) says true
-        render status: 500, json: { "error": 'Please try again later. If this error persists, we recommend to contact our support team.' }
+        render status: 500, json: { error: 'Please try again later. If this error persists, we recommend to contact our support team.' }
       rescue CustomExceptions::InvalidInput::SUB
         # Invalid Input (User Attribute is malformed) BUT user.authenticate(refresh_token_params["password"]) says true
-        render status: 500, json: { "error": 'Please try again later. If this error persists, we recommend to contact our support team.' }
+        render status: 500, json: { error: 'Please try again later. If this error persists, we recommend to contact our support team.' }
       end
 
       def create_access
         # ============ Token gets claimed ==============
         if request.headers['HTTP_REFRESH_TOKEN'].nil? || request.headers['HTTP_REFRESH_TOKEN'].empty?
-          render status: 400, json: { "token": [
+          render status: 400, json: { token: [
             {
-              "error": 'ERR_BLANK',
-              "description": "Attribute can't be blank"
+              error: 'ERR_BLANK',
+              description: "Attribute can't be blank"
             }
           ] }
         else

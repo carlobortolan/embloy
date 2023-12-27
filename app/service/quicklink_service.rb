@@ -7,7 +7,7 @@ class QuicklinkService < AuthenticationTokenService
   # The Client class is responsible for handling client tokens. These tokens are used
   # to authenticate the server making requests to Embloy's API.
   class Client
-    HMAC_SECRET = ENV['CLIENT_TOKEN_SECRET']
+    HMAC_SECRET = ENV.fetch('CLIENT_TOKEN_SECRET', nil)
     ALGORITHM_TYPE = 'HS256'
     ISSUER = Socket.gethostname
     REPLACEMENT_CHARACTER = '°'
@@ -44,12 +44,12 @@ class QuicklinkService < AuthenticationTokenService
 
       def self.calculate_expiration(custom_exp, subscription)
         exp = if custom_exp.nil? || custom_exp < Time.now
-                Time.now.to_i + 60 * 60 * 24 * 31 * 3 # standard validity interval: 3 months or end of subscription
+                Time.now.to_i + (60 * 60 * 24 * 31 * 3) # standard validity interval: 3 months or end of subscription
               else
                 custom_exp.to_i # Set custom expiration date if available
               end
 
-        exp > subscription.expiration_date.to_i ? subscription.expiration_date.to_i : exp # Token can't be valid longer than subscription
+        [exp, subscription.expiration_date.to_i].min # Token can't be valid longer than subscription
       end
     end
 
@@ -68,7 +68,7 @@ class QuicklinkService < AuthenticationTokenService
   # The Request class is responsible for handling request tokens. These tokens are used
   # to authenticate the user's application request to Embloy's API and communicate the selected job.
   class Request
-    HMAC_SECRET = ENV['REQUEST_TOKEN_SECRET']
+    HMAC_SECRET = ENV.fetch('REQUEST_TOKEN_SECRET', nil)
     ALGORITHM_TYPE = 'HS256'
     ISSUER = Socket.gethostname
     REPLACEMENT_CHARACTER = '°'
@@ -96,7 +96,7 @@ class QuicklinkService < AuthenticationTokenService
         ApplicationController.must_be_verified!(user_id)
         # TODO: @cb verify job / account validity / price category?
         job = job_slug
-        exp = Time.now.to_i + 60 * 60 * 30 # standard validity interval: 30 minutes
+        exp = Time.now.to_i + (60 * 60 * 30) # standard validity interval: 30 minutes
         iat = Time.now.to_i
         QuicklinkService::Request.encode(sub,
                                          exp, job, iat)

@@ -7,34 +7,34 @@ RSpec.describe 'AuthenticationController' do
     charset = ('a'..'z').to_a + ('A'..'Z').to_a
 
     @valid_user = User.create!(
-      "first_name": 'Max',
-      "last_name": 'Mustermann',
-      "email": "#{(0...16).map { charset.sample }.join}@embloy.com",
-      "password": 'password',
-      "password_confirmation": 'password',
-      "user_role": 'verified',
-      "activity_status": '1'
+      first_name: 'Max',
+      last_name: 'Mustermann',
+      email: "#{(0...16).map { charset.sample }.join}@embloy.com",
+      password: 'password',
+      password_confirmation: 'password',
+      user_role: 'verified',
+      activity_status: '1'
     )
     puts "Created valid user: #{@valid_user.id}"
 
     @blacklisted_user = User.create!(
-      "first_name": 'Max',
-      "last_name": 'Mustermann',
-      "email": "#{(0...16).map { charset.sample }.join}@embloy.com",
-      "password": 'password',
-      "password_confirmation": 'password',
-      "user_role": 'verified',
-      "activity_status": '1'
+      first_name: 'Max',
+      last_name: 'Mustermann',
+      email: "#{(0...16).map { charset.sample }.join}@embloy.com",
+      password: 'password',
+      password_confirmation: 'password',
+      user_role: 'verified',
+      activity_status: '1'
     )
     puts "Created blacklisted user: #{@blacklisted_user.id}"
 
     @unverified_user = User.create!(
-      "first_name": 'Max',
-      "last_name": 'Mustermann',
-      "email": "#{(0...16).map { charset.sample }.join}@embloy.com",
-      "password": 'password',
-      "password_confirmation": 'password',
-      "user_role": 'spectator'
+      first_name: 'Max',
+      last_name: 'Mustermann',
+      email: "#{(0...16).map { charset.sample }.join}@embloy.com",
+      password: 'password',
+      password_confirmation: 'password',
+      user_role: 'spectator'
     )
     puts "Created unverified user: #{@unverified_user.id}"
 
@@ -50,8 +50,8 @@ RSpec.describe 'AuthenticationController' do
     @valid_rt_blacklisted = JSON.parse(response.body)['refresh_token']
     puts "Valid refresh token for blacklisted user: #{@valid_rt_blacklisted}"
     UserBlacklist.create!(
-      "user_id": @blacklisted_user.id,
-      "reason": 'Test blacklist'
+      user_id: @blacklisted_user.id,
+      reason: 'Test blacklist'
     )
 
     @invalid_refresh_token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWILOjQ5LCJleHAiOjE2OTgxNzk0MjgsImp0aSI6IjQ1NDMyZWUyNWE4YWUyMjc1ZGY0YTE2ZTNlNmQ0YTY4IiwiaWF0IjoxNjk4MTY1MDI4LCJpc3MiOiJDQl9TdXJmYWNlUHJvOCJ9.nqGgQ6Z52CbaHZzPGcwQG6U-nMDxb1yIe7HQMxjoDTs'

@@ -7,24 +7,24 @@ RSpec.describe 'PasswordsController' do
     charset = ('a'..'z').to_a + ('A'..'Z').to_a
 
     @valid_user = User.create!(
-      "first_name": 'Max',
-      "last_name": 'Mustermann',
-      "email": "#{(0...16).map { charset.sample }.join}@embloy.com",
-      "password": 'password',
-      "password_confirmation": 'password',
-      "user_role": 'verified',
-      "activity_status": '1'
+      first_name: 'Max',
+      last_name: 'Mustermann',
+      email: "#{(0...16).map { charset.sample }.join}@embloy.com",
+      password: 'password',
+      password_confirmation: 'password',
+      user_role: 'verified',
+      activity_status: '1'
     )
     puts "Created valid user: #{@valid_user.id}"
 
     @blacklisted_user = User.create!(
-      "first_name": 'Max',
-      "last_name": 'Mustermann',
-      "email": "#{(0...16).map { charset.sample }.join}@embloy.com",
-      "password": 'password',
-      "password_confirmation": 'password',
-      "user_role": 'verified',
-      "activity_status": '1'
+      first_name: 'Max',
+      last_name: 'Mustermann',
+      email: "#{(0...16).map { charset.sample }.join}@embloy.com",
+      password: 'password',
+      password_confirmation: 'password',
+      user_role: 'verified',
+      activity_status: '1'
     )
     puts "Created blacklisted user: #{@blacklisted_user.id}"
 
@@ -52,8 +52,8 @@ RSpec.describe 'PasswordsController' do
     puts "Valid user who will be blacklisted access token: #{@valid_at_blacklisted}"
 
     UserBlacklist.create!(
-      "user_id": @blacklisted_user.id,
-      "reason": 'Test blacklist'
+      user_id: @blacklisted_user.id,
+      reason: 'Test blacklist'
     )
 
     @invalid_refresh_token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWILOjQ5LCJleHAiOjE2OTgxNzk0MjgsImp0aSI6IjQ1NDMyZWUyNWE4YWUyMjc1ZGY0YTE2ZTNlNmQ0YTY4IiwiaWF0IjoxNjk4MTY1MDI4LCJpc3MiOiJDQl9TdXJmYWNlUHJvOCJ9.nqGgQ6Z52CbaHZzPGcwQG6U-nMDxb1yIe7HQMxjoDTs'
@@ -64,9 +64,9 @@ RSpec.describe 'PasswordsController' do
       context 'valid inputs' do
         it 'returns [200 OK] and updates the user\'s password' do
           data = JSON.dump({
-                             "user": {
-                               "password": 'password',
-                               "password_confirmation": 'password'
+                             user: {
+                               password: 'password',
+                               password_confirmation: 'password'
                              }
                            })
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token, 'Content-Type' => 'application/json' }
@@ -78,9 +78,9 @@ RSpec.describe 'PasswordsController' do
       context 'invalid inputs' do
         it 'returns [400 Bad Request] for missing authentication' do
           data = JSON.dump({
-                             "user": {
-                               "password": 'password',
-                               "password_confirmation": 'password'
+                             user: {
+                               password: 'password',
+                               password_confirmation: 'password'
                              }
                            })
           headers = { 'Content-Type' => 'application/json' }
@@ -94,8 +94,8 @@ RSpec.describe 'PasswordsController' do
         end
         it 'returns [400 Bad Request] for missing password field' do
           data = JSON.dump({
-                             "user": {
-                               "password_confirmation": 'password'
+                             user: {
+                               password_confirmation: 'password'
                              }
                            })
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token, 'Content-Type' => 'application/json' }
@@ -104,8 +104,8 @@ RSpec.describe 'PasswordsController' do
         end
         it 'returns [400 Bad Request] for missing password_confirmation field' do
           data = JSON.dump({
-                             "user": {
-                               "password": 'password'
+                             user: {
+                               password: 'password'
                              }
                            })
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token, 'Content-Type' => 'application/json' }
@@ -114,9 +114,9 @@ RSpec.describe 'PasswordsController' do
         end
         it 'returns [400 Bad Request] for blank password' do
           data = JSON.dump({
-                             "user": {
-                               "password": '',
-                               "password_confirmation": ''
+                             user: {
+                               password: '',
+                               password_confirmation: ''
                              }
                            })
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token, 'Content-Type' => 'application/json' }
@@ -125,9 +125,9 @@ RSpec.describe 'PasswordsController' do
         end
         it 'returns [403 Forbidden] for blacklisted user' do
           data = JSON.dump({
-                             "user": {
-                               "password": 'password',
-                               "password_confirmation": 'password'
+                             user: {
+                               password: 'password',
+                               password_confirmation: 'password'
                              }
                            })
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_blacklisted, 'Content-Type' => 'application/json' }
@@ -136,9 +136,9 @@ RSpec.describe 'PasswordsController' do
         end
         it 'returns [422 Unprocessable Content] for too short password (min 8 char)' do
           data = JSON.dump({
-                             "user": {
-                               "password": '1234657',
-                               "password_confirmation": '1234657'
+                             user: {
+                               password: '1234657',
+                               password_confirmation: '1234657'
                              }
                            })
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token, 'Content-Type' => 'application/json' }
@@ -147,9 +147,9 @@ RSpec.describe 'PasswordsController' do
         end
         it 'returns [422 Unprocessable Content] for too long password (max 72 char)' do
           data = JSON.dump({
-                             "user": {
-                               "password": 'passwordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordp',
-                               "password_confirmation": 'passwordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordp'
+                             user: {
+                               password: 'passwordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordp',
+                               password_confirmation: 'passwordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordp'
                              }
                            })
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token, 'Content-Type' => 'application/json' }
@@ -158,9 +158,9 @@ RSpec.describe 'PasswordsController' do
         end
         it 'returns [422 Unprocessable Content] for password and password_confirmation mismatch' do
           data = JSON.dump({
-                             "user": {
-                               "password": 'password',
-                               "password_confirmation": '12345678'
+                             user: {
+                               password: 'password',
+                               password_confirmation: '12345678'
                              }
                            })
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token, 'Content-Type' => 'application/json' }

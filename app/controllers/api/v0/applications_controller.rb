@@ -37,7 +37,7 @@ module Api
         application = job.applications.where(user_id: params[:application_id]).first
         handle_accept(application)
       rescue ActiveRecord::RecordNotFound
-        render status: 404, json: { "message": 'Not found.' }
+        render status: 404, json: { message: 'Not found.' }
       end
 
       def reject
@@ -46,7 +46,7 @@ module Api
         application = job.applications.where(user_id: params[:application_id]).first
         handle_reject(application)
       rescue ActiveRecord::RecordNotFound
-        render status: 404, json: { "message": 'Not found.' }
+        render status: 404, json: { message: 'Not found.' }
       end
 
       def create_application_with_cv(job)
@@ -88,7 +88,7 @@ module Api
 
         application.user = Current.user
         application.job = job
-        render status: 200, json: { "message": 'Application submitted!' }
+        render status: 200, json: { message: 'Application submitted!' }
       end
 
       def fetch_applications
@@ -97,9 +97,9 @@ module Api
 
       def render_applications(applications)
         if applications.empty?
-          render status: 204, json: { "applications": applications }
+          render status: 204, json: { applications: }
         else
-          render status: 200, json: { "applications": applications }
+          render status: 200, json: { applications: }
         end
       end
 
@@ -109,9 +109,9 @@ module Api
 
       def render_application(application)
         if application.empty? || application.nil?
-          render status: 204, json: { "application": application }
+          render status: 204, json: { application: }
         else
-          render status: 200, json: { "application": application }
+          render status: 200, json: { application: }
         end
       end
 
@@ -128,7 +128,7 @@ module Api
         application.user = Current.user
 
         if application.save!
-          render status: 200, json: { "message": 'Application submitted!' }
+          render status: 200, json: { message: 'Application submitted!' }
         else
           malformed_error('application')
         end
@@ -136,23 +136,23 @@ module Api
 
       def handle_accept(application)
         if application.nil?
-          render status: 404, json: { "message": 'Not found.' }
+          render status: 404, json: { message: 'Not found.' }
         elsif application.status != '1'
           application.accept(application_params[:response] || 'ACCEPTED')
-          render status: 200, json: { "message": 'Application successfully accepted.' }
+          render status: 200, json: { message: 'Application successfully accepted.' }
         else
-          render status: 400, json: { "message": 'Already accepted.' }
+          render status: 400, json: { message: 'Already accepted.' }
         end
       end
 
       def handle_reject(application)
         if application.nil?
-          render status: 404, json: { "message": 'Not found.' }
+          render status: 404, json: { message: 'Not found.' }
         elsif application.status != '-1'
           application.reject(application_params[:response] || 'REJECTED')
-          render status: 200, json: { "message": 'Application successfully rejected.' }
+          render status: 200, json: { message: 'Application successfully rejected.' }
         else
-          render status: 400, json: { "message": 'Already rejected.' }
+          render status: 400, json: { message: 'Already rejected.' }
         end
       end
 

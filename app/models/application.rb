@@ -20,16 +20,16 @@ class Application < ApplicationRecord
   delegate :cv, to: :application_attachment,
                 allow_nil: true
 
-  validates :user_id, presence: { "error": 'ERR_BLANK', "description": "Attribute can't be blank" },
-                      uniqueness: { scope: :job_id, "error": 'ERR_TAKEN', "description": 'You already submitted an application for this job' }
+  validates :user_id, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
+                      uniqueness: { scope: :job_id, error: 'ERR_TAKEN', description: 'You already submitted an application for this job' }
   validates :job_id,
-            presence: { "error": 'ERR_BLANK',
-                        "description": "Attribute can't be blank" }
+            presence: { error: 'ERR_BLANK',
+                        description: "Attribute can't be blank" }
   validates :application_text,
-            length: { minimum: 0, maximum: 1000, "error": 'ERR_LENGTH', "description": 'Attribute length is invalid' }, presence: true
+            length: { minimum: 0, maximum: 1000, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }, presence: true
   validates :response,
-            length: { minimum: 0, maximum: 500, "error": 'ERR_LENGTH', "description": 'Attribute length is invalid' }, presence: false
-  validates :status, inclusion: { in: %w[-1 0 1], "error": 'ERR_INVALID', "description": 'Attribute is invalid' },
+            length: { minimum: 0, maximum: 500, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }, presence: false
+  validates :status, inclusion: { in: %w[-1 0 1], error: 'ERR_INVALID', description: 'Attribute is invalid' },
                      presence: false
 
   def create_from(user_id, job_id, params)
@@ -103,13 +103,13 @@ class Application < ApplicationRecord
     application.user = User.find(user_id)
     application.job = job
     render status: 200,
-           json: { "message": 'Application submitted!' }
+           json: { message: 'Application submitted!' }
   end
 
   def handle_record_invalid(application_attachment)
     application_attachment.destroy if application_attachment.present?
     render status: 400,
-           json: { "message": 'Application could not be submitted due to invalid file attachment' }
+           json: { message: 'Application could not be submitted due to invalid file attachment' }
   end
 
   def cleanup_notifications

@@ -12,10 +12,10 @@ module Api
         subscriptions = Current.user.subscriptions
         if subscriptions.empty?
           render(status: 204,
-                 json: { "subscriptions": subscriptions })
+                 json: { subscriptions: })
         else
           render(
-            status: 200, json: { "subscriptions": subscriptions }
+            status: 200, json: { subscriptions: }
           )
         end
       end
@@ -26,22 +26,22 @@ module Api
         subscription.user = Current.user
         if subscription.save
           render status: 201,
-                 json: { "message": 'Subscription created!' }
+                 json: { message: 'Subscription created!' }
         else
           render status: 400,
-                 json: { "subscription": subscription.errors }
+                 json: { subscription: subscription.errors }
         end
       end
 
       def subscription
         render(status: 200,
-               json: { "subscription": @subscription })
+               json: { subscription: @subscription })
       end
 
       def cancel_subscription
         if @subscription.cancel
           render status: 200,
-                 json: { "message": 'Subscription cancelled!' }
+                 json: { message: 'Subscription cancelled!' }
         else
           malformed_error('subscription')
         end
@@ -50,7 +50,7 @@ module Api
       def activate_subscription
         if @subscription.activate
           render status: 200,
-                 json: { "message": 'Subscription activated!' }
+                 json: { message: 'Subscription activated!' }
         else
           # Handle payment error
           malformed_error('subscription')
@@ -60,7 +60,7 @@ module Api
       def renew_subscription
         if @subscription.renew
           render status: 200,
-                 json: { "message": 'Subscription renewed!' }
+                 json: { message: 'Subscription renewed!' }
         else
           malformed_error('subscription')
         end
@@ -69,7 +69,7 @@ module Api
       def delete_subscription
         if @subscription.destroy
           render status: 200,
-                 json: { "message": 'Subscription deleted!' }
+                 json: { message: 'Subscription deleted!' }
         else
           malformed_error('subscription')
         end

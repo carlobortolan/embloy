@@ -4,7 +4,7 @@
 # part of the Genius application process. It includes two nested classes, Encoder and Decoder,
 # which handle the encoding and decoding of tokens respectively.
 class GeniusQueryService < AuthenticationTokenService
-  HMAC_SECRET = ENV['GENIUS_QUERY_TOKEN_SECRET']
+  HMAC_SECRET = ENV.fetch('GENIUS_QUERY_TOKEN_SECRET', nil)
   ALGORITHM_TYPE = 'HS256'
   ISSUER = Socket.gethostname
   REPLACEMENT_CHARACTER = '°'
@@ -27,16 +27,16 @@ class GeniusQueryService < AuthenticationTokenService
       job = Job.find(args['job_id'])
       res = Job.json_for(job)
 
-      { "job": res }
+      { job: res }
 
     elsif !args.key?('job_id') && args.key('user_id')
       # TODO: query users
       []
-    elsif args.key?('job_id') && args.key('user_id')
-      # TODO: query applications
-      []
-    else
-      []
+      # elsif args.key?('job_id') && args.key('user_id')
+      # # TODO: query applications
+      #  []
+      #    else
+      #     []
     end
   end
 

@@ -168,9 +168,9 @@ class FeedGenerator
     # puts "TGT = #{search_item}"
     bound = [0, 0]
     array.each_with_index do |value, index|
-      if value.values_at(tgt)[0].to_i <= search_item - 3600 * 24 - 1
+      if value.values_at(tgt)[0].to_i <= search_item - (3600 * 24) - 1
         bound[0] = index + 1
-      elsif value.values_at(tgt)[0].to_i <= search_item + 3600 * 24 - 1
+      elsif value.values_at(tgt)[0].to_i <= search_item + (3600 * 24) - 1
         bound[1] = index + 1
       end
     end
@@ -204,7 +204,7 @@ class FeedGenerator
     lat1_rad, = loc1.map { |i| i * rad_per_deg }
     lat2_rad, = loc2.map { |i| i * rad_per_deg }
 
-    a = Math.sin(d_lat_rad / 2)**2 + Math.cos(lat1_rad) * Math.cos(lat2_rad) * Math.sin(d_lon_rad / 2)**2
+    a = (Math.sin(d_lat_rad / 2)**2) + (Math.cos(lat1_rad) * Math.cos(lat2_rad) * (Math.sin(d_lon_rad / 2)**2))
     c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 
     rm * c # Delta in meters

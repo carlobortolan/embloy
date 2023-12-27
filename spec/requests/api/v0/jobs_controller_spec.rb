@@ -7,13 +7,13 @@ RSpec.describe 'JobsController' do
     # Create basic user
     charset = ('a'..'z').to_a + ('A'..'Z').to_a
     @valid_user = User.create!(
-      "first_name": 'Max',
-      "last_name": 'Mustermann',
-      "email": "#{(0...16).map { charset.sample }.join}@embloy.com",
-      "password": 'password',
-      "password_confirmation": 'password',
-      "user_role": 'verified',
-      "activity_status": '1'
+      first_name: 'Max',
+      last_name: 'Mustermann',
+      email: "#{(0...16).map { charset.sample }.join}@embloy.com",
+      password: 'password',
+      password_confirmation: 'password',
+      user_role: 'verified',
+      activity_status: '1'
     )
     puts "Created valid user: #{@valid_user.id}"
 

@@ -11,15 +11,15 @@ module Api
         @user = User.new(user_params)
 
         if @user.save
-          render status: 201, json: { "message": "Account registered! Please activate your account and claim your refresh token via GET #{api_v0_user_verify_path} " }
+          render status: 201, json: { message: "Account registered! Please activate your account and claim your refresh token via GET #{api_v0_user_verify_path} " }
         else
           handle_errors
         end
       rescue ActionController::ParameterMissing
-        render status: 400, json: { "user": [
+        render status: 400, json: { user: [
           {
-            "error": 'ERR_BLANK',
-            "description": "Attribute can't be blank"
+            error: 'ERR_BLANK',
+            description: "Attribute can't be blank"
           }
         ] }
       end
@@ -136,7 +136,7 @@ module Api
       def issue_refresh_token
         token = AuthenticationTokenService::Refresh::Encoder.call(@user.id)
 
-        render status: 200, json: { "refresh_token": token }
+        render status: 200, json: { refresh_token: token }
       end
     end
   end

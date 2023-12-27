@@ -9,113 +9,113 @@ RSpec.describe 'QuicklinkController' do
     ### USER CREATION ###
     # Create user with valid subscription, own jobs, upcoming jobs, reviews, ...
     @valid_user = User.create!(
-      "first_name": 'Max',
-      "last_name": 'Mustermann',
-      "email": "#{(0...16).map { charset.sample }.join}@embloy.com",
-      "password": 'password',
-      "password_confirmation": 'password',
-      "user_role": 'verified',
-      "activity_status": '1'
+      first_name: 'Max',
+      last_name: 'Mustermann',
+      email: "#{(0...16).map { charset.sample }.join}@embloy.com",
+      password: 'password',
+      password_confirmation: 'password',
+      user_role: 'verified',
+      activity_status: '1'
     )
     puts "Created subscribed, verified user without own jobs, upcoming jobs, reviews: #{@valid_user.id}"
     @valid_user.subscriptions.create!(
-      "tier": 'basic',
-      "active": true,
-      "start_date": Time.now,
-      "expiration_date": Time.now + 6.month,
-      "auto_renew": true
+      tier: 'basic',
+      active: true,
+      start_date: Time.now,
+      expiration_date: Time.now + 6.month,
+      auto_renew: true
     )
 
     # Create user with soon expiring subscription, own jobs, upcoming jobs, reviews, ...
     @valid_user_exp = User.create!(
-      "first_name": 'Max',
-      "last_name": 'Mustermann',
-      "email": "#{(0...16).map { charset.sample }.join}@embloy.com",
-      "password": 'password',
-      "password_confirmation": 'password',
-      "user_role": 'verified',
-      "activity_status": '1'
+      first_name: 'Max',
+      last_name: 'Mustermann',
+      email: "#{(0...16).map { charset.sample }.join}@embloy.com",
+      password: 'password',
+      password_confirmation: 'password',
+      user_role: 'verified',
+      activity_status: '1'
     )
     puts "Created subscribed, verified user without own jobs, upcoming jobs, reviews: #{@valid_user_exp.id}"
     @valid_user_exp.subscriptions.create!(
-      "tier": 'basic',
-      "active": true,
-      "start_date": Time.now,
-      "expiration_date": Time.now + 1.month,
-      "auto_renew": true
+      tier: 'basic',
+      active: true,
+      start_date: Time.now,
+      expiration_date: Time.now + 1.month,
+      auto_renew: true
     )
 
     # Create valid verified user with own jobs
     @valid_user_has_own_jobs = User.create!(
-      "first_name": 'Max',
-      "last_name": 'Mustermann',
-      "email": "#{(0...16).map { charset.sample }.join}@embloy.com",
-      "password": 'password',
-      "password_confirmation": 'password',
-      "user_role": 'verified',
-      "activity_status": '1'
+      first_name: 'Max',
+      last_name: 'Mustermann',
+      email: "#{(0...16).map { charset.sample }.join}@embloy.com",
+      password: 'password',
+      password_confirmation: 'password',
+      user_role: 'verified',
+      activity_status: '1'
     )
     puts "Created valid verified user with own jobs: #{@valid_user_has_own_jobs.id}"
     @valid_user_has_own_jobs.subscriptions.create!(
-      "tier": 'basic',
-      "active": true,
-      "start_date": Time.now,
-      "expiration_date": Time.now + 6.month,
-      "auto_renew": true
+      tier: 'basic',
+      active: true,
+      start_date: Time.now,
+      expiration_date: Time.now + 6.month,
+      auto_renew: true
     )
 
     # Create valid verified user who already has applied
     @valid_user_has_applied = User.create!(
-      "first_name": 'Max',
-      "last_name": 'Mustermann',
-      "email": "#{(0...16).map { charset.sample }.join}@embloy.com",
-      "password": 'password',
-      "password_confirmation": 'password',
-      "user_role": 'verified',
-      "activity_status": '1'
+      first_name: 'Max',
+      last_name: 'Mustermann',
+      email: "#{(0...16).map { charset.sample }.join}@embloy.com",
+      password: 'password',
+      password_confirmation: 'password',
+      user_role: 'verified',
+      activity_status: '1'
     )
     puts "Created valid verified user who has already applied: #{@valid_user_has_applied.id}"
     @valid_user_has_applied.subscriptions.create!(
-      "tier": 'basic',
-      "active": true,
-      "start_date": Time.now,
-      "expiration_date": Time.now + 6.month,
-      "auto_renew": true
+      tier: 'basic',
+      active: true,
+      start_date: Time.now,
+      expiration_date: Time.now + 6.month,
+      auto_renew: true
     )
 
     # Create valid unverified user
     @unverified_user = User.create!(
-      "first_name": 'Max',
-      "last_name": 'Mustermann',
-      "email": "#{(0...16).map { charset.sample }.join}@embloy.com",
-      "password": 'password',
-      "password_confirmation": 'password',
-      "user_role": 'spectator',
-      "activity_status": '0'
+      first_name: 'Max',
+      last_name: 'Mustermann',
+      email: "#{(0...16).map { charset.sample }.join}@embloy.com",
+      password: 'password',
+      password_confirmation: 'password',
+      user_role: 'spectator',
+      activity_status: '0'
     )
     puts "Created unverified user: #{@unverified_user.id}"
 
     # Create user without valid subscription, own jobs, upcoming jobs, reviews, ...
     @unsubscribed_user = User.create!(
-      "first_name": 'Max',
-      "last_name": 'Mustermann',
-      "email": "#{(0...16).map { charset.sample }.join}@embloy.com",
-      "password": 'password',
-      "password_confirmation": 'password',
-      "user_role": 'verified',
-      "activity_status": '1'
+      first_name: 'Max',
+      last_name: 'Mustermann',
+      email: "#{(0...16).map { charset.sample }.join}@embloy.com",
+      password: 'password',
+      password_confirmation: 'password',
+      user_role: 'verified',
+      activity_status: '1'
     )
     puts "Created verified unsubscribed user without own jobs, upcoming jobs, reviews: #{@unsubscribed_user.id}"
 
     # Blacklisted verified user
     @blacklisted_user = User.create!(
-      "first_name": 'Max',
-      "last_name": 'Mustermann',
-      "email": "#{(0...16).map { charset.sample }.join}@embloy.com",
-      "password": 'password',
-      "password_confirmation": 'password',
-      "user_role": 'verified',
-      "activity_status": '1'
+      first_name: 'Max',
+      last_name: 'Mustermann',
+      email: "#{(0...16).map { charset.sample }.join}@embloy.com",
+      password: 'password',
+      password_confirmation: 'password',
+      user_role: 'verified',
+      activity_status: '1'
     )
     puts "Created blacklisted user: #{@blacklisted_user.id}"
 
@@ -214,8 +214,8 @@ RSpec.describe 'QuicklinkController' do
     puts "Valid user who will be blacklisted access token: #{@valid_ct_blacklisted}"
 
     UserBlacklist.create!(
-      "user_id": @blacklisted_user.id,
-      "reason": 'Test blacklist'
+      user_id: @blacklisted_user.id,
+      reason: 'Test blacklist'
     )
     puts "Blacklisted user #{@blacklisted_user.id}}"
 

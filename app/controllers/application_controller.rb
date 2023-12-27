@@ -400,11 +400,11 @@ class ApplicationController < ActionController::Base
   # ======== that model the role hierarchy ========
 
   def owner
-    Current.user.nil? || @job.nil? || @job.user_id != Current.user.id ? false : true
+    !(Current.user.nil? || @job.nil? || @job.user_id != Current.user.id)
   end
 
   def self.owner
-    Current.user.nil? || @job.nil? || @job.user_id != Current.user.id ? false : true
+    !(Current.user.nil? || @job.nil? || @job.user_id != Current.user.id)
   end
 
   def owner!

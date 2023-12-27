@@ -10,61 +10,61 @@ RSpec.describe 'UserController' do
 
     # Create valid verified user without own jobs, upcoming jobs, reviews, ...
     @valid_user = User.create!(
-      "first_name": 'Max',
-      "last_name": 'Mustermann',
-      "email": "#{(0...16).map { charset.sample }.join}@embloy.com",
-      "password": 'password',
-      "password_confirmation": 'password',
-      "user_role": 'verified',
-      "activity_status": '1'
+      first_name: 'Max',
+      last_name: 'Mustermann',
+      email: "#{(0...16).map { charset.sample }.join}@embloy.com",
+      password: 'password',
+      password_confirmation: 'password',
+      user_role: 'verified',
+      activity_status: '1'
     )
     puts "Created verified user without own jobs, upcoming jobs, reviews: #{@valid_user.id}"
 
     # Create valid verified user with own jobs
     @valid_user_has_own_jobs = User.create!(
-      "first_name": 'Max',
-      "last_name": 'Mustermann',
-      "email": "#{(0...16).map { charset.sample }.join}@embloy.com",
-      "password": 'password',
-      "password_confirmation": 'password',
-      "user_role": 'verified',
-      "activity_status": '1'
+      first_name: 'Max',
+      last_name: 'Mustermann',
+      email: "#{(0...16).map { charset.sample }.join}@embloy.com",
+      password: 'password',
+      password_confirmation: 'password',
+      user_role: 'verified',
+      activity_status: '1'
     )
     puts "Created valid verified user with own jobs: #{@valid_user_has_own_jobs.id}"
 
     # Create valid verified user with upcoming jobs
     @valid_user_has_upcoming_jobs = User.create!(
-      "first_name": 'Max',
-      "last_name": 'Mustermann',
-      "email": "#{(0...16).map { charset.sample }.join}@embloy.com",
-      "password": 'password',
-      "password_confirmation": 'password',
-      "user_role": 'verified',
-      "activity_status": '1'
+      first_name: 'Max',
+      last_name: 'Mustermann',
+      email: "#{(0...16).map { charset.sample }.join}@embloy.com",
+      password: 'password',
+      password_confirmation: 'password',
+      user_role: 'verified',
+      activity_status: '1'
     )
     puts "Created valid verified user with upcoming jobs: #{@valid_user_has_upcoming_jobs.id}"
 
     # Create valid unverified user
     @unverified_user = User.create!(
-      "first_name": 'Max',
-      "last_name": 'Mustermann',
-      "email": "#{(0...16).map { charset.sample }.join}@embloy.com",
-      "password": 'password',
-      "password_confirmation": 'password',
-      "user_role": 'spectator',
-      "activity_status": '0'
+      first_name: 'Max',
+      last_name: 'Mustermann',
+      email: "#{(0...16).map { charset.sample }.join}@embloy.com",
+      password: 'password',
+      password_confirmation: 'password',
+      user_role: 'spectator',
+      activity_status: '0'
     )
     puts "Created unverified user: #{@unverified_user.id}"
 
     # Blacklisted verified user
     @blacklisted_user = User.create!(
-      "first_name": 'Max',
-      "last_name": 'Mustermann',
-      "email": "#{(0...16).map { charset.sample }.join}@embloy.com",
-      "password": 'password',
-      "password_confirmation": 'password',
-      "user_role": 'verified',
-      "activity_status": '1'
+      first_name: 'Max',
+      last_name: 'Mustermann',
+      email: "#{(0...16).map { charset.sample }.join}@embloy.com",
+      password: 'password',
+      password_confirmation: 'password',
+      user_role: 'verified',
+      activity_status: '1'
     )
     puts "Created blacklisted user: #{@blacklisted_user.id}"
 
@@ -119,8 +119,8 @@ RSpec.describe 'UserController' do
     puts "Valid user who will be blacklisted access token: #{@valid_at_blacklisted}"
 
     UserBlacklist.create!(
-      "user_id": @blacklisted_user.id,
-      "reason": 'Test blacklist'
+      user_id: @blacklisted_user.id,
+      reason: 'Test blacklist'
     )
     puts "Blacklisted user #{@blacklisted_user.id}}"
 

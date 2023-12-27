@@ -14,22 +14,22 @@ class User < ApplicationRecord
   has_many :application_attachments
   has_many :subscriptions, dependent: :delete_all
 
-  validates :email, presence: { "error": 'ERR_BLANK', "description": "Attribute can't be blank" },
-                    uniqueness: { "error": 'ERR_TAKEN', "description": 'Attribute exists' },
-                    format: { with: /\A[^@\s]+@[^@\s]+\z/, "error": 'ERR_INVALID', "description": 'Attribute is malformed or unknown' }
-  validates :first_name, presence: { "error": 'ERR_BLANK', "description": "Attribute can't be blank" },
+  validates :email, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
+                    uniqueness: { error: 'ERR_TAKEN', description: 'Attribute exists' },
+                    format: { with: /\A[^@\s]+@[^@\s]+\z/, error: 'ERR_INVALID', description: 'Attribute is malformed or unknown' }
+  validates :first_name, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
                          uniqueness: false
   validates :last_name,
-            presence: { "error": 'ERR_BLANK', "description": "Attribute can't be blank" }, uniqueness: false
-  validates :password, presence: { "error": 'ERR_BLANK', "description": "Attribute can't be blank", if: :password_required? },
-                       length: { minimum: 8, maximum: 72, "error": 'ERR_LENGTH', "description": 'Attribute length is invalid', if: :password_required? }
-  validates :password_confirmation, presence: { "error": 'ERR_BLANK', "description": "Attribute can't be blank", if: :password_required? },
-                                    length: { minimum: 8, maximum: 72, "error": 'ERR_LENGTH', "description": 'Attribute length is invalid', if: :password_required? }
+            presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" }, uniqueness: false
+  validates :password, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank", if: :password_required? },
+                       length: { minimum: 8, maximum: 72, error: 'ERR_LENGTH', description: 'Attribute length is invalid', if: :password_required? }
+  validates :password_confirmation, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank", if: :password_required? },
+                                    length: { minimum: 8, maximum: 72, error: 'ERR_LENGTH', description: 'Attribute length is invalid', if: :password_required? }
   # allow_nil: false,
   # allow_blank: false
   validates :application_notifications,
-            presence: { "error": 'ERR_BLANK',
-                        "description": "Attribute can't be blank" }
+            presence: { error: 'ERR_BLANK',
+                        description: "Attribute can't be blank" }
   validates :longitude, presence: false
   validates :latitude, presence: false
   validates :country_code, presence: false
@@ -37,9 +37,9 @@ class User < ApplicationRecord
   validates :city, presence: false
   validates :address, presence: false
   validates :user_type,
-            inclusion: { in: %w[company private], "error": 'ERR_INVALID', "description": 'Attribute is invalid' }, presence: false
+            inclusion: { in: %w[company private], error: 'ERR_INVALID', description: 'Attribute is invalid' }, presence: false
   validates :user_role,
-            inclusion: { in: %w[admin editor developer moderator verified spectator], "error": 'ERR_INVALID', "description": 'Attribute is invalid' }, presence: false
+            inclusion: { in: %w[admin editor developer moderator verified spectator], error: 'ERR_INVALID', description: 'Attribute is invalid' }, presence: false
   validates :image_url, presence: false
 
   validate :country_code_validation
@@ -113,8 +113,8 @@ class User < ApplicationRecord
     return if allowed_formats.include?(image_url.blob.content_type)
 
     errors.add(:image_url,
-               { "error": 'ERR_INVALID',
-                 "description": 'must be a PNG, JPG, or JPEG image' })
+               { error: 'ERR_INVALID',
+                 description: 'must be a PNG, JPG, or JPEG image' })
   end
 
   def password_validation

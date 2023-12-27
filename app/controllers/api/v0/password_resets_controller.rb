@@ -11,7 +11,7 @@ module Api
           @user = User.find_by(email: params[:email])
           PasswordMailer.with(user: @user).reset.deliver_later if !@user.nil? && user_not_blacklisted(@user.id) && @user.present?
 
-          render status: 202, json: { "message": 'Password reset process initiated! Please check your mailbox.' }
+          render status: 202, json: { message: 'Password reset process initiated! Please check your mailbox.' }
         else
           malformed_error('email')
         end
@@ -31,7 +31,7 @@ module Api
       rescue ActiveRecord::RecordNotFound
         not_found_error('user')
       rescue ActiveSupport::MessageVerifier::InvalidSignature
-        render status: 400, json: { "message": 'Token has either expired, has a purpose mismatch, is for another record, or has been tampered with' }
+        render status: 400, json: { message: 'Token has either expired, has a purpose mismatch, is for another record, or has been tampered with' }
       end
 
       private
@@ -46,7 +46,7 @@ module Api
 
       def update_password
         @user.update!(password_params)
-        render status: 200, json: { "message": 'Your password was reset successfully. Please sign in.' }
+        render status: 200, json: { message: 'Your password was reset successfully. Please sign in.' }
       end
 
       def password_params

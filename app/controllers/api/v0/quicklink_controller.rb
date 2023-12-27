@@ -35,7 +35,7 @@ module Api
 
         if application.save
           render status: 200,
-                 json: { "message": 'Application submitted!' }
+                 json: { message: 'Application submitted!' }
         else
           malformed_error('application')
         end

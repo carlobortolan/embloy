@@ -20,7 +20,7 @@ module Api
 
       def update_password
         Current.user.update!(password_params)
-        render status: 200, json: { "message": 'Password updated' }
+        render status: 200, json: { message: 'Password updated' }
       end
 
       def password_params

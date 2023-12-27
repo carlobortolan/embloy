@@ -70,21 +70,21 @@ Rails.application.configure do
 
   config.action_mailer.perform_deliveries = true
   config.action_mailer.raise_delivery_errors = true
-  config.action_mailer.default_options = { from: ENV['EMAIL_NOREPLY_USER'] }
+  config.action_mailer.default_options = { from: ENV.fetch('EMAIL_NOREPLY_USER', nil) }
 
   config.action_mailer.perform_caching = false
 
-  config.action_mailer.default_url_options = { host: ENV['SERVICE_HOST'] }
+  config.action_mailer.default_url_options = { host: ENV.fetch('SERVICE_HOST', nil) }
 
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-    address: ENV['EMAIL_ADDRESS'],
+    address: ENV.fetch('EMAIL_ADDRESS', nil),
     port: 587,
-    domain: ENV['EMAIL_HOST'],
+    domain: ENV.fetch('EMAIL_HOST', nil),
     authentication: :login,
     enable_starttls_auto: true,
-    user_name: ENV['EMAIL_NOREPLY_USER'],
-    password: ENV['EMAIL_PASSWORD']
+    user_name: ENV.fetch('EMAIL_NOREPLY_USER', nil),
+    password: ENV.fetch('EMAIL_PASSWORD', nil)
   }
 
   # Ignore bad email addresses and do not raise email delivery errors.
@@ -99,7 +99,7 @@ Rails.application.configure do
   config.active_support.report_deprecations = false
 
   # Use default logging formatter so that PID and timestamp are not suppressed.
-  config.log_formatter = ::Logger::Formatter.new
+  config.log_formatter = Logger::Formatter.new
 
   # Use a different logger for distributed setups.
   # require "syslog/logger"

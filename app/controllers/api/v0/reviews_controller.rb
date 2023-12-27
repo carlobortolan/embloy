@@ -36,7 +36,7 @@ module Api
         verify_owner(review)
         review.destroy!
         render status: 200,
-               json: { "message": 'Review deleted!' }
+               json: { message: 'Review deleted!' }
       rescue ActionController::ParameterMissing
         blank_error('review')
       rescue ActiveRecord::RecordNotFound
@@ -108,7 +108,7 @@ module Api
         review.user_id = Current.user.id
         review.created_by = Current.user.id # TODO: migrate to drop column
         review.save!
-        render status: 200, json: { "message": 'Review submitted!' }
+        render status: 200, json: { message: 'Review submitted!' }
       end
 
       def update_review
@@ -116,7 +116,7 @@ module Api
         return not_found_error('review') unless review.present?
 
         if review.update(review_params)
-          render status: 200, json: { "message": 'Review updated!' }
+          render status: 200, json: { message: 'Review updated!' }
         else
           render status: 400, json: review.errors.details
         end
