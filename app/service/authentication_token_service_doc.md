@@ -70,7 +70,7 @@ happen.
    You should only expect the following subclasses:
     + ``::SUB``: When ``<user_id>`` is malformed
     + ``::CustomEXP``: When ``<man_interval>`` is malformed
-   ####     
+   ####    
    ```
    AuthenticationTokenService::InvalidUser
    ```
@@ -107,7 +107,7 @@ happen.
    ###### Exceptions
    Have a look at the [documentation for custom exceptions](./custom_exceptions_doc.md) for more information.
 
-   ####     
+   ####    
      ```
    JWT
    ```
@@ -158,7 +158,7 @@ happen.
    ```
    You should only expect the following subclasses:
     + ``::Token``: When ``<refresh_token>`` is malformed
-   ####     
+   ####    
      ```
    JWT
    ```
@@ -202,7 +202,7 @@ happen.
    ```
    You should only expect the following subclasses:
     + ``::Token``: When ``<access_token>`` is malformed
-   ####     
+   ####    
      ```
    JWT
    ```
@@ -259,7 +259,7 @@ happen.
    ```
    You should only expect the following subclasses:
     + ``::Quicklink::Client``: When ``<client_token>`` is malformed
-   ####     
+   ####    
      ```
    JWT
    ```
@@ -303,7 +303,7 @@ happen.
    ```
    You should only expect the following subclasses:
     + ``::Quicklink::Client``: When ``<client_token>`` is malformed
-   ####     
+   ####    
      ```
    JWT
    ```
@@ -351,7 +351,7 @@ happen.
    ```
    You should only expect the following subclasses:
     + ``::Quicklink::Request``: When ``<client_token>`` is malformed
-   ####     
+   ####    
      ```
    JWT
    ```
@@ -377,8 +377,7 @@ happen.
    ###### Data parameters
     1. ``<request_token>`` *<span style="color:crimson">REQUIRED </span>*
         + String
-        + ``<request_token>`` must be a JWT, solely issued by the ``QuicklinkService::Quicklink::Request::Encoder``
-          class
+        + ``<request_token>`` must be a JWT, solely issued by the ``QuicklinkService::Quicklink::Request::Encoder`` class
 
    ####
    ###### Pipeline
@@ -396,7 +395,7 @@ happen.
    ```
    You should only expect the following subclasses:
     + ``::Quicklink::Request``: When ``<request_token>`` is malformed
-   ####     
+   ####    
      ```
    JWT
    ```

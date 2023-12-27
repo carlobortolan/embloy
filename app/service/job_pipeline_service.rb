@@ -2,6 +2,5 @@
 
 class JobPipelineService
   class EventEmitter
-
   end
 end

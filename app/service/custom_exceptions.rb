@@ -1,68 +1,83 @@
+# frozen_string_literal: true
+
 #########################################################
 ################# CUSTOM EXCEPTIONS #####################
 #########################################################
 class CustomExceptions < StandardError
-
   # ============== User Format and Authentication - Exceptions =============
   class InvalidUser < StandardError
-    class Unknown < StandardError # Should be risen when there is no record in users for a given id
+    # Should be risen when there is no record in users for a given id
+    class Unknown < StandardError
     end
 
-    class CredentialsWrong < StandardError # User credentials not correct -> Authentication failed
+    # User credentials not correct -> Authentication failed
+    class CredentialsWrong < StandardError
     end
 
-    class LoggedOut < StandardError # (NON-API-ONLY) Current.user is nil (= session token expired)
+    # (NON-API-ONLY) Current.user is nil (= session token expired)
+    class LoggedOut < StandardError
     end
 
-    class Inactive < StandardError # Current.user is deactivated (activity_status = 0)
+    # Current.user is deactivated (activity_status = 0)
+    class Inactive < StandardError
     end
-
   end
 
   # ============== User Authorization - Exceptions =============
   class Unauthorized < StandardError
-
-    class NotOwner < StandardError # Current.user is not owner of resource that he is trying to access
+    # Current.user is not owner of resource that he is trying to access
+    class NotOwner < StandardError
     end
 
-    class InsufficientRole < StandardError # User does not have the required role to access the resource
+    # User does not have the required role to access the resource
+    class InsufficientRole < StandardError
       # TODO: Subklassen können je nach dem wie genau die Error message sein soll auch weggelassen werden
-      class NotAdmin < StandardError # User does not have the 'admin' role
+      # User does not have the 'admin' role
+      class NotAdmin < StandardError
       end
 
-      class NotEditor < StandardError # User does not have the 'admin' role
+      # User does not have the 'admin' role
+      class NotEditor < StandardError
       end
 
-      class NotDeveloper < StandardError # User does not have the 'developer' role
+      # User does not have the 'developer' role
+      class NotDeveloper < StandardError
       end
 
-      class NotModerator < StandardError # User does not have the 'moderator' role
+      # User does not have the 'moderator' role
+      class NotModerator < StandardError
       end
 
-      class NotVerified < StandardError # User is not 'verified' yet
+      # User is not 'verified' yet
+      class NotVerified < StandardError
       end
-
     end
 
-    class Blocked < StandardError # User is blacklisted
+    # User is blacklisted
+    class Blocked < StandardError
     end
   end
 
   # ============== JWT-Token - Exceptions =============
   class InvalidInput < StandardError
-    class Token < StandardError # Invalid token?
+    # Invalid token?
+    class Token < StandardError
     end
 
-    class SUB < StandardError # Token has wrong format?
+    # Token has wrong format?
+    class SUB < StandardError
     end
 
-    class CustomEXP < StandardError # Token expired?
+    # Token expired?
+    class CustomEXP < StandardError
     end
 
-    class BlankCredentials < StandardError # Blank email || password
+    # Blank email || password
+    class BlankCredentials < StandardError
     end
 
-    class GeniusQuery < StandardError # Invalid token?
+    # Invalid token?
+    class GeniusQuery < StandardError
       class Blank < StandardError
       end
 
@@ -71,7 +86,8 @@ class CustomExceptions < StandardError
     end
 
     class Quicklink < StandardError
-      class Client < StandardError # Invalid token?
+      # Invalid token?
+      class Client < StandardError
         class Blank < StandardError
         end
 
@@ -79,26 +95,28 @@ class CustomExceptions < StandardError
         end
       end
 
-      class Request < StandardError # Invalid token?
+      # Invalid token?
+      class Request < StandardError
         class Blank < StandardError
         end
 
         class Malformed < StandardError
         end
       end
-
     end
   end
 
   # ============== Job - Exceptions =============
   class InvalidJob < StandardError
-    class Unknown < StandardError # Should be risen when there is no record in jobs for a given job_id
+    # Should be risen when there is no record in jobs for a given job_id
+    class Unknown < StandardError
     end
   end
 
   # ============== Subscription - Exceptions =============
   class Subscription < StandardError
-    class ExpiredOrMissing < StandardError # Subscription is either expired or not existent
+    # Subscription is either expired or not existent
+    class ExpiredOrMissing < StandardError
     end
   end
 end

@@ -1,12 +1,11 @@
 # frozen_string_literal: true
 
-module ApiExceptionHandler
-  # frozen_string_literal: true
+# rubocop:disable Metrics/ModuleLength, Style/Documentation, Metrics/BlockLength
 
+module ApiExceptionHandler
   extend ActiveSupport::Concern
 
   included do
-
     # =========== Job related exceptions ============
     # ===============================================
 
@@ -334,24 +333,25 @@ module ApiExceptionHandler
   #--------------------------------------
 
   def render_error(attribute, error, description, status)
-    if attribute.class == Array
+    if attribute.instance_of?(Array)
       bin = {}
       attribute.each do |att|
-        bin["#{att}"] = [{ error: error, description: description }]
+        bin[att.to_s] = [{ error:, description: }]
       end
-      render status: status, json: bin
+      render status:, json: bin
     else
-      render status: status, json: { attribute => [{ error: error, description: description }] }
+      render status:, json: { attribute => [{ error:, description: }] }
     end
-
   end
+
+  # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
   #--------------------------------------
   def flatten_hash(hash)
     new_hash = {}
 
     hash.each do |key, value|
-      if value.class == Hash && value.present?
+      if value.instance_of?(Hash) && value.present?
         e = value
         new_hash[key] = {}
 
@@ -359,7 +359,7 @@ module ApiExceptionHandler
           if k == key && v.class != Hash
             new_hash[key] = v
             break
-          elsif v.class == Hash && v.present?
+          elsif v.instance_of?(Hash) && v.present?
             bin = flatten_hash(v)
             new_hash[key] = bin
           else
@@ -371,24 +371,21 @@ module ApiExceptionHandler
       end
     end
 
-    if new_hash.size == 1 && new_hash.values[0].class == Hash
-      new_hash = new_hash.values[0]
-    end
+    new_hash = new_hash.values[0] if new_hash.size == 1 && new_hash.values[0].instance_of?(Hash)
 
-    return new_hash
-
+    new_hash
   end
 
   def flatted_first_element(hash)
     new = {}
-    if hash.values.present? && hash.values[0].class == Hash
+    if hash.values.present? && hash.values[0].instance_of?(Hash)
       e = hash.values[0]
       new[hash.keys[0]] = {}
       e.each do |k, v|
         if k == hash.keys[0] && v.class != Hash
           new = e.dup
           break
-        elsif v.class == Hash && v.present?
+        elsif v.instance_of?(Hash) && v.present?
           bin = ApiExceptionHandler.flatten_hash(v)
           new[hash.keys[0]] = bin
         else
@@ -398,15 +395,15 @@ module ApiExceptionHandler
       end
       hash = new
     end
-    return hash
+    hash
   end
+
+  # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
   def ok
     # do nothing
     1
   end
-
 end
 
-
-
+# rubocop:enable Metrics/ModuleLength, Style/Documentation, Metrics/BlockLength
