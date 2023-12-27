@@ -78,7 +78,9 @@ module Api
       # It calls the Encoder class of the `QuicklinkService::Request` module to create the token.
       # It then returns the token in the response.
       def create_request
-        puts "params = #{params}"
+        return user_role_to_low_error unless must_be_verified(@decoded_client_token['sub'].to_i)
+        return user_blocked_error unless user_not_blacklisted(@decoded_client_token['sub'].to_i)
+
         token = QuicklinkService::Request::Encoder.call(
           @decoded_client_token['sub'].to_i, 'job#1'
         )

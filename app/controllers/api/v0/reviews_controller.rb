@@ -89,7 +89,7 @@ module Api
       end
 
       def verify_application_for_employer(job)
-        application = job.applications.find_by_sql("SELECT * FROM applications a WHERE a.job_id = #{job.job_id} AND a.user_id = #{params[:id]}")
+        application = job.applications.where('job_id = ? AND user_id = ?', job.job_id, params[:id])
         access_denied_error('user') if application.nil? || application.empty? || application[0].status.to_i != 1
       end
 

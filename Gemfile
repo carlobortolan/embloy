@@ -110,3 +110,7 @@ gem 'dalli'
 gem 'activestorage-backblaze'
 gem 'iso_country_codes'
 gem 'composite_primary_keys'
+
+gem 'actionpack', '>= 7.0.5.1'
+gem 'activesupport', '>= 7.0.7.1'
+gem 'nokogiri', '>= 1.14.3'
