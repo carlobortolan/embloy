@@ -1,9 +1,6 @@
 [![Ruby on Rails CI](https://github.com/Embloy/Embloy-Core-Server/actions/workflows/rubyonrails.yml/badge.svg)](https://github.com/Embloy/Embloy-Core-Server/actions/workflows/rubyonrails.yml)
 
-![Codecov](https://img.shields.io/codecov/c/github/username/repository)
-
-![Coveralls github](https://img.shields.io/coveralls/github.com/Embloy/Embloy-Core-Server)
-
+![Codecov](https://img.shields.io/codecov/c/github/embloy/embloy-core-server)
 
 
 
