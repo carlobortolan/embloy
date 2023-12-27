@@ -21,7 +21,7 @@ gem 'rgeo'
 gem 'activerecord-postgis-adapter'
 
 # Use the Puma web server [https://github.com/puma/puma]
-gem "puma", "~> 5.0"
+gem "puma", "~> 6.4.0"
 
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
 gem "importmap-rails"
@@ -85,19 +85,22 @@ group :test do
   gem "webdrivers"
 end
 
+# O-Auth
 gem "omniauth-twitter", "~> 1.4"
 gem "omniauth-github", "~> 2.0"
 gem "omniauth-google-oauth2", "~> 1.1"
 gem "omniauth-rails_csrf_protection", "~> 1.0"
 
+# Notifications
 gem "noticed", "~> 1.6"
 
+# DB Performance 
 gem "bullet", "~> 7.0"
-
 gem "benchmark", "~> 0.2.1"
 
 gem "activerecord-import", "~> 1.4"
 
+# Pagination & Querying
 gem "pg_search"
 gem 'kaminari'
 gem 'geocoder'
