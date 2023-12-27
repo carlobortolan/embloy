@@ -2,7 +2,7 @@
 
 require 'open3'
 
-output, = Open3.capture2('flog', '.')
+output, = Open3.capture2('find . -name "*.rb" | xargs flog')
 
 lines = output.lines
 total_score = lines.first.split.last.to_f
