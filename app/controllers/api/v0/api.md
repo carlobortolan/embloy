@@ -5,5 +5,4 @@
 # Postman API documentation
 
 ###  **URL**: https://www.postman.com/embloy.com
-
 ***
