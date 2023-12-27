@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# rubocop:disable Metrics/BlockLength
 Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -7,6 +10,7 @@ Rails.application.routes.draw do
       # -----> PASSWORDS <-----
       patch 'user/password', to: 'passwords#update'
       post 'user/password/reset', to: 'password_resets#create'
+      patch 'user/password/reset', to: 'password_resets#update', as: :password_reset_update
 
       # -----> AUTH <-----
       post 'user/auth/token/refresh', to: 'authentications#create_refresh'
@@ -24,7 +28,7 @@ Rails.application.routes.draw do
       get 'user/upcoming', to: 'user#upcoming'
       delete 'user/image', to: 'user#remove_image'
       post 'user/image', to: 'user#upload_image'
-      get 'user/preferences', to: 'user#get_preferences'
+      get 'user/preferences', to: 'user#preferences'
       patch 'user/preferences', to: 'user#update_preferences'
 
       post 'user/(/:id)/reviews', to: 'reviews#create'
@@ -34,8 +38,8 @@ Rails.application.routes.draw do
       # -----> JOBS <-----
       get 'jobs', to: 'jobs#feed'
       get 'jobs/(/:id)', to: 'jobs#show'
-      get 'maps', :to => 'jobs#map'
-      get 'find', :to => 'jobs#find'
+      get 'maps', to: 'jobs#map'
+      get 'find', to: 'jobs#find'
       post 'jobs', to: 'jobs#create'
       patch 'jobs', to: 'jobs#update'
       delete 'jobs', to: 'jobs#destroy'
@@ -50,8 +54,8 @@ Rails.application.routes.draw do
       # delete 'jobs/(/:id)/applications', to: 'applications#destroy'
 
       # -----> SUBSCRIPTIONS <-----
-      get 'client/subscriptions', to: 'subscriptions#get_all_subscriptions'
-      get 'client/subscriptions/(:id)', to: 'subscriptions#get_subscription'
+      get 'client/subscriptions', to: 'subscriptions#all_subscriptions'
+      get 'client/subscriptions/(:id)', to: 'subscriptions#subscription'
       post 'client/subscriptions', to: 'subscriptions#create'
       patch 'client/subscriptions/(:id)/activate', to: 'subscriptions#activate_subscription'
       patch 'client/subscriptions/(:id)/renew', to: 'subscriptions#renew_subscription'
@@ -66,8 +70,7 @@ Rails.application.routes.draw do
       # -----> GENIUS-QUERIES <-----
       get 'resource/(/:genius)', to: 'genius_queries#query'
       post 'resource', to: 'genius_queries#create'
-
     end
   end
 end
-
+# rubocop:enable Metrics/BlockLength
