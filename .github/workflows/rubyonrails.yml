@@ -14,7 +14,7 @@ jobs:
         ports:
           - "5432:5432"
         env:
-          POSTGRES_DB: jobdata_test
+          POSTGRES_DB: embloy_test_beta
           POSTGRES_USER: ${{ secrets.DATABASE_USER }}
           POSTGRES_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
     env:
