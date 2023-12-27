@@ -22,24 +22,17 @@ class QuicklinkService < AuthenticationTokenService
 
     # Decodes a client token and returns the decoded payload.
     def self.decode(token)
-      JWT.decode(token, HMAC_SECRET, true,
-                 { iss: ISSUER, verify_iss: true, verify_iat: true, required_claims: %w[iss sub exp typ iat], algorithm: ALGORITHM_TYPE })
+      JWT.decode(token, HMAC_SECRET, true, { iss: ISSUER, verify_iss: true, verify_iat: true, required_claims: %w[iss sub exp typ iat], algorithm: ALGORITHM_TYPE })
     end
-
     # The Encoder class is responsible for encoding client tokens.
     class Encoder
       # Encodes a client token for a given user ID and subscription and expiration date.
       def self.call(user_id, subscription, custom_exp)
-        must_be_verified_and_subscription(user_id)
+        ApplicationController.must_be_verified!(user_id)
         exp = calculate_expiration(custom_exp, subscription)
         typ = subscription.tier # Needed for quick authorization when token is used
         iat = Time.now.to_i
-        QuicklinkService::Client.encode(123, exp.to_i, typ, iat)
-      end
-
-      def self.must_be_verified_and_subscription(user_id)
-        AuthenticationTokenService::Refresh.must_be_verified_id!(user_id)
-        ApplicationController.must_be_verified!(user_id)
+        QuicklinkService::Client.encode(user_id, exp.to_i, typ, iat)
       end
 
       def self.calculate_expiration(custom_exp, subscription)
@@ -91,15 +84,12 @@ class QuicklinkService < AuthenticationTokenService
     class Encoder
       # Encodes a request token for a given job slug and user ID.
       def self.call(user_id, job_slug)
-        sub = user_id
-        AuthenticationTokenService::Refresh.must_be_verified_id!(user_id)
         ApplicationController.must_be_verified!(user_id)
         # TODO: @cb verify job / account validity / price category?
         job = job_slug
         exp = Time.now.to_i + (60 * 60 * 30) # standard validity interval: 30 minutes
         iat = Time.now.to_i
-        QuicklinkService::Request.encode(sub,
-                                         exp, job, iat)
+        QuicklinkService::Request.encode(user_id, exp, job, iat)
       end
     end
 

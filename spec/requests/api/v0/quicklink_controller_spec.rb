@@ -118,6 +118,13 @@ RSpec.describe 'QuicklinkController' do
       activity_status: '1'
     )
     puts "Created blacklisted user: #{@blacklisted_user.id}"
+    @blacklisted_user.subscriptions.create!(
+      tier: 'basic',
+      active: true,
+      start_date: Time.now,
+      expiration_date: Time.now + 6.month,
+      auto_renew: true
+    )
 
     ### ACCESS / REFRESH TOKENS ###
 
@@ -301,7 +308,7 @@ RSpec.describe 'QuicklinkController' do
         it 'returns [400 Bad Request] for missing client token in header' do
           post '/api/v0/sdk/request/auth/token'
           expect(response).to have_http_status(400)
-        end
+        end     
         it 'returns [401 Unauthorized] for expired/invalid client token' do
           headers = { 'HTTP_CLIENT_TOKEN' => @invalid_token }
           post('/api/v0/sdk/request/auth/token', headers:)

@@ -79,7 +79,7 @@ module Api
 
       def create_subscription_params
         params.require(:subscription).permit(:tier, :active, :expiration_date, :start_date, :auto_renew,
-                                             :renew_date, :user_id)
+                                             :renew_date)
       end
     end
   end

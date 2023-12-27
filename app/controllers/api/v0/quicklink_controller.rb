@@ -14,6 +14,42 @@ module Api
       before_action :verify_request_token,
                     only: [:apply]
 
+      # The apply method is responsible for handling the application process.
+      # It finds the user and client based on the decoded tokens, updates or creates the job, and applies for the job.
+      def apply
+        begin
+          @client = User.find(@decoded_request_token['sub'].to_i)
+        rescue StandardError
+          not_found_error('client')
+        end
+
+        update_or_create_job(@decoded_request_token['job'])
+        apply_for_job
+      end
+
+      # The create_request method is responsible for creating a `request_token`.
+      # It calls the Encoder class of the `QuicklinkService::Request` module to create the token.
+      # It then returns the token in the response.
+      def create_request
+        return user_role_to_low_error unless must_be_verified(@decoded_client_token['sub'].to_i)
+        return user_blocked_error unless user_not_blacklisted(@decoded_client_token['sub'].to_i)
+
+        token = QuicklinkService::Request::Encoder.call(
+          @decoded_client_token['sub'].to_i, 'job#1'
+        )
+        render status: 200,
+               json: { 'request_token' => token }
+      end
+
+      # The create_client endpoint is responsible for creating a `client_token`.
+      # It calls the Encoder class of the `QuicklinkService::Client` module to create the token.
+      # It then returns the token in the response.
+      def create_client
+        verified!(@decoded_token['typ'])
+        check_subscription
+        generate_and_render_token
+      end
+
       private
 
       # The apply_for_job method is responsible for creating a new application for a job.
@@ -59,49 +95,8 @@ module Api
         not_found_error('job')
       end
 
-      public
-
-      # The apply method is responsible for handling the application process.
-      # It finds the user and client based on the decoded tokens, updates or creates the job, and applies for the job.
-      def apply
-        begin
-          @client = User.find(@decoded_request_token['sub'].to_i)
-        rescue StandardError
-          not_found_error('client')
-        end
-
-        update_or_create_job(@decoded_request_token['job'])
-        apply_for_job
-      end
-
-      # The create_request method is responsible for creating a `request_token`.
-      # It calls the Encoder class of the `QuicklinkService::Request` module to create the token.
-      # It then returns the token in the response.
-      def create_request
-        return user_role_to_low_error unless must_be_verified(@decoded_client_token['sub'].to_i)
-        return user_blocked_error unless user_not_blacklisted(@decoded_client_token['sub'].to_i)
-
-        token = QuicklinkService::Request::Encoder.call(
-          @decoded_client_token['sub'].to_i, 'job#1'
-        )
-        render status: 200,
-               json: { 'request_token' => token }
-      end
-
-      # The create_client endpoint is responsible for creating a `client_token`.
-      # It calls the Encoder class of the `QuicklinkService::Client` module to create the token.
-      # It then returns the token in the response.
-      def create_client
-        verified!(@decoded_token['typ'])
-        parse_expiration_date
-        check_subscription
-        generate_and_render_token
-      end
-
-      private
-
       def parse_expiration_date
-        params[:exp] ? Date.parse(params[:exp]) : nil # Parse custom expiration date
+        params[:exp] ? Time.parse(params[:exp]) : nil # Parse custom expiration date
       end
 
       def check_subscription
@@ -111,7 +106,7 @@ module Api
 
       def generate_and_render_token
         token = QuicklinkService::Client::Encoder.call(
-          Current.user.id, @subscription, params[:exp]
+          Current.user.id, @subscription, parse_expiration_date
         )
         render status: 200,
                json: { 'client_token' => token }
