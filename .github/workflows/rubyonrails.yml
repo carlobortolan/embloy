@@ -37,8 +37,8 @@ jobs:
           echo "DATABASE_USER=${{ secrets.DATABASE_USER }}" >> .env
           echo "DATABASE_HOST=${{ secrets.DATABASE_HOST }}" >> .env
           echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}" >> .env
-      - name: Setup database
-        run: bundle exec rails db:setup
+      #- name: Setup database
+      #  run: bundle exec rails db:setup
       - name: Run tests
         run: bundle exec rspec
 
