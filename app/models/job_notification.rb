@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# The JobNotification class handles sending notifications related to jobs.
 class JobNotification < ApplicationRecord
   include Noticed::Model
   belongs_to :job

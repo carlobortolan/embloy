@@ -1,16 +1,27 @@
+# frozen_string_literal: true
+
+# The ApplicationAttachment class represents an attachment (like a CV)
+# that is associated with a job application in the application.
 class ApplicationAttachment < ApplicationRecord
-  # belongs_to :application, counter_cache: true, :dependent => :destroy
   belongs_to :job
   belongs_to :user
   validate :cv_format_validation
   has_one_attached :cv, dependent: :destroy
 
   def cv_format_validation
-    return unless !cv.nil? && cv.attached? && job.cv_required && !job.allowed_cv_format.nil?
+    return unless cv_attached_and_required?
+
     allowed_formats = ApplicationHelper.allowed_cv_formats_for_form(job.allowed_cv_format)
-    unless allowed_formats.include?(cv.blob.content_type)
-      errors.add(:cv, { "error": "ERR_INVALID", "description": "must be a #{job.allowed_cv_format.join(',')} file" })
-    end
+    return if allowed_formats.include?(cv.blob.content_type)
+
+    errors.add(:cv,
+               { "error": 'ERR_INVALID',
+                 "description": "must be a #{job.allowed_cv_format.join(',')} file" })
   end
 
+  private
+
+  def cv_attached_and_required?
+    !cv.nil? && cv.attached? && job.cv_required && !job.allowed_cv_format.nil?
+  end
 end
