@@ -2,7 +2,9 @@
 
 require 'open3'
 
-output, = Open3.capture2("find -name '**/Embloy-Core-Server/**/*.rb' | xargs flog")
+current_directory = Dir.pwd
+puts "Current directory: #{current_directory}"
+output, = Open3.capture2("find #{current_directory}/app -name '*.rb' | xargs flog")
 
 lines = output.lines
 if lines.empty?

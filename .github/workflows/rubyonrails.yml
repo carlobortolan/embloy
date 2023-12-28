@@ -68,6 +68,10 @@ jobs:
       CORS_GENIUS_CLIENT_URL: ${{ secrets.CORS_GENIUS_CLIENT_URL }}      
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+      REFRESH_TOKEN_SECRET: ${{ secrets.REFRESH_TOKEN_SECRET }}
+      ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
+      CLIENT_TOKEN_SECRET: ${{ secrets.CLIENT_TOKEN_SECRET }}
+      REQUEST_TOKEN_SECRET: ${{ secrets.REQUEST_TOKEN_SECRET }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
