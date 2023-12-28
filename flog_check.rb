@@ -2,8 +2,9 @@
 
 require 'open3'
 
-puts "Current directory: #{Dir.pwd}"
-output, = Open3.capture2('flog .')
+current_directory = Dir.pwd
+puts "Current directory: #{current_directory}"
+output, = Open3.capture2("find #{current_directory} -name '*.rb' | xargs flog")
 
 lines = output.lines
 if lines.empty?
