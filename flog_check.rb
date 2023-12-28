@@ -4,7 +4,7 @@ require 'open3'
 
 current_directory = Dir.pwd
 puts "Current directory: #{current_directory}"
-output, = Open3.capture2("find #{current_directory} -name '*.rb' | xargs flog")
+output, = Open3.capture2("find #{current_directory}/{app,lib,db,config,spec} -name '*.rb' | xargs flog")
 
 lines = output.lines
 if lines.empty?
