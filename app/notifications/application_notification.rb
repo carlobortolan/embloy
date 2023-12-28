@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # To deliver this notification:
 #
 # ApplicationNotification.with(post: @post).deliver_later(current_user)
@@ -7,7 +9,8 @@ class ApplicationNotification < Noticed::Base
   #
   deliver_by :database, debug: false
   # deliver_by :action_cable, format: :to_action_cable
-  deliver_by :email, mailer: 'EmployerApplicationMailer', debug: false, if: :email_notifications?
+  deliver_by :email,
+             mailer: 'EmployerApplicationMailer', debug: false, if: :email_notifications?
   # unless: :read?,
   # deliver_by :email, mailer: "ApplicationMailer", if: :email_notifications?, delay: 15.minutes, unless: :read?, debug: true
   # deliver_by :slack
@@ -30,4 +33,3 @@ class ApplicationNotification < Noticed::Base
     job_path(params[:job])
   end
 end
-

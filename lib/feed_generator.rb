@@ -1,9 +1,9 @@
 # frozen_string_literal: true
+
 # @author Jan Hummel, Carlo Bortolan
 # This class creates a feed from a set of jobs matching the input parameters by the user.
 
 class FeedGenerator
-
   # job wird nach start_slot sortiert/ je nach time aus my args gefiltert. Das Ergebnis wird nun nach Distanz sortiert ausgegeben
   # n(= limit)-jobs im radius werden gefiltert und ausgegeben
   # @param prefiltered [Array] array of jobs from database
@@ -12,87 +12,83 @@ class FeedGenerator
   # prefiltered = [{ "job_id" => int>=0, "start_slot" => "year-month-date hours:minutes:seconds +hhmm", "location" => { "latitude" => float>=0, "longitude" => float>=0 } },
   # my_args = { "account_id" => int>=0, "latitude" => float>=0.0, "longitude" => float>=0.0, "radius" => float>=0.0, "time" => int [1, 48], "limit" => int>=0 }
   def self.initialize_feed(prefiltered, my_args)
-    puts "DEBUG ON"
+    puts 'DEBUG ON'
     puts prefiltered
     puts my_args
-    puts "DEBUG OFF"
+    puts 'DEBUG OFF'
 
     if prefiltered.nil? || my_args.nil? || prefiltered.empty?
-      puts "input was nil"
+      puts 'input was nil'
       return [401]
     end
     # if my_args["account_id"].nil? || !my_args["account_id"].is_a?(Integer) || my_args["account_id"] < 0
     # puts "account_id not correct (@my_args)"
     # return [401]
     # end
-    if my_args["latitude"].nil? || !my_args["latitude"].is_a?(Float)
-      puts "latitude not correct (@my_args)"
+    if my_args['latitude'].nil? || !my_args['latitude'].is_a?(Float)
+      puts 'latitude not correct (@my_args)'
       return [401]
     end
-    if my_args["longitude"].nil? || !my_args["longitude"].is_a?(Float)
-      puts "longitude not correct (@my_args)"
+    if my_args['longitude'].nil? || !my_args['longitude'].is_a?(Float)
+      puts 'longitude not correct (@my_args)'
       return [401]
     end
-    if my_args["radius"].nil? || my_args["radius"] < 0
-      my_args["radius"] = 50.0
-      puts "radius not correct (@my_args)"
-    elsif !my_args["radius"].is_a?(Float)
-      my_args["radius"] = my_args["radius"].to_f
+    if my_args['radius'].nil? || (my_args['radius']).negative?
+      my_args['radius'] = 50.0
+      puts 'radius not correct (@my_args)'
+    elsif !my_args['radius'].is_a?(Float)
+      my_args['radius'] = my_args['radius'].to_f
     end
 
-    if my_args["time"].nil? || !my_args["time"].is_a?(Time)
-      my_args["time"] = Time.now
-      puts "time not correct (@my_args)"
+    if my_args['time'].nil? || !my_args['time'].is_a?(Time)
+      my_args['time'] = Time.now
+      puts 'time not correct (@my_args)'
     end
-    if my_args["limit"].nil? || !my_args["limit"].kind_of?(Integer) || my_args["limit"] < 0
-      puts "limit not correct (@my_args)"
-      my_args["limit"] = 50
+    if my_args['limit'].nil? || !my_args['limit'].is_a?(Integer) || (my_args['limit']).negative?
+      puts 'limit not correct (@my_args)'
+      my_args['limit'] = 50
     end
     prefiltered.each do |i|
       if i.nil?
-        puts "element in prefiltered was nil (@prefiltered)"
+        puts 'element in prefiltered was nil (@prefiltered)'
         return [401]
       end
-      if i["job_id"].nil? || !i["job_id"].is_a?(Integer) || i["job_id"] < 0
-        puts "account_id not correct (@prefiltered)"
+      if i['job_id'].nil? || !i['job_id'].is_a?(Integer) || (i['job_id']).negative?
+        puts 'account_id not correct (@prefiltered)'
         return [401]
       end
-      if i["start_slot"].nil? || !(i["start_slot"].is_a?(Time))
+      if i['start_slot'].nil? || !i['start_slot'].is_a?(Time)
         begin
-          i["start_slot"] = Time.parse(i["start_slot"])
-          puts "correcting start-slot"
-        rescue
-          puts "start_slot correct (@prefiltered)"
+          i['start_slot'] = Time.parse(i['start_slot'])
+          puts 'correcting start-slot'
+        rescue StandardError
+          puts 'start_slot correct (@prefiltered)'
           return [401]
         end
       end
-      if i["latitude"].nil? || !i["latitude"].is_a?(Float)
-        puts "latitude not correct (@prefiltered)"
+      if i['latitude'].nil? || !i['latitude'].is_a?(Float)
+        puts 'latitude not correct (@prefiltered)'
         return [401]
       end
-      if i["longitude"].nil? || !i["longitude"].is_a?(Float)
-        puts "latitude not correct (@prefiltered)"
+      if i['longitude'].nil? || !i['longitude'].is_a?(Float)
+        puts 'latitude not correct (@prefiltered)'
         return [401]
       end
-      unless i["distance"].nil?
+      unless i['distance'].nil?
         # puts "correcting distance (@prefiltered)"
-        i["distance"] = nil
+        i['distance'] = nil
       end
     end
     r1 = match_jobs(prefiltered, my_args)
     puts "R1 === #{r1}"
-    generate_feed(r1, my_args["radius"], my_args["limit"])
+    generate_feed(r1, my_args['radius'], my_args['limit'])
   end
 
-  private
-
-  #@return [Array] sorted array
+  # @return [Array] sorted array
   def self.merge_sort(array, tgt)
     # klassische Merge sort implementierung mit einem Parameter. Die methode nimmt ein Array mit Hashes an z.b. [{...,start_slot:"07:00:00",target_slot:15,...}] und einen sortierungs parameter (tgt) (z.b. "target_slot"). DIe hashes in array werden nahc diesem sortierparameter soritert.
 
-    if array.length <= 1
-      return array
-    end
+    return array if array.length <= 1
 
     array_size = array.length
     middle = (array.length / 2).round
@@ -144,12 +140,10 @@ class FeedGenerator
   # @param array [Array] sorted array
   # @param search_item [args] relevant element
   # @param tgt [String] search parameter
-  def self.binary_compare (array, search_item, tgt)
+  def self.binary_compare(array, search_item, tgt)
     low = 0
     high = array.length - 1
-    if array[high].values_at(tgt)[0] <= search_item
-      return array.length
-    end
+    return array.length if array[high].values_at(tgt)[0] <= search_item
 
     while high - low > 1
       mid = (high + low) / 2
@@ -168,15 +162,15 @@ class FeedGenerator
   # @param search_item [Integer] time instance as Interger for reference
   # @param tgt [String] search parameter
   # @return [[Integer, Integer]] index of lower and upper bound
-  def self.time_bounds (array, search_item, tgt)
+  def self.time_bounds(array, search_item, tgt)
     # puts "INPUT = #{array[0].values_at(tgt)[0].to_i}"
     # puts "INPUT = #{array[1].values_at(tgt)[0].to_i}"
     # puts "TGT = #{search_item}"
     bound = [0, 0]
     array.each_with_index do |value, index|
-      if value.values_at(tgt)[0].to_i <= search_item - 3600 * 24 - 1
+      if value.values_at(tgt)[0].to_i <= search_item - (3600 * 24) - 1
         bound[0] = index + 1
-      elsif value.values_at(tgt)[0].to_i <= search_item + 3600 * 24 - 1
+      elsif value.values_at(tgt)[0].to_i <= search_item + (3600 * 24) - 1
         bound[1] = index + 1
       end
     end
@@ -188,13 +182,12 @@ class FeedGenerator
   # @param time [Time] target time
   # @return [Array] Interval that matches target time
   def self.find_time(sorted_args, time)
-    bounds = time_bounds(sorted_args, time.to_i + 1, "start_slot")
+    bounds = time_bounds(sorted_args, time.to_i + 1, 'start_slot')
     low = bounds[0]
     high = bounds[1]
 
-    if low == -1 || low == sorted_args.length || low >= high
-      return [401]
-    end
+    return [401] if low == -1 || low == sorted_args.length || low >= high
+
     [low, high - 1]
   end
 
@@ -208,11 +201,11 @@ class FeedGenerator
     d_lat_rad = (loc2[0] - loc1[0]) * rad_per_deg # Delta, converted to rad
     d_lon_rad = (loc2[1] - loc1[1]) * rad_per_deg
 
-    lat1_rad, lon1_rad = loc1.map { |i| i * rad_per_deg }
-    lat2_rad, lon2_rad = loc2.map { |i| i * rad_per_deg }
+    lat1_rad, = loc1.map { |i| i * rad_per_deg }
+    lat2_rad, = loc2.map { |i| i * rad_per_deg }
 
-    a = Math.sin(d_lat_rad / 2) ** 2 + Math.cos(lat1_rad) * Math.cos(lat2_rad) * Math.sin(d_lon_rad / 2) ** 2
-    c = 2 * Math::atan2(Math::sqrt(a), Math::sqrt(1 - a))
+    a = (Math.sin(d_lat_rad / 2)**2) + (Math.cos(lat1_rad) * Math.cos(lat2_rad) * (Math.sin(d_lon_rad / 2)**2))
+    c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 
     rm * c # Delta in meters
   end
@@ -222,13 +215,13 @@ class FeedGenerator
   # @param args [Job] job list
   # @return args job list with updated distance
   def self.calculate_distance(user_pos, args)
-    user_lat = user_pos.values_at("latitude")[0]
-    user_lon = user_pos.values_at("longitude")[0]
+    user_lat = user_pos.values_at('latitude')[0]
+    user_lon = user_pos.values_at('longitude')[0]
     args.each do |job|
-      job_lat = job.values_at("latitude")[0]
-      job_lon = job.values_at("longitude")[0]
+      job_lat = job.values_at('latitude')[0]
+      job_lon = job.values_at('longitude')[0]
 
-      job["distance"] = distance([user_lat, user_lon], [job_lat, job_lon])
+      job['distance'] = distance([user_lat, user_lon], [job_lat, job_lon])
     end
     args
   end
@@ -240,44 +233,36 @@ class FeedGenerator
   # @return [Array] containing relevant jobs
   def self.match_jobs(args, my_args)
     # puts "T1"
-    time = my_args.select { |k| k.to_s.include? "time" }.values[0]
-    args = merge_sort(args, "start_slot")
+    time = my_args.select { |k| k.to_s.include? 'time' }.values[0]
+    args = merge_sort(args, 'start_slot')
     rng = find_time(args, time)
     # puts "args = #{args}, time = #{time}, \r\n nng = #{rng}"
 
-    if rng == [401]
-      # rng = find_time(args, time + 3600 * 24)
-      if rng == [401]
-        # rng = find_time(args, time - 3600 * 24)
-        if rng == [401]
-          return [401]
-        end
-      end
+    # rng = find_time(args, time + 3600 * 24)
+    if rng == [401] && (rng == [401]) && (rng == [401])
+      # rng = find_time(args, time - 3600 * 24)
+      return [401]
     end
+
     args = args.slice(rng[0], ((rng[1] + 1) - rng[0]))
-    merge_sort(calculate_distance(my_args, args), "distance")
+    merge_sort(calculate_distance(my_args, args), 'distance')
   end
 
   # @param jobs [jobs] input
   # @param radius [Float] target radius
   # @param limit [Integer] Limit of result
   # @return [Array] containing relevant jobs
-  def self.generate_feed(jobs, radius, limit)
-    if jobs == [401]
-      return [401]
-    end
+  def self.generate_feed(jobs, radius, _limit)
+    return [401] if jobs == [401]
 
-    pos = FeedGenerator.binary_compare(jobs, radius, "distance")
+    pos = FeedGenerator.binary_compare(jobs, radius, 'distance')
     puts pos
 
     # No match
-    if pos == -1 || jobs[0..pos].empty?
-      return [401]
-    end
+    return [401] if pos == -1 || jobs[0..pos].empty?
 
     # If number of matched jobs is greater than 'limit', exactly 'limit'-number of jobs will be returned
     # jobs.slice(0, pos).length > limit ? jobs.slice(0, limit) : jobs.slice(0, pos)
     jobs[0..pos]
   end
 end
-

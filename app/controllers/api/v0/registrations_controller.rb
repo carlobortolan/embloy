@@ -1,99 +1,143 @@
+# frozen_string_literal: true
+
 module Api
+  # V0 module
   module V0
+    # RegistrationsController handles user registration actions
     class RegistrationsController < ApiController
       skip_before_action :set_current_user
 
       def create
-        begin
-          @user = User.new(user_params)
+        @user = User.new(user_params)
 
-          if @user.save
-            render status: 201, json: { "message": "Account registered! Please activate your account and claim your refresh token via GET #{api_v0_user_verify_path} " }
-          else
-            # horrible code follows TODO: make prettier for v1
-            # the problem is that I dont know a way to customize the error messages from bycrypt verification and i want to morphe them into the standard error render format
-            taken = false
-            @user.errors.details[:email].each do |e|
-              if e[:error] == "ERR_TAKEN"
-                taken = true
-              end
-            end
-            if taken
-              render status: 422, json: @user.errors.details
-            else
-              if @user.errors.details[:password].present? && @user.errors.details[:password][0][:error] == :too_long # auto verification of pw (by bycript) doesnt render as we need it. preliminary solution. should be tidied up in v1
-                malformed_error('password')
-              elsif @user.errors.details[:password].present? && @user.errors.details[:password][0][:error] == :blank # this one is just there to substitute the error:blank to error:ERR_BLANK in case password:""
-                bin = @user.errors.details
-                bin[:password][0][:error] = :ERR_BLANK
-                render status: 400, json: bin
-              elsif @user.errors.details[:password_confirmation].present? && @user.errors.details[:password_confirmation][0][:error] == :confirmation
-                malformed_error('password_confirmation')
-              else
-                render status: 400, json: @user.errors.details
-              end
-            end
-          end
-
-        rescue ActionController::ParameterMissing
-          render status: 400, json: { "user": [
-            {
-              "error": "ERR_BLANK",
-              "description": "Attribute can't be blank"
-            }
-          ]
-          }
-
+        if @user.save
+          render status: 201, json: { message: "Account registered! Please activate your account and claim your refresh token via GET #{api_v0_user_verify_path} " }
+        else
+          handle_errors
         end
+      rescue ActionController::ParameterMissing
+        render status: 400, json: { user: [
+          {
+            error: 'ERR_BLANK',
+            description: "Attribute can't be blank"
+          }
+        ] }
       end
 
       # TODO: @cb [User verification #73]
       def verify
-        # verifies that an newly created account was created correctly. if so it issues an initial refresh token ()
-        email, password = ActionController::HttpAuthentication::Basic::user_name_and_password(request)
+        email, password = ActionController::HttpAuthentication::Basic.user_name_and_password(request)
 
         if !email.present? && password.present? # checks for fully missing as well as empty params
-          return blank_error('email')
+          blank_error('email')
+          return
         elsif email.present? && !password.present?
-          return blank_error('password')
+          blank_error('password')
+          return
         elsif !email.present? && !password.present?
-          return blank_error(%w[email password])
-        else
-
-          @user = User.find_by(email: email)
-
-          if !@user.present? || !@user.authenticate(password)
-            return unauthorized_error("email|password")
-          else
-
-            user_not_blacklisted!(@user.id)
-            if @user.activity_status == 0
-              # TODO: Exception handling
-              @user.update_column("user_role", "verified")
-              @user.update_column("activity_status", 1)
-
-              token = AuthenticationTokenService::Refresh::Encoder.call(@user.id)
-
-              render status: 200, json: { "refresh_token": token }
-              # rescue # because the code above checked all attributes, there should not be any exceptions. if there are something strange happened (or a bug)
-              # render status: 500, json: { "error": "Something went wrong while issuing your initial refresh token. Please try again later. If this error persists, we recommend to contact our support team." }
-            else
-              # is user already listed as active/is user verified?
-              return unnecessary_error("user")
-            end
-
-          end
-
+          blank_error(%w[email password])
+          return
         end
 
-      end
+        @user = User.find_by(email:)
 
-      private
+        return unauthorized_error('email|password') unless @user.present? && @user.authenticate(password)
+
+        user_blocked_error and return unless user_not_blacklisted(@user.id)
+
+        return unnecessary_error('user') unless @user.activity_status.zero?
+
+        update_user_status(email, password)
+        issue_refresh_token
+      end
 
       def user_params
         params.require(:user).permit(:email, :first_name, :last_name, :password, :password_confirmation)
       end
 
+      private
+
+      def handle_errors
+        if email_taken?
+          render(status: 422, json: @user.errors.details) and return
+        elsif password_too_long? || password_blank?
+          handle_password_errors and return
+        elsif password_confirmation_error?
+          malformed_error('password_confirmation') and return
+        else
+          render(status: 400, json: @user.errors.details) and return
+        end
+      end
+
+      def handle_invalid_credentials(user, password)
+        return if user.present? && user.authenticate(password)
+
+        unauthorized_error('email|password')
+      end
+
+      def email_taken?
+        @user.errors.details[:email].any? { |e| e[:error] == 'ERR_TAKEN' }
+      end
+
+      def password_too_long?
+        password_error?(:too_long)
+      end
+
+      def password_blank?
+        password_error?(:blank)
+      end
+
+      def password_error?(error)
+        @user.errors.details[:password].present? && @user.errors.details[:password][0][:error] == error
+      end
+
+      def handle_password_errors
+        if password_blank?
+          bin = @user.errors.details
+          bin[:password][0][:error] = :ERR_BLANK
+          render status: 400, json: bin
+        else
+          malformed_error('password')
+          nil
+        end
+      end
+
+      def password_confirmation_error?
+        @user.errors.details[:password_confirmation].present? && @user.errors.details[:password_confirmation][0][:error] == :confirmation
+      end
+
+      def handle_blank_credentials(email, password)
+        if !email.present? && password.present? # checks for fully missing as well as empty params
+          blank_error('email')
+          false
+        elsif email.present? && !password.present?
+          blank_error('password')
+          false
+        elsif !email.present? && !password.present?
+          blank_error(%w[email password])
+          false
+        end
+        true
+      end
+
+      def update_user_status(email, password)
+        @user = User.find_by(email:)
+
+        unauthorized_error('email|password') if !@user.present? || !@user.authenticate(password)
+
+        user_blocked_error and return unless user_not_blacklisted(@user.id)
+        return unless @user.activity_status.zero?
+
+        # TODO: Exception handling
+        @user.update_column('user_role', 'verified')
+        @user.update_column('activity_status', 1)
+      end
+
+      def issue_refresh_token
+        token = AuthenticationTokenService::Refresh::Encoder.call(@user.id)
+
+        render status: 200, json: { refresh_token: token }
+      end
     end
   end
 end

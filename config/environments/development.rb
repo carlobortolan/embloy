@@ -1,5 +1,8 @@
-require "active_support/core_ext/integer/time"
+# frozen_string_literal: true
 
+require 'active_support/core_ext/integer/time'
+
+# rubocop:disable Metrics/BlockLength
 Rails.application.configure do
   config.after_initialize do
     Bullet.enable = true
@@ -28,13 +31,13 @@ Rails.application.configure do
 
   # Enable/disable caching. By default caching is disabled.
   # Run rails dev:cache to toggle caching.
-  if Rails.root.join("tmp/caching-dev.txt").exist?
+  if Rails.root.join('tmp/caching-dev.txt').exist?
     config.action_controller.perform_caching = true
     config.action_controller.enable_fragment_cache_logging = true
 
     config.cache_store = :memory_store
     config.public_file_server.headers = {
-      "Cache-Control" => "public, max-age=#{2.days.to_i}"
+      'Cache-Control' => "public, max-age=#{2.days.to_i}"
     }
   else
     config.action_controller.perform_caching = false
@@ -80,17 +83,17 @@ Rails.application.configure do
 
   # config.assets.prefix = "/assets"
   #
-  config.action_mailer.default_url_options = { host: ENV['SERVICE_HOST'] }
+  config.action_mailer.default_url_options = { host: ENV.fetch('SERVICE_HOST', nil) }
   # config.log_level = :fatal
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-    address: ENV['EMAIL_ADDRESS'],
+    address: ENV.fetch('EMAIL_ADDRESS', nil),
     port: 587,
-    domain: ENV['EMAIL_HOST'],
+    domain: ENV.fetch('EMAIL_HOST', nil),
     authentication: :login,
     enable_starttls_auto: true,
-    user_name: ENV['EMAIL_NOREPLY_USER'],
-    password: ENV['EMAIL_PASSWORD']
+    user_name: ENV.fetch('EMAIL_NOREPLY_USER', nil),
+    password: ENV.fetch('EMAIL_PASSWORD', nil)
   }
-
 end
+# rubocop:enable Metrics/BlockLength

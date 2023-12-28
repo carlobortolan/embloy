@@ -1,72 +1,95 @@
 # frozen_string_literal: true
 
+# The GeniusQueryService class is responsible for handling the server-side authorization
+# part of the Genius application process. It includes two nested classes, Encoder and Decoder,
+# which handle the encoding and decoding of tokens respectively.
 class GeniusQueryService < AuthenticationTokenService
-  HMAC_SECRET = ENV['GENIUS_QUERY_TOKEN_SECRET']
+  HMAC_SECRET = ENV.fetch('GENIUS_QUERY_TOKEN_SECRET', nil)
   ALGORITHM_TYPE = 'HS256'
   ISSUER = Socket.gethostname
   REPLACEMENT_CHARACTER = '°'
 
   def self.encode(sub, exp, jti, iat, args)
-    payload = { sub: sub, exp: exp, jti: jti, iat: iat }.merge(args)
-    return AuthenticationTokenService.call(HMAC_SECRET, ALGORITHM_TYPE, ISSUER, payload)
+    payload = { sub:, exp:, jti:,
+                iat: }.merge(args)
+    AuthenticationTokenService.call(HMAC_SECRET,
+                                    ALGORITHM_TYPE, ISSUER, payload)
   end
 
   def self.decode(token)
-    decoded_token = JWT.decode(token, HMAC_SECRET, true, { verify_jti: Proc.new { |jti| AuthenticationTokenService::Refresh.jti?(jti, token["sub"].to_i) }, iss: ISSUER, verify_iss: true, verify_iat: true, required_claims: ['iss', 'sub', 'exp', 'jti', 'iat'], algorithm: ALGORITHM_TYPE })
-    return decoded_token
+    JWT.decode(token, HMAC_SECRET, true, { verify_jti: proc { |jti|
+                                                         AuthenticationTokenService::Refresh.jti?(jti, token['sub'].to_i)
+                                                       }, iss: ISSUER, verify_iss: true, verify_iat: true, required_claims: %w[iss sub exp jti iat], algorithm: ALGORITHM_TYPE })
   end
 
   def self.query(args)
-    if args.key?("job_id") && !args.key("user_id")
-      job = Job.find(args["job_id"])
-      res = Job.get_json(job)
+    if args.key?('job_id') && !args.key('user_id')
+      job = Job.find(args['job_id'])
+      res = Job.json_for(job)
 
-      return { "job": res }
+      { job: res }
 
-    elsif !args.key?("job_id") && args.key("user_id")
+    elsif !args.key?('job_id') && args.key('user_id')
       # TODO: query users
-      return []
-    elsif args.key?("job_id") && args.key("user_id")
-      # TODO: query applications
-      return []
-    else
-      return []
+      []
+      # elsif args.key?('job_id') && args.key('user_id')
+      # # TODO: query applications
+      #  []
+      #    else
+      #     []
     end
   end
 
+  # The Encoder class is responsible for encoding tokens.
   class Encoder
-    MAX_INTERVAL = 31557600 # == 12 months == 1 year
+    MAX_INTERVAL = 31_557_600 # == 12 months == 1 year
     MIN_INTERVAL = 60 # == 1 min
 
+    # Encodes a token for a given user ID and arguments.
     def self.call(user_id, args)
-      AuthenticationTokenService::Refresh.verify_user_id!(user_id)
+      must_be_verified_and_args(user_id, args)
+      iat, sub, bin_exp = prepare_token_values(user_id, args)
+      GeniusQueryService.encode(sub, bin_exp, jti(iat), iat, args).gsub('.', REPLACEMENT_CHARACTER)
+    end
+
+    def self.must_be_verified_and_args(user_id, args)
+      AuthenticationTokenService::Refresh.must_be_verified_id!(user_id)
       ApplicationController.must_be_verified!(user_id)
-      ApplicationController.must_be_owner!(args["job_id"], user_id) if args.key?("job_id")
+      ApplicationController.must_be_owner!(args['job_id'], user_id) if args.key?('job_id')
+    end
+
+    def self.prepare_token_values(user_id, args)
       iat = Time.now.to_i
       sub = user_id
-      unless args.include?("expires_at") && !args["expires_at"].nil?
-        bin_exp = iat + 3600 # standard validity interval (1 hour == 60 min == 3600 sec)
-      else
-        bin_exp = iat + AuthenticationTokenService::Refresh.verify_expiration(args["expires_at"], MAX_INTERVAL, MIN_INTERVAL)
-        args.delete("expires_at")
-      end
-      exp = bin_exp
-      jti = AuthenticationTokenService::Refresh.jti(iat)
-      return GeniusQueryService.encode(sub, exp, jti, iat, args).gsub('.', REPLACEMENT_CHARACTER)
+      bin_exp = if args.include?('expires_at') && !args['expires_at'].nil?
+                  iat + AuthenticationTokenService::Refresh.verify_expiration(args['expires_at'], MAX_INTERVAL, MIN_INTERVAL)
+                else
+                  iat + 3600 # standard validity interval (1 hour == 60 min == 3600 sec)
+                end
+      args.delete('expires_at')
+      [iat, sub, bin_exp]
+    end
+
+    def self.jti(iat)
+      AuthenticationTokenService::Refresh.jti(iat)
     end
   end
 
+  # The Decoder class is responsible for decoding tokens.
   class Decoder
     def self.call(token)
       raise CustomExceptions::InvalidInput::GeniusQuery::Malformed if token.class != String
-      raise CustomExceptions::InvalidInput::GeniusQuery::Blank if token[0] == ":" || token.blank?
+      raise CustomExceptions::InvalidInput::GeniusQuery::Blank if token[0] == ':' || token.blank?
+
       begin
         # necessary to shortcut actual JWT errors to prevent frontend from logging out due to 401s
-        decoded_token = GeniusQueryService.decode(token.gsub(REPLACEMENT_CHARACTER, '.'))[0]
+        decoded_token = GeniusQueryService.decode(token.gsub(
+                                                    REPLACEMENT_CHARACTER, '.'
+                                                  ))[0]
       rescue StandardError
         raise CustomExceptions::InvalidInput::GeniusQuery::Malformed
       end
-      return GeniusQueryService.query(decoded_token)
+      GeniusQueryService.query(decoded_token)
     end
   end
 end

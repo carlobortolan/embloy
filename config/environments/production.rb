@@ -1,5 +1,8 @@
-require "active_support/core_ext/integer/time"
+# frozen_string_literal: true
 
+require 'active_support/core_ext/integer/time'
+
+# rubocop:disable Metrics/BlockLength
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -22,7 +25,7 @@ Rails.application.configure do
 
   # Disable serving static files from the `/public` folder by default since
   # Apache or NGINX already handles this.
-  config.public_file_server.enabled = ENV["RAILS_SERVE_STATIC_FILES"].present? || ENV["RENDER"].present?
+  config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present? || ENV['RENDER'].present?
 
   # Compress CSS using a preprocessor.
   # config.assets.css_compressor = :sass
@@ -67,21 +70,21 @@ Rails.application.configure do
 
   config.action_mailer.perform_deliveries = true
   config.action_mailer.raise_delivery_errors = true
-  config.action_mailer.default_options = { from: ENV['EMAIL_NOREPLY_USER'] }
+  config.action_mailer.default_options = { from: ENV.fetch('EMAIL_NOREPLY_USER', nil) }
 
   config.action_mailer.perform_caching = false
 
-  config.action_mailer.default_url_options = { host: ENV['SERVICE_HOST'] }
+  config.action_mailer.default_url_options = { host: ENV.fetch('SERVICE_HOST', nil) }
 
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-    address: ENV['EMAIL_ADDRESS'],
+    address: ENV.fetch('EMAIL_ADDRESS', nil),
     port: 587,
-    domain: ENV['EMAIL_HOST'],
+    domain: ENV.fetch('EMAIL_HOST', nil),
     authentication: :login,
     enable_starttls_auto: true,
-    user_name: ENV['EMAIL_NOREPLY_USER'],
-    password: ENV['EMAIL_PASSWORD']
+    user_name: ENV.fetch('EMAIL_NOREPLY_USER', nil),
+    password: ENV.fetch('EMAIL_PASSWORD', nil)
   }
 
   # Ignore bad email addresses and do not raise email delivery errors.
@@ -96,14 +99,14 @@ Rails.application.configure do
   config.active_support.report_deprecations = false
 
   # Use default logging formatter so that PID and timestamp are not suppressed.
-  config.log_formatter = ::Logger::Formatter.new
+  config.log_formatter = Logger::Formatter.new
 
   # Use a different logger for distributed setups.
   # require "syslog/logger"
   # config.logger = ActiveSupport::TaggedLogging.new(Syslog::Logger.new "app-name")
 
-  if ENV["RAILS_LOG_TO_STDOUT"].present?
-    logger = ActiveSupport::Logger.new(STDOUT)
+  if ENV['RAILS_LOG_TO_STDOUT'].present?
+    logger = ActiveSupport::Logger.new($stdout)
     logger.formatter = config.log_formatter
     config.logger = ActiveSupport::TaggedLogging.new(logger)
   end
@@ -111,3 +114,4 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 end
+# rubocop:enable Metrics/BlockLength
