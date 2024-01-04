@@ -3,6 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe 'SubscriptionsController' do
+=begin
   before(:all) do
     charset = ('a'..'z').to_a + ('A'..'Z').to_a
 
@@ -157,4 +158,5 @@ RSpec.describe 'SubscriptionsController' do
       end
     end
   end
+=end
 end

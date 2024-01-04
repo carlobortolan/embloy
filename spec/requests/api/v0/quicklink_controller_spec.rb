@@ -18,13 +18,13 @@ RSpec.describe 'QuicklinkController' do
       activity_status: '1'
     )
     puts "Created subscribed, verified user without own jobs, upcoming jobs, reviews: #{@valid_user.id}"
-    @valid_user.subscriptions.create!(
-      tier: 'basic',
-      active: true,
-      start_date: Time.now,
-      expiration_date: Time.now + 6.month,
-      auto_renew: true
-    )
+    #@valid_user.subscriptions.create!(
+    #  tier: 'basic',
+    #  active: true,
+    #  start_date: Time.now,
+    #  expiration_date: Time.now + 6.month,
+    #  auto_renew: true
+    #)
 
     # Create user with soon expiring subscription, own jobs, upcoming jobs, reviews, ...
     @valid_user_exp = User.create!(
@@ -37,13 +37,13 @@ RSpec.describe 'QuicklinkController' do
       activity_status: '1'
     )
     puts "Created subscribed, verified user without own jobs, upcoming jobs, reviews: #{@valid_user_exp.id}"
-    @valid_user_exp.subscriptions.create!(
-      tier: 'basic',
-      active: true,
-      start_date: Time.now,
-      expiration_date: Time.now + 1.month,
-      auto_renew: true
-    )
+    #@valid_user_exp.subscriptions.create!(
+    #  tier: 'basic',
+    #  active: true,
+    #  start_date: Time.now,
+    #  expiration_date: Time.now + 1.month,
+    #  auto_renew: true
+    #)
 
     # Create valid verified user with own jobs
     @valid_user_has_own_jobs = User.create!(
@@ -56,13 +56,13 @@ RSpec.describe 'QuicklinkController' do
       activity_status: '1'
     )
     puts "Created valid verified user with own jobs: #{@valid_user_has_own_jobs.id}"
-    @valid_user_has_own_jobs.subscriptions.create!(
-      tier: 'basic',
-      active: true,
-      start_date: Time.now,
-      expiration_date: Time.now + 6.month,
-      auto_renew: true
-    )
+    #@valid_user_has_own_jobs.subscriptions.create!(
+    #  tier: 'basic',
+    #  active: true,
+    #  start_date: Time.now,
+    #  expiration_date: Time.now + 6.month,
+    #  auto_renew: true
+    #)
 
     # Create valid verified user who already has applied
     @valid_user_has_applied = User.create!(
@@ -75,13 +75,13 @@ RSpec.describe 'QuicklinkController' do
       activity_status: '1'
     )
     puts "Created valid verified user who has already applied: #{@valid_user_has_applied.id}"
-    @valid_user_has_applied.subscriptions.create!(
-      tier: 'basic',
-      active: true,
-      start_date: Time.now,
-      expiration_date: Time.now + 6.month,
-      auto_renew: true
-    )
+    #@valid_user_has_applied.subscriptions.create!(
+    #  tier: 'basic',
+    #  active: true,
+    #  start_date: Time.now,
+    #  expiration_date: Time.now + 6.month,
+    #  auto_renew: true
+    #)
 
     # Create valid unverified user
     @unverified_user = User.create!(
@@ -118,13 +118,13 @@ RSpec.describe 'QuicklinkController' do
       activity_status: '1'
     )
     puts "Created blacklisted user: #{@blacklisted_user.id}"
-    @blacklisted_user.subscriptions.create!(
-      tier: 'basic',
-      active: true,
-      start_date: Time.now,
-      expiration_date: Time.now + 6.month,
-      auto_renew: true
-    )
+    #@blacklisted_user.subscriptions.create!(
+    #  tier: 'basic',
+    #  active: true,
+    #  start_date: Time.now,
+    #  expiration_date: Time.now + 6.month,
+    #  auto_renew: true
+    #)
 
     ### ACCESS / REFRESH TOKENS ###
 

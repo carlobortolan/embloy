@@ -9,13 +9,17 @@ module Api
 
       def all_subscriptions
         must_be_verified!
-        subscriptions = Current.user.payment_processor.sync_subscriptions(status: 'all')
-        if subscriptions.empty?
-          render(status: 204, json: { subscriptions: })
+        if Current.user.payment_processor
+          subscriptions = Current.user.payment_processor.sync_subscriptions(status: 'all')
+          if subscriptions.empty?
+            render(status: 204, json: { subscriptions: [] })
+          else
+            render(
+              status: 200, json: { subscriptions: }
+            )
+          end
         else
-          render(
-            status: 200, json: { subscriptions: }
-          )
+          render(status: 404, json: { error: 'User or payment processor not found' })
         end
       end
 
