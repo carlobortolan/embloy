@@ -27,11 +27,12 @@ class QuicklinkService < AuthenticationTokenService
 
     # The Encoder class is responsible for encoding client tokens.
     class Encoder
+      include SubscriptionHelper
       # Encodes a client token for a given user ID and subscription and expiration date.
       def self.call(user_id, subscription, custom_exp)
         ApplicationController.must_be_verified!(user_id)
         exp = calculate_expiration(custom_exp, subscription)
-        typ = subscription.tier # Needed for quick authorization when token is used
+        typ = SubscriptionHelper.subscription_type(subscription.processor_plan) # Needed for quick authorization when token is used
         iat = Time.now.to_i
         QuicklinkService::Client.encode(user_id, exp.to_i, typ, iat)
       end
@@ -43,7 +44,7 @@ class QuicklinkService < AuthenticationTokenService
                 custom_exp.to_i # Set custom expiration date if available
               end
 
-        [exp, subscription.expiration_date.to_i].min # Token can't be valid longer than subscription
+        [exp, subscription.current_period_end.to_i].min # Token can't be valid longer than subscription
       end
     end
 
