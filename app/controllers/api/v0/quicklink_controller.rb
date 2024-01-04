@@ -7,12 +7,14 @@ module Api
     # QuicklinkController handles quicklink-related actions
     class QuicklinkController < ApiController
       skip_before_action :set_current_user,
-                         only: [:create_request]
+                         only: %i[create_request]
+      skip_before_action :verify_authenticity_token, only: %i[create_request]
 
       before_action :verify_client_token,
                     only: [:create_request]
       before_action :verify_request_token,
                     only: [:apply]
+      before_action :must_be_subscribed, only: [:create_client]
 
       # The apply method is responsible for handling the application process.
       # It finds the user and client based on the decoded tokens, updates or creates the job, and applies for the job.
@@ -46,8 +48,7 @@ module Api
       # It then returns the token in the response.
       def create_client
         verified!(@decoded_token['typ'])
-        check_subscription
-        generate_and_render_token
+        generate_and_render_token(check_subscription)
       end
 
       private
@@ -96,17 +97,26 @@ module Api
       end
 
       def parse_expiration_date
-        params[:exp] ? Time.parse(params[:exp]) : nil # Parse custom expiration date
+        Time.parse(params[:exp]) if params[:exp] && valid_time?(params[:exp])
+      end
+
+      def valid_time?(time_string)
+        Time.parse(time_string)
+        true
+      rescue ArgumentError
+        false
       end
 
       def check_subscription
-        @subscription = Current.user.current_subscription # Check for active subscription
-        raise CustomExceptions::Subscription::ExpiredOrMissing if @subscription.nil?
+        subscription = Current.user.current_subscription # Check for active subscription
+        raise CustomExceptions::Subscription::ExpiredOrMissing if subscription.nil?
+
+        subscription
       end
 
-      def generate_and_render_token
+      def generate_and_render_token(subscription)
         token = QuicklinkService::Client::Encoder.call(
-          Current.user.id, @subscription, parse_expiration_date
+          Current.user.id, subscription, parse_expiration_date
         )
         render status: 200,
                json: { 'client_token' => token }

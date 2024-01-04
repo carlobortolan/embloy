@@ -164,6 +164,32 @@ class ApplicationController < ActionController::Base
     verified!(Current.user.user_role)
   end
 
+  #--------------------------------------
+
+  def must_be_subscribed(id = nil)
+    set_current_id(id)
+    Current.user.active_subscription
+  end
+
+  def self.must_be_subscribed(id = nil)
+    set_current_id(id)
+    Current.user.active_subscription
+  end
+
+  def must_be_subscribed!(id = nil)
+    set_current_id(id)
+    return if Current.user.active_subscription
+
+    raise CustomExceptions::Subscription::ExpiredOrMissing
+  end
+
+  def self.must_be_subscribed!(id = nil)
+    set_current_id(id)
+    return if Current.user.active_subscription
+
+    raise CustomExceptions::Subscription::ExpiredOrMissing
+  end
+
   # ============== Helper methods =================
   # ===============================================
 
