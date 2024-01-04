@@ -4,7 +4,6 @@
 # It includes methods for activating, cancelling, and renewing the subscription.
 class Subscription < ApplicationRecord
   belongs_to :user
-  has_many :payments, dependent: :delete_all
 
   validates :tier, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
                    inclusion: { in: %w[basic premium enterprise_1 enterprise_2 enterprise_3], error: 'ERR_INVALID', description: 'Attribute is invalid' }

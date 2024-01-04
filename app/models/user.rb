@@ -2,6 +2,8 @@
 
 # The User class represents a user in the application.
 class User < ApplicationRecord
+  include SubscriptionStatus
+
   has_secure_password
 
   has_one :preferences, dependent: :delete
@@ -12,7 +14,10 @@ class User < ApplicationRecord
                            dependent: :destroy
   has_many :applications
   has_many :application_attachments
-  has_many :subscriptions, dependent: :delete_all
+  # has_many :subscriptions, dependent: :delete_all
+
+  pay_customer default_payment_processor: :stripe
+  pay_customer stripe_attributes: :stripe_attributes
 
   validates :email, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
                     uniqueness: { error: 'ERR_TAKEN', description: 'Attribute exists' },
@@ -66,11 +71,6 @@ class User < ApplicationRecord
     user_hash.to_json
   end
 
-  def current_subscription
-    subscriptions.where('expiration_date > ?',
-                        Time.now).where(active: true).first
-  end
-
   def to_hash_except_image_url
     JSON.parse(to_json(except: [:image_url]))
   end
@@ -84,6 +84,21 @@ class User < ApplicationRecord
   end
 
   private
+
+  def stripe_attributes(pay_customer)
+    {
+      address: {
+        city: pay_customer.owner.city,
+        country: pay_customer.owner.country_code,
+        postal_code: pay_customer.owner.postal_code,
+        line1: pay_customer.owner.address
+      },
+      metadata: {
+        pay_customer_id: pay_customer.id,
+        user_id: id
+      }
+    }
+  end
 
   def years_since_birth
     Time.now.utc.to_date.year - date_of_birth.year
