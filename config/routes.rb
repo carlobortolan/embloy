@@ -72,5 +72,6 @@ Rails.application.routes.draw do
       post 'resource', to: 'genius_queries#create'
     end
   end
+  get '/sdk/apply', to: 'api/v0/quicklink#apply_from_redirect'
 end
 # rubocop:enable Metrics/BlockLength

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Embloy Quicklink</title>
+</head>
+<body>
+  <h1>Welcome to Embloy!</h1>
+  <p>Here will be the Embloy-Core-Client UI with the login & application process!</p>
+  <h3>Your request_token is:</h3> 
+  <p><%=@token%></p>
+  <h3>Your referer URL is:</h3> 
+  <p><%=@referer%></p>
+  <h3>Request came from IP:</h3> 
+  <p><%=@remote_ip%></p>
+  <h3>Request User-Agent:</h3> 
+  <p><%=@user_agent%></p>
+  <h1>
+  <%= link_to "Go Back (aka successfully applied to job)", @referer, class: "btn btn-primary" %>
+  </h1>
+</body>
+</html>
