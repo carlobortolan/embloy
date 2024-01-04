@@ -3,6 +3,7 @@
 # rubocop:disable Metrics/BlockLength
 Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  root to: 'welcome#index'
 
   #= <<<<< *API* >>>>>>
   namespace :api, defaults: { format: 'json' } do
@@ -53,15 +54,6 @@ Rails.application.routes.draw do
       # patch 'jobs/(/:id)/applications/(/:user)/accept', to: 'applications#accept'
       # delete 'jobs/(/:id)/applications', to: 'applications#destroy'
 
-      # -----> SUBSCRIPTIONS <-----
-      get 'client/subscriptions', to: 'subscriptions#all_subscriptions'
-      get 'client/subscriptions/(:id)', to: 'subscriptions#subscription'
-      post 'client/subscriptions', to: 'subscriptions#create'
-      patch 'client/subscriptions/(:id)/activate', to: 'subscriptions#activate_subscription'
-      patch 'client/subscriptions/(:id)/renew', to: 'subscriptions#renew_subscription'
-      patch 'client/subscriptions/(:id)/cancel', to: 'subscriptions#cancel_subscription'
-      delete 'client/subscriptions/(:id)', to: 'subscriptions#delete_subscription'
-
       # -----> QUICKLINK <-----
       post 'client/auth/token', to: 'quicklink#create_client'
       post 'sdk/request/auth/token', to: 'quicklink#create_request'
@@ -70,6 +62,19 @@ Rails.application.routes.draw do
       # -----> GENIUS-QUERIES <-----
       get 'resource/(/:genius)', to: 'genius_queries#query'
       post 'resource', to: 'genius_queries#create'
+
+      # -----> SUBSCRIPTIONS <-----
+      get 'client/subscriptions/charges', to: 'subscriptions#all_charges'
+      get 'client/subscriptions', to: 'subscriptions#all_subscriptions'
+      get 'client/subscriptions/active', to: 'subscriptions#active_subscription'
+
+      # -----> STRIPE-PAY <-----
+      post 'checkout', to: 'checkouts#show'
+      get 'checkout/subscription/success', to: 'checkouts#subscriptionsuccess'
+      get 'checkout/payment/success', to: 'checkouts#paymentsuccess'
+      get 'checkout/failure', to: 'checkouts#failure'
+      get 'billing', to: 'checkouts#billing'
+      get 'checkout/portal', to: 'checkouts#portal'
     end
   end
 end
