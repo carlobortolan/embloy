@@ -9,7 +9,7 @@ module Api
 
       def all_subscriptions
         must_be_verified!
-        if Current.user.payment_processor
+        if Current.user.payment_processor && !Current.user.payment_processor.deleted?
           subscriptions = Current.user.payment_processor.sync_subscriptions(status: 'all')
           if subscriptions.empty?
             render(status: 204, json: { subscriptions: [] })
