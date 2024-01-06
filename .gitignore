@@ -32,6 +32,7 @@
 
 # Ignore environment variables to access db remotly and allow oauth2.
 /config/env_var.rb
+.env
 /config/puma.rb
 /config/database.yml
 Gemfile
