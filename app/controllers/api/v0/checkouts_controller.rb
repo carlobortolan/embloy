@@ -7,10 +7,7 @@ module Api
       skip_before_action :set_current_user, only: %i[paymentsuccess subscriptionsuccess failure] # TODO: Maybe change in the future, if neccessary
 
       def show
-        Current.user.set_payment_processor :stripe
-        Current.user.pay_customers
-        Current.user.payment_processor.customer
-
+        setup_payment_processor
         stripe_price_id = SubscriptionHelper.stripe_price_id(checkout_params[:tier])
         render json: { error: 'Invalid tier: must be one of basic, premium, enterprise_1, enterprise_2 or enterprise_3' }, status: 400 and return if stripe_price_id.nil?
 
@@ -76,7 +73,7 @@ module Api
               customer: default_customer.processor_id,
               return_url: 'https://genius.embloy.com'
             )
-            render json: { portal_session: portal_session }, status: 200
+            render json: { portal_session: }, status: 200
           else
             render json: { error: 'No default customer found' }, status: 404
           end
@@ -109,6 +106,12 @@ module Api
           success_url:,
           cancel_url: api_v0_checkout_failure_url
         )
+      end
+
+      def setup_payment_processor
+        Current.user.set_payment_processor :stripe
+        Current.user.pay_customers
+        Current.user.payment_processor.customer
       end
     end
   end
