@@ -7,6 +7,7 @@ module Api
       skip_before_action :set_current_user, only: %i[paymentsuccess subscriptionsuccess failure] # TODO: Maybe change in the future, if neccessary
 
       def show
+        Current.user.set_payment_processor :stripe
         Current.user.pay_customers
         Current.user.payment_processor.customer
 
@@ -67,8 +68,18 @@ module Api
         raise CustomExceptions::Subscription::ExpiredOrMissing if Current.user.payment_processor.nil? # TODO: Move to application_controller.rb
 
         begin
-          portal_session = Current.user.payment_processor.billing_portal
-          render json: { portal_session: }, status: 200
+          # portal_session = Current.user.payment_processor.billing_portal
+          default_customer = Current.user.pay_customers.find_by(default: true)
+
+          if default_customer
+            portal_session = Stripe::BillingPortal::Session.create(
+              customer: default_customer.processor_id,
+              return_url: 'https://genius.embloy.com'
+            )
+            render json: { portal_session: portal_session }, status: 200
+          else
+            render json: { error: 'No default customer found' }, status: 404
+          end
         rescue Stripe::StripeError => e
           render json: { error: e.message }, status: 400
         end
