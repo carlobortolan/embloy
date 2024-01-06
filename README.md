@@ -152,61 +152,12 @@ To deploy to docker-hub: \
 If you wish to experiment on our backend or contribute to our front end, you can test your changes by starting a local
 server.
 
-1. Create a file 'config/env_var.rb' with the following content:
+1. Create a `.env` file with the following content:
 
-   ```Ruby
-   ENV['RAILS_MASTER_KEY'] = <>
-   ENV['RAILS_SERVE_STATIC_FILES'] = <>
-   ENV['SERVICE_HOST'] = <>
-   # DATABASE ACCESS
-   ENV['DATABASE_HOST'] = <>
-   ENV['DATABASE_PASSWORD'] = <>
-   ENV['DATABASE_URL'] = <>
-   ENV['DATABASE_URL'] = <>
-   ENV['DATABASE_USER'] = <>
-   ENV['MONGO_DATABASE_URI'] = <>
-   # OAUTH2 CODES
-   ## GOOGLE
-   ENV['GOOGLE_OAUTH2_KEY'] = <>
-   ENV['GOOGLE_OAUTH2_SECRET'] = <>
-   ## GITHUB: embloy.onrender
-   ENV['GITHUB_KEY'] = <>
-   ENV['GITHUB_SECRET'] = <>
-   # E-MAIL CREDENTIALS
-   ENV['EMAIL_ADDRESS'] = <>
-   ENV['EMAIL_HOST'] = <>
-   ENV['EMAIL_INFO_USER'] = <>
-   ENV['EMAIL_NOREPLY_USER'] = <>
-   ENV['EMAIL_PASSWORD'] = <>
-   # TOKEN SECRETS
-   ENV['REFRESH_TOKEN_SECRET'] = <>
-   ENV['ACCESS_TOKEN_SECRET'] = <>
-   ENV['CLIENT_TOKEN_SECRET'] = <>
-   ENV['REQUEST_TOKEN_SECRET'] = <>
-   # CORS CLIENT_URL
-   ENV['CORS_CLIENT_URL'] = <>
-   ENV['CORS_GENIUS_CLIENT_URL'] = <>
-   # BACKBLAZE B2 BUCKET
-   ENV['BUCKET_APPLICATION_KEY_ID'] = <>
-   ENV['BUCKET_APPLICATION_KEY'] = <>
-   ENV['BUCKET_NAME'] = <>
-   ENV['BUCKET_ID'] = <>
-   ENV['BUCKET_REGION'] = <>
-   ENV['BUCKET_ENDPOINT'] = <>
-   # STRIPE
-   ENV['STRIPE_PUBLISHABLE_KEY'] = <>
-   ENV['STRIPE_SECRET_KEY'] = <>
-   ENV['STRIPE_SIGNING_SECRET'] = <>
-   ENV['STRIPE_WEBHOOK_SECRET'] = <>
-   # FG
-   ENV['ADMIN_PW'] = <>
-   ENV['ADMIN_U'] = <>
-   ```
-
-1. Run ``$ rails db:create`` to create all necessary tables in your development database.
-2. Run ``$ rails db:migrate`` to migrate your changes to the database.
-3. Run ``$ rails server`` to start the server.
-4. Add the following lines manually when resetting the current database or creating a new database:
+2. Run ``$ rails db:create`` to create all necessary tables in your development database.
+3. Run ``$ rails db:migrate`` to migrate your changes to the database.
+4. Run ``$ rails server`` to start the server.
+5. Add the following lines manually when resetting the current database or creating a new database:
 
    ```SQL
    CREATE EXTENSION postgis;
@@ -219,13 +170,16 @@ server.
 
 </details>
 
-4. Go to http://localhost:3000
+6. Go to http://localhost:3000
 
-5. To enable subscriptions and Embloy Quicklink, make sure to have StripeCLI installed and have an active webhook:
+<details>
+  <summary> 4. Setup Stripe webhook </summary>
+To enable subscriptions and Embloy Quicklink, make sure to have StripeCLI installed and have an active webhook:
 
 ```Bash
 ./stripe listen --forward-to localhost:3000/pay/webhooks/stripe
 ```
+</details>
 
 ## What's next
 
