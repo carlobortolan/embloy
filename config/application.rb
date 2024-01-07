@@ -17,7 +17,7 @@ module Embloy
     config.load_defaults 7.0
     config.action_text.attachments = true
     config.action_mailer.default_url_options = { host: 'embloy.com' }
-     config.action_controller.forgery_protection_origin_check = true
+    config.action_controller.forgery_protection_origin_check = true
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
