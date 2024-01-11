@@ -8,7 +8,7 @@ module Api
     class QuicklinkController < ApiController
       skip_before_action :set_current_user,
                          only: %i[create_request]
-      skip_before_action :verify_authenticity_token, only: %i[create_request]
+      skip_before_action :verify_authenticity_token, only: %i[create_request] # TODO: CHECK IF NECESSARY
 
       before_action :verify_client_token,
                     only: [:create_request]
@@ -36,11 +36,8 @@ module Api
         return user_role_to_low_error unless must_be_verified(@decoded_client_token['sub'].to_i)
         return user_blocked_error unless user_not_blacklisted(@decoded_client_token['sub'].to_i)
 
-        token = QuicklinkService::Request::Encoder.call(
-          @decoded_client_token['sub'].to_i, 'job#1'
-        )
-        render status: 200,
-               json: { 'request_token' => token }
+        token = QuicklinkService::Request::Encoder.call(create_session)
+        render status: 200, json: { 'request_token' => token }
       end
 
       # The create_client endpoint is responsible for creating a `client_token`.
@@ -107,6 +104,22 @@ module Api
         false
       end
 
+      def create_session
+        mode = portal_params[:mode]
+        success_url = portal_params[:success_url]
+        cancel_url = portal_params[:cancel_url]
+        job_slug = portal_params[:job_slug]
+
+        {
+          client_id: @decoded_client_token['sub'].to_i,
+          subscription_type: @decoded_client_token['typ'],
+          mode:,
+          success_url:,
+          cancel_url:,
+          job_slug:
+        }
+      end
+
       def check_subscription
         subscription = Current.user.current_subscription # Check for active subscription
         raise CustomExceptions::Subscription::ExpiredOrMissing if subscription.nil?
@@ -120,6 +133,10 @@ module Api
         )
         render status: 200,
                json: { 'client_token' => token }
+      end
+
+      def portal_params
+        params.permit(:client_token, :mode, :success_url, :cancel_url, :job_slug, :format)
       end
     end
   end

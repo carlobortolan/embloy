@@ -103,6 +103,11 @@ class CustomExceptions < StandardError
         class Malformed < StandardError
         end
       end
+
+      class Mode < StandardError
+        class Malformed < StandardError
+        end
+      end
     end
   end
 

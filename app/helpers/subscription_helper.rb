@@ -22,4 +22,14 @@ module SubscriptionHelper
   def stripe_price_id(subscription_type)
     SUBSCRIPTION_TYPE_TO_STRIPE_PRICE_ID[subscription_type]
   end
+
+  def self.check_valid_mode(subscription_type, mode)
+    raise CustomExceptions::InvalidInput::Quicklink::Mode::Malformed unless %w[job].include?(mode)
+    raise CustomExceptions::Subscription::ExpiredOrMissing unless %w[premium enterprise_1 enterprise_2 enterprise_3].include?(subscription_type)
+  end
+
+  def check_valid_mode(subscription_type, mode)
+    raise CustomExceptions::InvalidInput::Quicklink::Mode::Malformed unless %w[job].include?(mode)
+    raise CustomExceptions::Subscription::ExpiredOrMissing unless %w[premium enterprise_1 enterprise_2 enterprise_3].include?(subscription_type)
+  end
 end

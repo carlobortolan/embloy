@@ -120,6 +120,9 @@ module ApiExceptionHandler
     rescue_from CustomExceptions::InvalidInput::Quicklink::Request::Blank,
                 with: :request_token_blank_error
 
+    rescue_from CustomExceptions::InvalidInput::Quicklink::Mode::Malformed,
+                with: :request_mode_malformed_error
+
     rescue_from CustomExceptions::Subscription::ExpiredOrMissing,
                 with: :subscription_expired_or_missing_error
 
@@ -207,6 +210,10 @@ module ApiExceptionHandler
 
   def request_token_malformed_error
     malformed_error('request_token')
+  end
+
+  def request_mode_malformed_error
+    malformed_error('mode')
   end
 
   def genius_query_malformed_error
