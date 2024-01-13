@@ -6,7 +6,7 @@
 seconds to load due to render's server instance having to boot up after being inactive for a while._
 
 > __NOTE__: _If you're interested in finding out more or if you want to integrate Embloy into your system,
-check out the developer documentation at ***[developer.embloy.com](developer.embloy.com)***._
+check out the developer documentation at ***[developers.embloy.com](developers.embloy.com)***._
 
 This repository contains the backend code for our application and API, excluding the web-application client. We
 have recently deployed an initial prototype at ***[beta.embloy.com](beta.embloy.com)***, although it is not yet 
@@ -52,16 +52,16 @@ Embloy partners with Stripe for simplified billing. Most Embloy services can be 
 - Embloy-Smart: xx EUR
 - Embloy-Genius xx EUR
 
-Subscriptions are per default on a monthly basis, but can be customized to be dependent on API use. For more information, see the [subscription documentation](https://developer.embloy.com/docs/category/subscriptions). 
+Subscriptions are per default on a monthly basis, but can be customized to be dependent on API use. For more information, see the [subscription documentation](https://developers.embloy.com/docs/category/subscriptions). 
 
 ### Quicklink
 
 With Quicklink you can integrate Embloy into your web service. What PayPal is for transactions, Embloy-Quicklink is for applications. We designed Quicklink to be as easy to use as possible, requiring minimal effort to be integrated on your job posting site. All you have to do is add the "Apply with EMBLOY" button to your client and add one Endpoint to your server and the rest is managed by Embloy.
-For more information, see the [Quicklink documentation](https://developer.embloy.com/docs/category/quicklink). 
+For more information, see the [Quicklink documentation](https://developers.embloy.com/docs/category/quicklink). 
 
 ### Genius-Queries
 
-Embedding Embloy content on external platforms made ease. Create a new Genius-Query and upload it to your social media platform to direct new applicants directly to your Embloy job application. For more information, see the [Genius-Queries documentation](https://developer.embloy.com/docs/category/genius). 
+Embedding Embloy content on external platforms made ease. Create a new Genius-Query and upload it to your social media platform to direct new applicants directly to your Embloy job application. For more information, see the [Genius-Queries documentation](https://developers.embloy.com/docs/category/genius). 
 
 ### Job Posting
 
