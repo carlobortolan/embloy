@@ -6,14 +6,11 @@ module Api
   module V0
     # QuicklinkController handles quicklink-related actions
     class QuicklinkController < ApiController
-      skip_before_action :set_current_user,
-                         only: %i[create_request]
+      skip_before_action :set_current_user, only: %i[create_request]
       skip_before_action :verify_authenticity_token, only: %i[create_request] # TODO: CHECK IF NECESSARY
 
-      before_action :verify_client_token,
-                    only: [:create_request]
-      before_action :verify_request_token,
-                    only: [:apply]
+      before_action :verify_client_token, only: [:create_request]
+      before_action :verify_request_token, only: [:apply]
       before_action :must_be_subscribed, only: [:create_client]
 
       # The apply method is responsible for handling the application process.
@@ -44,7 +41,7 @@ module Api
       # It calls the Encoder class of the `QuicklinkService::Client` module to create the token.
       # It then returns the token in the response.
       def create_client
-        verified!(@decoded_token['typ'])
+        #         verified!(@decoded_token['typ'])
         generate_and_render_token(check_subscription)
       end
 
@@ -94,7 +91,7 @@ module Api
       end
 
       def parse_expiration_date
-        Time.parse(params[:exp]) if params[:exp] && valid_time?(params[:exp])
+        Time.parse(create_client_params[:exp]) if create_client_params[:exp] && valid_time?(create_client_params[:exp])
       end
 
       def valid_time?(time_string)
@@ -135,8 +132,12 @@ module Api
                json: { 'client_token' => token }
       end
 
+      def create_client_params
+        params.except(:format).permit(:exp)
+      end
+
       def portal_params
-        params.permit(:client_token, :mode, :success_url, :cancel_url, :job_slug, :format)
+        params.except(:format).permit(:mode, :success_url, :cancel_url, :job_slug)
       end
     end
   end

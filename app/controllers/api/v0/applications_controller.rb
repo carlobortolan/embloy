@@ -20,42 +20,27 @@ module Api
         render_application(application, application_attachment)
       end
 
+      # rubocop:disable Metrics/AbcSize
       def create
         ActiveRecord::Base.transaction do
-          set_at_job(application_params[:id])
-          tmp = application_params.except(:id, :application_attachment, :format)
-          tmp[:job_id] = @job.id
-          tmp[:user_id] = Current.user.id
-          application = Application.new(tmp)
-
-          application.save!
-
+          create_application!
           if @job.cv_required
             if application_params[:application_attachment].nil?
-              application.errors.add(:application_attachment, 'CV is required')
-              render json: { errors: application.errors }, status: :unprocessable_entity and return
+              @application.errors.add(:application_attachment, 'CV is required')
+              render json: { errors: @application.errors }, status: :unprocessable_entity and return
             end
 
             attachment_format = application_params[:application_attachment].content_type
             allowed_formats = ApplicationHelper.allowed_cv_formats_for_form(@job.allowed_cv_formats)
 
             unless allowed_formats.include?(attachment_format)
-              application.errors.add(:application_attachment, 'Invalid CV format')
-              render json: { errors: application.errors }, status: :unprocessable_entity and return
+              @application.errors.add(:application_attachment, 'Invalid CV format')
+              render json: { errors: @application.errors }, status: :unprocessable_entity and return
             end
 
-            application_attachment = ApplicationAttachment.create!(
-              user_id: Current.user.id,
-              job_id: @job.id
-            )
-            application_attachment.save!
-            application_attachment.cv.attach(application_params[:application_attachment])
+            create_application_attachment!
           end
-
-          application.user = Current.user
-          application.job = @job
         end
-
         render status: 201, json: { message: 'Application submitted!' }
       rescue ActiveRecord::RecordInvalid => e
         render status: 400, json: { errors: e.record.errors.details }
@@ -64,6 +49,7 @@ module Api
       rescue ActiveRecord::RecordNotUnique
         unnecessary_error('application')
       end
+      # rubocop:enable Metrics/AbcSize
 
       def accept
         must_be_owner!(application_modify_params[:id], Current.user.id)
@@ -86,6 +72,23 @@ module Api
       private
 
       def fetch_applications; end
+
+      def create_application!
+        tmp = application_params.except(:id, :application_attachment, :format)
+        tmp[:job_id] = @job.id
+        tmp[:user_id] = Current.user.id
+        @application = Application.new(tmp)
+        @application.save!
+      end
+
+      def create_application_attachment!
+        application_attachment = ApplicationAttachment.create!(
+          user_id: Current.user.id,
+          job_id: @job.id
+        )
+        application_attachment.save!
+        application_attachment.cv.attach(application_params[:application_attachment])
+      end
 
       def render_applications(applications)
         if applications.empty?

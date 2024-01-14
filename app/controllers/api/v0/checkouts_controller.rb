@@ -4,7 +4,7 @@ module Api
   module V0
     # CheckoutsController handles checkout-related actions
     class CheckoutsController < ApiController
-      skip_before_action :set_current_user, only: %i[paymentsuccess subscriptionsuccess failure] # TODO: Maybe change in the future, if neccessary
+      # skip_before_action :set_current_user, only: %i[paymentsuccess subscriptionsuccess failure] # TODO: Maybe change in the future, if neccessary
 
       def show
         setup_payment_processor

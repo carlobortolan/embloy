@@ -55,7 +55,7 @@ RSpec.describe 'ApplicationsController' do
       activity_status: '1'
     )
     puts "Created valid verified user with applications: #{@valid_applicant.id}"
-    
+
     # Blacklisted verified user
     @blacklisted_user = User.create!(
       first_name: 'Max',
@@ -67,7 +67,7 @@ RSpec.describe 'ApplicationsController' do
       activity_status: '1'
     )
     puts "Created blacklisted user: #{@blacklisted_user.id}"
-    
+
     ### ACCESS / REFRESH TOKENS ###
 
     # Verified user refresh/access tokens
@@ -118,7 +118,6 @@ RSpec.describe 'ApplicationsController' do
     @valid_at_applicant = JSON.parse(response.body)['access_token']
     puts "Valid user with own jobs access token: #{@valid_at_applicant}"
 
-
     # Blacklisted user refresh/access tokens
     credentials = Base64.strict_encode64("#{@blacklisted_user.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
@@ -136,14 +135,14 @@ RSpec.describe 'ApplicationsController' do
       reason: 'Test blacklist'
     )
     puts "Blacklisted user #{@blacklisted_user.id}}"
-    
+
     # Invalid/expired access tokens
     @invalid_access_token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWILOjQ6LCJleHAiOjE2OTgxNzk0MjgsImp0aSI6IjQ1NDMyZWUyNWE4YWUyMjc1ZGY0YTE2ZTNlNmQ0YTY4IiwiaWF0IjoxNjk4MTY1MDI4LCJpc3MiOiJDQl9TdXJmYWNlUHJvOCJ9.nqGgQ6Z52CbaHZzPGcwQG6U-nMDxb1yIe7HQMxjoDTs'
 
     # OWN JOBS & UPCOMING JOBS
     # Create own jobs for valid verified user (valid_user_has_own_jobs) and upcoming jobs for valid verified user (valid_user_has_upcoming_jobs)
     cv_required = [false, true, true, true, true, true, true, true, true]
-    allowed_cv_formats = [[".pdf", ".docx", ".txt", ".xml"], [".pdf"], [".docx"], [".txt"], [".xml"], [".pdf"], [".docx"], [".txt"], [".xml"]]
+    allowed_cv_formats = [['.pdf', '.docx', '.txt', '.xml'], ['.pdf'], ['.docx'], ['.txt'], ['.xml'], ['.pdf'], ['.docx'], ['.txt'], ['.xml']]
     @jobs = []
     @applications = []
     9.times do |i|
@@ -180,7 +179,7 @@ RSpec.describe 'ApplicationsController' do
   describe 'Applications', type: :request do
     describe '(GET: /api/v0/jobs/{id}/applications)' do
       context 'valid normal inputs' do
-        it 'returns [200 Ok] and JSON job JSONs if job has applications' do
+        it 'returns [200 Ok] and JSON application JSONs if job has applications' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
           5.times do |i|
             get("/api/v0/jobs/#{@jobs[i].id}/applications", headers:)
@@ -223,7 +222,7 @@ RSpec.describe 'ApplicationsController' do
 
     describe '(GET: /api/v0/jobs/{id}/application)' do
       context 'valid normal inputs' do
-        it 'returns [200 Ok] and JSON job JSONs if job has applications' do
+        it 'returns [200 Ok] and JSON application JSONs if job has applications' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_applications }
           5.times do |i|
             get("/api/v0/jobs/#{@jobs[i].id}/application", headers:)
@@ -278,7 +277,7 @@ RSpec.describe 'ApplicationsController' do
         end
         it 'returns [200 Ok] and accepts application with response' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
-          message = "Good job!"
+          message = 'Good job!'
           patch("/api/v0/jobs/#{@jobs[5].id}/applications/#{@valid_user_has_applications.id}/accept?response=#{message}", headers:)
           expect(response).to have_http_status(200)
         end
@@ -302,7 +301,7 @@ RSpec.describe 'ApplicationsController' do
         end
         it 'returns [400 Bad Request] and if response message is too long' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
-          message = "Lorem ipsum venenatis quis sollicitudin elit eros aliquam scelerisque ornare tortor volutpat, quisque ultricies tortor euismod venenatis inceptos quis feugiat condimentum. Bibendum etiam hendrerit pretium odio sit lectus dui congue hendrerit dolor sit, consectetur ante dapibus vitae mi dictumst velit lacus fermentum fames dictum laoreet, nibh tristique quisque aenean mi sociosqu justo rutrum dictum odio. Porttitor turpis hendrerit consequat habitant enim ante urna dictumst convallis ligula massa pharetra"
+          message = 'Lorem ipsum venenatis quis sollicitudin elit eros aliquam scelerisque ornare tortor volutpat, quisque ultricies tortor euismod venenatis inceptos quis feugiat condimentum. Bibendum etiam hendrerit pretium odio sit lectus dui congue hendrerit dolor sit, consectetur ante dapibus vitae mi dictumst velit lacus fermentum fames dictum laoreet, nibh tristique quisque aenean mi sociosqu justo rutrum dictum odio. Porttitor turpis hendrerit consequat habitant enim ante urna dictumst convallis ligula massa pharetra'
           patch("/api/v0/jobs/#{@jobs[5].id}/applications/#{@valid_user_has_applications.id}/accept?response=#{message}", headers:)
           expect(response).to have_http_status(400)
         end
@@ -333,7 +332,7 @@ RSpec.describe 'ApplicationsController' do
         end
       end
     end
-  
+
     describe '(PATCH: /api/v0/jobs/{id}/applications/{id}/reject)' do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and rejects application' do
@@ -345,7 +344,7 @@ RSpec.describe 'ApplicationsController' do
         end
         it 'returns [200 Ok] and rejects application with response' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
-          message = "Not good enough!"
+          message = 'Not good enough!'
           patch("/api/v0/jobs/#{@jobs[5].id}/applications/#{@valid_user_has_applications.id}/reject?response=#{message}", headers:)
           expect(response).to have_http_status(200)
         end
@@ -369,7 +368,7 @@ RSpec.describe 'ApplicationsController' do
         end
         it 'returns [400 Bad Request] and if response message is too long' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
-          message = "Lorem ipsum venenatis quis sollicitudin elit eros aliquam scelerisque ornare tortor volutpat, quisque ultricies tortor euismod venenatis inceptos quis feugiat condimentum. Bibendum etiam hendrerit pretium odio sit lectus dui congue hendrerit dolor sit, consectetur ante dapibus vitae mi dictumst velit lacus fermentum fames dictum laoreet, nibh tristique quisque aenean mi sociosqu justo rutrum dictum odio. Porttitor turpis hendrerit consequat habitant enim ante urna dictumst convallis ligula massa pharetra"
+          message = 'Lorem ipsum venenatis quis sollicitudin elit eros aliquam scelerisque ornare tortor volutpat, quisque ultricies tortor euismod venenatis inceptos quis feugiat condimentum. Bibendum etiam hendrerit pretium odio sit lectus dui congue hendrerit dolor sit, consectetur ante dapibus vitae mi dictumst velit lacus fermentum fames dictum laoreet, nibh tristique quisque aenean mi sociosqu justo rutrum dictum odio. Porttitor turpis hendrerit consequat habitant enim ante urna dictumst convallis ligula massa pharetra'
           patch("/api/v0/jobs/#{@jobs[5].id}/applications/#{@valid_user_has_applications.id}/reject?response=#{message}", headers:)
           expect(response).to have_http_status(400)
         end
@@ -400,7 +399,7 @@ RSpec.describe 'ApplicationsController' do
         end
       end
     end
-    # TODO
+
     describe '(POST: /api/v0/jobs/{id}/applications)' do
       let(:valid_attributes_basic) do
         {
@@ -409,12 +408,12 @@ RSpec.describe 'ApplicationsController' do
       end
       let(:invalid_attributes_basic) do
         {
-          application_text: "Lorem ipsum venenatis quis sollicitudin elit eros aliquam scelerisque ornare tortor volutpat, quisque ultricies tortor euismod venenatis inceptos quis feugiat condimentum. Bibendum etiam hendrerit pretium odio sit lectus dui congue hendrerit dolor sit, consectetur ante dapibus vitae mi dictumst velit lacus fermentum fames dictum laoreet, nibh tristique quisque aenean mi sociosqu justo rutrum dictum odio. Porttitor turpis hendrerit consequat habitant enim ante urna dictumst convallis ligula massa pharetra Lorem ipsum venenatis quis sollicitudin elit eros aliquam scelerisque ornare tortor volutpat, quisque ultricies tortor euismod venenatis inceptos quis feugiat condimentum. Bibendum etiam hendrerit pretium odio sit lectus dui congue hendrerit dolor sit, consectetur ante dapibus vitae mi dictumst velit lacus fermentum fames dictum laoreet, nibh tristique quisque aenean mi sociosqu justo rutrum dictum odio. Porttitor turpis hendrerit consequat habitant enim ante urna dictumst convallis ligula massa pharetra"
+          application_text: 'Lorem ipsum venenatis quis sollicitudin elit eros aliquam scelerisque ornare tortor volutpat, quisque ultricies tortor euismod venenatis inceptos quis feugiat condimentum. Bibendum etiam hendrerit pretium odio sit lectus dui congue hendrerit dolor sit, consectetur ante dapibus vitae mi dictumst velit lacus fermentum fames dictum laoreet, nibh tristique quisque aenean mi sociosqu justo rutrum dictum odio. Porttitor turpis hendrerit consequat habitant enim ante urna dictumst convallis ligula massa pharetra Lorem ipsum venenatis quis sollicitudin elit eros aliquam scelerisque ornare tortor volutpat, quisque ultricies tortor euismod venenatis inceptos quis feugiat condimentum. Bibendum etiam hendrerit pretium odio sit lectus dui congue hendrerit dolor sit, consectetur ante dapibus vitae mi dictumst velit lacus fermentum fames dictum laoreet, nibh tristique quisque aenean mi sociosqu justo rutrum dictum odio. Porttitor turpis hendrerit consequat habitant enim ante urna dictumst convallis ligula massa pharetra'
         }
       end
       let(:blank_attributes_basic) do
         {
-          application_text: ""
+          application_text: ''
         }
       end
       let(:valid_attributes_pdf) do
@@ -441,27 +440,27 @@ RSpec.describe 'ApplicationsController' do
           application_attachment: Rack::Test::UploadedFile.new(Rails.root.join('spec/assets', 'test_file.txt'), 'text/plain')
         }
       end
-      let(:headers) { { 'HTTP_ACCESS_TOKEN' => @valid_at_applicant } }    
+      let(:headers) { { 'HTTP_ACCESS_TOKEN' => @valid_at_applicant } }
 
       context 'invalid inputs' do
         it 'returns [201 Created] for successfull application not requiring cv' do
-          post("/api/v0/jobs/#{@jobs[0].id}/applications", params: valid_attributes_basic, headers: headers)
+          post("/api/v0/jobs/#{@jobs[0].id}/applications", params: valid_attributes_basic, headers:)
           expect(response).to have_http_status(201)
         end
         it 'returns [201 Created] for successfull application requiring cv with \'.pdf\' format' do
-          post("/api/v0/jobs/#{@jobs[1].id}/applications", params: valid_attributes_pdf, headers: headers)
+          post("/api/v0/jobs/#{@jobs[1].id}/applications", params: valid_attributes_pdf, headers:)
           expect(response).to have_http_status(201)
         end
         it 'returns [201 Created] for successfull application requiring cv with \'.docx\' format' do
-          post("/api/v0/jobs/#{@jobs[2].id}/applications", params: valid_attributes_docx, headers: headers)
+          post("/api/v0/jobs/#{@jobs[2].id}/applications", params: valid_attributes_docx, headers:)
           expect(response).to have_http_status(201)
         end
         it 'returns [201 Created] for successfull application requiring cv with \'.txt\' format' do
-          post("/api/v0/jobs/#{@jobs[3].id}/applications", params: valid_attributes_txt, headers: headers)
+          post("/api/v0/jobs/#{@jobs[3].id}/applications", params: valid_attributes_txt, headers:)
           expect(response).to have_http_status(201)
         end
         it 'returns [201 Created] for successfull application requiring cv with \'.xml\' format' do
-          post("/api/v0/jobs/#{@jobs[4].id}/applications", params: valid_attributes_xml, headers: headers)
+          post("/api/v0/jobs/#{@jobs[4].id}/applications", params: valid_attributes_xml, headers:)
           expect(response).to have_http_status(201)
         end
       end
@@ -472,15 +471,15 @@ RSpec.describe 'ApplicationsController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for missing application text' do
-          post("/api/v0/jobs/#{@jobs[0].id}/applications", headers: headers)
+          post("/api/v0/jobs/#{@jobs[0].id}/applications", headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for too long application text' do
-          post("/api/v0/jobs/#{@jobs[0].id}/applications", params: invalid_attributes_basic, headers: headers)
+          post("/api/v0/jobs/#{@jobs[0].id}/applications", params: invalid_attributes_basic, headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for blank application text' do
-          post("/api/v0/jobs/#{@jobs[0].id}/applications", params: blank_attributes_basic, headers: headers)
+          post("/api/v0/jobs/#{@jobs[0].id}/applications", params: blank_attributes_basic, headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
@@ -495,39 +494,39 @@ RSpec.describe 'ApplicationsController' do
         end
         it 'returns [404 Not Found] if job does not exist' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token }
-          post("/api/v0/jobs/123123123/applications", params: valid_attributes_docx, headers:)
+          post('/api/v0/jobs/123123123/applications', params: valid_attributes_docx, headers:)
           expect(response).to have_http_status(404)
         end
         it 'returns [422 Unprocessable Content] for applying with wrong cv format (\'.pdf\' required)' do
-          post("/api/v0/jobs/#{@jobs[5].id}/applications", params: valid_attributes_xml, headers: headers)
+          post("/api/v0/jobs/#{@jobs[5].id}/applications", params: valid_attributes_xml, headers:)
           expect(response).to have_http_status(422)
-          post("/api/v0/jobs/#{@jobs[5].id}/applications", params: valid_attributes_docx, headers: headers)
+          post("/api/v0/jobs/#{@jobs[5].id}/applications", params: valid_attributes_docx, headers:)
           expect(response).to have_http_status(422)
-          post("/api/v0/jobs/#{@jobs[5].id}/applications", params: valid_attributes_txt, headers: headers)
+          post("/api/v0/jobs/#{@jobs[5].id}/applications", params: valid_attributes_txt, headers:)
           expect(response).to have_http_status(422)
         end
         it 'returns [422 Unprocessable Content] for applying with wrong cv format (\'.docx\' required)' do
-          post("/api/v0/jobs/#{@jobs[6].id}/applications", params: valid_attributes_xml, headers: headers)
+          post("/api/v0/jobs/#{@jobs[6].id}/applications", params: valid_attributes_xml, headers:)
           expect(response).to have_http_status(422)
-          post("/api/v0/jobs/#{@jobs[6].id}/applications", params: valid_attributes_pdf, headers: headers)
+          post("/api/v0/jobs/#{@jobs[6].id}/applications", params: valid_attributes_pdf, headers:)
           expect(response).to have_http_status(422)
-          post("/api/v0/jobs/#{@jobs[6].id}/applications", params: valid_attributes_txt, headers: headers)
+          post("/api/v0/jobs/#{@jobs[6].id}/applications", params: valid_attributes_txt, headers:)
           expect(response).to have_http_status(422)
         end
         it 'returns [422 Unprocessable Content] for applying with wrong cv format (\'.txt\' required)' do
-          post("/api/v0/jobs/#{@jobs[7].id}/applications", params: valid_attributes_xml, headers: headers)
+          post("/api/v0/jobs/#{@jobs[7].id}/applications", params: valid_attributes_xml, headers:)
           expect(response).to have_http_status(422)
-          post("/api/v0/jobs/#{@jobs[7].id}/applications", params: valid_attributes_docx, headers: headers)
+          post("/api/v0/jobs/#{@jobs[7].id}/applications", params: valid_attributes_docx, headers:)
           expect(response).to have_http_status(422)
-          post("/api/v0/jobs/#{@jobs[7].id}/applications", params: valid_attributes_pdf, headers: headers)
+          post("/api/v0/jobs/#{@jobs[7].id}/applications", params: valid_attributes_pdf, headers:)
           expect(response).to have_http_status(422)
         end
         it 'returns [422 Unprocessable Content] for applying with wrong cv format (\'.xml\' required)' do
-          post("/api/v0/jobs/#{@jobs[8].id}/applications", params: valid_attributes_pdf, headers: headers)
+          post("/api/v0/jobs/#{@jobs[8].id}/applications", params: valid_attributes_pdf, headers:)
           expect(response).to have_http_status(422)
-          post("/api/v0/jobs/#{@jobs[8].id}/applications", params: valid_attributes_docx, headers: headers)
+          post("/api/v0/jobs/#{@jobs[8].id}/applications", params: valid_attributes_docx, headers:)
           expect(response).to have_http_status(422)
-          post("/api/v0/jobs/#{@jobs[8].id}/applications", params: valid_attributes_txt, headers: headers)
+          post("/api/v0/jobs/#{@jobs[8].id}/applications", params: valid_attributes_txt, headers:)
           expect(response).to have_http_status(422)
         end
         it 'returns [422 Unprocessable Content] if application already submitted' do

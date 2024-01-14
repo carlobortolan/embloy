@@ -8,6 +8,10 @@ Rails.application.routes.draw do
   #= <<<<< *API* >>>>>>
   namespace :api, defaults: { format: 'json' } do
     namespace :v0 do
+      # -----> STATIC RESOURCES & DOCUMENTS <-----
+      get 'docs', to: 'static#redirect_to_docs'
+      get 'coverage', to: 'static#show_coverage'
+
       # -----> PASSWORDS <-----
       patch 'user/password', to: 'passwords#update'
       post 'user/password/reset', to: 'password_resets#create'
@@ -64,9 +68,9 @@ Rails.application.routes.draw do
       post 'resource', to: 'genius_queries#create'
 
       # -----> SUBSCRIPTIONS <-----
-      get 'client/subscriptions/charges', to: 'subscriptions#all_charges'
       get 'client/subscriptions', to: 'subscriptions#all_subscriptions'
       get 'client/subscriptions/active', to: 'subscriptions#active_subscription'
+      get 'client/subscriptions/charges', to: 'subscriptions#all_charges'
 
       # -----> STRIPE-PAY <-----
       post 'checkout', to: 'checkouts#show'
