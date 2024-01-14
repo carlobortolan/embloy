@@ -2,6 +2,7 @@
 
 # The Application class represents a job application in the application.
 class Application < ApplicationRecord
+  acts_as_paranoid
   after_create_commit :notify_recipient
   # after_update_commit :notify_applicant
   before_destroy :cleanup_notifications

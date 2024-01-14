@@ -88,7 +88,7 @@ RSpec.describe 'ApplicationsController' do
     # OWN JOBS & UPCOMING JOBS
     # Create own jobs for valid verified user (valid_user_has_own_jobs) and upcoming jobs for valid verified user (valid_user_has_upcoming_jobs)
     cv_required = [false, true, true, true, true, false]
-    allowed_cv_formats = [%w[.pdf .docx .txt .xml], ['.pdf'], ['.docx'], ['.txt'], ['xml'], %w[.pdf .docx .txt .xml]]
+    allowed_cv_formats = [[".pdf", ".docx", ".txt", ".xml"], [".pdf"], [".docx"], [".txt"], [".xml"], [".xml", ".pdf"]]
     @jobs = []
     @applications = []
     6.times do |i|
@@ -107,7 +107,7 @@ RSpec.describe 'ApplicationsController' do
         job_type: 'Retail',
         job_type_value: '1',
         cv_required: cv_required[i],
-        allowed_cv_format: allowed_cv_formats[i]
+        allowed_cv_formats: allowed_cv_formats[i]
       )
       puts "Created new job for: #{@valid_user_has_own_jobs.id}"
     end
@@ -201,7 +201,7 @@ RSpec.describe 'ApplicationsController' do
         end
       end
     end
-    # TODO
+
     describe '(PATCH: /api/v0/jobs/{id}/applications/{id}/accept)' do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and accepts application' do
@@ -251,7 +251,7 @@ RSpec.describe 'ApplicationsController' do
         end
       end
     end
-    # TODO
+  
     describe '(PATCH: /api/v0/jobs/{id}/applications/{id}/reject)' do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and rejects application' do

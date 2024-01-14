@@ -4,8 +4,6 @@ module Api
   module V0
     # UserController handles user-related actions
     class UserController < ApiController
-      before_action :must_be_verified!
-
       def upcoming
         upcoming_jobs = fetch_upcoming_jobs
 

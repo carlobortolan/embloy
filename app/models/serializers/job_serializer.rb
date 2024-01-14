@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'fog/backblaze'
+
 # job_serializer.rb
 module Serializers
   # The JobSerializer class is responsible for defining the serialization
@@ -62,7 +64,6 @@ module Serializers
 
     def self.jsons_for(jobs)
       res_json = []
-      return if jobs.nil?
 
       jobs.each do |job|
         json = Job.json_for(job)
@@ -87,11 +88,11 @@ module Serializers
     end
 
     def self.add_image_url(job, res_hash)
-      res_hash['image_url'] = begin
-        job.image_url.url
-      rescue StandardError
-        'https://picsum.photos/200/300.jpg'
-      end
+      res_hash['image_url'] = if job.image_url&.url
+                                job.image_url.url
+                              else
+                                ''
+                              end
     end
 
     def self.add_employer_details(job, res_hash)

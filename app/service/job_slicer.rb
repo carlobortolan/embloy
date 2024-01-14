@@ -11,7 +11,7 @@ class JobSlicer
     rad, lat, lng = sanitize_inputs(rad, lat, lng)
     res = fetch_jobs_within_radius(lat, lng, rad, 20)
     res = fetch_all_jobs(20) if res.nil? || res.empty?
-    res
+    res.is_a?(Array) ? res : [res]
   end
 
   # Fetches a limited number of jobs depending on the user's coordinates (map)

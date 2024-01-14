@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 20_240_104_151_736) do
+ActiveRecord::Schema[7.0].define(version: 20_240_114_012_806) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_trgm'
   enable_extension 'plpgsql'
@@ -86,6 +86,8 @@ ActiveRecord::Schema[7.0].define(version: 20_240_104_151_736) do
     t.string 'application_text', limit: 1000
     t.string 'application_documents', limit: 150
     t.string 'response', limit: 500
+    t.datetime 'deleted_at'
+    t.index ['deleted_at'], name: 'index_applications_on_deleted_at'
     t.index %w[job_id user_id], name: 'application_job_id_user_id_index', unique: true
     t.index ['job_id'], name: 'application_job_id_index'
     t.index ['user_id'], name: 'application_user_id_index'
@@ -110,8 +112,54 @@ ActiveRecord::Schema[7.0].define(version: 20_240_104_151_736) do
     t.datetime 'updated_at', default: '2023-02-27 23:06:11', null: false
   end
 
-  # Could not dump table "jobs" because of following StandardError
-  #   Unknown type 'geography(PointZ,4326)' for column 'job_value'
+  create_table 'jobs', primary_key: 'job_id', id: :serial, force: :cascade do |t|
+    t.string 'job_type'
+    t.integer 'job_type_value'
+    t.integer 'job_status', limit: 2, default: 0
+    t.enum 'status', default: 'public', null: false, enum_type: 'job_status'
+    t.integer 'user_id', default: 0
+    t.integer 'duration', default: 0
+    t.string 'code_lang', limit: 2
+    t.string 'title', limit: 100
+    t.string 'position', limit: 100
+    t.text 'description'
+    t.string 'key_skills', limit: 100
+    t.integer 'salary'
+    t.integer 'euro_salary'
+    t.float 'relevance_score'
+    t.string 'currency'
+    t.string 'image_url', limit: 500
+    t.datetime 'start_slot', precision: nil
+    t.float 'longitude', null: false
+    t.float 'latitude', null: false
+    t.string 'country_code', limit: 45
+    t.string 'postal_code', limit: 45
+    t.string 'city', limit: 45
+    t.string 'address', limit: 150
+    t.integer 'view_count', default: 0, null: false
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.integer 'applications_count', default: 0, null: false
+    t.integer 'employer_rating', default: 0, null: false
+    t.text 'job_notifications', default: '1', null: false
+    t.integer 'boost', default: 0, null: false
+    t.boolean 'cv_required', null: false, default: false
+    t.string 'allowed_cv_formats', default: ['.pdf', '.docx', '.txt', '.xml'], null: false, array: true
+    t.datetime 'deleted_at'
+    t.index ['country_code'], name: ' job_country_code_index '
+    t.index ['job_id'], name: 'job_job_id_index'
+    t.index ['postal_code'], name: ' job_postal_code_index '
+    t.index ['user_id'], name: 'job_user_id_index '
+    t.index ['position'], name: 'job_position_index '
+    t.index ['job_type'], name: 'job_job_type_index '
+    t.index ['deleted_at'], name: 'index_jobs_on_deleted_at'
+  end
+
+  execute('ALTER TABLE jobs ADD COLUMN job_value public.geography(PointZ,4326);CREATE INDEX IF NOT EXISTS job_job_value_index ON public.jobs USING gist(job_value)TABLESPACE pg_default;')
+  execute("CREATE INDEX jobs_tsvector_idx ON jobs USING gin(to_tsvector('simple', coalesce(title,'') || ' ' || coalesce(job_type,'') || ' ' || coalesce(position,'') || ' ' || coalesce(key_skills,'') || ' ' || coalesce(description,'') || ' ' || coalesce(country_code,'') || ' ' || coalesce(city,'') || ' ' || coalesce(postal_code,'') || ' ' || coalesce(address,'')));")
+  execute('CREATE EXTENSION IF NOT EXISTS pg_trgm;')
+  execute('CREATE INDEX IF NOT EXISTS jobs_title_trgm_idx ON jobs USING gin(title gin_trgm_ops);CREATE INDEX IF NOT EXISTS jobs_job_type_trgm_idx ON jobs USING gin(job_type gin_trgm_ops);')
+  execute('CREATE EXTENSION IF NOT EXISTS unaccent;')
 
   create_table 'notifications', force: :cascade do |t|
     t.string 'recipient_type', null: false
@@ -237,6 +285,8 @@ ActiveRecord::Schema[7.0].define(version: 20_240_104_151_736) do
     t.jsonb 'key_skills'
     t.float 'salary_range', default: [0.0, 0.0], array: true
     t.string 'cv_url', limit: 500
+    t.datetime 'deleted_at'
+    t.index ['deleted_at'], name: 'index_preferences_on_deleted_at'
   end
 
   create_table 'private_users', id: :serial, force: :cascade do |t|
@@ -254,8 +304,11 @@ ActiveRecord::Schema[7.0].define(version: 20_240_104_151_736) do
     t.datetime 'updated_at', null: false
     t.integer 'job_id'
     t.integer 'subject', null: false
+    t.datetime 'deleted_at'
     t.index ['created_by'], name: 'reviews_created_by_index'
+    t.index ['deleted_at'], name: 'index_reviews_on_deleted_at'
   end
+
   create_table 'user_blacklists', force: :cascade do |t|
     t.integer 'user_id', null: false
     t.integer 'reason'
@@ -297,12 +350,19 @@ ActiveRecord::Schema[7.0].define(version: 20_240_104_151_736) do
     t.index ['user_type'], name: 'user_user_type_index'
   end
 
+  add_foreign_key 'active_storage_attachments', 'active_storage_blobs', column: 'blob_id'
+  add_foreign_key 'active_storage_variant_records', 'active_storage_blobs', column: 'blob_id'
+  add_foreign_key 'applications', 'jobs', primary_key: 'job_id', on_delete: :cascade
+  add_foreign_key 'applications', 'users', on_delete: :cascade
+  add_foreign_key 'company_users', 'users', column: 'id', on_delete: :cascade
+  add_foreign_key 'jobs', 'users', on_delete: :cascade
   add_foreign_key 'pay_charges', 'pay_customers', column: 'customer_id'
   add_foreign_key 'pay_charges', 'pay_subscriptions', column: 'subscription_id'
   add_foreign_key 'pay_payment_methods', 'pay_customers', column: 'customer_id'
   add_foreign_key 'pay_subscriptions', 'pay_customers', column: 'customer_id'
   add_foreign_key 'preferences', 'users', on_delete: :cascade
   add_foreign_key 'private_users', 'users', column: 'id', on_delete: :cascade
+  add_foreign_key 'reviews', 'jobs', primary_key: 'job_id'
   add_foreign_key 'reviews', 'users'
   add_foreign_key 'reviews', 'users', column: 'created_by'
   add_foreign_key 'user_blacklists', 'users', on_delete: :cascade

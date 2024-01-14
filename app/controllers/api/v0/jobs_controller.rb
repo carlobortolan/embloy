@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../../../../lib/feed_generator'
 require 'net/http'
 module Api
   module V0
@@ -10,271 +9,251 @@ module Api
                     only: %i[update destroy show]
 
       def create
-        must_be_verified!
-        job_params['status'] = 0
-        @job = Job.new(job_params)
-        @job.user_id = Current.user.id
+        job = build_job
+        job.assign_job_type_value
+        # job.job_status = 1
 
-        job_types_file = File.read(Rails.root.join(
-                                     'app/helpers', 'job_types.json'
-                                   ))
-        job_types = JSON.parse(job_types_file)
-        job_type = @job.job_type
-        @job.job_type_value = job_types[job_type]
-        @job.job_status = 1
-
-        if @job.save
-          SpatialJobValue.update_job_value(@job)
-          # Attach image file to job-object
-
-          @job.image_url.attach(params[:image_url]) if params[:image_url]
-          render status: 200,
-                 json: { message: 'Job created!' }
-        elsif @job.errors.details != false
-          error = @job.errors.details.dup # necessary because @job.errors.details cant be modified manually
-          error.each_value do |b|
-            b.each_with_index do |e, i|
-              b[i] = flatted_first_element(e)
-            end
-          end
-          if error[:job_type_value].present? && error[:job_type_value][0][:error] == 'ERR_BLANK'
-            error.delete('job_type_value') # in case that job_type_value is blank error is raised, delete it because it is against the documentation policy of only raising blank errors for required attributes (and job_type value is non)
-            not_found_error('job_type')
-            0
-          else
-            render status: 400, json: error
-          end
+        if job.save
+          process_after_save(job)
+          render status: 201, json: { message: 'Job created!' }
         else
-          render status: 400,
-                 json: @job.errors.details
+          render status: 400, json: job.errors.details
         end
+      rescue ActiveSupport::MessageVerifier::InvalidSignature
+        malformed_error('image_url')
       rescue ActionController::ParameterMissing
         blank_error('job')
       end
 
       def update
-        must_be_verified!
-        must_be_owner!(params[:id],
-                       Current.user.id)
+        must_be_owner!(params[:id], Current.user.id)
         # TODO: @jh: Set default job_status = 1 / make sure that job can be set to (de-)activated by owner
-        return removed_error('job') if @job.job_status.zero?
+        # return removed_error('job') if @job.job_status.zero?
 
-        if @job.update(update_job_params)
-          SpatialJobValue.update_job_value(@job)
-          # Attach image file to job-object
-          @job.image_url.attach(params[:image_url]) if params[:image_url]
-          render status: 200,
-                 json: { message: 'Job updated!' }
+        if @job.update(job_params)
+          process_after_save(@job)
+          render status: 200, json: { message: 'Job updated!' }
         else
-          render status: 400,
-                 json: @job.errors.details
+          render status: 400, json: @job.errors.details
         end
-      rescue ActionController::ParameterMissing # just relevant for strong parameters
+      rescue ActiveSupport::MessageVerifier::InvalidSignature
+        malformed_error('image_url')
+      rescue ActionController::ParameterMissing
         blank_error('job')
       end
 
       def destroy
         # TODO: @jh: Why use `must_be_editor!` and not `owner!`?
         must_be_editor!(Current.user.id)
-        # verified!(@decoded_token["typ"]) #jobs should be removed with job_status = 0 instead of being irreversibly deleted
         # must_be_owner!(params[:id], Current.user.id)
-        @job = Job.find(params[:id]) # no must_be_owner! call @job needs to be set manually
-        @job.destroy!
-        render status: 200,
-               json: { message: 'Job deleted!' }
+        job = Job.find(params[:id]) # no must_be_owner! call @job needs to be set manually
+        job.destroy!
+        render status: 200, json: { message: 'Job deleted!' }
       rescue ActiveRecord::RecordNotFound
-        not_found_error('job') # ok to be this specific because onöy editors can delete jobs
+        not_found_error('job') # ok to be this specific because only editors can delete jobs
       end
 
       # Creates feed based on current user's preferences (if available); if the current user is not verified yet or
       # isn't logged in, his feed consists of random jobs (limit 100)
       def feed
-        # Check that user is verified
-        # request.headers["HTTP_ACCESS_TOKEN"].nil? ? taboo! : @decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers["HTTP_ACCESS_TOKEN"])[0]
-        must_be_verified!
-        if (params[:latitude].nil? || params[:latitude].blank?) && (params[:longitude].nil? || params[:longitude].blank?)
-          render status: 400,
-                 json: { 'latitude' => [{ error: 'ERR_BLANK', description: 'Attribute can\'t be blank' }],
-                         'longitude' => [{ error: 'ERR_BLANK',
-                                           description: 'Attribute can\'t be blank' }] }
-          return -1
-        end
-        return blank_error('latitude') if params[:latitude].nil? || params[:latitude].blank?
-        return blank_error('longitude') if params[:longitude].nil? || params[:longitude].blank?
+        redirect = validate_coordinates
+        return redirect if redirect.is_a?(String)
 
-        begin
-          params[:latitude] =
-            Float(params[:latitude])
-        rescue ArgumentError
-          return malformed_error('latitude')
-        end
-        begin
-          params[:longitude] =
-            Float(params[:longitude])
-        rescue ArgumentError
-          return malformed_error('longitude')
-        end
-        # Create slice to find possible jobs
-        jobs = JobSlicer.slice(Current.user,
-                               30_000, params[:latitude], params[:longitude])
-        # Call FG-API to rank jobs
-        if !jobs.nil? && !jobs.empty?
-          #            feed = call_feed(jobs)
-          # feed.nil? || feed.empty? ? render(status: 500, json: { "message": "Please try again later. If this error persists, we recommend to contact our support team" }) : render(status: 200, json: { "feed": feed })
+        jobs, redirect = create_job_slice
+        return redirect if redirect.is_a?(String)
 
-          feed = []
-          call_feed(jobs).each do |j_id|
-            feed << Job.find_by_job_id(j_id)
-          end
-          if feed.nil? || feed.empty?
-            render(status: 500,
-                   json: { message: 'Please try again later. If this error persists, we recommend to contact our support team' })
-          else
-            render(
-              status: 200, json: "{\"feed\": [#{Job.jsons_for(feed)}]}"
-            )
-          end
-
-        else
-          render status: 204, json: { message: 'No jobs found!' } # message will not show with 204, just for maintainability
-        end
+        redirect = create_and_render_feed(jobs)
+        redirect if redirect.is_a?(String)
       end
 
       # Returns jobs near given coordinates
       def map
-        lat = params[:latitude]
-        lng = params[:longitude]
+        redirect = validate_coordinates
+        return redirect if redirect.is_a?(String)
 
-        return blank_error('latitude') if lat.nil? || lat.blank?
-        return blank_error('longitude') if lng.nil? || lng.blank?
+        lat, lng = fetch_user_coordinates
 
-        begin
-          lat = Float(lat)
-        rescue ArgumentError
-          return malformed_error('latitude')
-        end
-        begin
-          lng = Float(lng)
-        rescue ArgumentError
-          return malformed_error('longitude')
-        end
-
-        return malformed_error('latitude') if lat.abs > 90.0
-        return malformed_error('longitude') if lng.abs > 180.0
-
-        if !Current.user.nil? && !Current.user.longitude.nil? && !Current.user.latitude.nil?
-          lat = Current.user.latitude
-          lng = Current.user.longitude
-        end
         jobs = JobSlicer.fetch_map(lat, lng)
-        # jobs.empty? ? render(status: 204, json: { "jobs": jobs }) : render(status: 200, json: "jobs: #{jobs.to_json(except: [:image_url])}")
         if jobs.empty?
-          render(status: 204,
-                 json: { jobs: })
+          render(status: 204, json: { jobs: })
         else
-          render(status: 200,
-                 json: "{\"jobs\": [#{Job.get_jsons_include_user(jobs)}]}")
+          render(status: 200, json: "{\"jobs\": [#{Job.get_jsons_include_user(jobs)}]}")
         end
       end
 
       # Returns a specific job
       def show
         begin
-          job = Job.find(params[:id])
+          job = Job.find_by(job_id: params[:id])
         rescue ActiveRecord::RecordNotFound
-          render(status: 404,
-                 json: { message: "Job with id #{params[:id]} does not exist!" })
-          return
+          render(status: 404, json: { message: "Job with id #{params[:id]} does not exist!" }) and return
         end
-        if job.nil?
-          render(status: 204,
-                 json: { job: })
-        else
-          render(status: 200,
-                 json: "{\"job\": #{Job.json_for(job)}}")
-        end
+        return access_denied_error('job') if (job.user_id != Current.user.id && job.status != 'public') || job.nil?
+
+        render(status: 200, json: "{\"job\": #{Job.json_for(job)}}")
       end
 
       def find
-        # TODO: Input validation
-        jobs = Job.includes(image_url_attachment: :blob).includes([:rich_text_description]).where(
-          'title ILIKE :query OR description ILIKE :query OR position ILIKE :query OR job_type ILIKE :query OR key_skills ILIKE :query OR address ILIKE :query OR city ILIKE :query OR postal_code ILIKE :query OR start_slot::text ILIKE :query', query: "%#{params[:query]}%"
-        )
-                  .page(params[:page])
+        jobs = job_params[:query].presence ? search_jobs : Job.includes(image_url_attachment: :blob).includes([:rich_text_description]).all
 
-        jobs = Job.includes(image_url_attachment: :blob).includes([:rich_text_description]).all if jobs.nil? || jobs.empty?
+        render status: 204, json: { message: 'No jobs found!' } and return if jobs.blank?
 
-        jobs = jobs.includes(image_url_attachment: :blob).includes([:rich_text_description]).where(job_type: params[:job_type]) unless params[:job_type].nil? || params[:job_type].blank?
-        unless params[:sort_by].nil? || params[:sort_by].blank?
-          jobs = case params[:sort_by]
-                 when 'salary_asc'
-                   jobs.includes(image_url_attachment: :blob).includes([:rich_text_description]).order(salary: :asc)
-                 when 'salary_desc'
-                   jobs.includes(image_url_attachment: :blob).includes([:rich_text_description]).order(salary: :desc)
-                 when 'date_asc'
-                   jobs.includes(image_url_attachment: :blob).includes([:rich_text_description]).order(created_at: :asc)
-                 when 'date_desc'
-                   jobs.includes(image_url_attachment: :blob).includes([:rich_text_description]).order(created_at: :desc)
-                 else
-                   []
-                 end
-        end
-
-        if !jobs.nil? && !jobs.empty?
-          render(status: 200,
-                 json: "{\"jobs\": [#{Job.jsons_for(jobs.page(params[:page]).per(24))}]}")
-        else
-          render status: 204, json: { message: 'No jobs found!' } # message will not show with 204, just for maintainability
-        end
+        jobs = filter_jobs_by_type(jobs)
+        jobs = sort_jobs(jobs)
+        render_jobs('jobs', jobs)
       end
 
       private
 
-      # Method to communicate with the FG-API by sending a POST-request to tbd
-      def call_feed(jobs)
-        url = URI.parse('https://embloy-fg-api.onrender.com/feed')
-        # url = URI.parse("http://localhost:8080/feed")
-        request_body = if !Current.user.nil? && !Current.user.preferences.nil?
-                         "{\"pref\": #{Current.user.preferences.to_json}, \"slice\": [#{Job.jsons_for(jobs)}]}"
-                       else
-                         "{\"slice\": [#{Job.jsons_for(jobs)}]}"
-                       end
-        http = Net::HTTP.new(url.host, url.port)
-        http.use_ssl = true
-        http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+      def build_job
+        job = Job.new(job_params)
+        job.user_id = Current.user.id
+        job
+      end
 
-        request = Net::HTTP::Post.new(url)
-        request.basic_auth('FG', 'pw')
-        request.body = request_body
-        request['Content-Type'] =
-          'application/json'
-        response = http.request(request)
+      def process_after_save(job)
+        SpatialJobValue.update_job_value(job)
+
+        return unless job_params[:image_url].present?
+
+        job.image_url.attach(job_params[:image_url])
+      end
+
+      def validate_coordinates
+        lat, lng = [find_job_params[:latitude], find_job_params[:longitude]].map do |coordinate|
+          return blank_error(coordinate) if coordinate.blank?
+
+          begin
+            Float(coordinate)
+          rescue StandardError
+            (return malformed_error(coordinate))
+          end
+        end
+
+        return malformed_error('latitude') unless valid_latitude?(lat)
+
+        malformed_error('longitude') unless valid_longitude?(lng)
+      end
+
+      def create_job_slice
+        jobs = JobSlicer.slice(Current.user, 30_000, Float(params[:latitude]), Float(params[:longitude]))
+        render(status: 204, json: { message: 'No jobs found!' }) and return if jobs.nil? || jobs.empty?
+
+        jobs
+      end
+
+      def create_and_render_feed(jobs)
+        if jobs.present?
+          feed_ids = call_feed(jobs)
+          if feed_ids.nil?
+            render(status: 500, json: { message: 'Feed service is currently unavailable. Please try again later.' })
+          else
+            feed = feed_ids.map { |j_id| Job.find_by_job_id(j_id) }
+            if feed.empty?
+              render(status: 500, json: { message: 'Please try again later. If this error persists, we recommend to contact our support team' })
+            else
+              render_jobs('feed', feed)
+            end
+          end
+        else
+          render status: 204, json: { message: 'No jobs found!' }
+        end
+      end
+
+      # Method to communicate with the FG-API by sending a POST-request
+      def call_feed(jobs)
+        url = URI.parse(ENV.fetch('FG_URL', nil))
+        request = create_feed_request(jobs, url)
+        http = Net::HTTP.new(url.host, url.port).tap do |http_instance|
+          http_instance.use_ssl = true
+          http_instance.verify_mode = OpenSSL::SSL::VERIFY_PEER
+        end
+
+        response = http.request(request) # This line is missing in your code
+
+        process_response(response)
+      end
+
+      def create_feed_request(jobs, url)
+        body = if Current.user&.preferences
+                 "{\"pref\": #{Current.user.preferences.to_json}, \"slice\": [#{Job.jsons_for(jobs)}]}"
+               else
+                 "{\"slice\": [#{Job.jsons_for(jobs)}]}"
+               end
+
+        Net::HTTP::Post.new(url).tap do |request|
+          request.basic_auth(ENV.fetch('FG_U', nil), ENV.fetch('FG_PW', nil))
+          request.body = body
+          request['Content-Type'] = 'application/json'
+        end
+      end
+
+      def process_response(response)
         return unless response.code == '200'
 
         feed_json = JSON.parse(response.body)
-        res = []
-        feed_json.each do |job_hash|
-          # puts job_hash["job_id"]
-          res << job_hash['job_id']
-          # @jobs << Job.new(job_hash)
+        feed_json.map { |job_hash| job_hash['job_id'] }
+      end
+
+      def search_jobs
+        query = "%#{ActiveRecord::Base.sanitize_sql_like(find_job_params[:query])}%"
+        Job.includes(image_url_attachment: :blob)
+           .includes([:rich_text_description])
+           .where("status = 'public' AND " \
+                  '(title ILIKE :query OR ' \
+                  'description ILIKE :query OR ' \
+                  'position ILIKE :query OR ' \
+                  'job_type ILIKE :query OR ' \
+                  'key_skills ILIKE :query OR ' \
+                  'address ILIKE :query OR ' \
+                  'city ILIKE :query OR ' \
+                  'postal_code ILIKE :query OR ' \
+                  "COALESCE(start_slot::text, '') ILIKE :query)", query:)
+           .page(find_job_params[:page])
+      end
+
+      def filter_jobs_by_type(jobs)
+        return jobs if !find_job_params[:job_type].present? || jobs.nil?
+
+        jobs.where(job_type: find_job_params[:job_type])
+      end
+
+      def sort_jobs(jobs)
+        return jobs if !find_job_params[:sort_by].present? || jobs.nil?
+
+        sort_options = {
+          'salary_asc' => { salary: :asc },
+          'salary_desc' => { salary: :desc },
+          'date_asc' => { created_at: :asc },
+          'date_desc' => { created_at: :desc }
+        }
+
+        order = sort_options[find_job_params[:sort_by]]
+        order ? jobs.order(order) : []
+      end
+
+      def render_jobs(tag, jobs)
+        if jobs.present?
+          render status: 200, json: "{\"#{tag}\": [#{Job.jsons_for(jobs.page(find_job_params[:page]).per(24))}]}"
+        else
+          render status: 204, json: { message: 'No jobs found!' }
         end
-        res
       end
 
-      def job_params
-        # =================== API v0 ====================
-        # ===============================================
-        # params.require(:job).permit(:title, :description, :start_slot, :user_id, :longitude, :latitude, :job_type, :position, :currency, :salary, :key_skills, :duration)
-        # Updated params to work with postman form-data
-        params.permit(:title, :description, :start_slot, :user_id, :longitude, :latitude, :job_type, :position,
-                      :currency, :salary, :key_skills, :duration)
+      def fetch_user_coordinates
+        if Current.user&.longitude && Current.user&.latitude
+          [Current.user.latitude, Current.user.longitude]
+        else
+          [nil, nil]
+        end
       end
 
-      def update_job_params
-        # params.require(:job).permit(:title, :description, :start_slot, :user_id, :longitude, :latitude, :job_type, :status, :job_status, :position, :currency, :salary, :key_skills, :duration)
-        # Updated params to work with postman form-data
-        params.permit(:title, :description, :start_slot, :user_id, :longitude, :latitude, :job_type, :status,
-                      :job_status, :position, :currency, :salary, :key_skills, :duration)
+      def valid_latitude?(lat)
+        lat.abs <= 90.0
+      end
+
+      def valid_longitude?(lng)
+        lng.abs <= 180.0
       end
 
       # mark_notifications_as_read is not implemented because i dont understand how it works
@@ -284,6 +263,15 @@ module Api
       #           notifications_to_mark_as_read.update_all(read_at: Time.zone.now)
       #         end
       #       end
+
+      def job_params
+        params.except(:format).permit(:title, :description, :start_slot, :longitude, :latitude, :job_type, :status, :image_url,
+                                      :job_status, :position, :currency, :salary, :key_skills, :duration, :job_notifications, :cv_required, allowed_cv_formats: [])
+      end
+
+      def find_job_params
+        params.except(:format).permit(:query, :job_type, :sort_by, :page, :longitude, :latitude)
+      end
     end
   end
 end

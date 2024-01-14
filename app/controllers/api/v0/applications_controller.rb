@@ -4,7 +4,8 @@ module Api
   module V0
     # ApplicationsController handles application-related actions
     class ApplicationsController < ApiController
-      before_action :verify_path_job_id, :must_be_verified!
+      before_action :verify_path_job_id
+      before_action :must_be_verified!
 
       def show
         must_be_owner!(params[:id], Current.user.id)

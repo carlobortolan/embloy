@@ -4,13 +4,13 @@
 module SpatialJobValue
   # TODO: Make module use @job in Application controller
   def self.update_job_value(job)
-    job_type_id = JSON.parse(File.read(Rails.root.join('app/helpers', 'job_types.json')))[job.job_type] or 5
+    job_type_id = JSON.parse(File.read(Rails.root.join('app/helpers', 'job_types.json')))[job.job_type] || 5
     sql = <<-SQL
     UPDATE jobs
     SET job_value = ST_SetSRID(ST_MakePoint($1, $2, $3), 4326)
     WHERE job_id = $4
     SQL
-    ActiveRecord::Base.connection.execute(sql, [job.latitude, job.longitude, job_type_id, job.job_id])
+    ActiveRecord::Base.connection.raw_connection.exec_params(sql, [job.latitude, job.longitude, job_type_id, job.id])
   end
 
   #   def self.update_job_value(job = nil)

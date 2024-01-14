@@ -51,7 +51,6 @@ gem "tzinfo-data", platforms: %i[ mingw mswin x64_mingw jruby ]
 gem "bootsnap", require: false
 
 # Enable .env file
-# gem 'dotenv-rails', groups: [:development, :test]
 gem 'dotenv-rails'
 
 # Use Sass to process CSS
@@ -116,8 +115,14 @@ gem 'activestorage-backblaze'
 gem 'iso_country_codes'
 gem 'composite_primary_keys'
 
+# Rich-Text Support
 gem 'actionpack', '>= 7.0.5.1'
 gem 'activesupport', '>= 7.0.7.1'
 gem 'nokogiri', '>= 1.14.3'
+
+# Payments and Subscriptions
 gem "stripe", "~> 10.4"
 gem "pay", "~> 7.1"
+
+# Enable Soft Delete
+gem "paranoia", "~> 2.6"
