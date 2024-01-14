@@ -408,11 +408,9 @@ class ApplicationController < ActionController::Base
   # ======= that set "@job" to job for id  ========
 
   def set_at_job(job_id = nil)
-    @job = Job.find_by(job_id:) unless job_id.nil?
+    @job = Job.find_by(job_id:) unless job_id.nil?    
 
-    return unless @job.nil?
-
-    raise CustomExceptions::InvalidJob::Unknown
+    raise CustomExceptions::InvalidJob::Unknown if @job.nil?
   end
 
   def self.set_at_job(job_id = nil)
