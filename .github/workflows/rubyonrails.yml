@@ -72,6 +72,9 @@ jobs:
       ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
       CLIENT_TOKEN_SECRET: ${{ secrets.CLIENT_TOKEN_SECRET }}
       REQUEST_TOKEN_SECRET: ${{ secrets.REQUEST_TOKEN_SECRET }}
+      STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
+      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      STRIPE_SIGNING_SECRET: ${{ secrets.whsec_59f892257baad8614034a03c76e10f941fc45f0bd6341cbeef05e8708d4ec2d0 }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -92,9 +95,3 @@ jobs:
         run: bundle exec rspec
       - name: Output coverage report
         run: cat coverage/index.html
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        with:
-          file: ./coverage/.resultset.json
