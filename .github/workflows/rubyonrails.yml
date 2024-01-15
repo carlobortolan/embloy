@@ -74,7 +74,7 @@ jobs:
       REQUEST_TOKEN_SECRET: ${{ secrets.REQUEST_TOKEN_SECRET }}
       STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
       STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
-      STRIPE_SIGNING_SECRET: ${{ secrets.whsec_59f892257baad8614034a03c76e10f941fc45f0bd6341cbeef05e8708d4ec2d0 }}
+      STRIPE_SIGNING_SECRET: ${{ secrets.STRIPE_SIGNING_SECRET }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
