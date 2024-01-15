@@ -10,7 +10,6 @@ Rails.application.routes.draw do
     namespace :v0 do
       # -----> STATIC RESOURCES & DOCUMENTS <-----
       get 'docs', to: 'static#redirect_to_docs'
-      get 'coverage', to: 'static#show_coverage'
 
       # -----> PASSWORDS <-----
       patch 'user/password', to: 'passwords#update'
