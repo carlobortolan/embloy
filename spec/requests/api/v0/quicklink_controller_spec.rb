@@ -17,14 +17,12 @@ RSpec.describe 'QuicklinkController' do
       user_role: 'verified',
       activity_status: '1'
     )
+    @valid_user.set_payment_processor :fake_processor, allow_fake: true
+    @valid_user.pay_customers
+    @valid_user.payment_processor.customer
+    @valid_user.payment_processor.charge(19_00)
+    @valid_user.payment_processor.subscribe(plan: 'fake')
     puts "Created subscribed, verified user without own jobs, upcoming jobs, reviews: #{@valid_user.id}"
-    @valid_user.subscriptions.create!(
-      tier: 'basic',
-      active: true,
-      start_date: Time.now,
-      expiration_date: Time.now + 6.month,
-      auto_renew: true
-    )
 
     # Create user with soon expiring subscription, own jobs, upcoming jobs, reviews, ...
     @valid_user_exp = User.create!(
@@ -36,14 +34,12 @@ RSpec.describe 'QuicklinkController' do
       user_role: 'verified',
       activity_status: '1'
     )
-    puts "Created subscribed, verified user without own jobs, upcoming jobs, reviews: #{@valid_user_exp.id}"
-    @valid_user_exp.subscriptions.create!(
-      tier: 'basic',
-      active: true,
-      start_date: Time.now,
-      expiration_date: Time.now + 1.month,
-      auto_renew: true
-    )
+    @valid_user_exp.set_payment_processor :fake_processor, allow_fake: true
+    @valid_user_exp.pay_customers
+    @valid_user_exp.payment_processor.customer
+    @valid_user_exp.payment_processor.charge(19_00)
+    @valid_user_exp.payment_processor.subscribe(plan: 'fake')
+    puts "Created user with soon expiring subscription: #{@valid_user_exp.id}"
 
     # Create valid verified user with own jobs
     @valid_user_has_own_jobs = User.create!(
@@ -55,14 +51,12 @@ RSpec.describe 'QuicklinkController' do
       user_role: 'verified',
       activity_status: '1'
     )
+    @valid_user_has_own_jobs.set_payment_processor :fake_processor, allow_fake: true
+    @valid_user_has_own_jobs.pay_customers
+    @valid_user_has_own_jobs.payment_processor.customer
+    @valid_user_has_own_jobs.payment_processor.charge(19_00)
+    @valid_user_has_own_jobs.payment_processor.subscribe(plan: 'fake')
     puts "Created valid verified user with own jobs: #{@valid_user_has_own_jobs.id}"
-    @valid_user_has_own_jobs.subscriptions.create!(
-      tier: 'basic',
-      active: true,
-      start_date: Time.now,
-      expiration_date: Time.now + 6.month,
-      auto_renew: true
-    )
 
     # Create valid verified user who already has applied
     @valid_user_has_applied = User.create!(
@@ -75,25 +69,6 @@ RSpec.describe 'QuicklinkController' do
       activity_status: '1'
     )
     puts "Created valid verified user who has already applied: #{@valid_user_has_applied.id}"
-    @valid_user_has_applied.subscriptions.create!(
-      tier: 'basic',
-      active: true,
-      start_date: Time.now,
-      expiration_date: Time.now + 6.month,
-      auto_renew: true
-    )
-
-    # Create valid unverified user
-    @unverified_user = User.create!(
-      first_name: 'Max',
-      last_name: 'Mustermann',
-      email: "#{(0...16).map { charset.sample }.join}@embloy.com",
-      password: 'password',
-      password_confirmation: 'password',
-      user_role: 'spectator',
-      activity_status: '0'
-    )
-    puts "Created unverified user: #{@unverified_user.id}"
 
     # Create user without valid subscription, own jobs, upcoming jobs, reviews, ...
     @unsubscribed_user = User.create!(
@@ -117,14 +92,12 @@ RSpec.describe 'QuicklinkController' do
       user_role: 'verified',
       activity_status: '1'
     )
+    @blacklisted_user.set_payment_processor :fake_processor, allow_fake: true
+    @blacklisted_user.pay_customers
+    @blacklisted_user.payment_processor.customer
+    @blacklisted_user.payment_processor.charge(19_00)
+    @blacklisted_user.payment_processor.subscribe(plan: 'fake')
     puts "Created blacklisted user: #{@blacklisted_user.id}"
-    @blacklisted_user.subscriptions.create!(
-      tier: 'basic',
-      active: true,
-      start_date: Time.now,
-      expiration_date: Time.now + 6.month,
-      auto_renew: true
-    )
 
     ### ACCESS / REFRESH TOKENS ###
 
@@ -169,10 +142,7 @@ RSpec.describe 'QuicklinkController' do
     @valid_at_has_own_jobs = JSON.parse(response.body)['access_token']
     puts "Valid user with own jobs access token: #{@valid_at_has_own_jobs}"
 
-    headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
-    post('/api/v0/client/auth/token', headers:)
-    @valid_ct_has_own_jobs = JSON.parse(response.body)['client_token']
-    puts "Valid user with own jobs client token: #{@valid_ct_has_own_jobs}"
+    @valid_ct_has_own_jobs = QuicklinkService::Client.encode(@valid_user_has_own_jobs.id.to_i, Time.now.to_i + (60 * 60 * 24 * 31 * 3), 'premium', Time.now.to_i)
 
     # Valid user who has applied refresh/access/client tokens
     credentials = Base64.strict_encode64("#{@valid_user_has_applied.email}:password")
@@ -215,10 +185,7 @@ RSpec.describe 'QuicklinkController' do
     @valid_at_blacklisted = JSON.parse(response.body)['access_token']
     puts "Valid user who will be blacklisted access token: #{@valid_at_blacklisted}"
 
-    headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_blacklisted }
-    post('/api/v0/client/auth/token', headers:)
-    @valid_ct_blacklisted = JSON.parse(response.body)['client_token']
-    puts "Valid user who will be blacklisted access token: #{@valid_ct_blacklisted}"
+    @valid_ct_blacklisted = QuicklinkService::Client.encode(@blacklisted_user.id.to_i, Time.now.to_i + (60 * 60 * 24 * 31 * 3), 'premium', Time.now.to_i)
 
     UserBlacklist.create!(
       user_id: @blacklisted_user.id,
@@ -228,7 +195,7 @@ RSpec.describe 'QuicklinkController' do
 
     # Invalid/expired access tokens
     @invalid_token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWILOjQ6LCJleHAiOjE2OTgxNzk0MjgsImp0aSI6IjQ1NDMyZWUyNWE4YWUyMjc1ZGY0YTE2ZTNlNmQ0YTY4IiwiaWF0IjoxNjk4MTY1MDI4LCJpc3MiOiJDQl9TdXJmYWNlUHJvOCJ9.nqGgQ6Z52CbaHZzPGcwQG6U-nMDxb1yIe7HQMxjoDTs'
-
+    @invalid_client_token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOjEsImV4adw6MTcwNzkzMzk5NSwidHlwIjoicHJlbWl1bSIsImlhdCI6MTcwNTI1NTY4MiwiaXNzIjoibWFua2RlIn0.25S1QuOifV7BUgilcqWaOK3UmZ1toPfdobi9z8m-b2o'
     # OWN JOBS & APPLIED JOBS
     # Create own jobs for valid verified user (valid_user_has_own_jobs) and applied jobs for valid verified user (valid_user_has_applied)
     5.times do
@@ -297,26 +264,52 @@ RSpec.describe 'QuicklinkController' do
     end
 
     describe '(POST: /api/v0/sdk/request/auth/token)' do
+      let(:request_body) do
+        {
+          mode: 'job',
+          success_url: '/success',
+          cancel_url: '/failure',
+          job_slug: 'job#1'
+        }
+      end
+
       context 'valid normal inputs' do
         it 'returns [200 Ok] and new request token' do
           headers = { 'HTTP_CLIENT_TOKEN' => @valid_ct_has_own_jobs }
-          post('/api/v0/sdk/request/auth/token', headers:)
+          post('/api/v0/sdk/request/auth/token', params: request_body, headers:)
+          expect(response).to have_http_status(200)
+        end
+        it 'returns [200 Ok] and new request token' do
+          headers = { 'HTTP_CLIENT_TOKEN' => @valid_ct_has_own_jobs }
+          post('/api/v0/sdk/request/auth/token', params: request_body, headers:)
+          expect(response).to have_http_status(200)
+        end
+        it 'returns [200 Ok] and new request token' do
+          headers = { 'HTTP_CLIENT_TOKEN' => @valid_ct_has_own_jobs }
+          post('/api/v0/sdk/request/auth/token', params: request_body.except(:success_url, :cancal_url, :job_slug), headers:)
           expect(response).to have_http_status(200)
         end
       end
+
       context 'invalid inputs' do
         it 'returns [400 Bad Request] for missing client token in header' do
-          post '/api/v0/sdk/request/auth/token'
+          post '/api/v0/sdk/request/auth/token', params: request_body
           expect(response).to have_http_status(400)
-        end     
+        end
+        it 'returns [400 Bad Request] for invalid mode' do
+          headers = { 'HTTP_CLIENT_TOKEN' => @valid_ct_has_own_jobs }
+          invalid_request_body = request_body.merge(mode: 'invalid_mode')
+          post('/api/v0/sdk/request/auth/token', params: invalid_request_body, headers:)
+          expect(response).to have_http_status(400)
+        end
         it 'returns [401 Unauthorized] for expired/invalid client token' do
-          headers = { 'HTTP_CLIENT_TOKEN' => @invalid_token }
-          post('/api/v0/sdk/request/auth/token', headers:)
+          headers = { 'HTTP_CLIENT_TOKEN' => @invalid_client_token }
+          post('/api/v0/sdk/request/auth/token', params: request_body, headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
           headers = { 'HTTP_CLIENT_TOKEN' => @valid_ct_blacklisted }
-          post('/api/v0/sdk/request/auth/token', headers:)
+          post('/api/v0/sdk/request/auth/token', params: request_body, headers:)
           expect(response).to have_http_status(403)
         end
       end

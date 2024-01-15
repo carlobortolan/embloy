@@ -4,82 +4,49 @@ module Api
   module V0
     # SubscriptionsController handles subscription-related actions
     class SubscriptionsController < ApiController
-      before_action :set_subscription,
-                    except: %i[create all_subscriptions]
+      before_action :must_be_subscribed,
+                    except: %i[all_subscriptions all_charges]
 
       def all_subscriptions
-        must_be_verified!
-        subscriptions = Current.user.subscriptions
-        if subscriptions.empty?
-          render(status: 204,
-                 json: { subscriptions: })
+        if valid_payment_processor?
+          subscriptions = Current.user.payment_processor.sync_subscriptions(status: 'all')
+          if subscriptions.empty?
+            render(status: 204, json: { subscriptions: [] })
+          else
+            render(status: 200, json: { subscriptions: })
+          end
         else
-          render(
-            status: 200, json: { subscriptions: }
-          )
+          render(status: 404, json: { error: 'User or payment processor not found' })
         end
       end
 
-      def create
-        must_be_verified!
-        subscription = Subscription.new(create_subscription_params)
-        subscription.user = Current.user
-        if subscription.save
-          render status: 201,
-                 json: { message: 'Subscription created!' }
+      def active_subscription
+        subscription = if params[:info].present? && params[:info] == '1'
+                         Current.user.current_subscription_info
+                       else
+                         Current.user.current_subscription
+                       end
+
+        if subscription.nil?
+          render(status: 404, json: { message: 'No active subscription found.' })
         else
-          render status: 400,
-                 json: { subscription: subscription.errors }
+          render(status: 200, json: { subscription: })
         end
       end
 
-      def subscription
-        render(status: 200,
-               json: { subscription: @subscription })
-      end
-
-      def cancel_subscription
-        if @subscription.cancel
-          render status: 200,
-                 json: { message: 'Subscription cancelled!' }
+      def all_charges
+        charges = Current.user.charges
+        if charges.empty?
+          render(status: 204, json: { charges: })
         else
-          malformed_error('subscription')
-        end
-      end
-
-      def activate_subscription
-        if @subscription.activate
-          render status: 200,
-                 json: { message: 'Subscription activated!' }
-        else
-          # Handle payment error
-          malformed_error('subscription')
-        end
-      end
-
-      def renew_subscription
-        if @subscription.renew
-          render status: 200,
-                 json: { message: 'Subscription renewed!' }
-        else
-          malformed_error('subscription')
-        end
-      end
-
-      def delete_subscription
-        if @subscription.destroy
-          render status: 200,
-                 json: { message: 'Subscription deleted!' }
-        else
-          malformed_error('subscription')
+          render(status: 200, json: { charges: })
         end
       end
 
       private
 
-      def create_subscription_params
-        params.require(:subscription).permit(:tier, :active, :expiration_date, :start_date, :auto_renew,
-                                             :renew_date)
+      def valid_payment_processor?
+        Current.user.payment_processor && !Current.user.payment_processor.deleted? && Current.user.payment_processor.processor == 'stripe'
       end
     end
   end

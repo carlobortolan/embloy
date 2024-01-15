@@ -5,6 +5,7 @@
 # as well as other helper methods related to jobs.
 class Job < ApplicationRecord
   include Validators::JobValidator
+  acts_as_paranoid
 
   TIME_UNITS = {
     0...60 => :less_than_a_minute,
@@ -61,6 +62,11 @@ class Job < ApplicationRecord
 
   def self.get_jsons_include_user(jobs)
     Serializers::JobSerializer.get_jsons_include_user(jobs)
+  end
+
+  def assign_job_type_value
+    job_types = JSON.parse(File.read(Rails.root.join('app/helpers', 'job_types.json')))
+    self.job_type_value = job_types[job_type]
   end
 
   private

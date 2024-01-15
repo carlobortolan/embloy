@@ -6,13 +6,12 @@ module Api
   module V0
     # QuicklinkController handles quicklink-related actions
     class QuicklinkController < ApiController
-      skip_before_action :set_current_user,
-                         only: [:create_request]
+      skip_before_action :set_current_user, only: %i[create_request]
+      skip_before_action :verify_authenticity_token, only: %i[create_request] # TODO: CHECK IF NECESSARY
 
-      before_action :verify_client_token,
-                    only: [:create_request]
-      before_action :verify_request_token,
-                    only: [:apply]
+      before_action :verify_client_token, only: [:create_request]
+      before_action :verify_request_token, only: [:apply]
+      before_action :must_be_subscribed, only: [:create_client]
 
       # The apply method is responsible for handling the application process.
       # It finds the user and client based on the decoded tokens, updates or creates the job, and applies for the job.
@@ -34,20 +33,16 @@ module Api
         return user_role_to_low_error unless must_be_verified(@decoded_client_token['sub'].to_i)
         return user_blocked_error unless user_not_blacklisted(@decoded_client_token['sub'].to_i)
 
-        token = QuicklinkService::Request::Encoder.call(
-          @decoded_client_token['sub'].to_i, 'job#1'
-        )
-        render status: 200,
-               json: { 'request_token' => token }
+        token = QuicklinkService::Request::Encoder.call(create_session)
+        render status: 200, json: { 'request_token' => token }
       end
 
       # The create_client endpoint is responsible for creating a `client_token`.
       # It calls the Encoder class of the `QuicklinkService::Client` module to create the token.
       # It then returns the token in the response.
       def create_client
-        verified!(@decoded_token['typ'])
-        check_subscription
-        generate_and_render_token
+        #         verified!(@decoded_token['typ'])
+        generate_and_render_token(check_subscription)
       end
 
       private
@@ -96,20 +91,53 @@ module Api
       end
 
       def parse_expiration_date
-        params[:exp] ? Time.parse(params[:exp]) : nil # Parse custom expiration date
+        Time.parse(create_client_params[:exp]) if create_client_params[:exp] && valid_time?(create_client_params[:exp])
+      end
+
+      def valid_time?(time_string)
+        Time.parse(time_string)
+        true
+      rescue ArgumentError
+        false
+      end
+
+      def create_session
+        mode = portal_params[:mode]
+        success_url = portal_params[:success_url]
+        cancel_url = portal_params[:cancel_url]
+        job_slug = portal_params[:job_slug]
+
+        {
+          client_id: @decoded_client_token['sub'].to_i,
+          subscription_type: @decoded_client_token['typ'],
+          mode:,
+          success_url:,
+          cancel_url:,
+          job_slug:
+        }
       end
 
       def check_subscription
-        @subscription = Current.user.current_subscription # Check for active subscription
-        raise CustomExceptions::Subscription::ExpiredOrMissing if @subscription.nil?
+        subscription = Current.user.current_subscription # Check for active subscription
+        raise CustomExceptions::Subscription::ExpiredOrMissing if subscription.nil?
+
+        subscription
       end
 
-      def generate_and_render_token
+      def generate_and_render_token(subscription)
         token = QuicklinkService::Client::Encoder.call(
-          Current.user.id, @subscription, parse_expiration_date
+          Current.user.id, subscription, parse_expiration_date
         )
         render status: 200,
                json: { 'client_token' => token }
+      end
+
+      def create_client_params
+        params.except(:format).permit(:exp)
+      end
+
+      def portal_params
+        params.except(:format).permit(:mode, :success_url, :cancel_url, :job_slug)
       end
     end
   end

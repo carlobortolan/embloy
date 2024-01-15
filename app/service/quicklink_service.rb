@@ -27,11 +27,12 @@ class QuicklinkService < AuthenticationTokenService
 
     # The Encoder class is responsible for encoding client tokens.
     class Encoder
+      include SubscriptionHelper
       # Encodes a client token for a given user ID and subscription and expiration date.
       def self.call(user_id, subscription, custom_exp)
         ApplicationController.must_be_verified!(user_id)
         exp = calculate_expiration(custom_exp, subscription)
-        typ = subscription.tier # Needed for quick authorization when token is used
+        typ = SubscriptionHelper.subscription_type(subscription.processor_plan) # Needed for quick authorization when token is used
         iat = Time.now.to_i
         QuicklinkService::Client.encode(user_id, exp.to_i, typ, iat)
       end
@@ -43,7 +44,7 @@ class QuicklinkService < AuthenticationTokenService
                 custom_exp.to_i # Set custom expiration date if available
               end
 
-        [exp, subscription.expiration_date.to_i].min # Token can't be valid longer than subscription
+        [exp, subscription.current_period_end.to_i].min # Token can't be valid longer than subscription
       end
     end
 
@@ -68,8 +69,8 @@ class QuicklinkService < AuthenticationTokenService
     REPLACEMENT_CHARACTER = '°'
 
     # Encodes a request token with the given payload.
-    def self.encode(sub, exp, job, iat)
-      payload = { sub:, exp:, job:, iat: }
+    def self.encode(sub, exp, session, iat)
+      payload = { sub:, exp:, session:, iat: }
       AuthenticationTokenService.call(
         HMAC_SECRET, ALGORITHM_TYPE, ISSUER, payload
       )
@@ -78,19 +79,29 @@ class QuicklinkService < AuthenticationTokenService
     # Decodes a request token and returns the decoded payload.
     def self.decode(token)
       JWT.decode(token, HMAC_SECRET, true,
-                 { iss: ISSUER, verify_iss: true, verify_iat: true, required_claims: %w[iss sub exp job iat], algorithm: ALGORITHM_TYPE })
+                 { iss: ISSUER, verify_iss: true, verify_iat: true, required_claims: %w[iss sub exp session iat], algorithm: ALGORITHM_TYPE })
     end
 
     # The Encoder class is responsible for encoding request tokens.
     class Encoder
-      # Encodes a request token for a given job slug and user ID.
-      def self.call(user_id, job_slug)
-        ApplicationController.must_be_verified!(user_id)
+      # Encodes a request token for a given application process session.
+      def self.call(session)
+        user_id = session[:client_id]
+        typ = session[:subscription_type]
+        # job_slug = session[:job_slug]
+        mode = session[:mode]
+        # success_url = session[:success_url]
+        # cancel_url = session[:cancel_url]
+
+        SubscriptionHelper.check_valid_mode(typ, mode)
+
+        # ApplicationController.must_be_verified!(user_id) # TODO: This shouldn't be needed here as verification already happens on client_token creation
         # TODO: @cb verify job / account validity / price category?
-        job = job_slug
+
+        # job = job_slug # Other encoding/id options possible?
         exp = Time.now.to_i + (60 * 60 * 30) # standard validity interval: 30 minutes
         iat = Time.now.to_i
-        QuicklinkService::Request.encode(user_id, exp, job, iat)
+        QuicklinkService::Request.encode(user_id, exp, session, iat)
       end
     end
 

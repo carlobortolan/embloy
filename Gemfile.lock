@@ -259,9 +259,13 @@ GEM
       omniauth-oauth (~> 1.1)
       rack
     parallel (1.24.0)
+    paranoia (2.6.3)
+      activerecord (>= 5.1, < 7.2)
     parser (3.2.2.4)
       ast (~> 2.4.1)
       racc
+    pay (7.1.0)
+      rails (>= 6.0.0)
     pg (1.4.6)
     pg (1.4.6-x64-mingw-ucrt)
     pg (1.4.6-x64-mingw32)
@@ -269,7 +273,7 @@ GEM
       activerecord (>= 5.2)
       activesupport (>= 5.2)
     public_suffix (5.0.1)
-    puma (6.4.0)
+    puma (6.4.2)
       nio4r (~> 2.0)
     racc (1.6.2)
     rack (2.2.6.4)
@@ -372,6 +376,7 @@ GEM
       sprockets (>= 3.0.0)
     stimulus-rails (1.2.1)
       railties (>= 6.0.0)
+    stripe (10.4.0)
     thor (1.2.1)
     timeout (0.3.2)
     trix (0.10.1)
@@ -443,9 +448,11 @@ DEPENDENCIES
   omniauth-google-oauth2 (~> 1.1)
   omniauth-rails_csrf_protection (~> 1.0)
   omniauth-twitter (~> 1.4)
+  paranoia (~> 2.6)
+  pay (~> 7.1)
   pg (~> 1.1)
   pg_search
-  puma (~> 6.4.0)
+  puma (~> 6.4.2)
   rack-cors
   rails (~> 7.0.4, >= 7.0.4.1)
   rgeo
@@ -455,6 +462,7 @@ DEPENDENCIES
   simplecov
   sprockets-rails
   stimulus-rails
+  stripe (~> 10.4)
   trix
   turbo-rails
   tzinfo-data

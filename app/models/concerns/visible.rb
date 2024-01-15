@@ -9,7 +9,7 @@ module Visible
 
   included do
     validates :status,
-              inclusion: { in: VALID_STATUSES }
+              inclusion: { in: VALID_STATUSES, error: 'ERR_INVALID', description: 'Attribute is invalid' }
   end
 
   def archived?

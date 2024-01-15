@@ -30,12 +30,12 @@ module Api
       end
 
       # Set queried subscription to @subscription to avoid code duplication
-      def set_subscription
-        return if Current.user.nil?
-
-        must_be_verified!
-        set_user_subscription
-      end
+      # def set_subscription
+      #  return if Current.user.nil?#
+      #
+      #  must_be_verified!
+      #  set_user_subscription
+      # end
 
       # ============== API TOKEN VERIFICATIOn ================
       # Deprecated method - replaced by set_current_user

@@ -12,25 +12,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 20_230_415_205_359) do
+ActiveRecord::Schema[7.0].define(version: 20_240_114_012_806) do
   # These are extensions that must be enabled in order to support this database
-  # enable_extension "pg_trgm"
+  enable_extension 'pg_trgm'
   enable_extension 'plpgsql'
   enable_extension 'postgis'
-  # enable_extension "unaccent"
+  enable_extension 'unaccent'
 
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
+  create_enum 'allowed_cv_format', ['.pdf', '.docx', '.txt', '.xml']
   create_enum 'application_status', ['-1', '0', '1']
   create_enum 'job_status', %w[public private archived]
   create_enum 'notify_type', %w[0 1]
   create_enum 'rating_type', %w[1 2 3 4 5]
   create_enum 'user_role', %w[admin editor developer moderator verified spectator]
   create_enum 'user_type', %w[company private]
-  create_enum 'allowed_cv_format', ['.pdf', '.docx', '.txt', '.xml']
-  create_enum 'subscription_type', %w[basic premium enterprise_1 enterprise_2 enterprise_3]
-  create_enum 'payment_method', %w[credit_card debit_card bank_transfer paypal]
-  create_enum 'payment_status', %w[pending paid failed cancelled]
 
   create_table 'action_text_rich_texts', force: :cascade do |t|
     t.string 'name', null: false
@@ -49,8 +46,7 @@ ActiveRecord::Schema[7.0].define(version: 20_230_415_205_359) do
     t.bigint 'blob_id', null: false
     t.datetime 'created_at', null: false
     t.index ['blob_id'], name: 'index_active_storage_attachments_on_blob_id'
-    t.index %w[record_type record_id name blob_id], name: 'index_active_storage_attachments_uniqueness',
-                                                    unique: true
+    t.index %w[record_type record_id name blob_id], name: 'index_active_storage_attachments_uniqueness', unique: true
   end
 
   create_table 'active_storage_blobs', force: :cascade do |t|
@@ -71,6 +67,16 @@ ActiveRecord::Schema[7.0].define(version: 20_230_415_205_359) do
     t.index %w[blob_id variation_digest], name: 'index_active_storage_variant_records_uniqueness', unique: true
   end
 
+  create_table 'application_attachments', id: :serial, force: :cascade do |t|
+    t.integer 'user_id', null: false
+    t.integer 'job_id', null: false
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index %w[job_id user_id], name: 'application_attachment_job_id_user_id_index', unique: true
+    t.index ['job_id'], name: 'application_attachment_job_id_index'
+    t.index ['user_id'], name: 'application_attachment_user_id_index'
+  end
+
   create_table 'applications', primary_key: %w[job_id user_id], force: :cascade do |t|
     t.integer 'job_id', null: false
     t.integer 'user_id', null: false
@@ -80,6 +86,8 @@ ActiveRecord::Schema[7.0].define(version: 20_230_415_205_359) do
     t.string 'application_text', limit: 1000
     t.string 'application_documents', limit: 150
     t.string 'response', limit: 500
+    t.datetime 'deleted_at'
+    t.index ['deleted_at'], name: 'index_applications_on_deleted_at'
     t.index %w[job_id user_id], name: 'application_job_id_user_id_index', unique: true
     t.index ['job_id'], name: 'application_job_id_index'
     t.index ['user_id'], name: 'application_user_id_index'
@@ -136,19 +144,22 @@ ActiveRecord::Schema[7.0].define(version: 20_230_415_205_359) do
     t.text 'job_notifications', default: '1', null: false
     t.integer 'boost', default: 0, null: false
     t.boolean 'cv_required', null: false, default: false
-    t.string 'allowed_cv_format', default: ['.pdf', '.docx', '.txt', '.xml'], null: false, array: true
+    t.string 'allowed_cv_formats', default: ['.pdf', '.docx', '.txt', '.xml'], null: false, array: true
+    t.datetime 'deleted_at'
     t.index ['country_code'], name: ' job_country_code_index '
     t.index ['job_id'], name: 'job_job_id_index'
     t.index ['postal_code'], name: ' job_postal_code_index '
     t.index ['user_id'], name: 'job_user_id_index '
     t.index ['position'], name: 'job_position_index '
     t.index ['job_type'], name: 'job_job_type_index '
+    t.index ['deleted_at'], name: 'index_jobs_on_deleted_at'
   end
 
   execute('ALTER TABLE jobs ADD COLUMN job_value public.geography(PointZ,4326);CREATE INDEX IF NOT EXISTS job_job_value_index ON public.jobs USING gist(job_value)TABLESPACE pg_default;')
   execute("CREATE INDEX jobs_tsvector_idx ON jobs USING gin(to_tsvector('simple', coalesce(title,'') || ' ' || coalesce(job_type,'') || ' ' || coalesce(position,'') || ' ' || coalesce(key_skills,'') || ' ' || coalesce(description,'') || ' ' || coalesce(country_code,'') || ' ' || coalesce(city,'') || ' ' || coalesce(postal_code,'') || ' ' || coalesce(address,'')));")
-  execute('CREATE EXTENSION pg_trgm;CREATE INDEX jobs_title_trgm_idx ON jobs USING gin(title gin_trgm_ops);CREATE INDEX jobs_job_type_trgm_idx ON jobs USING gin(job_type gin_trgm_ops);')
-  execute('CREATE EXTENSION unaccent;')
+  execute('CREATE EXTENSION IF NOT EXISTS pg_trgm;')
+  execute('CREATE INDEX IF NOT EXISTS jobs_title_trgm_idx ON jobs USING gin(title gin_trgm_ops);CREATE INDEX IF NOT EXISTS jobs_job_type_trgm_idx ON jobs USING gin(job_type gin_trgm_ops);')
+  execute('CREATE EXTENSION IF NOT EXISTS unaccent;')
 
   create_table 'notifications', force: :cascade do |t|
     t.string 'recipient_type', null: false
@@ -160,6 +171,97 @@ ActiveRecord::Schema[7.0].define(version: 20_230_415_205_359) do
     t.datetime 'updated_at', null: false
     t.index ['read_at'], name: 'index_notifications_on_read_at'
     t.index %w[recipient_type recipient_id], name: 'index_notifications_on_recipient'
+  end
+
+  create_table 'pay_charges', force: :cascade do |t|
+    t.bigint 'customer_id', null: false
+    t.bigint 'subscription_id'
+    t.string 'processor_id', null: false
+    t.integer 'amount', null: false
+    t.string 'currency'
+    t.integer 'application_fee_amount'
+    t.integer 'amount_refunded'
+    t.jsonb 'metadata'
+    t.jsonb 'data'
+    t.string 'stripe_account'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index %w[customer_id processor_id], name: 'index_pay_charges_on_customer_id_and_processor_id', unique: true
+    t.index ['subscription_id'], name: 'index_pay_charges_on_subscription_id'
+  end
+
+  create_table 'pay_customers', force: :cascade do |t|
+    t.string 'owner_type'
+    t.bigint 'owner_id'
+    t.string 'processor', null: false
+    t.string 'processor_id'
+    t.boolean 'default'
+    t.jsonb 'data'
+    t.string 'stripe_account'
+    t.datetime 'deleted_at', precision: nil
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index %w[owner_type owner_id deleted_at], name: 'pay_customer_owner_index', unique: true
+    t.index %w[processor processor_id], name: 'index_pay_customers_on_processor_and_processor_id', unique: true
+  end
+
+  create_table 'pay_merchants', force: :cascade do |t|
+    t.string 'owner_type'
+    t.bigint 'owner_id'
+    t.string 'processor', null: false
+    t.string 'processor_id'
+    t.boolean 'default'
+    t.jsonb 'data'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index %w[owner_type owner_id processor], name: 'index_pay_merchants_on_owner_type_and_owner_id_and_processor'
+  end
+
+  create_table 'pay_payment_methods', force: :cascade do |t|
+    t.bigint 'customer_id', null: false
+    t.string 'processor_id', null: false
+    t.boolean 'default'
+    t.string 'type'
+    t.jsonb 'data'
+    t.string 'stripe_account'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index %w[customer_id processor_id], name: 'index_pay_payment_methods_on_customer_id_and_processor_id', unique: true
+  end
+
+  create_table 'pay_subscriptions', force: :cascade do |t|
+    t.bigint 'customer_id', null: false
+    t.string 'name', null: false
+    t.string 'processor_id', null: false
+    t.string 'processor_plan', null: false
+    t.integer 'quantity', default: 1, null: false
+    t.string 'status', null: false
+    t.datetime 'current_period_start', precision: nil
+    t.datetime 'current_period_end', precision: nil
+    t.datetime 'trial_ends_at', precision: nil
+    t.datetime 'ends_at', precision: nil
+    t.boolean 'metered'
+    t.string 'pause_behavior'
+    t.datetime 'pause_starts_at', precision: nil
+    t.datetime 'pause_resumes_at', precision: nil
+    t.decimal 'application_fee_percent', precision: 8, scale: 2
+    t.jsonb 'metadata'
+    t.jsonb 'data'
+    t.string 'stripe_account'
+    t.string 'payment_method_id'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index %w[customer_id processor_id], name: 'index_pay_subscriptions_on_customer_id_and_processor_id', unique: true
+    t.index ['metered'], name: 'index_pay_subscriptions_on_metered'
+    t.index ['pause_starts_at'], name: 'index_pay_subscriptions_on_pause_starts_at'
+  end
+
+  create_table 'pay_webhooks', force: :cascade do |t|
+    t.string 'processor'
+    t.string 'event_type'
+    t.jsonb 'event'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
   end
 
   create_table 'pg_search_documents', force: :cascade do |t|
@@ -179,10 +281,12 @@ ActiveRecord::Schema[7.0].define(version: 20_230_415_205_359) do
     t.integer 'num_jobs_done', default: 0
     t.string 'gender', limit: 10
     t.float 'spontaneity'
-    t.jsonb 'job_types', default: { '1': 0, '2': 0, '3': 0 }
+    t.jsonb 'job_types', default: { '1' => 0, '2' => 0, '3' => 0 }
     t.jsonb 'key_skills'
     t.float 'salary_range', default: [0.0, 0.0], array: true
     t.string 'cv_url', limit: 500
+    t.datetime 'deleted_at'
+    t.index ['deleted_at'], name: 'index_preferences_on_deleted_at'
   end
 
   create_table 'private_users', id: :serial, force: :cascade do |t|
@@ -200,7 +304,9 @@ ActiveRecord::Schema[7.0].define(version: 20_230_415_205_359) do
     t.datetime 'updated_at', null: false
     t.integer 'job_id'
     t.integer 'subject', null: false
+    t.datetime 'deleted_at'
     t.index ['created_by'], name: 'reviews_created_by_index'
+    t.index ['deleted_at'], name: 'index_reviews_on_deleted_at'
   end
 
   create_table 'user_blacklists', force: :cascade do |t|
@@ -244,57 +350,20 @@ ActiveRecord::Schema[7.0].define(version: 20_230_415_205_359) do
     t.index ['user_type'], name: 'user_user_type_index'
   end
 
-  create_table 'subscriptions', id: :serial, force: :cascade do |t|
-    t.enum 'tier', null: false, enum_type: 'subscription_type'
-    t.boolean 'active', null: false
-    t.datetime 'expiration_date', null: false
-    t.datetime 'start_date', null: false
-    t.boolean 'auto_renew', null: false
-    t.datetime 'renew_date'
-    t.integer 'user_id', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.index ['user_id'], name: 'subscription_user_id_index'
-    t.index ['expiration_date'], name: 'subscription_expiration_date_index'
-  end
-
-  create_table 'payments', id: :serial, force: :cascade do |t|
-    t.enum 'payment_method', default: 'credit_card', null: false, enum_type: 'payment_method'
-    t.enum 'payment_status', default: 'pending', null: false, enum_type: 'payment_status'
-    t.datetime 'payment_date', null: false
-    t.float 'payment_amount', null: false
-    t.string 'payment_currency', limit: 3, null: false
-    t.string 'payment_description', limit: 500, null: false
-    t.integer 'subscription_id', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.index ['subscription_id'], name: 'payment_subscription_id_index'
-  end
-
-  create_table 'application_attachments', id: :serial, force: :cascade do |t|
-    t.integer 'user_id', null: false
-    t.integer 'job_id', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.index %w[job_id user_id], name: 'application_attachment_job_id_user_id_index', unique: true
-    t.index ['job_id'], name: 'application_attachment_job_id_index'
-    t.index ['user_id'], name: 'application_attachment_user_id_index'
-  end
-
   add_foreign_key 'active_storage_attachments', 'active_storage_blobs', column: 'blob_id'
   add_foreign_key 'active_storage_variant_records', 'active_storage_blobs', column: 'blob_id'
   add_foreign_key 'applications', 'jobs', primary_key: 'job_id', on_delete: :cascade
   add_foreign_key 'applications', 'users', on_delete: :cascade
   add_foreign_key 'company_users', 'users', column: 'id', on_delete: :cascade
   add_foreign_key 'jobs', 'users', on_delete: :cascade
+  add_foreign_key 'pay_charges', 'pay_customers', column: 'customer_id'
+  add_foreign_key 'pay_charges', 'pay_subscriptions', column: 'subscription_id'
+  add_foreign_key 'pay_payment_methods', 'pay_customers', column: 'customer_id'
+  add_foreign_key 'pay_subscriptions', 'pay_customers', column: 'customer_id'
   add_foreign_key 'preferences', 'users', on_delete: :cascade
   add_foreign_key 'private_users', 'users', column: 'id', on_delete: :cascade
-  add_foreign_key 'user_blacklists', 'users', on_delete: :cascade
   add_foreign_key 'reviews', 'jobs', primary_key: 'job_id'
+  add_foreign_key 'reviews', 'users'
   add_foreign_key 'reviews', 'users', column: 'created_by'
-  add_foreign_key 'reviews', 'users', column: 'user_id'
-  # add_foreign_key "application_attachments", "applications", primary_key: "job_id", column: "job_id", on_delete: :cascade
-  # add_foreign_key "application_attachments", "applications", primary_key: "user_id", on_delete: :cascade
-  add_foreign_key 'subscriptions', 'users', on_delete: :cascade
-  add_foreign_key 'payments', 'subscriptions', on_delete: :cascade
+  add_foreign_key 'user_blacklists', 'users', on_delete: :cascade
 end

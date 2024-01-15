@@ -16,7 +16,7 @@ RSpec.describe 'AuthenticationController' do
       activity_status: '1'
     )
     Rails.logger.info("Created valid user: #{@valid_user.id}")
-    
+
     @blacklisted_user = User.create!(
       first_name: 'Max',
       last_name: 'Mustermann',
@@ -44,7 +44,7 @@ RSpec.describe 'AuthenticationController' do
     post('/api/v0/user/auth/token/refresh', headers:)
     @valid_refresh_token = JSON.parse(response.body)['refresh_token']
     Rails.logger.info("Valid refresh token: #{@valid_refresh_token}")
-    
+
     credentials = Base64.strict_encode64("#{@blacklisted_user.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
     Rails.logger.info("Making request: POST /api/v0/user/auth/token/refresh with headers: #{headers}")

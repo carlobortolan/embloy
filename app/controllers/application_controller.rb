@@ -164,6 +164,32 @@ class ApplicationController < ActionController::Base
     verified!(Current.user.user_role)
   end
 
+  #--------------------------------------
+
+  def must_be_subscribed(id = nil)
+    set_current_id(id)
+    Current.user.active_subscription
+  end
+
+  def self.must_be_subscribed(id = nil)
+    set_current_id(id)
+    Current.user.active_subscription
+  end
+
+  def must_be_subscribed!(id = nil)
+    set_current_id(id)
+    return if Current.user.active_subscription
+
+    raise CustomExceptions::Subscription::ExpiredOrMissing
+  end
+
+  def self.must_be_subscribed!(id = nil)
+    set_current_id(id)
+    return if Current.user.active_subscription
+
+    raise CustomExceptions::Subscription::ExpiredOrMissing
+  end
+
   # ============== Helper methods =================
   # ===============================================
 
@@ -384,9 +410,7 @@ class ApplicationController < ActionController::Base
   def set_at_job(job_id = nil)
     @job = Job.find_by(job_id:) unless job_id.nil?
 
-    return unless @job.nil?
-
-    raise CustomExceptions::InvalidJob::Unknown
+    raise CustomExceptions::InvalidJob::Unknown if @job.nil?
   end
 
   def self.set_at_job(job_id = nil)

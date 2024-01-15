@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
 # The JobValidator module contains custom validation rules for a Job object.
-# These rules are included in the Job model and run when a Job object is saved.
 module Validators
-  # The JobValidator module contains custom validation rules for a Job object.
   # These rules are included in the Job model and run when a Job object is saved.
   module JobValidator
     extend ActiveSupport::Concern
@@ -62,9 +60,9 @@ module Validators
                            numericality: { only_integer: true, greater_than: 0, error: 'ERR_INVALID', description: 'Attribute is malformed or unknown' }
       validates :salary, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
                          numericality: { only_integer: true, greater_than: 0, error: 'ERR_INVALID', description: 'Attribute is malformed or unknown' }
-      validates :currency,
-                presence: { error: 'ERR_BLANK',
-                            description: "Attribute can't be blank" }
+      validates :currency, format: { with: /\A[A-Z]{3}\z/, message: { error: 'ERR_INVALID', description: 'Attribute is malformed or unknown' } },
+                           presence: { error: 'ERR_BLANK',
+                                       description: "Attribute can't be blank" }
       validates :job_type,
                 presence: { error: 'ERR_BLANK',
                             description: "Attribute can't be blank" }
@@ -78,55 +76,46 @@ module Validators
       # validates :country_code, length: { minimum: 0, maximum: 45, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
       # validates :city, length: { minimum: 0, maximum: 45, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
       # validates :address, length: { minimum: 0, maximum: 150, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
-      # TODO: @cb Validate allowed_cv_format, so that user has to select at least one option
-      validates :allowed_cv_format,
-                # inclusion: { in: %w[.pdf .docx .txt .xml], message: { error: "ERR_INVALID", description: "Attribute is invalid" } },
-                presence: { message: {
-                  error: 'ERR_BLANK', description: "Attribute can't be blank"
-                } },
-                # format: { with: /\.(pdf|docx|txt|xml)\z/, allow_blank: true, message: { error: "ERR_INVALID", description: "Attribute is invalid" }},
-                if: :cv_required?
-      validate :image_format_validation
+      validate :cv_formats_validation
       validate :employer_rating
       validate :boost
       validate :start_slot_validation
       validate :job_type_validation
+      validate :image_format_validation
     end
     # rubocop:enable Metrics/BlockLength
 
     private
 
+    def cv_formats_validation
+      valid_formats = ['.pdf', '.docx', '.txt', '.xml']
+      return if !allowed_cv_formats.nil? && allowed_cv_formats.all? { |format| valid_formats.include?(format) }
+
+      errors.add(:allowed_cv_formats, 'Invalid file format. Only PDF, DOCX, TXT, and XML files are allowed.')
+    end
+
     def job_type_validation
-      job_types_file = File.read(Rails.root.join(
-                                   'app/helpers', 'job_types.json'
-                                 ))
+      job_types_file = File.read(Rails.root.join('app/helpers', 'job_types.json'))
       job_types = JSON.parse(job_types_file)
       # Given job_type is not existent in job_types.json
       return if job_types.key?(job_type) || job_type == 'EMJ'
 
-      errors.add(:job_type,
-                 { error: 'ERR_INVALID',
-                   description: 'Attribute is malformed or unknown' })
+      errors.add(:job_type, { error: 'ERR_INVALID', description: 'Attribute is malformed or unknown' })
     end
 
     def start_slot_validation
-      return unless start_slot - Time.now < -86_400
+      return unless start_slot.nil? || (start_slot <= 0 && start_slot - Time.now < -86_400)
 
-      errors.add(:start_slot,
-                 { error: 'ERR_INVALID',
-                   description: 'Attribute is malformed or unknown' })
+      errors.add(:start_slot, { error: 'ERR_INVALID', description: 'Attribute is malformed or unknown' })
     end
 
     def image_format_validation
-      return unless !image_url.nil? && image_url.attached?
+      return unless image_url.attached?
 
-      allowed_formats = %w[image/png image/jpeg
-                           image/jpg]
-      return if allowed_formats.include?(image_url.blob.content_type)
+      allowed_formats = ['image/png', 'image/jpeg', 'image/jpg']
+      return if allowed_formats.include?(image_url.content_type)
 
-      errors.add(:image_url,
-                 { error: 'ERR_INVALID',
-                   description: 'must be a PNG, JPG, or JPEG image' })
+      errors.add(:image_url, { error: 'ERR_INVALID', description: 'must be a PNG, JPG, or JPEG image' })
     end
   end
 end

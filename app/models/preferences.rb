@@ -2,6 +2,7 @@
 
 # The Preferences class represents a user's preferences in the application.
 class Preferences < ApplicationRecord
+  acts_as_paranoid
   belongs_to :user, dependent: :destroy
 
   validates :interests, presence: false
