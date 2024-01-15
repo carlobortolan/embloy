@@ -162,7 +162,7 @@ module Api
 
       # Method to communicate with the FG-API by sending a POST-request
       def call_feed(jobs)
-        url = URI.parse(ENV.fetch('FG_URL', nil))
+        url = URI.parse(ENV.fetch('FG_URL', 'https://embloy-fg-api.onrender.com/feed'))
         request = create_feed_request(jobs, url)
         http = Net::HTTP.new(url.host, url.port).tap do |http_instance|
           http_instance.use_ssl = true
