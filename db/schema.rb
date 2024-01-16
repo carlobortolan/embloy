@@ -114,10 +114,12 @@ ActiveRecord::Schema[7.0].define(version: 20_240_114_012_806) do
 
   create_table 'jobs', primary_key: 'job_id', id: :serial, force: :cascade do |t|
     t.string 'job_type'
+    t.string 'job_slug', null: false, limit: 100
     t.integer 'job_type_value'
     t.integer 'job_status', limit: 2, default: 0
     t.enum 'status', default: 'public', null: false, enum_type: 'job_status'
     t.integer 'user_id', default: 0
+    t.string 'referrer_url'
     t.integer 'duration', default: 0
     t.string 'code_lang', limit: 2
     t.string 'title', limit: 100
@@ -146,6 +148,7 @@ ActiveRecord::Schema[7.0].define(version: 20_240_114_012_806) do
     t.boolean 'cv_required', null: false, default: false
     t.string 'allowed_cv_formats', default: ['.pdf', '.docx', '.txt', '.xml'], null: false, array: true
     t.datetime 'deleted_at'
+    t.index ['job_slug'], name: ' job_job_slug_index '
     t.index ['country_code'], name: ' job_country_code_index '
     t.index ['job_id'], name: 'job_job_id_index'
     t.index ['postal_code'], name: ' job_postal_code_index '

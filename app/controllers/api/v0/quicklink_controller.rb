@@ -1,11 +1,15 @@
 # frozen_string_literal: true
 
+require 'json'
+
 # The QuicklinkController is responsible for handling the application process via the Embloy API.
 # It includes methods for creating client and request tokens and applying for jobs via Quicklink.
 module Api
   module V0
     # QuicklinkController handles quicklink-related actions
     class QuicklinkController < ApiController
+      include ApplicationBuilder
+
       skip_before_action :set_current_user, only: %i[create_request]
       skip_before_action :verify_authenticity_token, only: %i[create_request] # TODO: CHECK IF NECESSARY
 
@@ -15,16 +19,27 @@ module Api
 
       # The apply method is responsible for handling the application process.
       # It finds the user and client based on the decoded tokens, updates or creates the job, and applies for the job.
+      # rubocop:disable Metrics/AbcSize
       def apply
         begin
           @client = User.find(@decoded_request_token['sub'].to_i)
         rescue StandardError
-          not_found_error('client')
+          return not_found_error('client')
         end
 
-        update_or_create_job(@decoded_request_token['job'])
-        apply_for_job
+        session = @decoded_request_token['session']
+
+        return render status: 401, json: { 'error' => 'Malformed Request Token' } if session.nil? || session['job_slug'].nil? || session['user_id'].nil? || session['subscription_type'].nil?
+
+        session['referrer_url'] = request.referrer
+
+        if update_or_create_job(session)
+          apply_for_job
+        else
+          render status: 400, json: @job.errors.details
+        end
       end
+      # rubocop:enable Metrics/AbcSize
 
       # The create_request method is responsible for creating a `request_token`.
       # It calls the Encoder class of the `QuicklinkService::Request` module to create the token.
@@ -32,6 +47,7 @@ module Api
       def create_request
         return user_role_to_low_error unless must_be_verified(@decoded_client_token['sub'].to_i)
         return user_blocked_error unless user_not_blacklisted(@decoded_client_token['sub'].to_i)
+        return malformed_error('job_slug') if portal_params[:job_slug].nil?
 
         token = QuicklinkService::Request::Encoder.call(create_session)
         render status: 200, json: { 'request_token' => token }
@@ -47,47 +63,28 @@ module Api
 
       private
 
-      # The apply_for_job method is responsible for creating a new application for a job.
-      # It sets the `user_id`, `job_id`, `application_text`, `created_at`, `updated_at`, and `response` fields of the application.
-      # If the application is saved successfully, it returns a success message.
-      # If the application is not saved successfully, it raises a `malformed_error`.
-      def apply_for_job
-        puts "params #{params}"
-
-        application = Application.create_from(
-          Current.user.id, @job.job_id, params
-        )
-
-        begin
-          application.user = Current.user
-        rescue ActiveRecord::RecordNotFound
-          raise CustomExceptions::InvalidUser::Unknown
-        end
-
-        if application.save
-          render status: 200,
-                 json: { message: 'Application submitted!' }
-        else
-          malformed_error('application')
-        end
-      end
-
       # The update_or_create_job method is responsible for updating an existing job or creating a new one.
       # It takes a `job_slug` as a parameter, which is used to find or create the job.
       # If the job does not exist, it is created with the `job_slug` and `client.id`.
       # The job is then added to the client's jobs.
-      def update_or_create_job(job_slug)
+      def update_or_create_job(session)
         @client.jobs = [] if @client.jobs.nil?
 
-        # TODO: Update to use shell / EMJ / job_slug
-        @job = @client.jobs.find_by(title: job_slug)
+        @job = @client.jobs.find_by(job_slug: session['job_slug'])
         unless @job
-          @job = Job.create_emj(job_slug, @client.id) # Create externally managed job, if it hasn't been created yet
+          allowed_params = %w[user_id job_type job_slug referrer_url duration code_lang title position description key_skills salary currency start_slot longitude latitude country_code postal_code
+                              city address job_notifications cv_required allowed_cv_formats]
+          @job = Job.new(session.slice(*allowed_params))
+          # @job = Job.new(session.except('subscription_type', 'mode', 'success_url', 'cancel_url'))
+          # @job = Job.create_emj(@client.id, session) # Create externally managed job, if it hasn't been created yet
+          return false unless @job.save
+
           @job.user = @client
           @client.jobs << @job
+          return true
+
         end
-      rescue RecordNotFound
-        not_found_error('job')
+        true
       end
 
       def parse_expiration_date
@@ -102,19 +99,10 @@ module Api
       end
 
       def create_session
-        mode = portal_params[:mode]
-        success_url = portal_params[:success_url]
-        cancel_url = portal_params[:cancel_url]
-        job_slug = portal_params[:job_slug]
-
-        {
-          client_id: @decoded_client_token['sub'].to_i,
-          subscription_type: @decoded_client_token['typ'],
-          mode:,
-          success_url:,
-          cancel_url:,
-          job_slug:
-        }
+        session = portal_params.to_unsafe_h.transform_keys(&:to_s)
+        session['user_id'] = @decoded_client_token['sub'].to_i
+        session['subscription_type'] = @decoded_client_token['typ']
+        session
       end
 
       def check_subscription
@@ -136,8 +124,13 @@ module Api
         params.except(:format).permit(:exp)
       end
 
+      def application_params
+        params.except(:format).permit(:id, :application_text, :application_attachment)
+      end
+
       def portal_params
-        params.except(:format).permit(:mode, :success_url, :cancel_url, :job_slug)
+        params.except(:format).permit(:mode, :success_url, :cancel_url, :job_slug, :title, :description, :start_slot, :longitude, :latitude, :job_type, :status, :image_url,
+                                      :job_status, :position, :currency, :salary, :key_skills, :duration, :job_notifications, :cv_required, allowed_cv_formats: [])
       end
     end
   end

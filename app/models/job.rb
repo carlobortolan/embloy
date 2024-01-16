@@ -5,6 +5,8 @@
 # as well as other helper methods related to jobs.
 class Job < ApplicationRecord
   include Validators::JobValidator
+  before_save :set_default_job_slug, if: -> { job_slug.nil? }
+  before_validation :set_default_values
   acts_as_paranoid
 
   TIME_UNITS = {
@@ -42,10 +44,6 @@ class Job < ApplicationRecord
     else
       "#{address}, #{city}, #{postal_code}, #{country_code}"
     end
-  end
-
-  def self.create_emj(job_slug, user_id)
-    Serializers::JobSerializer.create_emj(job_slug, user_id)
   end
 
   def self.json_for(job)
@@ -96,5 +94,15 @@ class Job < ApplicationRecord
 
   def weeks_left(diff_seconds)
     "in #{diff_seconds / 604_800} week#{'s' if diff_seconds / 604_800 > 1}"
+  end
+
+  def set_default_job_slug
+    self.job_slug = "#{user_id}_#{title}_#{Time.current.to_i}"
+  end
+
+  def set_default_values
+    self.longitude ||= 0.0
+    self.latitude ||= 0.0
+    self.duration = duration.zero? ? 1 : duration
   end
 end

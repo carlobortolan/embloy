@@ -46,7 +46,7 @@ Rails.application.routes.draw do
       get 'find', to: 'jobs#find'
       post 'jobs', to: 'jobs#create'
       patch 'jobs', to: 'jobs#update'
-      delete 'jobs', to: 'jobs#destroy'
+      delete 'jobs/(/:id)', to: 'jobs#destroy'
       get 'jobs/(/:id)/applications', to: 'applications#show'
       get 'jobs/(/:id)/application', to: 'applications#show_single'
       post 'jobs/(/:id)/applications', to: 'applications#create'

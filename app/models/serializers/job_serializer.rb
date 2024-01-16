@@ -8,28 +8,6 @@ module Serializers
   # rules for a Job object. This includes specifying which attributes
   # should be included in the serialized output.
   class JobSerializer
-    # Creates a externally managed job with placeholder fields
-    def self.create_emj(job_slug, user_id)
-      job = Job.create!(
-        user_id:,
-        title: job_slug,
-        # TODO: Save referrer URL
-        description: 'HERE IS THE URL OF THE REFERRER',
-        longitude: '0.0',
-        latitude: '0.0',
-        position: 'EMJ',
-        salary: '1',
-        start_slot: Time.now,
-        key_skills: 'EMJ',
-        duration: '1',
-        currency: '0',
-        job_type: 'EMJ',
-        job_type_value: '1'
-      )
-      puts 'Created new job for'
-      job
-    end
-
     # Current approach; - TODO: @cb find easier way to serialize job JSONs & remove commented code when switching to S3
     def self.json_for(job)
       return if job.nil?

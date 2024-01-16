@@ -87,7 +87,7 @@ module Api
       private
 
       def checkout_params
-        params.permit(:payment_mode, :tier, :session_id, :format)
+        params.except(:format).permit(:payment_mode, :tier, :session_id)
       end
 
       def determine_success_url

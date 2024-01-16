@@ -4,6 +4,7 @@ module Api
   module V0
     # ApplicationsController handles application-related actions
     class ApplicationsController < ApiController
+      include ApplicationBuilder
       before_action :verify_path_job_id
       before_action :must_be_verified!
 
@@ -20,36 +21,9 @@ module Api
         render_application(application, application_attachment)
       end
 
-      # rubocop:disable Metrics/AbcSize
       def create
-        ActiveRecord::Base.transaction do
-          create_application!
-          if @job.cv_required
-            if application_params[:application_attachment].nil?
-              @application.errors.add(:application_attachment, 'CV is required')
-              render json: { errors: @application.errors }, status: :unprocessable_entity and return
-            end
-
-            attachment_format = application_params[:application_attachment].content_type
-            allowed_formats = ApplicationHelper.allowed_cv_formats_for_form(@job.allowed_cv_formats)
-
-            unless allowed_formats.include?(attachment_format)
-              @application.errors.add(:application_attachment, 'Invalid CV format')
-              render json: { errors: @application.errors }, status: :unprocessable_entity and return
-            end
-
-            create_application_attachment!
-          end
-        end
-        render status: 201, json: { message: 'Application submitted!' }
-      rescue ActiveRecord::RecordInvalid => e
-        render status: 400, json: { errors: e.record.errors.details }
-      rescue ActiveSupport::MessageVerifier::InvalidSignature
-        malformed_error('image_url')
-      rescue ActiveRecord::RecordNotUnique
-        unnecessary_error('application')
+        apply_for_job
       end
-      # rubocop:enable Metrics/AbcSize
 
       def accept
         must_be_owner!(application_modify_params[:id], Current.user.id)
@@ -70,25 +44,6 @@ module Api
       end
 
       private
-
-      def fetch_applications; end
-
-      def create_application!
-        tmp = application_params.except(:id, :application_attachment, :format)
-        tmp[:job_id] = @job.id
-        tmp[:user_id] = Current.user.id
-        @application = Application.new(tmp)
-        @application.save!
-      end
-
-      def create_application_attachment!
-        application_attachment = ApplicationAttachment.create!(
-          user_id: Current.user.id,
-          job_id: @job.id
-        )
-        application_attachment.save!
-        application_attachment.cv.attach(application_params[:application_attachment])
-      end
 
       def render_applications(applications)
         if applications.empty?
@@ -139,15 +94,15 @@ module Api
       end
 
       def application_params
-        params.permit(:id, :application_text, :application_attachment, :format)
+        params.except(:format).permit(:id, :application_text, :application_attachment)
       end
 
       def application_modify_params
-        params.permit(:application_id, :response, :id, :job_id, :format)
+        params.except(:format).permit(:application_id, :response, :id, :job_id)
       end
 
       def application_show_params
-        params.permit(:id, :format)
+        params.except(:format).permit(:id)
       end
     end
   end

@@ -86,12 +86,9 @@ class QuicklinkService < AuthenticationTokenService
     class Encoder
       # Encodes a request token for a given application process session.
       def self.call(session)
-        user_id = session[:client_id]
+        user_id = session[:user_id]
         typ = session[:subscription_type]
-        # job_slug = session[:job_slug]
         mode = session[:mode]
-        # success_url = session[:success_url]
-        # cancel_url = session[:cancel_url]
 
         SubscriptionHelper.check_valid_mode(typ, mode)
 

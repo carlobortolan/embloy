@@ -44,10 +44,10 @@ module Api
 
       def destroy
         # TODO: @jh: Why use `must_be_editor!` and not `owner!`?
-        must_be_editor!(Current.user.id)
-        # must_be_owner!(params[:id], Current.user.id)
-        job = Job.find(params[:id]) # no must_be_owner! call @job needs to be set manually
-        job.destroy!
+        # must_be_editor!(Current.user.id)
+        must_be_owner!(params[:id], Current.user.id)
+        # job = Job.find(params[:id]) # no must_be_owner! call @job needs to be set manually
+        @job.destroy!
         render status: 200, json: { message: 'Job deleted!' }
       rescue ActiveRecord::RecordNotFound
         not_found_error('job') # ok to be this specific because only editors can delete jobs
