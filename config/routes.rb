@@ -61,6 +61,7 @@ Rails.application.routes.draw do
       post 'client/auth/token', to: 'quicklink#create_client'
       post 'sdk/request/auth/token', to: 'quicklink#create_request'
       post 'sdk/request/handle', to: 'quicklink#handle_request'
+      post 'sdk/apply', to: 'quicklink#apply'
 
       # -----> GENIUS-QUERIES <-----
       get 'resource/(/:genius)', to: 'genius_queries#query'

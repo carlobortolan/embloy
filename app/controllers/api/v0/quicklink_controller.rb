@@ -14,12 +14,34 @@ module Api
       skip_before_action :verify_authenticity_token, only: %i[create_request] # TODO: CHECK IF NECESSARY
 
       before_action :verify_client_token, only: [:create_request]
-      before_action :verify_request_token, only: [:handle_request]
+      before_action :verify_request_token, only: %i[handle_request apply]
       before_action :must_be_subscribed, only: [:create_client]
 
       # The apply method is responsible for handling the application process.
       # It finds the user and client based on the decoded tokens, updates or creates the job, and applies for the job.
       # rubocop:disable Metrics/AbcSize
+      def apply
+        begin
+          @client = User.find(@decoded_request_token['sub'].to_i)
+        rescue StandardError
+          return not_found_error('client')
+        end
+
+        session = @decoded_request_token['session']
+
+        return render status: 401, json: { 'error' => 'Malformed Request Token' } if session.nil? || session['job_slug'].nil? || session['user_id'].nil? || session['subscription_type'].nil?
+
+        session['referrer_url'] = request.referrer
+
+        if update_or_create_job(session)
+          apply_for_job
+        else
+          render status: 400, json: @job.errors.details
+        end
+      end
+
+      # The apply method is responsible for handling the application process.
+      # It finds the user and client based on the decoded tokens, updates or creates the job, and applies for the job.
       def handle_request
         begin
           @client = User.find(@decoded_request_token['sub'].to_i)
