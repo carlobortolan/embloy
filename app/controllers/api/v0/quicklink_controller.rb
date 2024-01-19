@@ -14,13 +14,13 @@ module Api
       skip_before_action :verify_authenticity_token, only: %i[create_request] # TODO: CHECK IF NECESSARY
 
       before_action :verify_client_token, only: [:create_request]
-      before_action :verify_request_token, only: [:apply]
+      before_action :verify_request_token, only: [:handle_request]
       before_action :must_be_subscribed, only: [:create_client]
 
       # The apply method is responsible for handling the application process.
       # It finds the user and client based on the decoded tokens, updates or creates the job, and applies for the job.
       # rubocop:disable Metrics/AbcSize
-      def apply
+      def handle_request
         begin
           @client = User.find(@decoded_request_token['sub'].to_i)
         rescue StandardError
@@ -34,7 +34,7 @@ module Api
         session['referrer_url'] = request.referrer
 
         if update_or_create_job(session)
-          apply_for_job
+          render status: 200, json: { session:, job: Job.json_for(@job) }
         else
           render status: 400, json: @job.errors.details
         end
