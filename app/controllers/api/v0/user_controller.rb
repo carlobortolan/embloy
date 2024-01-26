@@ -22,6 +22,8 @@ module Api
         else
           render(status: 200,
                  json: "{\"jobs\": [#{Job.jsons_for(jobs)}]}")
+          #          render(status: 200,
+          #                 json: "{\"jobs\": [#{Job.jsons_for(jobs)}]}")
         end
       end
 

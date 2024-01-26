@@ -555,6 +555,112 @@ RSpec.describe 'JobsController' do
           expect(response).to have_http_status(403)
         end
       end
+      context 'application options tests' do
+        let(:form_data_with_options) do
+          form_data.merge(
+            application_options_attributes: [
+              {
+                question: 'Do you have experience with marketing?',
+                question_type: 'yes_no',
+                required: true,
+                options: []
+              },
+              {
+                question: 'What is your highest level of education?',
+                question_type: 'single_choice',
+                required: true,
+                options: ['High School', "Bachelor's Degree", "Master's Degree"]
+              },
+              {
+                question: 'What is your highest level of education?',
+                question_type: 'multiple_choice',
+                required: true,
+                options: ['High School', "Bachelor's Degree", "Master's Degree"]
+              },
+              {
+                question: 'What is your highest level of education?',
+                question_type: 'text',
+                required: false
+              },
+              {
+                question: 'What is your highest level of education?',
+                question_type: 'text',
+                required: true
+              },
+              {
+                question: 'What is your highest level of education?',
+                question_type: 'link',
+                required: true
+              }
+            ]
+          )
+        end
+        it 'returns [201 Created] and job JSONs if application options are valid' do
+          post('/api/v0/jobs', params: form_data_with_options, headers:)
+          expect(response).to have_http_status(201)
+        end
+        it 'returns [400 Bad Request] if application options question is empty' do
+          form_data_with_options[:application_options_attributes][0][:question] = ''
+          post('/api/v0/jobs', params: form_data_with_options, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] if application options question_type is invalid' do
+          form_data_with_options[:application_options_attributes][0][:question_type] = 'invalid_type'
+          post('/api/v0/jobs', params: form_data_with_options, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] if application options options field is empty' do
+          form_data_with_options[:application_options_attributes][1][:options] = []
+          post('/api/v0/jobs', params: form_data_with_options, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] if application options options field has more than 25 options' do
+          form_data_with_options[:application_options_attributes][1][:options] = Array.new(26, 'a')
+          post('/api/v0/jobs', params: form_data_with_options, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] if application options options field has more than 25 options' do
+          form_data_with_options[:application_options_attributes][2][:options] = Array.new(26, 'a')
+          post('/api/v0/jobs', params: form_data_with_options, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] if application options options is too long' do
+          form_data_with_options[:application_options_attributes][1][:options] = ['aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa']
+          post('/api/v0/jobs', params: form_data_with_options, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] if application options options field is empty' do
+          form_data_with_options[:application_options_attributes][2][:options] = []
+          post('/api/v0/jobs', params: form_data_with_options, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] if application question it invalid' do
+          form_data_with_options[:application_options_attributes][0][:question] = ''
+          post('/api/v0/jobs', params: form_data_with_options, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] if application question is too long' do
+          form_data_with_options[:application_options_attributes][0][:question] =
+            'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+          post('/api/v0/jobs', params: form_data_with_options, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] if application options question is null' do
+          form_data_with_options[:application_options_attributes][0][:question] = nil
+          post('/api/v0/jobs', params: form_data_with_options, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] if application options options field is missing for single_choice' do
+          form_data_with_options[:application_options_attributes][1].delete(:options)
+          post('/api/v0/jobs', params: form_data_with_options, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] if application options options field is missing for multiple_choice' do
+          form_data_with_options[:application_options_attributes][2].delete(:options)
+          post('/api/v0/jobs', params: form_data_with_options, headers:)
+          expect(response).to have_http_status(400)
+        end
+      end
     end
 
     describe "(PATCH: /api/v0/jobs/\#{@job.id})" do
@@ -707,6 +813,112 @@ RSpec.describe 'JobsController' do
         end
         it 'returns [400 Bad Request] for invalid image_url' do
           patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(image_url: 'invalid'), headers:)
+          expect(response).to have_http_status(400)
+        end
+      end
+      context 'application options tests' do
+        let(:form_data_with_options) do
+          form_data.merge(
+            application_options_attributes: [
+              {
+                question: 'Do you have experience with marketing?',
+                question_type: 'yes_no',
+                required: true,
+                options: []
+              },
+              {
+                question: 'What is your highest level of education?',
+                question_type: 'single_choice',
+                required: true,
+                options: ['High School', "Bachelor's Degree", "Master's Degree"]
+              },
+              {
+                question: 'What is your highest level of education?',
+                question_type: 'multiple_choice',
+                required: true,
+                options: ['High School', "Bachelor's Degree", "Master's Degree"]
+              },
+              {
+                question: 'What is your highest level of education?',
+                question_type: 'text',
+                required: false
+              },
+              {
+                question: 'What is your highest level of education?',
+                question_type: 'text',
+                required: true
+              },
+              {
+                question: 'What is your highest level of education?',
+                question_type: 'link',
+                required: true
+              }
+            ]
+          )
+        end
+        it 'returns [200 OK] and job JSONs if application options are valid' do
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data_with_options, headers:)
+          expect(response).to have_http_status(200)
+        end
+        it 'returns [400 Bad Request] if application options question is empty' do
+          form_data_with_options[:application_options_attributes][0][:question] = ''
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data_with_options, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] if application options question_type is invalid' do
+          form_data_with_options[:application_options_attributes][0][:question_type] = 'invalid_type'
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data_with_options, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] if application options options field is empty' do
+          form_data_with_options[:application_options_attributes][1][:options] = []
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data_with_options, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] if application options options field has more than 25 options' do
+          form_data_with_options[:application_options_attributes][1][:options] = Array.new(26, 'a')
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data_with_options, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] if application options options field has more than 25 options' do
+          form_data_with_options[:application_options_attributes][2][:options] = Array.new(26, 'a')
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data_with_options, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] if application options options is too long' do
+          form_data_with_options[:application_options_attributes][1][:options] = ['aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa']
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data_with_options, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] if application options options field is empty' do
+          form_data_with_options[:application_options_attributes][2][:options] = []
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data_with_options, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] if application question it invalid' do
+          form_data_with_options[:application_options_attributes][0][:question] = ''
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data_with_options, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] if application question is too long' do
+          form_data_with_options[:application_options_attributes][0][:question] =
+            'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data_with_options, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] if application options question is null' do
+          form_data_with_options[:application_options_attributes][0][:question] = nil
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data_with_options, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] if application options options field is missing for single_choice' do
+          form_data_with_options[:application_options_attributes][1].delete(:options)
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data_with_options, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] if application options options field is missing for multiple_choice' do
+          form_data_with_options[:application_options_attributes][2].delete(:options)
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data_with_options, headers:)
           expect(response).to have_http_status(400)
         end
       end

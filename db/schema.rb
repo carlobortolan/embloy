@@ -28,6 +28,7 @@ ActiveRecord::Schema[7.0].define(version: 20_240_114_012_806) do
   create_enum 'rating_type', %w[1 2 3 4 5]
   create_enum 'user_role', %w[admin editor developer moderator verified spectator]
   create_enum 'user_type', %w[company private]
+  create_enum 'question_type', %w[yes_no text link single_choice multiple_choice]
 
   create_table 'action_text_rich_texts', force: :cascade do |t|
     t.string 'name', null: false
@@ -163,6 +164,19 @@ ActiveRecord::Schema[7.0].define(version: 20_240_114_012_806) do
   execute('CREATE EXTENSION IF NOT EXISTS pg_trgm;')
   execute('CREATE INDEX IF NOT EXISTS jobs_title_trgm_idx ON jobs USING gin(title gin_trgm_ops);CREATE INDEX IF NOT EXISTS jobs_job_type_trgm_idx ON jobs USING gin(job_type gin_trgm_ops);')
   execute('CREATE EXTENSION IF NOT EXISTS unaccent;')
+
+  create_table 'application_options', force: :cascade do |t|
+    t.bigint 'job_id', null: false
+    t.string 'question', null: false, limit: 200
+    t.enum 'question_type', default: 'yes_no', null: false, enum_type: 'question_type'
+    t.boolean 'required', default: true
+    t.text 'options'
+    t.datetime 'created_at', precision: 6, null: false
+    t.datetime 'updated_at', precision: 6, null: false
+    t.datetime 'deleted_at'
+    t.index ['job_id'], name: 'application_options_job_id_index'
+    t.index ['deleted_at'], name: 'index_application_options_on_deleted_at'
+  end
 
   create_table 'notifications', force: :cascade do |t|
     t.string 'recipient_type', null: false

@@ -35,6 +35,8 @@ module Validators
       has_many :applications, dependent: :delete_all
       has_many :application_attachments,
                dependent: :delete_all
+      has_many :application_options, dependent: :destroy
+      accepts_nested_attributes_for :application_options, allow_destroy: true
       has_noticed_notifications model_name: 'Notification'
       has_rich_text :description
       has_one_attached :image_url
@@ -68,6 +70,8 @@ module Validators
       validate :start_slot_validation
       validate :job_type_validation
       validate :image_format_validation
+      validate :application_options_count_validation
+      validate :application_options_validity
     end
     # rubocop:enable Metrics/BlockLength
 
@@ -104,6 +108,20 @@ module Validators
       return if allowed_formats.include?(image_url.content_type)
 
       errors.add(:image_url, { error: 'ERR_INVALID', description: 'must be a PNG, JPG, or JPEG image' })
+    end
+
+    def application_options_count_validation
+      return if application_options.size <= 50
+
+      errors.add(:application_options, 'A job can have at most 50 application options')
+    end
+
+    def application_options_validity
+      application_options.each do |application_option|
+        application_option.errors.full_messages.each do |message|
+          errors.add(:application_options, message)
+        end
+      end
     end
   end
 end

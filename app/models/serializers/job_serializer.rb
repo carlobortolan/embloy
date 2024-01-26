@@ -16,7 +16,7 @@ module Serializers
         unless job.image_url.url.nil?
           # use custom url
           # Parse the JSON to a hash
-          res_hash = JSON.parse(job.to_json(except: [:image_url]))
+          res_hash = JSON.parse(job.to_json(include: :application_options, except: [:image_url]))
           # Add the 'image_url' field with the value 'job.image_url.url'
           res_hash['image_url'] = job.image_url.url
           return res_hash.to_json
@@ -25,7 +25,7 @@ module Serializers
         # do nothing & continue with default url
       end
       # use default url
-      res_hash = JSON.parse(job.to_json(except: [:image_url]))
+      res_hash = JSON.parse(job.to_json(include: :application_options, except: [:image_url]))
       res_hash['image_url'] = 'https://embloy.onrender.com/assets/img/features_3.png'
       res_hash.to_json
     end
@@ -62,7 +62,7 @@ module Serializers
     end
 
     def self.job_to_hash(job)
-      JSON.parse(job.to_json(except: [:image_url]))
+      JSON.parse(job.to_json(include: :application_options, except: [:image_url]))
     end
 
     def self.add_image_url(job, res_hash)
