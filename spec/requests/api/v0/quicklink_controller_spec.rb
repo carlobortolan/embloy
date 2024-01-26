@@ -104,41 +104,41 @@ RSpec.describe 'QuicklinkController' do
     # Verified user refresh/access/client tokens
     credentials = Base64.strict_encode64("#{@valid_user.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
-    post('/api/v0/user/auth/token/refresh', headers:)
+    post('/api/v0/auth/token/refresh', headers:)
     @valid_refresh_token = JSON.parse(response.body)['refresh_token']
     puts "Valid user refresh token: #{@valid_refresh_token}"
 
     headers = { 'HTTP_REFRESH_TOKEN' => @valid_refresh_token }
-    post('/api/v0/user/auth/token/access', headers:)
+    post('/api/v0/auth/token/access', headers:)
     @valid_access_token = JSON.parse(response.body)['access_token']
     puts "Valid user access token: #{@valid_access_token}"
 
     headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token }
-    post('/api/v0/client/auth/token', headers:)
+    post('/api/v0/auth/token/client', headers:)
     @valid_client_token = JSON.parse(response.body)['client_token']
     puts "Valid user client token: #{@valid_client_token}"
 
     # Verified user with soon expiring subscription refresh/access/client tokens
     credentials = Base64.strict_encode64("#{@valid_user_exp.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
-    post('/api/v0/user/auth/token/refresh', headers:)
+    post('/api/v0/auth/token/refresh', headers:)
     @valid_rt_exp = JSON.parse(response.body)['refresh_token']
     puts "Valid user refresh token: #{@valid_rt_exp}"
 
     headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt_exp }
-    post('/api/v0/user/auth/token/access', headers:)
+    post('/api/v0/auth/token/access', headers:)
     @valid_at_exp = JSON.parse(response.body)['access_token']
     puts "Valid user access token: #{@valid_at_exp}"
 
     # Valid user with own jobs refresh/access/client tokens
     credentials = Base64.strict_encode64("#{@valid_user_has_own_jobs.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
-    post('/api/v0/user/auth/token/refresh', headers:)
+    post('/api/v0/auth/token/refresh', headers:)
     @valid_rt_has_own_jobs = JSON.parse(response.body)['refresh_token']
     puts "Valid user with own jobs refresh token: #{@valid_rt_has_own_jobs}"
 
     headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt_has_own_jobs }
-    post('/api/v0/user/auth/token/access', headers:)
+    post('/api/v0/auth/token/access', headers:)
     @valid_at_has_own_jobs = JSON.parse(response.body)['access_token']
     puts "Valid user with own jobs access token: #{@valid_at_has_own_jobs}"
 
@@ -147,41 +147,41 @@ RSpec.describe 'QuicklinkController' do
     # Valid user who has applied refresh/access/client tokens
     credentials = Base64.strict_encode64("#{@valid_user_has_applied.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
-    post('/api/v0/user/auth/token/refresh', headers:)
+    post('/api/v0/auth/token/refresh', headers:)
     @valid_rt_has_applied = JSON.parse(response.body)['refresh_token']
     puts "Valid user who has applied jobs refresh token: #{@valid_rt_has_applied}"
 
     headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt_has_applied }
-    post('/api/v0/user/auth/token/access', headers:)
+    post('/api/v0/auth/token/access', headers:)
     @valid_at_has_applied = JSON.parse(response.body)['access_token']
     puts "Valid user who has applied access token: #{@valid_at_has_applied}"
 
     headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_applied }
-    post('/api/v0/client/auth/token', headers:)
+    post('/api/v0/auth/token/client', headers:)
     @valid_ct_has_applied = JSON.parse(response.body)['client_token']
     puts "Valid user who has applied client token: #{@valid_ct_has_applied}"
 
     # Unsubscribed refresh/access/client tokens
     credentials = Base64.strict_encode64("#{@unsubscribed_user.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
-    post('/api/v0/user/auth/token/refresh', headers:)
+    post('/api/v0/auth/token/refresh', headers:)
     @valid_rt_unsubscribed = JSON.parse(response.body)['refresh_token']
     puts "Unsubscribed user refresh token: #{@valid_rt_unsubscribed}"
 
     headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt_unsubscribed }
-    post('/api/v0/user/auth/token/access', headers:)
+    post('/api/v0/auth/token/access', headers:)
     @valid_at_unsubscribed = JSON.parse(response.body)['access_token']
     puts "Unsubscribed user access token: #{@valid_at_unsubscribed}"
 
     # Blacklisted user refresh/access/client tokens
     credentials = Base64.strict_encode64("#{@blacklisted_user.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
-    post('/api/v0/user/auth/token/refresh', headers:)
+    post('/api/v0/auth/token/refresh', headers:)
     @valid_rt_blacklisted = JSON.parse(response.body)['refresh_token']
     puts "Valid user who will be blacklisted refresh token: #{@valid_rt_blacklisted}"
 
     headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt_blacklisted }
-    post('/api/v0/user/auth/token/access', headers:)
+    post('/api/v0/auth/token/access', headers:)
     @valid_at_blacklisted = JSON.parse(response.body)['access_token']
     puts "Valid user who will be blacklisted access token: #{@valid_at_blacklisted}"
 
@@ -207,7 +207,7 @@ RSpec.describe 'QuicklinkController' do
         latitude: '0.0',
         position: 'Intern',
         salary: '123',
-        start_slot: Time.now,
+        start_slot: Time.now + 1.year,
         key_skills: 'Entrepreneurship',
         duration: '14',
         currency: 'CHF',
@@ -227,37 +227,37 @@ RSpec.describe 'QuicklinkController' do
   end
 
   describe 'Quicklink', type: :request do
-    describe '(POST: /api/v0/client/auth/token)' do
+    describe '(POST: /api/v0/auth/token/client)' do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and new client token' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token }
-          post('/api/v0/client/auth/token', headers:)
+          post('/api/v0/auth/token/client', headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [200 OK] for user with soon expiring subscription' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_exp }
-          post('/api/v0/client/auth/token', headers:)
+          post('/api/v0/auth/token/client', headers:)
           expect(response).to have_http_status(200)
         end
       end
       context 'invalid inputs' do
         it 'returns [400 Bad Request] for missing refresh token in header' do
-          post '/api/v0/client/auth/token'
+          post '/api/v0/auth/token/client'
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid refresh token' do
           headers = { 'HTTP_ACCESS_TOKEN' => @invalid_token }
-          post('/api/v0/client/auth/token', headers:)
+          post('/api/v0/auth/token/client', headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [401 Unauthorized] for user without active subscription' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_unsubscribed }
-          post('/api/v0/client/auth/token', headers:)
+          post('/api/v0/auth/token/client', headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_blacklisted }
-          post('/api/v0/client/auth/token', headers:)
+          post('/api/v0/auth/token/client', headers:)
           expect(response).to have_http_status(403)
         end
       end
@@ -286,7 +286,7 @@ RSpec.describe 'QuicklinkController' do
         end
         it 'returns [200 Ok] and new request token' do
           headers = { 'HTTP_CLIENT_TOKEN' => @valid_ct_has_own_jobs }
-          post('/api/v0/sdk/request/auth/token', params: request_body.except(:success_url, :cancal_url, :job_slug), headers:)
+          post('/api/v0/sdk/request/auth/token', params: request_body.except(:success_url, :cancel_url), headers:)
           expect(response).to have_http_status(200)
         end
       end
@@ -300,6 +300,11 @@ RSpec.describe 'QuicklinkController' do
           headers = { 'HTTP_CLIENT_TOKEN' => @valid_ct_has_own_jobs }
           invalid_request_body = request_body.merge(mode: 'invalid_mode')
           post('/api/v0/sdk/request/auth/token', params: invalid_request_body, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for missing job_slug' do
+          headers = { 'HTTP_CLIENT_TOKEN' => @valid_ct_has_own_jobs }
+          post('/api/v0/sdk/request/auth/token', params: request_body.except(:job_slug), headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid client token' do

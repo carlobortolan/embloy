@@ -152,8 +152,7 @@ To deploy to docker-hub: \
 If you wish to experiment on our backend or contribute to our front end, you can test your changes by starting a local
 server.
 
-1. Create a `.env` file with the following content:
-
+1. Create a `.env` file with the content of `.example.env`.
 2. Run ``$ rails db:create`` to create all necessary tables in your development database.
 3. Run ``$ rails db:migrate`` to migrate your changes to the database.
 4. Run ``$ rails server`` to start the server.

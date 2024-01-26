@@ -21,16 +21,15 @@ module Api
       end
 
       def active_subscription
-        subscription = if params[:info].present? && params[:info] == '1'
-                         Current.user.current_subscription_info
-                       else
-                         Current.user.current_subscription
-                       end
-
-        if subscription.nil?
-          render(status: 404, json: { message: 'No active subscription found.' })
+        if valid_payment_processor?
+          subscription = fetch_subscription
+          if subscription.nil?
+            render(status: 404, json: { message: 'No active subscription found.' })
+          else
+            render(status: 200, json: { subscription: })
+          end
         else
-          render(status: 200, json: { subscription: })
+          render(status: 404, json: { error: 'User or payment processor not found' })
         end
       end
 
@@ -44,6 +43,15 @@ module Api
       end
 
       private
+
+      def fetch_subscription
+        Current.user.payment_processor.sync_subscriptions(status: 'all')
+        if params[:info].present? && params[:info] == '1'
+          Current.user.current_subscription_info
+        else
+          Current.user.current_subscription
+        end
+      end
 
       def valid_payment_processor?
         Current.user.payment_processor && !Current.user.payment_processor.deleted? && Current.user.payment_processor.processor == 'stripe'

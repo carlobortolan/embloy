@@ -11,7 +11,7 @@ module Api
         stripe_price_id = SubscriptionHelper.stripe_price_id(checkout_params[:tier])
         render json: { error: 'Invalid tier: must be one of basic, premium, enterprise_1, enterprise_2 or enterprise_3' }, status: 400 and return if stripe_price_id.nil?
 
-        create_checkout_session(determine_success_url, stripe_price_id)
+        create_checkout_session(determine_success_url, determine_cancel_url, stripe_price_id)
       rescue Stripe::StripeError => e
         render json: { error: e.message }, status: 400
       end
@@ -87,27 +87,38 @@ module Api
       private
 
       def checkout_params
-        params.except(:format).permit(:payment_mode, :tier, :session_id)
+        params.except(:format).permit(:payment_mode, :tier, :origin, :session_id)
       end
 
       def determine_success_url
-        case checkout_params[:payment_mode]
-        when 'payment'
-          api_v0_checkout_payment_success_url
-        when 'subscription'
-          api_v0_checkout_subscription_success_url
+        case checkout_params[:origin]
+        when 'core'
+          "#{ENV.fetch('CORE_CLIENT_URL', '')}/dashboard/billing"
+        when 'genius'
+          "#{ENV.fetch('GENIUS_CLIENT_URL', '')}/dashboard/billing"
         else
           api_v0_checkout_failure_url
         end
       end
 
-      def create_checkout_session(success_url, stripe_price_id)
+      def determine_cancel_url
+        case checkout_params[:origin]
+        when 'core'
+          "#{ENV.fetch('GENIUS_CLIENT_URL', '')}/dashboard/billing"
+        when 'genius'
+          "#{ENV.fetch('CORE_CLIENT_URL', '')}/dashboard/billing"
+        else
+          api_v0_checkout_failure_url
+        end
+      end
+
+      def create_checkout_session(success_url, cancel_url, stripe_price_id)
         if !Current.user.payment_processor.nil? && !Current.user.payment_processor.deleted?
           session = Current.user.payment_processor.checkout(
             mode: checkout_params[:payment_mode],
             line_items: stripe_price_id,
             success_url:,
-            cancel_url: api_v0_checkout_failure_url
+            cancel_url:
           )
           render json: session, status: 200
         else

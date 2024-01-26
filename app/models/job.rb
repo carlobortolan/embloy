@@ -97,7 +97,7 @@ class Job < ApplicationRecord
   end
 
   def set_default_job_slug
-    self.job_slug = "#{user_id}_#{title}_#{Time.current.to_i}"
+    self.job_slug = SecureRandom.uuid
   end
 
   def set_default_values

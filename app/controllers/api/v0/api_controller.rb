@@ -11,9 +11,6 @@ module Api
       include ApiExceptionHandler
       protect_from_forgery with: :null_session
 
-      # Ignore Web-App before actions
-      skip_before_action :auth_prototype
-
       # ============== API BEFORE ACTIONS ================
       before_action :set_current_user
       before_action :require_user_not_blacklisted!, unless: -> { Current.user.nil? }

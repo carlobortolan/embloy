@@ -73,48 +73,48 @@ RSpec.describe 'UserController' do
     # Verified user refresh/access tokens
     credentials = Base64.strict_encode64("#{@valid_user.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
-    post('/api/v0/user/auth/token/refresh', headers:)
+    post('/api/v0/auth/token/refresh', headers:)
     @valid_refresh_token = JSON.parse(response.body)['refresh_token']
     puts "Valid user refresh token: #{@valid_refresh_token}"
 
     headers = { 'HTTP_REFRESH_TOKEN' => @valid_refresh_token }
-    post('/api/v0/user/auth/token/access', headers:)
+    post('/api/v0/auth/token/access', headers:)
     @valid_access_token = JSON.parse(response.body)['access_token']
     puts "Valid user access token: #{@valid_access_token}"
 
     # Valid user with own jobs refresh/access tokens
     credentials = Base64.strict_encode64("#{@valid_user_has_own_jobs.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
-    post('/api/v0/user/auth/token/refresh', headers:)
+    post('/api/v0/auth/token/refresh', headers:)
     @valid_rt_has_own_jobs = JSON.parse(response.body)['refresh_token']
     puts "Valid user with own jobs refresh token: #{@valid_rt_has_own_jobs}"
 
     headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt_has_own_jobs }
-    post('/api/v0/user/auth/token/access', headers:)
+    post('/api/v0/auth/token/access', headers:)
     @valid_at_has_own_jobs = JSON.parse(response.body)['access_token']
     puts "Valid user with own jobs access token: #{@valid_at_has_own_jobs}"
 
     # Valid user with upcoming jobs refresh/access tokens
     credentials = Base64.strict_encode64("#{@valid_user_has_upcoming_jobs.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
-    post('/api/v0/user/auth/token/refresh', headers:)
+    post('/api/v0/auth/token/refresh', headers:)
     @valid_rt_has_upcoming_jobs = JSON.parse(response.body)['refresh_token']
     puts "Valid user with upcoming jobs refresh token: #{@valid_rt_has_upcoming_jobs}"
 
     headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt_has_upcoming_jobs }
-    post('/api/v0/user/auth/token/access', headers:)
+    post('/api/v0/auth/token/access', headers:)
     @valid_at_has_upcoming_jobs = JSON.parse(response.body)['access_token']
     puts "Valid user with own jobs access token: #{@valid_at_has_upcoming_jobs}"
 
     # Blacklisted user refresh/access/client tokens
     credentials = Base64.strict_encode64("#{@blacklisted_user.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
-    post('/api/v0/user/auth/token/refresh', headers:)
+    post('/api/v0/auth/token/refresh', headers:)
     @valid_rt_blacklisted = JSON.parse(response.body)['refresh_token']
     puts "Valid user who will be blacklisted refresh token: #{@valid_rt_blacklisted}"
 
     headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt_blacklisted }
-    post('/api/v0/user/auth/token/access', headers:)
+    post('/api/v0/auth/token/access', headers:)
     @valid_at_blacklisted = JSON.parse(response.body)['access_token']
     puts "Valid user who will be blacklisted access token: #{@valid_at_blacklisted}"
 
@@ -138,7 +138,7 @@ RSpec.describe 'UserController' do
         latitude: '0.0',
         position: 'Intern',
         salary: '123',
-        start_slot: Time.now,
+        start_slot: Time.now + 1.year,
         key_skills: 'Entrepreneurship',
         duration: '14',
         currency: 'CHF',

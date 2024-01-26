@@ -221,12 +221,6 @@ GEM
     noticed (1.6.0)
       http (>= 4.0.0)
       rails (>= 5.2.0)
-    oauth (1.1.0)
-      oauth-tty (~> 1.0, >= 1.0.1)
-      snaky_hash (~> 2.0)
-      version_gem (~> 1.1)
-    oauth-tty (1.0.5)
-      version_gem (~> 1.1, >= 1.1.1)
     oauth2 (2.0.9)
       faraday (>= 0.17.3, < 3.0)
       jwt (>= 1.0, < 3.0)
@@ -238,6 +232,8 @@ GEM
       hashie (>= 3.4.6)
       rack (>= 2.2.3)
       rack-protection
+    omniauth-azure-activedirectory-v2 (2.1.0)
+      omniauth-oauth2 (~> 1.8)
     omniauth-github (2.0.1)
       omniauth (~> 2.0)
       omniauth-oauth2 (~> 1.8)
@@ -246,18 +242,14 @@ GEM
       oauth2 (~> 2.0.6)
       omniauth (~> 2.0)
       omniauth-oauth2 (~> 1.8.0)
-    omniauth-oauth (1.2.0)
-      oauth
-      omniauth (>= 1.0, < 3)
+    omniauth-linkedin-oauth2 (1.0.1)
+      omniauth-oauth2
     omniauth-oauth2 (1.8.0)
       oauth2 (>= 1.4, < 3)
       omniauth (~> 2.0)
     omniauth-rails_csrf_protection (1.0.1)
       actionpack (>= 4.2)
       omniauth (~> 2.0)
-    omniauth-twitter (1.4.0)
-      omniauth-oauth (~> 1.1)
-      rack
     parallel (1.24.0)
     paranoia (2.6.3)
       activerecord (>= 5.1, < 7.2)
@@ -377,6 +369,7 @@ GEM
     stimulus-rails (1.2.1)
       railties (>= 6.0.0)
     stripe (10.4.0)
+    tempfile (0.2.1)
     thor (1.2.1)
     timeout (0.3.2)
     trix (0.10.1)
@@ -435,6 +428,7 @@ DEPENDENCIES
   debug
   dotenv-rails
   faker
+  faraday (~> 2.7)
   geocoder
   httparty
   image_processing (~> 1.2)
@@ -444,10 +438,12 @@ DEPENDENCIES
   kaminari
   nokogiri (>= 1.14.3)
   noticed (~> 1.6)
+  omniauth
+  omniauth-azure-activedirectory-v2 (~> 2.1)
   omniauth-github (~> 2.0)
   omniauth-google-oauth2 (~> 1.1)
-  omniauth-rails_csrf_protection (~> 1.0)
-  omniauth-twitter (~> 1.4)
+  omniauth-linkedin-oauth2 (~> 1.0)
+  omniauth-rails_csrf_protection
   paranoia (~> 2.6)
   pay (~> 7.1)
   pg (~> 1.1)
@@ -463,6 +459,7 @@ DEPENDENCIES
   sprockets-rails
   stimulus-rails
   stripe (~> 10.4)
+  tempfile (~> 0.2.1)
   trix
   turbo-rails
   tzinfo-data

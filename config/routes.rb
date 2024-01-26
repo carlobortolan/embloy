@@ -5,6 +5,12 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   root to: 'welcome#index'
 
+  # -----> OAUTH CALLBACKS <-----
+  get 'auth/github/callback', to: 'oauth_callbacks#github', as: :auth_github_callback
+  get 'auth/google_oauth2/callback', to: 'oauth_callbacks#google', as: :auth_google_callback
+  get 'auth/azure_activedirectory_v2/callback', to: 'oauth_callbacks#azure', as: :auth_azure_callback
+  get 'auth/linkedin/callback', to: 'oauth_callbacks#linkedin', as: :auth_linkedin_callback
+
   #= <<<<< *API* >>>>>>
   namespace :api, defaults: { format: 'json' } do
     namespace :v0 do
@@ -17,8 +23,9 @@ Rails.application.routes.draw do
       patch 'user/password/reset', to: 'password_resets#update', as: :password_reset_update
 
       # -----> AUTH <-----
-      post 'user/auth/token/refresh', to: 'authentications#create_refresh'
-      post 'user/auth/token/access', to: 'authentications#create_access'
+      post 'auth/token/refresh', to: 'authentications#create_refresh'
+      post 'auth/token/access', to: 'authentications#create_access'
+      post 'auth/token/client', to: 'quicklink#create_client'
 
       # -----> USER <-----
       get 'user', to: 'user#show'
@@ -53,12 +60,7 @@ Rails.application.routes.draw do
       patch 'jobs/(/:id)/applications/(/:application_id)/accept', to: 'applications#accept'
       patch 'jobs/(/:id)/applications/(/:application_id)/reject', to: 'applications#reject'
 
-      # get 'jobs/(/:id)/applications/(/:user)/accept', to: 'applications#accept'
-      # patch 'jobs/(/:id)/applications/(/:user)/accept', to: 'applications#accept'
-      # delete 'jobs/(/:id)/applications', to: 'applications#destroy'
-
       # -----> QUICKLINK <-----
-      post 'client/auth/token', to: 'quicklink#create_client'
       post 'sdk/request/auth/token', to: 'quicklink#create_request'
       post 'sdk/request/handle', to: 'quicklink#handle_request'
       post 'sdk/apply', to: 'quicklink#apply'

@@ -90,10 +90,12 @@ group :test do
 end
 
 # O-Auth
-gem "omniauth-twitter", "~> 1.4"
+gem 'omniauth'
+gem "omniauth-rails_csrf_protection"
 gem "omniauth-github", "~> 2.0"
 gem "omniauth-google-oauth2", "~> 1.1"
-gem "omniauth-rails_csrf_protection", "~> 1.0"
+gem "omniauth-azure-activedirectory-v2", "~> 2.1"
+gem "omniauth-linkedin-oauth2", "~> 1.0"
 
 # Notifications
 gem "noticed", "~> 1.6"
@@ -126,3 +128,7 @@ gem "pay", "~> 7.1"
 
 # Enable Soft Delete
 gem "paranoia", "~> 2.6"
+
+gem "faraday", "~> 2.7"
+
+gem "tempfile", "~> 0.2.1"

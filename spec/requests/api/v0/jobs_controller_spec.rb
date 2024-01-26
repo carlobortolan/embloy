@@ -53,8 +53,8 @@ RSpec.describe 'JobsController' do
         latitude: '0.0',
         position: 'Intern',
         salary: '123',
-        start_slot: Time.now,
-        
+        start_slot: Time.now + 1.year,
+
         key_skills: 'Entrepreneurship',
         duration: '14',
         currency: 'CHF',
@@ -72,9 +72,9 @@ RSpec.describe 'JobsController' do
       longitude: '0.0',
       latitude: '0.0',
       position: 'Intern',
-      
+
       salary: '123',
-      start_slot: Time.now,
+      start_slot: Time.now + 1.year,
       key_skills: 'Entrepreneurship',
       duration: '14',
       currency: 'CHF',
@@ -92,8 +92,8 @@ RSpec.describe 'JobsController' do
       latitude: '0.0',
       position: 'Intern',
       salary: '123',
-      start_slot: Time.now,
-      
+      start_slot: Time.now + 1.year,
+
       key_skills: 'Entrepreneurship',
       duration: '14',
       currency: 'CHF',
@@ -106,24 +106,24 @@ RSpec.describe 'JobsController' do
     # Verified user refresh/access tokens
     credentials = Base64.strict_encode64("#{@valid_user.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
-    post('/api/v0/user/auth/token/refresh', headers:)
+    post('/api/v0/auth/token/refresh', headers:)
     @valid_rt = JSON.parse(response.body)['refresh_token']
     puts "Valid user with upcoming jobs refresh token: #{@valid_rt}"
 
     headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt }
-    post('/api/v0/user/auth/token/access', headers:)
+    post('/api/v0/auth/token/access', headers:)
     @valid_at = JSON.parse(response.body)['access_token']
     puts "Valid user with own jobs access token: #{@valid_at}"
 
     # Blacklisted user refresh/access tokens
     credentials = Base64.strict_encode64("#{@blacklisted_user.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
-    post('/api/v0/user/auth/token/refresh', headers:)
+    post('/api/v0/auth/token/refresh', headers:)
     @valid_rt_blacklisted = JSON.parse(response.body)['refresh_token']
     puts "Valid user who will be blacklisted refresh token: #{@valid_rt_blacklisted}"
 
     headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt_blacklisted }
-    post('/api/v0/user/auth/token/access', headers:)
+    post('/api/v0/auth/token/access', headers:)
     @valid_at_blacklisted = JSON.parse(response.body)['access_token']
     puts "Valid user who will be blacklisted access token: #{@valid_at_blacklisted}"
 
@@ -347,7 +347,7 @@ RSpec.describe 'JobsController' do
         {
           title: 'TestTitle',
           job_type: 'Retail',
-          start_slot: '2024-01-14T03:32:40.555Z',
+          start_slot: Time.now + 1.year,
           position: 'CEO',
           key_skills: 'Entrepreneurship',
           duration: '9',
@@ -359,38 +359,34 @@ RSpec.describe 'JobsController' do
           job_notifications: '1',
           currency: 'EUR',
           cv_required: false,
-          allowed_cv_formats: [".pdf", ".docx", ".txt", ".xml"],
+          allowed_cv_formats: ['.pdf', '.docx', '.txt', '.xml'],
           image_url: Rack::Test::UploadedFile.new(Rails.root.join('spec/assets', 'test_image.png'), 'image/png')
         }
       end
       let(:headers) { { 'HTTP_ACCESS_TOKEN' => @valid_at } }
       context 'valid normal inputs' do
         it 'returns [201 Created] and job JSONs if job exists' do
-          post '/api/v0/jobs', params: form_data, headers: headers
+          post('/api/v0/jobs', params: form_data, headers:)
           expect(response).to have_http_status(201)
         end
         it 'returns [201 Created] even if missing status' do
-          post '/api/v0/jobs', params: form_data.except(:status), headers: headers
+          post('/api/v0/jobs', params: form_data.except(:status), headers:)
           expect(response).to have_http_status(201)
         end
         it 'returns [201 Created] even if missing job_notifications' do
-          post '/api/v0/jobs', params: form_data.except(:job_notifications), headers: headers
+          post('/api/v0/jobs', params: form_data.except(:job_notifications), headers:)
           expect(response).to have_http_status(201)
         end
         it 'returns [201 Created] even if missing image_url' do
-          post '/api/v0/jobs', params: form_data.except(:image_url), headers: headers
+          post('/api/v0/jobs', params: form_data.except(:image_url), headers:)
           expect(response).to have_http_status(201)
         end
         it 'returns [201 Created] even if missing allowed_cv_format and cv_required false' do
-          post '/api/v0/jobs', params: form_data.except(:allowed_cv_format).merge(cv_required: false), headers: headers
+          post('/api/v0/jobs', params: form_data.except(:allowed_cv_format).merge(cv_required: false), headers:)
           expect(response).to have_http_status(201)
         end
         it 'returns [201 Created] even if missing allowed_cv_format and cv_required true' do
-          post '/api/v0/jobs', params: form_data.except(:allowed_cv_format), headers: headers
-          expect(response).to have_http_status(201)
-        end
-        it 'returns [201 Created] even if missing cv_required' do
-          post '/api/v0/jobs', params: form_data.except(:cv_required), headers: headers
+          post('/api/v0/jobs', params: form_data.except(:allowed_cv_format), headers:)
           expect(response).to have_http_status(201)
         end
       end
@@ -399,106 +395,151 @@ RSpec.describe 'JobsController' do
           post '/api/v0/jobs'
           expect(response).to have_http_status(400)
         end
-        it 'returns [400 Bad Request] for missing title' do
-          post '/api/v0/jobs', params: form_data.except(:title), headers: headers
-          expect(response).to have_http_status(400)
+        it 'returns [201 Created] for missing title' do
+          post('/api/v0/jobs', params: form_data.except(:title), headers:)
+          expect(response).to have_http_status(201)
         end
-        it 'returns [400 Bad Request] for missing job_type' do
-          post '/api/v0/jobs', params: form_data.except(:job_type), headers: headers
-          expect(response).to have_http_status(400)
+        it 'returns [201 Created] for missing job_type' do
+          post('/api/v0/jobs', params: form_data.except(:job_type), headers:)
+          expect(response).to have_http_status(201)
         end
-        it 'returns [400 Bad Request] for missing start_slot' do
-          post '/api/v0/jobs', params: form_data.except(:start_slot), headers: headers
-          expect(response).to have_http_status(400)
+        it 'returns [201 Created] for missing start_slot' do
+          post('/api/v0/jobs', params: form_data.except(:start_slot), headers:)
+          expect(response).to have_http_status(201)
         end
-        it 'returns [400 Bad Request] for missing position' do
-          post '/api/v0/jobs', params: form_data.except(:position), headers: headers
-          expect(response).to have_http_status(400)
+        it 'returns [201 Created] for missing position' do
+          post('/api/v0/jobs', params: form_data.except(:position), headers:)
+          expect(response).to have_http_status(201)
         end
-        it 'returns [400 Bad Request] for missing key_skills' do
-          post '/api/v0/jobs', params: form_data.except(:key_skills), headers: headers
-          expect(response).to have_http_status(400)
+        it 'returns [201 Created] for missing key_skills' do
+          post('/api/v0/jobs', params: form_data.except(:key_skills), headers:)
+          expect(response).to have_http_status(201)
         end
-        it 'returns [400 Bad Request] for missing duration' do
-          post '/api/v0/jobs', params: form_data.except(:duration), headers: headers
-          expect(response).to have_http_status(400)
+        it 'returns [201 Created] for missing duration' do
+          post('/api/v0/jobs', params: form_data.except(:duration), headers:)
+          expect(response).to have_http_status(201)
         end
-        it 'returns [400 Bad Request] for missing salary' do
-          post '/api/v0/jobs', params: form_data.except(:salary), headers: headers
-          expect(response).to have_http_status(400)
+        it 'returns [201 Created] for missing salary' do
+          post('/api/v0/jobs', params: form_data.except(:salary), headers:)
+          expect(response).to have_http_status(201)
         end
-        it 'returns [400 Bad Request] for missing description' do
-          post '/api/v0/jobs', params: form_data.except(:description), headers: headers
-          expect(response).to have_http_status(400)
+        it 'returns [201 Created] for missing description' do
+          post('/api/v0/jobs', params: form_data.except(:description), headers:)
+          expect(response).to have_http_status(201)
         end
-        it 'returns [400 Bad Request] for missing longitude' do
-          post '/api/v0/jobs', params: form_data.except(:longitude), headers: headers
-          expect(response).to have_http_status(400)
+        it 'returns [201 Created] for missing longitude' do
+          post('/api/v0/jobs', params: form_data.except(:longitude), headers:)
+          expect(response).to have_http_status(201)
         end
-        it 'returns [400 Bad Request] for missing latitude' do
-          post '/api/v0/jobs', params: form_data.except(:latitude), headers: headers
-          expect(response).to have_http_status(400)
+        it 'returns [201 Created] for missing latitude' do
+          post('/api/v0/jobs', params: form_data.except(:latitude), headers:)
+          expect(response).to have_http_status(201)
         end
-        it 'returns [400 Bad Request] for missing currency' do
-          post '/api/v0/jobs', params: form_data.except(:currency), headers: headers
-          expect(response).to have_http_status(400)
+        it 'returns [201 Created] for missing currency' do
+          post('/api/v0/jobs', params: form_data.except(:currency), headers:)
+          expect(response).to have_http_status(201)
+        end
+        it 'returns [201 Created] if missing cv_required' do
+          post('/api/v0/jobs', params: form_data.except(:cv_required), headers:)
+          expect(response).to have_http_status(201)
         end
       end
       context 'invalid inputs' do
         it 'returns [400 Bad Request] for invalid start_slot' do
-          post '/api/v0/jobs', params: form_data.merge(start_slot: 'invalid'), headers: headers
+          post('/api/v0/jobs', params: form_data.merge(start_slot: 1.year.ago), headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid position' do
-          post '/api/v0/jobs', params: form_data.merge(position: ''), headers: headers
+          post('/api/v0/jobs', params: form_data.merge(position: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'), headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid key_skills' do
-          post '/api/v0/jobs', params: form_data.merge(key_skills: ''), headers: headers
+          post('/api/v0/jobs', params: form_data.merge(key_skills: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'), headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid duration' do
-          post '/api/v0/jobs', params: form_data.merge(duration: 'invalid'), headers: headers
+          post('/api/v0/jobs', params: form_data.merge(duration: -99_999_999_999_999), headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid salary' do
-          post '/api/v0/jobs', params: form_data.merge(salary: 'invalid'), headers: headers
+          post('/api/v0/jobs', params: form_data.merge(salary: 'invalid'), headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid salary' do
+          post('/api/v0/jobs', params: form_data.merge(salary: 0), headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid salary' do
+          post('/api/v0/jobs', params: form_data.merge(salary: -123_456_789), headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid description' do
-          post '/api/v0/jobs', params: form_data.merge(description: ''), headers: headers
+          post('/api/v0/jobs',
+               params: form_data.merge(description: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'), headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid status' do
-          post '/api/v0/jobs', params: form_data.merge(status: 'invalid'), headers: headers
+          post('/api/v0/jobs', params: form_data.merge(status: 'invalid'), headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid status' do
+          post('/api/v0/jobs', params: form_data.merge(status: 123), headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid status' do
+          post('/api/v0/jobs', params: form_data.merge(status: -123), headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid longitude' do
-          post '/api/v0/jobs', params: form_data.merge(longitude: 'invalid'), headers: headers
+          post('/api/v0/jobs', params: form_data.merge(longitude: 'invalid'), headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid longitude' do
+          post('/api/v0/jobs', params: form_data.merge(longitude: 181), headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid longitude' do
+          post('/api/v0/jobs', params: form_data.merge(longitude: -181), headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid latitude' do
-          post '/api/v0/jobs', params: form_data.merge(latitude: 'invalid'), headers: headers
+          post('/api/v0/jobs', params: form_data.merge(latitude: 'invalid'), headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid latitude' do
+          post('/api/v0/jobs', params: form_data.merge(latitude: 91), headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid latitude' do
+          post('/api/v0/jobs', params: form_data.merge(latitude: -91), headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid job_notifications' do
-          post '/api/v0/jobs', params: form_data.merge(job_notifications: 'invalid'), headers: headers
+          post('/api/v0/jobs', params: form_data.merge(job_notifications: 'invalid'), headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid job_notifications' do
+          post('/api/v0/jobs', params: form_data.merge(job_notifications: 5), headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid currency' do
-          post '/api/v0/jobs', params: form_data.merge(currency: 'invalid'), headers: headers
+          post('/api/v0/jobs', params: form_data.merge(currency: 'invalid'), headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid allowed_cv_formats' do
-          post '/api/v0/jobs', params: form_data.merge(allowed_cv_formats: ['invalid']), headers: headers
+          post('/api/v0/jobs', params: form_data.merge(allowed_cv_formats: [1, 2, 3, 4]), headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid allowed_cv_formats' do
-          post '/api/v0/jobs', params: form_data.merge(allowed_cv_formats: [".pdf", ".invalid"]), headers: headers
+          post('/api/v0/jobs', params: form_data.merge(allowed_cv_formats: ['invalid']), headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid allowed_cv_formats' do
+          post('/api/v0/jobs', params: form_data.merge(allowed_cv_formats: ['.pdf', '.invalid']), headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid image_url' do
-          post '/api/v0/jobs', params: form_data.merge(image_url: 'invalid'), headers: headers
+          post('/api/v0/jobs', params: form_data.merge(image_url: 'invalid'), headers:)
           expect(response).to have_http_status(400)
         end
       end
@@ -516,12 +557,12 @@ RSpec.describe 'JobsController' do
       end
     end
 
-    describe '(PATCH: /api/v0/jobs/#{@job.id})' do
+    describe "(PATCH: /api/v0/jobs/\#{@job.id})" do
       let(:form_data) do
         {
           title: 'TestTitle',
           job_type: 'Retail',
-          start_slot: '2024-01-14T03:32:40.555Z',
+          start_slot: Time.now + 1.year,
           position: 'CEO',
           key_skills: 'Entrepreneurship',
           duration: '9',
@@ -533,96 +574,139 @@ RSpec.describe 'JobsController' do
           job_notifications: '1',
           currency: 'EUR',
           cv_required: true,
-          allowed_cv_formats: [".pdf", ".docx", ".txt", ".xml"],
+          allowed_cv_formats: ['.pdf', '.docx', '.txt', '.xml'],
           image_url: Rack::Test::UploadedFile.new(Rails.root.join('spec/assets', 'test_image.png'), 'image/png')
         }
       end
       let(:headers) { { 'HTTP_ACCESS_TOKEN' => @valid_at } }
       context 'valid normal inputs' do
         it 'returns [200 OK] and job JSONs if job exists' do
-          patch "/api/v0/jobs?id=#{@job.id.to_i}", params: form_data, headers: headers
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data, headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [200 OK] even if missing status' do
-          patch "/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.except(:status), headers: headers
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.except(:status), headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [200 OK] even if missing job_notifications' do
-          patch "/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.except(:job_notifications), headers: headers
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.except(:job_notifications), headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [200 OK] even if missing image_url' do
-          patch "/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.except(:image_url), headers: headers
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.except(:image_url), headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [200 OK] even if missing allowed_cv_format and cv_required false' do
-          patch "/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.except(:allowed_cv_format).merge(cv_required: false), headers: headers
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.except(:allowed_cv_format).merge(cv_required: false), headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [200 OK] even if missing allowed_cv_format and cv_required true' do
-          patch "/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.except(:allowed_cv_format), headers: headers
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.except(:allowed_cv_format), headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [200 OK] even if missing cv_required' do
-          patch "/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.except(:cv_required), headers: headers
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.except(:cv_required), headers:)
           expect(response).to have_http_status(200)
         end
       end
       context 'invalid inputs' do
         it 'returns [400 Bad Request] for invalid start_slot' do
-          patch "/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(start_slot: 'invalid'), headers: headers
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(start_slot: 1.year.ago), headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid position' do
-          patch "/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(position: ''), headers: headers
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(position: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'),
+                                                   headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid key_skills' do
-          patch "/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(key_skills: ''), headers: headers
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(key_skills: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'),
+                                                   headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid duration' do
-          patch "/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(duration: 'invalid'), headers: headers
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(duration: -99_999_999_999_999), headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid salary' do
-          patch "/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(salary: 'invalid'), headers: headers
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(salary: 'invalid'), headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid salary' do
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(salary: 0), headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid salary' do
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(salary: -123_456_789), headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid description' do
-          patch "/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(description: ''), headers: headers
+          patch("/api/v0/jobs?id=#{@job.id.to_i}",
+                params: form_data.merge(description: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'), headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid status' do
-          patch "/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(status: 'invalid'), headers: headers
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(status: 'invalid'), headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid status' do
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(status: 123), headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid status' do
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(status: -123), headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid longitude' do
-          patch "/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(longitude: 'invalid'), headers: headers
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(longitude: 'invalid'), headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid longitude' do
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(longitude: 181), headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid longitude' do
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(longitude: -181), headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid latitude' do
-          patch "/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(latitude: 'invalid'), headers: headers
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(latitude: 'invalid'), headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid latitude' do
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(latitude: 91), headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid latitude' do
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(latitude: -91), headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid job_notifications' do
-          patch "/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(job_notifications: 'invalid'), headers: headers
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(job_notifications: 'invalid'), headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid job_notifications' do
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(job_notifications: 5), headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid currency' do
-          patch "/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(currency: 'invalid'), headers: headers
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(currency: 'invalid'), headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid allowed_cv_formats' do
-          patch "/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(allowed_cv_formats: ['invalid']), headers: headers
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(allowed_cv_formats: [1, 2, 3, 4]), headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid allowed_cv_formats' do
-          patch "/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(allowed_cv_formats: ['.pdf', 'invalid']), headers: headers
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(allowed_cv_formats: ['invalid']), headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid allowed_cv_formats' do
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(allowed_cv_formats: ['.pdf', '.invalid']), headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid image_url' do
-          patch "/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(image_url: 'invalid'), headers: headers
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(image_url: 'invalid'), headers:)
           expect(response).to have_http_status(400)
         end
       end

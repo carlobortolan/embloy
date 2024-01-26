@@ -46,8 +46,7 @@ module Validators
                             numericality: { error: 'ERR_INVALID', description: 'Attribute is malformed or unknown' }
       validates :latitude, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
                            numericality: { error: 'ERR_INVALID', description: 'Attribute is malformed or unknown' }
-      validates :job_notifications, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
-                                    numericality: { only_integer: true, error: 'ERR_INVALID', description: 'Attribute is malformed or unknown' }
+      validates :job_notifications, inclusion: { in: %w[0 1], error: 'ERR_INVALID', description: 'Attribute is malformed or unknown' }, allow_blank: true
       validates :position, length: { minimum: 0, maximum: 100, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }, allow_blank: true
       validates :key_skills, length: { minimum: 0, maximum: 100, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }, allow_blank: true
       validates :duration, numericality: { only_integer: true, greater_than: 0, error: 'ERR_INVALID', description: 'Attribute is malformed or unknown' }
@@ -55,6 +54,10 @@ module Validators
       validates :currency, format: { with: /\A[A-Z]{3}\z/, message: { error: 'ERR_INVALID', description: 'Attribute is malformed or unknown' } }, allow_blank: true
       validates :status, inclusion: { in: %w[public private archived], error: 'ERR_INVALID', description: 'Attribute is invalid' }, presence: false
 
+      validates :longitude, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
+                            numericality: { greater_than_or_equal_to: -180, less_than_or_equal_to: 180, error: 'ERR_INVALID', description: 'Attribute is malformed or unknown' }
+      validates :latitude, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
+                           numericality: { greater_than_or_equal_to: -90, less_than_or_equal_to: 90, error: 'ERR_INVALID', description: 'Attribute is malformed or unknown' }
       # validates :postal_code, length: { minimum: 0, maximum: 45, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
       # validates :country_code, length: { minimum: 0, maximum: 45, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
       # validates :city, length: { minimum: 0, maximum: 45, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
@@ -89,7 +92,7 @@ module Validators
 
     def start_slot_validation
       return if start_slot.nil?
-      return unless start_slot <= 0 && start_slot - Time.now < -86_400
+      return unless start_slot < Time.now
 
       errors.add(:start_slot, { error: 'ERR_INVALID', description: 'Attribute is malformed or unknown' })
     end

@@ -26,15 +26,22 @@ module Api
       end
 
       def own_applications
-        applications = Application.all.where(user_id: Current.user.id)
-        if applications.empty?
-          render(status: 204,
-                 json: { applications: })
-        else
-          render(
-            status: 200, json: { applications: }
-          )
+        applications = Application.where(user_id: Current.user.id)
+        return render(status: 204, json: { applications: {} }) if applications.empty?
+
+        applications_json = applications.map do |application|
+          application_attachment = ApplicationAttachment.find_by(job_id: application.job_id, user_id: Current.user.id)
+          attachment_url = application_attachment ? rails_blob_url(application_attachment.cv) : nil
+          {
+            application:,
+            application_attachment: {
+              attachment: application_attachment,
+              url: attachment_url
+            }
+          }
         end
+
+        render status: 200, json: applications_json
       end
 
       def own_reviews
@@ -114,6 +121,9 @@ module Api
 
       def attach_image
         Current.user.image_url.attach(params[:image_url])
+      rescue ActiveStorage::IntegrityError
+        default_image = Rails.root.join('app/assets/images/logo-light.png')
+        Current.user.image_url.attach(io: File.open(default_image), filename: 'default.png', content_type: 'image/png')
       end
     end
   end

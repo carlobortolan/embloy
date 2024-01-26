@@ -40,3 +40,7 @@ Gemfile.lock
 
 # Ignore coverage files
 /coverage
+
+# Ignore JetBrains IDE files
+.idea/
+*.iml

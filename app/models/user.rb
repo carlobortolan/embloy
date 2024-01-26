@@ -78,9 +78,9 @@ class User < ApplicationRecord
   def image_url_or_default
     return image_url.url if image_url.url
 
-    'https://embloy.onrender.com/assets/img/features_3.png' if image_url.url.nil? && image_url.attached?
+    'https://avatars.githubusercontent.com/u/132399266' if !image_url.url.nil? && image_url.attached?
   rescue Fog::Errors::Error
-    'https://embloy.onrender.com/assets/img/features_3.png'
+    'https://avatars.githubusercontent.com/u/132399266'
   end
 
   private

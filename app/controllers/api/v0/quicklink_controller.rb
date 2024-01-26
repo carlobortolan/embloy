@@ -11,7 +11,6 @@ module Api
       include ApplicationBuilder
 
       skip_before_action :set_current_user, only: %i[create_request]
-      skip_before_action :verify_authenticity_token, only: %i[create_request] # TODO: CHECK IF NECESSARY
 
       before_action :verify_client_token, only: [:create_request]
       before_action :verify_request_token, only: %i[handle_request apply]
@@ -97,8 +96,6 @@ module Api
           allowed_params = %w[user_id job_type job_slug referrer_url duration code_lang title position description key_skills salary currency start_slot longitude latitude country_code postal_code
                               city address job_notifications cv_required allowed_cv_formats]
           @job = Job.new(session.slice(*allowed_params))
-          # @job = Job.new(session.except('subscription_type', 'mode', 'success_url', 'cancel_url'))
-          # @job = Job.create_emj(@client.id, session) # Create externally managed job, if it hasn't been created yet
           return false unless @job.save
 
           @job.user = @client

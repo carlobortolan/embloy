@@ -8,18 +8,8 @@ class ApplicationController < ActionController::Base
 
   # ============ WEB-APP BEFORE ACTIONS ==============
   before_action :set_current_user
-  before_action :auth_prototype
   before_action :set_notifications, unless: -> { Current.user.nil? }
   before_action :require_user_not_blacklisted!, unless: -> { Current.user.nil? }
-
-  # =============== Prototype auth-wall ===============
-  def auth_prototype
-    return if !Current.user.nil? && must_be_verified
-
-    #      redirect_to sign_in_path, alert: 'Your account is not verified yet!'
-    redirect_to sign_in_path,
-                alert: 'Your account hasn\'t been activated yet!'
-  end
 
   # def set_current_user
   #  return unless session[:user_id]
@@ -437,40 +427,6 @@ class ApplicationController < ActionController::Base
 
   def self.owner!
     Current.user.nil? || @job.nil? || @job.user_id != Current.user.id ? raise(CustomExceptions::Unauthorized::NotOwner) : true
-  end
-
-  ####################################################################################################
-  # Methods from above are used for the checks & exceptions
-  # Methods below are needed for the redirects in the web-app
-  ####################################################################################################
-
-  # ============== Exceptions =============
-
-  # def require_user_not_blacklisted!
-  #  return if user_not_blacklisted
-  ##
-  #  raise CustomExceptions::Unauthorized::Blocked
-  # end
-
-  def require_user_logged_in
-    if Current.user.nil?
-      redirect_to sign_in_path,
-                  alert: 'You must be logged in!'
-      return false
-    end
-    true
-  end
-
-  # This method checks whether the currently signed in user is the owner of the job that is being requested.
-  # If this is not the case, the user will be redirected back and not gain access to the resource.
-  def require_user_be_owner
-    if owner
-      true
-    else
-      redirect_back(
-        fallback_location: jobs_path, alert: 'Not allowed!'
-      )
-    end
   end
 
   # This method only checks whether the currently signed in user is the owner of the job that is being requested

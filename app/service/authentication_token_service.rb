@@ -201,7 +201,7 @@ class AuthenticationTokenService
         sub = Current.user.id # who "owns" the token
         # AuthenticationTokenService::Refresh.must_be_verified_id!(sub)
         # ApplicationController.must_be_verified!(sub)
-        typ = User.find_by(id: sub).user_role
+        typ = Current.user.user_role
         exp = Time.now.to_i + 1200 # standard validity interval;: 1200 sec == 20 min
         AuthenticationTokenService::Access.encode(
           sub, exp, typ
