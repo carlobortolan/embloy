@@ -82,7 +82,6 @@ module Api
         if Current.user.nil?
           render(status: 204)
         else
-          puts "Json = #{User.json_for(Current.user)}"
           render(status: 200,
                  json: "{\"user\": #{User.json_for(Current.user)}}")
         end

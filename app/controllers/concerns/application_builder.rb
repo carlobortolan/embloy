@@ -6,35 +6,24 @@ module ApplicationBuilder
 
   # The apply_for_job method is responsible for creating a new application for a job.
   # Requires @job and application_params
-  # rubocop:disable Metrics/AbcSize
+  # rubocop:disable Metrics/CyclomaticComplexity, Metrics/AbcSize
   def apply_for_job
-    puts 'START 1'
     ActiveRecord::Base.transaction do
       create_application!
-      puts 'EXEC 2'
       create_application_answers! if @job.application_options.any?
-      puts 'EXEC 3'
-
       if @job.cv_required
-        puts 'EXEC 4'
         if application_params[:application_attachment].nil?
           @application.errors.add(:application_attachment, 'CV is required')
           render json: { errors: @application.errors }, status: :unprocessable_entity and return
         end
-
-        puts 'EXEC 5'
         attachment_format = application_params[:application_attachment].content_type
         allowed_formats = ApplicationHelper.allowed_cv_formats_for_form(@job.allowed_cv_formats)
 
         unless allowed_formats.include?(attachment_format)
-          puts 'EXEC 6'
           @application.errors.add(:application_attachment, 'Invalid CV format')
           render json: { errors: @application.errors }, status: :unprocessable_entity and return
         end
-
-        puts 'EXEC 7'
         create_application_attachment!
-        puts 'EXEC 8'
       end
     end
     render status: 201, json: { message: 'Application submitted!' }
@@ -45,55 +34,60 @@ module ApplicationBuilder
   rescue ActiveRecord::RecordNotUnique
     unnecessary_error('application')
   end
-  # rubocop:enable Metrics/AbcSize
+  # rubocop:enable Metrics/CyclomaticComplexity, Metrics/AbcSize
 
   private
 
   # Creates @application
   def create_application!
-    puts 'EXEC 1.1'
     tmp = application_params.except(:id, :application_attachment, :application_answers)
     tmp[:job_id] =  @job.id
     tmp[:user_id] = Current.user.id
     @application = Application.new(tmp)
-    puts 'EXEC 1.2'
     @application.save!
   end
 
+  # rubocop:disable Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/BlockLength
   def create_application_answers!
-    if application_params[:application_answers]
-      application_params[:application_answers].each_value do |answer|
-        application_option = ApplicationOption.find(answer[:application_option_id].to_i)
-        answer_array = answer[:answer].split(', ').map(&:strip) if application_option.question_type == 'multiple_choice'
-        answer_array ||= answer[:answer]
-        if application_option
-          ApplicationAnswer.create!(
-            job_id: @job.id.to_i,
-            user_id: Current.user.id.to_i,
-            application_option:,
-            answer: answer_array
-          )
-        else
-          @application.errors.add(:application_answers, 'Invalid application option')
-        end
+    @job.application_options.each do |option|
+      answer_params = if application_params[:application_answers].is_a?(Array)
+                        application_params[:application_answers].find { |v| v[:application_option_id] == option.id.to_s }
+                      else
+                        application_params[:application_answers].to_unsafe_h&.find { |_, v| v[:application_option_id] == option.id.to_s }
+                      end
+
+      if option.required && (answer_params.nil? || answer_params.last[:answer].blank?)
+        @application.errors.add(:application_answers, "Answer for required option #{option.id} is missing")
+        raise ActiveRecord::RecordInvalid, @application
       end
-    else
-      @application.errors.add(:application_answers, 'Application answer missing')
+
+      if answer_params
+
+        if option.question_type != 'multiple_choice' && !answer_params.last[:answer].is_a?(String)
+          @application.errors.add(:base, 'Invalid answer type')
+          raise ActiveRecord::RecordInvalid, @application
+        end
+
+        answer_array = if option.question_type == 'multiple_choice' && answer_params.last[:answer]
+                         answer_params.last[:answer].split(', ').map(&:strip)
+                       else
+                         answer_params.last[:answer]
+                       end
+
+        ApplicationAnswer.create!(
+          job_id: @job.id.to_i,
+          user_id: Current.user.id.to_i,
+          application_option: option,
+          answer: answer_array
+        )
+      else
+        @application.errors.add(:base, 'Invalid application answer parameters')
+        raise ActiveRecord::RecordInvalid, @application
+      end
     end
   end
 
-  def awdawcreate_application_answers!
-    application_params[:application_answers].each_value do |answer|
-      application_option = ApplicationOption.find(answer[:application_option_id].to_i)
-      ApplicationAnswer.create!(
-        job_id: @job.id.to_i,
-        user_id: Current.user.id.to_i,
-        application_option:,
-        answer: answer[:answer]
-      )
-    end
-  end
-
+  # rubocop:enable Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/BlockLength
   def create_application_attachment!
     application_attachment = ApplicationAttachment.create!(
       user_id: Current.user.id,

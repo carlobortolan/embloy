@@ -178,17 +178,17 @@ ActiveRecord::Schema[7.0].define(version: 20_240_114_012_806) do
     t.index ['deleted_at'], name: 'index_application_options_on_deleted_at'
   end
 
-  create_table "application_answers", force: :cascade do |t|
-    t.bigint "job_id", null: false
-    t.bigint "user_id", null: false
-    t.bigint "application_option_id", null: false
-    t.text "answer"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+  create_table 'application_answers', force: :cascade do |t|
+    t.bigint 'job_id', null: false
+    t.bigint 'user_id', null: false
+    t.bigint 'application_option_id', null: false
+    t.text 'answer'
+    t.datetime 'created_at', precision: 6, null: false
+    t.datetime 'updated_at', precision: 6, null: false
     t.datetime 'deleted_at'
-    t.index ["job_id"], name: "application_answers_job_id_index"
-    t.index ["user_id"], name: "application_answers_user_id_index"
-    t.index ["application_option_id"], name: "application_answers_on_application_option_id_index"
+    t.index ['job_id'], name: 'application_answers_job_id_index'
+    t.index ['user_id'], name: 'application_answers_user_id_index'
+    t.index ['application_option_id'], name: 'application_answers_on_application_option_id_index'
     t.index ['deleted_at'], name: 'index_application_anwers_on_deleted_at'
   end
 

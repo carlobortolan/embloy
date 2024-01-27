@@ -174,8 +174,126 @@ RSpec.describe 'ApplicationsController' do
       )
       puts "#{@valid_user_has_applications.id} applied to #{@jobs[i].id}"
     end
+    required = true
+    3.times do |_i|
+      job = Job.create!(
+        user_id: @valid_user_has_own_jobs.id,
+        title: 'TestJob',
+        description: 'TestDescription',
+        longitude: '0.0',
+        latitude: '0.0',
+        position: 'Intern',
+        salary: '123',
+        start_slot: Time.now + 1.year,
+        key_skills: 'Entrepreneurship',
+        duration: '14',
+        currency: 'CHF',
+        job_type: 'Retail',
+        job_type_value: '1',
+        cv_required: false
+      )
+      job.application_options.create!(
+        question: 'TEST Text',
+        question_type: 'text',
+        required:
+      )
+      job.application_options.create!(
+        question: 'TEST SC',
+        question_type: 'single_choice',
+        required:,
+        options: %w[TestOption1 TestOption2 TestOption3]
+      )
+      job.application_options.create!(
+        question: 'TEST MC',
+        question_type: 'multiple_choice',
+        required:,
+        options: %w[TestOption1 TestOption2 TestOption3]
+      )
+      job.application_options.create!(
+        question: 'TEST LINK',
+        question_type: 'link',
+        required:
+      )
+      job.application_options.create!(
+        question: 'TEST Yes/No',
+        question_type: 'yes_no',
+        required:
+      )
+      required = !required
+      @jobs << job
+      puts "Created new job for: #{@valid_user_has_own_jobs.id}"
+    end
   end
 
+  describe 'User', type: :request do
+    describe '(GET: /api/v0/user/applications)' do
+      context 'valid normal inputs' do
+        it 'returns [200 Ok] and JSON application JSONs if user has applications' do
+          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_applications }
+          5.times do |_i|
+            get('/api/v0/user/applications', headers:)
+            expect(response).to have_http_status(200)
+          end
+        end
+        it 'returns [204 No Content] if user does not have any applications' do
+          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          get('/api/v0/user/applications', headers:)
+          expect(response).to have_http_status(204)
+        end
+      end
+      context 'invalid inputs' do
+        it 'returns [400 Bad Request] for missing access token in header' do
+          get('/api/v0/user/applications')
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [401 Unauthorized] for expired/invalid access token' do
+          headers = { 'HTTP_ACCESS_TOKEN' => @invalid_access_token }
+          get('/api/v0/user/applications', headers:)
+          expect(response).to have_http_status(401)
+        end
+        it 'returns [403 Forbidden] for blacklisted user' do
+          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_blacklisted }
+          get('/api/v0/user/applications', headers:)
+          expect(response).to have_http_status(403)
+        end
+      end
+    end
+    describe '(GET: /api/v0/jobs/upcoming)' do
+      context 'valid normal inputs' do
+        it 'returns [200 Ok] and JSON application JSONs if user has upcoming jobs' do
+          @applications.each do |application|
+            application.accept('Accepted')
+          end
+          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_applications }
+          5.times do |_i|
+            get('/api/v0/user/upcoming', headers:)
+            expect(response).to have_http_status(200)
+          end
+        end
+        it 'returns [204 No Content] if user does not have any upcoming jobs' do
+          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_applications }
+          get('/api/v0/user/upcoming', headers:)
+          expect(response).to have_http_status(204)
+        end
+      end
+      context 'invalid inputs' do
+        it 'returns [400 Bad Request] for missing access token in header' do
+          get('/api/v0/user/upcoming')
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [401 Unauthorized] for expired/invalid access token' do
+          headers = { 'HTTP_ACCESS_TOKEN' => @invalid_access_token }
+          get('/api/v0/user/upcoming', headers:)
+          expect(response).to have_http_status(401)
+        end
+        it 'returns [403 Forbidden] for blacklisted user' do
+          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_blacklisted }
+          get('/api/v0/user/upcoming', headers:)
+          expect(response).to have_http_status(403)
+        end
+      end
+    end
+  end
   describe 'Applications', type: :request do
     describe '(GET: /api/v0/jobs/{id}/applications)' do
       context 'valid normal inputs' do
@@ -442,7 +560,7 @@ RSpec.describe 'ApplicationsController' do
       end
       let(:headers) { { 'HTTP_ACCESS_TOKEN' => @valid_at_applicant } }
 
-      context 'invalid inputs' do
+      context 'valid inputs' do
         it 'returns [201 Created] for successfull application not requiring cv' do
           post("/api/v0/jobs/#{@jobs[0].id}/applications", params: valid_attributes_basic, headers:)
           expect(response).to have_http_status(201)
@@ -533,6 +651,220 @@ RSpec.describe 'ApplicationsController' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_applications }
           post("/api/v0/jobs/#{@jobs[0].id}/applications", params: valid_attributes_docx, headers:)
           expect(response).to have_http_status(422)
+        end
+      end
+
+      context 'application options' do
+        let(:valid_attributes_with_required_answer) do
+          {
+            application_text: 'Hello World',
+            application_answers: {
+              '0' => {
+                application_option_id: @jobs[9].application_options[0].id,
+                answer: 'Text'
+              },
+              '1' => {
+                application_option_id: @jobs[9].application_options[1].id,
+                answer: 'TestOption1'
+              },
+              '2' => {
+                application_option_id: @jobs[9].application_options[2].id,
+                answer: 'TestOption1, TestOption2'
+              },
+              '3' => {
+                application_option_id: @jobs[9].application_options[3].id,
+                answer: 'https://embloy.com'
+              },
+              '4' => {
+                application_option_id: @jobs[9].application_options[4].id,
+                answer: 'Yes'
+              }
+            }
+          }
+        end
+        let(:valid_attributes_with_optional_answer) do
+          {
+            application_text: 'Hello World',
+            application_answers: {
+              '0' => {
+                application_option_id: @jobs[10].application_options[0].id,
+                answer: 'Text'
+              },
+              '1' => {
+                application_option_id: @jobs[10].application_options[1].id,
+                answer: 'TestOption1'
+              },
+              '2' => {
+                application_option_id: @jobs[10].application_options[2].id,
+                answer: 'TestOption1, TestOption2'
+              },
+              '3' => {
+                application_option_id: @jobs[10].application_options[3].id,
+                answer: 'https://embloy.com'
+              },
+              '4' => {
+                application_option_id: @jobs[10].application_options[4].id,
+                answer: 'Yes'
+              }
+            }
+          }
+        end
+        let(:invalid_attributes_with_answer) do
+          {
+            application_text: 'Test Text',
+            application_answers: {
+              '0' => {
+                application_option_id: @jobs[11].application_options[0].id,
+                answer: 'a' * 501
+              },
+              '1' => {
+                application_option_id: @jobs[11].application_options[1].id,
+                answer: 'TestOption1, TestOption2, TestOption3'
+              },
+              '2' => {
+                application_option_id: @jobs[11].application_options[2].id,
+                answer: 'TestOption1, TestOption2, TestOption3, TestOption4'
+              },
+              '3' => {
+                application_option_id: @jobs[11].application_options[3].id,
+                answer: 'not-a-link'
+              },
+              '4' => {
+                application_option_id: @jobs[11].application_options[4].id,
+                answer: 'Hello World'
+              }
+            }
+          }
+        end
+
+        it 'returns [201 Created] for successful application with required application answer' do
+          post("/api/v0/jobs/#{@jobs[9].id}/applications", params: valid_attributes_with_required_answer, headers:)
+          expect(response).to have_http_status(201)
+        end
+        it 'returns [201 Created] for successful application with optional application answer' do
+          post("/api/v0/jobs/#{@jobs[10].id}/applications", params: valid_attributes_with_optional_answer, headers:)
+          expect(response).to have_http_status(201)
+        end
+
+        it 'returns [400 Bad Request] for missing required application answer (text)' do
+          valid_attributes = valid_attributes_with_required_answer.dup
+          valid_attributes[:application_answers].delete('0')
+          post("/api/v0/jobs/#{@jobs[9].id}/applications", params: valid_attributes, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for missing required application answer (single_choice)' do
+          valid_attributes = valid_attributes_with_required_answer.dup
+          valid_attributes[:application_answers].delete('1')
+          post("/api/v0/jobs/#{@jobs[9].id}/applications", params: valid_attributes, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for missing required application answer (multiple_choice)' do
+          valid_attributes = valid_attributes_with_required_answer.dup
+          valid_attributes[:application_answers].delete('2')
+          post("/api/v0/jobs/#{@jobs[9].id}/applications", params: valid_attributes, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for missing required application answer (link)' do
+          valid_attributes = valid_attributes_with_required_answer.dup
+          valid_attributes[:application_answers].delete('3')
+          post("/api/v0/jobs/#{@jobs[9].id}/applications", params: valid_attributes, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for missing required application answer (yes_no)' do
+          valid_attributes = valid_attributes_with_required_answer.dup
+          valid_attributes[:application_answers].delete('4')
+          post("/api/v0/jobs/#{@jobs[9].id}/applications", params: valid_attributes, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for too long text answer' do
+          invalid_attributes = invalid_attributes_with_answer.dup
+          invalid_attributes[:application_answers] = { '0' => invalid_attributes[:application_answers]['0'] }
+          post("/api/v0/jobs/#{@jobs[10].id}/applications", params: invalid_attributes, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid single choice answer' do
+          invalid_attributes = invalid_attributes_with_answer.dup
+          invalid_attributes[:application_answers] = { '1' => invalid_attributes[:application_answers]['1'] }
+          post("/api/v0/jobs/#{@jobs[10].id}/applications", params: invalid_attributes, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid multiple choice answer' do
+          invalid_attributes = invalid_attributes_with_answer.dup
+          invalid_attributes[:application_answers] = { '2' => invalid_attributes[:application_answers]['2'] }
+          post("/api/v0/jobs/#{@jobs[10].id}/applications", params: invalid_attributes, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid link answer' do
+          invalid_attributes = invalid_attributes_with_answer.dup
+          invalid_attributes[:application_answers] = { '3' => invalid_attributes[:application_answers]['3'] }
+          post("/api/v0/jobs/#{@jobs[10].id}/applications", params: invalid_attributes, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for too long text answer' do
+          invalid_attributes = invalid_attributes_with_answer.dup
+          invalid_attributes[:application_answers] = [invalid_attributes[:application_answers][0]]
+          post("/api/v0/jobs/#{@jobs[10].id}/applications", params: invalid_attributes, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid single choice answer' do
+          invalid_attributes = invalid_attributes_with_answer.dup
+          invalid_attributes[:application_answers] = [invalid_attributes[:application_answers][1]]
+          post("/api/v0/jobs/#{@jobs[10].id}/applications", params: invalid_attributes, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid multiple choice answer' do
+          invalid_attributes = invalid_attributes_with_answer.dup
+          invalid_attributes[:application_answers] = [invalid_attributes[:application_answers][2]]
+          post("/api/v0/jobs/#{@jobs[10].id}/applications", params: invalid_attributes, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid link answer' do
+          invalid_attributes = invalid_attributes_with_answer.dup
+          invalid_attributes[:application_answers] = [invalid_attributes[:application_answers][3]]
+          post("/api/v0/jobs/#{@jobs[10].id}/applications", params: invalid_attributes, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid application_option_id' do
+          invalid_attributes = valid_attributes_with_required_answer.dup
+          invalid_attributes[:application_answers]['0'][:application_option_id] = -1
+          post("/api/v0/jobs/#{@jobs[9].id}/applications", params: invalid_attributes, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for missing application_option_id in application_answers' do
+          invalid_attributes = valid_attributes_with_required_answer.dup
+          invalid_attributes[:application_answers]['0'].delete(:application_option_id)
+          post("/api/v0/jobs/#{@jobs[9].id}/applications", params: invalid_attributes, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for non-integer application_option_id' do
+          invalid_attributes = valid_attributes_with_required_answer.dup
+          invalid_attributes[:application_answers]['0'][:application_option_id] = 'invalid'
+          post("/api/v0/jobs/#{@jobs[9].id}/applications", params: invalid_attributes, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid single_choice answer' do
+          invalid_attributes = invalid_attributes_with_answer.dup
+          invalid_attributes[:application_answers]['1'][:answer] = 'InvalidOption'
+          post("/api/v0/jobs/#{@jobs[10].id}/applications", params: invalid_attributes, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid link answer' do
+          invalid_attributes = invalid_attributes_with_answer.dup
+          invalid_attributes[:application_answers]['3'][:answer] = 'not-a-link'
+          post("/api/v0/jobs/#{@jobs[10].id}/applications", params: invalid_attributes, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid yes_no answer' do
+          invalid_attributes = invalid_attributes_with_answer.dup
+          invalid_attributes[:application_answers]['4'][:answer] = 'maybe'
+          post("/api/v0/jobs/#{@jobs[10].id}/applications", params: invalid_attributes, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid application_option' do
+          invalid_attributes = valid_attributes_with_required_answer.dup
+          invalid_attributes[:application_answers]['0'][:application_option_id] = -1
+          post("/api/v0/jobs/#{@jobs[9].id}/applications", params: invalid_attributes, headers:)
+          expect(response).to have_http_status(400)
         end
       end
     end

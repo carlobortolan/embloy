@@ -38,30 +38,32 @@ module SpatialJobValue
   #     ActiveRecord::Base.connection.execute(sql)
   #   end
 
-  def self.read_job_value(job = nil)
-    sql = "SELECT ST_AsText(job_value) FROM jobs WHERE job_id=#{job.job_id}"
-    result = ActiveRecord::Base.connection.execute(sql).first
-    point_string = result['st_astext']
-    latitude, longitude, job_type_id = point_string.scan(/[\d.-]+/)
-    # return the values as a hash
-    { latitude: latitude.to_f,
-      longitude: longitude.to_f, job_type_id: job_type_id.to_i }
-  end
-
-  def self.find_cluster(_job = nil, eps = nil, minpoints = nil)
-    eps = 0.1 if eps.nil?
-    minpoints = 2 if minpoints.nil?
-    sql = <<-SQL
-      job_type, ST_ClusterDBSCAN(job_value, eps := #{eps}, minpoints := #{minpoints}) OVER () AS cluster_id,#{' '}
-      ST_NumGeometries(ST_Collect(job_value)) AS cluster_size#{' '}
-      FROM jobs#{' '}
-      WHERE job_value IS NOT NULL
-    SQL
-    clusters = ActiveRecord::Base.connection.execute(sql)
-    clusters.each do |cluster|
-      puts "#{cluster.cluster_id}: #{cluster.cluster_size} jobs"
-    end
-  end
+  #
+  #   def self.read_job_value(job = nil)
+  #     sql = "SELECT ST_AsText(job_value) FROM jobs WHERE job_id=#{job.job_id}"
+  #     result = ActiveRecord::Base.connection.execute(sql).first
+  #     point_string = result['st_astext']
+  #     latitude, longitude, job_type_id = point_string.scan(/[\d.-]+/)
+  #     # return the values as a hash
+  #     { latitude: latitude.to_f,
+  #       longitude: longitude.to_f, job_type_id: job_type_id.to_i }
+  #   end
+  #
+  #   def self.find_cluster(_job = nil, eps = nil, minpoints = nil)
+  #     eps = 0.1 if eps.nil?
+  #     minpoints = 2 if minpoints.nil?
+  #     sql = <<-SQL
+  #       job_type, ST_ClusterDBSCAN(job_value, eps := #{eps}, minpoints := #{minpoints}) OVER () AS cluster_id,#{' '}
+  #       ST_NumGeometries(ST_Collect(job_value)) AS cluster_size#{' '}
+  #       FROM jobs#{' '}
+  #       WHERE job_value IS NOT NULL
+  #     SQL
+  #     clusters = ActiveRecord::Base.connection.execute(sql)
+  #     clusters.each do |cluster|
+  #       puts "#{cluster.cluster_id}: #{cluster.cluster_size} jobs"
+  #     end
+  #   end
+  #
 
   # TODO: add external api for exchange rate conversion
   #   def self.retrieve_records_within_range(x_min, y_min, x_max, y_max, max_records)
