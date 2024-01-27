@@ -144,7 +144,7 @@ module Api
       end
 
       def application_params
-        params.except(:format).permit(:id, :application_text, :application_attachment)
+        params.except(:format).permit(:id, :application_text, :application_attachment, application_answers: %i[application_option_id answer])
       end
 
       def portal_params

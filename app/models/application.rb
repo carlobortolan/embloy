@@ -6,6 +6,8 @@ class Application < ApplicationRecord
   after_create_commit :notify_recipient
   # after_update_commit :notify_applicant
   before_destroy :cleanup_notifications
+  has_many :application_answers, foreign_key: %i[user_id job_id], primary_key: %i[user_id job_id], dependent: :destroy
+  accepts_nested_attributes_for :application_answers
 
   self.primary_keys = :user_id, :job_id
 

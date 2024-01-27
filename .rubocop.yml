@@ -14,6 +14,8 @@ AllCops:
     - 'app/controllers/oauth_callbacks_controller.rb' # TODO: remove this line after refactoring
     - 'app/controllers/api/v0/registrations_controller.rb' # TODO: remove this line after refactoring
     - 'app/controllers/api/v0/authentications_controller.rb' # TODO: remove this line after refactoring
+    - 'app/controllers/concerns/application_builder.rb' # TODO: remove this line after refactoring
+    - 'app/models/application_answer.rb' # TODO: remove this line after refactoring
     - 'vendor/**/*'
 Layout/LineLength:
   Max: 200

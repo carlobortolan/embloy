@@ -16,7 +16,8 @@ module Api
 
       def show_single
         set_at_job(application_show_params[:id])
-        application = @job.applications.includes(:application_attachment).find_by_sql(['SELECT * FROM applications a WHERE a.job_id = ? AND a.user_id = ?', @job.job_id, Current.user.id]).first
+        application = @job.applications.includes(:application_attachment,
+                                                 :application_answers).find_by_sql(['SELECT * FROM applications a WHERE a.job_id = ? AND a.user_id = ?', @job.job_id, Current.user.id]).first
         application_attachment = ApplicationAttachment.find_by(job_id: @job.job_id, user_id: Current.user.id)
         render_application(application, application_attachment)
       end
@@ -58,8 +59,11 @@ module Api
           render status: 204, json: { application: {} }
         else
           attachment_url = application_attachment ? rails_blob_url(application_attachment.cv) : nil
-          # attachment_url = nil
-          render status: 200, json: { application:, application_attachment: { attachment: application_attachment, url: attachment_url } }
+          render status: 200, json: {
+            application:,
+            application_attachment: { attachment: application_attachment, url: attachment_url },
+            application_answers: application.application_answers
+          }
         end
       end
 
@@ -94,7 +98,7 @@ module Api
       end
 
       def application_params
-        params.except(:format).permit(:id, :application_text, :application_attachment)
+        params.except(:format).permit(:id, :application_text, :application_attachment, application_answers: %i[application_option_id answer])
       end
 
       def application_modify_params
