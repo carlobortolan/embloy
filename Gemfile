@@ -95,7 +95,7 @@ gem "omniauth-rails_csrf_protection"
 gem "omniauth-github", "~> 2.0"
 gem "omniauth-google-oauth2", "~> 1.1"
 gem "omniauth-azure-activedirectory-v2", "~> 2.1"
-gem "omniauth-linkedin-oauth2", "~> 1.0"
+gem 'omniauth-linkedin-openid'
 
 # Notifications
 gem "noticed", "~> 1.6"

@@ -83,16 +83,11 @@ class OauthCallbacksController < ApplicationController
   #   end
   def authenticate
     if auth.info.email.nil?
-      handle_invalid_email
+      redirect_to("#{ENV.fetch('CORE_CLIENT_URL')}?error=Invalid email or password", allow_other_host: true) and return
     else
       user = User.find_by(email: auth.info.email)
       user.present? ? handle_existing_user(user) : handle_new_user
     end
-  end
-
-  def handle_invalid_email
-    flash[:alert] = 'Invalid email or password'
-    render :new, status: :bad_request
   end
 
   def handle_existing_user(user)
@@ -124,6 +119,8 @@ class OauthCallbacksController < ApplicationController
   end
 
   def attach_user_image(user)
+    return unless auth.info.image
+
     response = Faraday.get(auth.info.image)
     raise 'Unable to download image' unless response.success?
 
@@ -135,6 +132,6 @@ class OauthCallbacksController < ApplicationController
       user.image_url.attach(io: tempfile, filename: 'image.jpg', content_type: response.headers['content-type'])
     end
   rescue StandardError => e
-    render status: 400, message: "Failed to download image: #{e.message}" and return
+    redirect_to("#{ENV.fetch('CORE_CLIENT_URL')}?error=#{e.message}", allow_other_host: true) and return
   end
 end

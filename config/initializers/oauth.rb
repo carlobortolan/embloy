@@ -11,13 +11,10 @@ Rails.application.config.middleware.use OmniAuth::Builder do
   provider :google_oauth2, ENV.fetch('GOOGLE_OAUTH2_KEY', nil), ENV.fetch('GOOGLE_OAUTH2_SECRET', nil)
 end
 
-# Rails.application.config.middleware.use OmniAuth::Builder do
-#  provider :azure_activedirectory_v2, ENV.fetch('AZURE_CLIENT_ID', nil), ENV.fetch('AZURE_CLIENT_SECRET', nil)
-# end
+Rails.application.config.middleware.use OmniAuth::Builder do
+  provider :azure_activedirectory_v2, ENV.fetch('AZURE_CLIENT_ID', nil), ENV.fetch('AZURE_CLIENT_SECRET', nil)
+end
 
 Rails.application.config.middleware.use OmniAuth::Builder do
-  provider :linkedin, ENV.fetch('LINKEDIN_APP_ID', nil), ENV.fetch('LINKEDIN_APP_SECRET', nil), {
-    scope: 'liteprofile,emailaddress,w_member_social',
-    authorize_url: "https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=#{ENV.fetch('LINKEDIN_APP_ID', nil)}"
-  }
+  provider :linkedin, client_id: ENV.fetch('LINKEDIN_APP_ID', nil), client_secret: ENV.fetch('LINKEDIN_APP_SECRET', nil)
 end
