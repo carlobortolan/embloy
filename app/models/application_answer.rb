@@ -46,7 +46,7 @@ class ApplicationAnswer < ApplicationRecord
   end
 
   def validate_text_or_link_answer
-    return unless answer.blank? || answer.length > 500
+    return unless (answer.blank? && application_option.required) || answer.length > 500
 
     errors.add(:answer, 'Invalid or missing text/link answer')
   end

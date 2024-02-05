@@ -7,8 +7,6 @@ require 'tempfile'
 class OauthCallbacksController < ApplicationController
   skip_before_action :set_current_user
   skip_before_action :require_user_not_blacklisted!
-  skip_before_action :verify_authenticity_token
-  skip_forgery_protection
 
   def github
     authenticate
@@ -83,7 +81,7 @@ class OauthCallbacksController < ApplicationController
   #   end
   def authenticate
     if auth.info.email.nil?
-      redirect_to("#{ENV.fetch('CORE_CLIENT_URL')}?error=Invalid email or password", allow_other_host: true) and return
+      redirect_to("#{ENV.fetch('CORE_CLIENT_URL')}/oauth/redirect?error=Invalid email or password", allow_other_host: true) and return
     else
       user = User.find_by(email: auth.info.email)
       user.present? ? handle_existing_user(user) : handle_new_user
@@ -92,7 +90,7 @@ class OauthCallbacksController < ApplicationController
 
   def handle_existing_user(user)
     refresh_token = AuthenticationTokenService::Refresh::Encoder.call(user.id.to_i)
-    redirect_to("#{ENV.fetch('CORE_CLIENT_URL')}?refresh_token=#{refresh_token}", allow_other_host: true) and return
+    redirect_to("#{ENV.fetch('CORE_CLIENT_URL')}/oauth/redirect?refresh_token=#{refresh_token}", allow_other_host: true) and return
   end
 
   def handle_new_user
@@ -102,7 +100,7 @@ class OauthCallbacksController < ApplicationController
     attach_user_image(user)
     WelcomeMailer.with(user:).welcome_email.deliver_later
     refresh_token = AuthenticationTokenService::Refresh::Encoder.call(user.id.to_i)
-    redirect_to("#{ENV.fetch('CORE_CLIENT_URL')}?refresh_token=#{refresh_token}", allow_other_host: true) and return
+    redirect_to("#{ENV.fetch('CORE_CLIENT_URL')}/oauth/redirect?refresh_token=#{refresh_token}", allow_other_host: true) and return
   end
 
   def create_new_user
@@ -132,6 +130,6 @@ class OauthCallbacksController < ApplicationController
       user.image_url.attach(io: tempfile, filename: 'image.jpg', content_type: response.headers['content-type'])
     end
   rescue StandardError => e
-    redirect_to("#{ENV.fetch('CORE_CLIENT_URL')}?error=#{e.message}", allow_other_host: true) and return
+    redirect_to("#{ENV.fetch('CORE_CLIENT_URL')}/oauth/redirect?error=#{e.message}", allow_other_host: true) and return
   end
 end

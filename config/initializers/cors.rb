@@ -2,10 +2,12 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins ENV.fetch('CORS_CORE_CLIENT_URL', ''), ENV.fetch('CORS_GENIUS_CLIENT_URL', ''), 'localhost:3000', 'localhost:3001'
+    origins 'embloy.com', 'api2.embloy.com', 'genius.embloy.com', 'localhost:3000', 'localhost:3001', 'localhost:8080'
+
     resource '*',
              headers: :any,
-             methods: %i[get post put patch delete options head]
+             methods: %i[get post put patch delete options head],
+             credentials: true
   end
 
   allow do

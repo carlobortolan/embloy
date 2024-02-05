@@ -9,7 +9,6 @@ module Api
     # ApiController handles API-related actions
     class ApiController < ApplicationController
       include ApiExceptionHandler
-      protect_from_forgery with: :null_session
 
       # ============== API BEFORE ACTIONS ================
       before_action :set_current_user
