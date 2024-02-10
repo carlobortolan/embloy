@@ -16,7 +16,7 @@ class AuthenticationTokenService
   class Refresh
     HMAC_SECRET = ENV.fetch('REFRESH_TOKEN_SECRET', nil)
     ALGORITHM_TYPE = 'HS256'
-    ISSUER = Socket.gethostname
+    ISSUER = 'api.embloy.com'
 
     def self.encode(sub, exp, jti, iat)
       # serializes token generation for a refresh token
@@ -178,7 +178,7 @@ class AuthenticationTokenService
   class Access
     HMAC_SECRET = ENV.fetch('ACCESS_TOKEN_SECRET', nil)
     ALGORITHM_TYPE = 'HS256'
-    ISSUER = Socket.gethostname
+    ISSUER = 'api.embloy.com'
 
     def self.encode(sub, exp, typ, _scope = nil)
       payload = { sub:, exp:, typ: }

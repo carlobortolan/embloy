@@ -215,7 +215,7 @@ GEM
     net-smtp (0.3.3)
       net-protocol
     nio4r (2.5.8)
-    nokogiri (1.15.5)
+    nokogiri (1.16.2)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
     noticed (1.6.0)
@@ -437,7 +437,7 @@ DEPENDENCIES
   iso_country_codes
   jbuilder
   kaminari
-  nokogiri (>= 1.14.3)
+  nokogiri (>= 1.16.2)
   noticed (~> 1.6)
   omniauth
   omniauth-azure-activedirectory-v2 (~> 2.1)

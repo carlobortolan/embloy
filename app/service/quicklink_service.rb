@@ -9,7 +9,7 @@ class QuicklinkService < AuthenticationTokenService
   class Client
     HMAC_SECRET = ENV.fetch('CLIENT_TOKEN_SECRET', nil)
     ALGORITHM_TYPE = 'HS256'
-    ISSUER = Socket.gethostname
+    ISSUER = 'api.embloy.com'
     REPLACEMENT_CHARACTER = '°'
 
     # Encodes a client token with the given payload.
@@ -65,7 +65,7 @@ class QuicklinkService < AuthenticationTokenService
   class Request
     HMAC_SECRET = ENV.fetch('REQUEST_TOKEN_SECRET', nil)
     ALGORITHM_TYPE = 'HS256'
-    ISSUER = Socket.gethostname
+    ISSUER = 'api.embloy.com'
     REPLACEMENT_CHARACTER = '°'
 
     # Encodes a request token with the given payload.

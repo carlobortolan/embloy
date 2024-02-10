@@ -6,11 +6,10 @@ module ApplicationBuilder
 
   # The apply_for_job method is responsible for creating a new application for a job.
   # Requires @job and application_params
-  # rubocop:disable Metrics/CyclomaticComplexity, Metrics/AbcSize
+  # rubocop:disable Metrics/AbcSize
   def apply_for_job
     ActiveRecord::Base.transaction do
       create_application!
-      create_application_answers! if @job.application_options.any?
       if @job.cv_required
         if application_params[:application_attachment].nil?
           @application.errors.add(:application_attachment, 'CV is required')
@@ -34,7 +33,7 @@ module ApplicationBuilder
   rescue ActiveRecord::RecordNotUnique
     unnecessary_error('application')
   end
-  # rubocop:enable Metrics/CyclomaticComplexity, Metrics/AbcSize
+  # rubocop:enable Metrics/AbcSize
 
   private
 
@@ -45,49 +44,57 @@ module ApplicationBuilder
     tmp[:user_id] = Current.user.id
     @application = Application.new(tmp)
     @application.save!
+
+    create_application_answers! if @job.application_options.any?
   end
 
-  # rubocop:disable Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/BlockLength
+  # rubocop:disable Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/PerceivedComplexity
   def create_application_answers!
     @job.application_options.each do |option|
-      answer_params = if application_params[:application_answers].is_a?(Array)
-                        application_params[:application_answers].find { |v| v[:application_option_id] == option.id.to_s }
-                      else
-                        application_params[:application_answers].to_unsafe_h&.find { |_, v| v[:application_option_id] == option.id.to_s }
-                      end
+      answer_params = find_answer_params(option.id)
 
       if option.required && (answer_params.nil? || answer_params.last[:answer].blank?)
         @application.errors.add(:application_answers, "Answer for required option #{option.id} is missing")
         raise ActiveRecord::RecordInvalid, @application
       end
 
-      if answer_params
+      if answer_params && !answer_params.last[:answer].blank?
 
         if option.question_type != 'multiple_choice' && !answer_params.last[:answer].is_a?(String)
           @application.errors.add(:base, 'Invalid answer type')
           raise ActiveRecord::RecordInvalid, @application
         end
 
-        answer_array = if option.question_type == 'multiple_choice' && answer_params.last[:answer]
-                         answer_params.last[:answer].split(', ').map(&:strip)
-                       else
-                         answer_params.last[:answer]
-                       end
+        answer_array = process_answer(option, answer_params)
 
-        ApplicationAnswer.create!(
-          job_id: @job.id.to_i,
-          user_id: Current.user.id.to_i,
-          application_option: option,
-          answer: answer_array
-        )
+        ApplicationAnswer.create!(job_id: @job.id.to_i, user_id: Current.user.id.to_i, application_option: option, answer: answer_array)
       else
+        # TODO: elsif option.required
         @application.errors.add(:base, 'Invalid application answer parameters')
         raise ActiveRecord::RecordInvalid, @application
       end
     end
   end
 
-  # rubocop:enable Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/BlockLength
+  def find_answer_params(option_id)
+    if application_params[:application_answers].is_a?(Array)
+      application_params[:application_answers].find { |v| v[:application_option_id] == option_id.to_s }
+    else
+      application_params[:application_answers].to_unsafe_h&.find { |_, v| v[:application_option_id] == option_id.to_s }
+    end
+  end
+
+  def process_answer(option, answer_params)
+    return unless answer_params && !answer_params.last[:answer].blank?
+
+    if option.question_type == 'multiple_choice' && answer_params.last[:answer]
+      answer_params.last[:answer].split(', ').map(&:strip)
+    else
+      answer_params.last[:answer]
+    end
+  end
+
+  # rubocop:enable Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/PerceivedComplexity
   def create_application_attachment!
     application_attachment = ApplicationAttachment.create!(
       user_id: Current.user.id,

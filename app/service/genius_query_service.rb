@@ -6,7 +6,7 @@
 class GeniusQueryService < AuthenticationTokenService
   HMAC_SECRET = ENV.fetch('GENIUS_QUERY_TOKEN_SECRET', nil)
   ALGORITHM_TYPE = 'HS256'
-  ISSUER = Socket.gethostname
+  ISSUER = 'api.embloy.com'
   REPLACEMENT_CHARACTER = '°'
 
   def self.encode(sub, exp, jti, iat, args)

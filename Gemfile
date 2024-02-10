@@ -120,7 +120,7 @@ gem 'composite_primary_keys'
 # Rich-Text Support
 gem 'actionpack', '>= 7.0.5.1'
 gem 'activesupport', '>= 7.0.7.1'
-gem 'nokogiri', '>= 1.14.3'
+gem 'nokogiri', '>= 1.16.2'
 
 # Payments and Subscriptions
 gem "stripe", "~> 10.4"
