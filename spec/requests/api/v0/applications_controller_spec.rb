@@ -31,6 +31,40 @@ RSpec.describe 'ApplicationsController' do
       activity_status: '1'
     )
     puts "Created valid verified user with own jobs: #{@valid_user_has_own_jobs.id}"
+    @valid_user_has_own_jobs.set_payment_processor :fake_processor, allow_fake: true
+    @valid_user_has_own_jobs.pay_customers
+    @valid_user_has_own_jobs.payment_processor.customer
+    @valid_user_has_own_jobs.payment_processor.charge(19_00)
+    @valid_user_has_own_jobs.payment_processor.subscribe(plan: 'fake')
+
+    # Create valid verified user with own jobs
+    @valid_user_has_no_jobs = User.create!(
+      first_name: 'Max',
+      last_name: 'Mustermann',
+      email: "#{(0...16).map { charset.sample }.join}@embloy.com",
+      password: 'password',
+      password_confirmation: 'password',
+      user_role: 'verified',
+      activity_status: '1'
+    )
+    puts "Created valid verified user with own jobs: #{@valid_user_has_no_jobs.id}"
+    @valid_user_has_no_jobs.set_payment_processor :fake_processor, allow_fake: true
+    @valid_user_has_no_jobs.pay_customers
+    @valid_user_has_no_jobs.payment_processor.customer
+    @valid_user_has_no_jobs.payment_processor.charge(19_00)
+    @valid_user_has_no_jobs.payment_processor.subscribe(plan: 'fake')
+
+    # Create valid verified user with own jobs
+    @unsubscribed_user_has_own_jobs = User.create!(
+      first_name: 'Max',
+      last_name: 'Mustermann',
+      email: "#{(0...16).map { charset.sample }.join}@embloy.com",
+      password: 'password',
+      password_confirmation: 'password',
+      user_role: 'verified',
+      activity_status: '1'
+    )
+    puts "Created valid verified user with own jobs: #{@valid_user_has_own_jobs.id}"
 
     # Create valid verified user with applications
     @valid_user_has_applications = User.create!(
@@ -94,6 +128,30 @@ RSpec.describe 'ApplicationsController' do
     @valid_at_has_own_jobs = JSON.parse(response.body)['access_token']
     puts "Valid user with own jobs access token: #{@valid_at_has_own_jobs}"
 
+    # Valid user with no jobs refresh/access tokens
+    credentials = Base64.strict_encode64("#{@valid_user_has_no_jobs.email}:password")
+    headers = { 'Authorization' => "Basic #{credentials}" }
+    post('/api/v0/auth/token/refresh', headers:)
+    @valid_rt_has_no_jobs = JSON.parse(response.body)['refresh_token']
+    puts "Valid user with own jobs refresh token: #{@valid_rt_has_no_jobs}"
+
+    headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt_has_no_jobs }
+    post('/api/v0/auth/token/access', headers:)
+    @valid_at_has_no_jobs = JSON.parse(response.body)['access_token']
+    puts "Valid user with own jobs access token: #{@valid_at_has_no_jobs}"
+
+    # Not subscribed user with own jobs refresh/access tokens
+    credentials = Base64.strict_encode64("#{@unsubscribed_user_has_own_jobs.email}:password")
+    headers = { 'Authorization' => "Basic #{credentials}" }
+    post('/api/v0/auth/token/refresh', headers:)
+    @unsubscribed_rt_has_own_jobs = JSON.parse(response.body)['refresh_token']
+    puts "Valid user with own jobs refresh token: #{@unsubscribed_rt_has_own_jobs}"
+
+    headers = { 'HTTP_REFRESH_TOKEN' => @unsubscribed_rt_has_own_jobs }
+    post('/api/v0/auth/token/access', headers:)
+    @unsubscribed_at_has_own_jobs = JSON.parse(response.body)['access_token']
+    puts "Valid user with own jobs access token: #{@unsubscribed_at_has_own_jobs}"
+
     # Valid user with upcoming jobs refresh/access tokens
     credentials = Base64.strict_encode64("#{@valid_user_has_applications.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
@@ -144,7 +202,7 @@ RSpec.describe 'ApplicationsController' do
     cv_required = [false, true, true, true, true, true, true, true, true, false, false, false]
     allowed_cv_formats = [['.pdf', '.docx', '.txt', '.xml'], ['.pdf'], ['.docx'], ['.txt'], ['.xml'], ['.pdf'], ['.docx'], ['.txt'], ['.xml']]
     job_status = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
-    status = ['public', 'public', 'public', 'public', 'public', 'public', 'public', 'public', 'public', 'private', 'archived', 'public']
+    status = %w[public public public public public public public public public private archived public]
     @jobs = []
     @applications = []
     12.times do |i|
@@ -167,7 +225,6 @@ RSpec.describe 'ApplicationsController' do
         cv_required: cv_required[i],
         allowed_cv_formats: allowed_cv_formats[i]
       )
-      puts @jobs[i].inspect
       puts "Created new job for: #{@valid_user_has_own_jobs.id}"
     end
     6.times do |i|
@@ -189,7 +246,7 @@ RSpec.describe 'ApplicationsController' do
     puts "#{@valid_user_has_applications.id} applied to #{@jobs[9].id}"
 
     job_status = [1, 1, 1, 1, 1, 0]
-    status = ['public', 'public', 'public', 'private', 'archived', 'public']
+    status = %w[public public public private archived public]
     required = [true, false, false, false, false, false]
     6.times do |i|
       job = Job.create!(
@@ -240,6 +297,26 @@ RSpec.describe 'ApplicationsController' do
       @jobs << job
       puts "Created new job for: #{@valid_user_has_own_jobs.id}"
     end
+
+    @jobs << Job.create!(
+      user_id: @unsubscribed_user_has_own_jobs.id,
+      title: 'TestJob',
+      description: 'TestDescription',
+      longitude: '0.0',
+      latitude: '0.0',
+      position: 'Intern',
+      salary: '123',
+      status: 'public',
+      job_status: 1,
+      start_slot: Time.now + 1.year,
+      key_skills: 'Entrepreneurship',
+      duration: '14',
+      currency: 'CHF',
+      job_type: 'Retail',
+      job_type_value: '1',
+      cv_required: false
+    )
+    puts "Created new job for: #{@unsubscribed_user_has_own_jobs.id}"
   end
 
   describe 'User', type: :request do
@@ -339,6 +416,11 @@ RSpec.describe 'ApplicationsController' do
         end
         it 'returns [403 Forbidden] if user is not owner' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token }
+          get("/api/v0/jobs/#{@jobs[6].id}/applications", headers:)
+          expect(response).to have_http_status(403)
+        end
+        it 'returns [403 Forbidden] if user is not owner' do
+          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_no_jobs }
           get("/api/v0/jobs/#{@jobs[6].id}/applications", headers:)
           expect(response).to have_http_status(403)
         end
@@ -450,8 +532,13 @@ RSpec.describe 'ApplicationsController' do
           patch("/api/v0/jobs/#{@jobs[0].id}/applications/#{@valid_user_has_applications.id}/accept", headers:)
           expect(response).to have_http_status(401)
         end
+        it 'returns [401 Unauthorized] for unsubscribed user' do
+          headers = { 'HTTP_ACCESS_TOKEN' => @unsubscribed_at_has_own_jobs }
+          patch("/api/v0/jobs/#{@jobs[18].id}/applications/#{@valid_user_has_applications.id}/accept", headers:)
+          expect(response).to have_http_status(401)
+        end
         it 'returns [403 Forbidden] if user is not owner' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token }
+          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_no_jobs }
           patch("/api/v0/jobs/#{@jobs[0].id}/applications/#{@valid_user_has_applications.id}/accept", headers:)
           expect(response).to have_http_status(403)
         end
@@ -532,8 +619,13 @@ RSpec.describe 'ApplicationsController' do
           patch("/api/v0/jobs/#{@jobs[0].id}/applications/#{@valid_user_has_applications.id}/reject", headers:)
           expect(response).to have_http_status(401)
         end
+        it 'returns [401 Unauthorized] for unsubscribed user' do
+          headers = { 'HTTP_ACCESS_TOKEN' => @unsubscribed_at_has_own_jobs }
+          patch("/api/v0/jobs/#{@jobs[18].id}/applications/#{@valid_user_has_applications.id}/reject", headers:)
+          expect(response).to have_http_status(401)
+        end
         it 'returns [403 Forbidden] if user is not owner' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token }
+          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_no_jobs }
           patch("/api/v0/jobs/#{@jobs[0].id}/applications/#{@valid_user_has_applications.id}/reject", headers:)
           expect(response).to have_http_status(403)
         end

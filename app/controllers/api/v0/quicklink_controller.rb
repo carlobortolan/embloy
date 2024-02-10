@@ -14,7 +14,7 @@ module Api
 
       before_action :verify_client_token, only: [:create_request]
       before_action :verify_request_token, only: %i[handle_request apply]
-      before_action :must_be_subscribed, only: [:create_client]
+      before_action :must_be_subscribed!, only: [:create_client]
 
       # The apply method is responsible for handling the application process.
       # It finds the user and client based on the decoded tokens, updates or creates the job, and applies for the job.

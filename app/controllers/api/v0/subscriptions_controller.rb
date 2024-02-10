@@ -4,9 +4,6 @@ module Api
   module V0
     # SubscriptionsController handles subscription-related actions
     class SubscriptionsController < ApiController
-      before_action :must_be_subscribed,
-                    except: %i[all_subscriptions all_charges]
-
       def all_subscriptions
         if valid_payment_processor?
           subscriptions = Current.user.payment_processor.sync_subscriptions(status: 'all')

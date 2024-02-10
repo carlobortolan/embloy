@@ -7,7 +7,7 @@ module Api
     class JobsController < ApiController
       before_action :verify_path_job_id, only: %i[destroy show]
       before_action :verify_path_active_job_id, only: %i[update]
-      before_action :must_be_subscribed
+      before_action :must_be_subscribed!, only: %i[create update]
 
       def create
         job = build_job

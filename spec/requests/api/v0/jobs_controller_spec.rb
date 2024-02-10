@@ -18,6 +18,11 @@ RSpec.describe 'JobsController' do
       activity_status: '1'
     )
     puts "Created valid user: #{@valid_user.id}"
+    @valid_user.set_payment_processor :fake_processor, allow_fake: true
+    @valid_user.pay_customers
+    @valid_user.payment_processor.customer
+    @valid_user.payment_processor.charge(19_00)
+    @valid_user.payment_processor.subscribe(plan: 'fake')
 
     # Create valid unverified user
     @unverified_user = User.create!(
@@ -30,9 +35,26 @@ RSpec.describe 'JobsController' do
       activity_status: '0'
     )
     puts "Created unverified user: #{@unverified_user.id}"
+    @unverified_user.set_payment_processor :fake_processor, allow_fake: true
+    @unverified_user.pay_customers
+    @unverified_user.payment_processor.customer
+    @unverified_user.payment_processor.charge(19_00)
+    @unverified_user.payment_processor.subscribe(plan: 'fake')
 
     # Blacklisted verified user
     @blacklisted_user = User.create!(
+      first_name: 'Max',
+      last_name: 'Mustermann',
+      email: "#{(0...16).map { charset.sample }.join}@embloy.com",
+      password: 'password',
+      password_confirmation: 'password',
+      user_role: 'verified',
+      activity_status: '1'
+    )
+    puts "Created blacklisted user: #{@blacklisted_user.id}"
+
+    # Blacklisted verified user
+    @unsubscribed_user = User.create!(
       first_name: 'Max',
       last_name: 'Mustermann',
       email: "#{(0...16).map { charset.sample }.join}@embloy.com",
@@ -125,7 +147,7 @@ RSpec.describe 'JobsController' do
       status: 'private'
     )
     puts "Created new job for: #{@valid_user.id}"
-    
+
     # Create jobs
     @not_owned_archived_job = Job.create!(
       user_id: @blacklisted_user.id,
@@ -145,7 +167,7 @@ RSpec.describe 'JobsController' do
       status: 'archived'
     )
     puts "Created new job for: #{@valid_user.id}"
-    
+
     # Create jobs
     @archived_job = Job.create!(
       user_id: @valid_user.id,
@@ -198,6 +220,18 @@ RSpec.describe 'JobsController' do
     @valid_at = JSON.parse(response.body)['access_token']
     puts "Valid user with own jobs access token: #{@valid_at}"
 
+    # Unsubscribed user refresh/access tokens
+    credentials = Base64.strict_encode64("#{@unsubscribed_user.email}:password")
+    headers = { 'Authorization' => "Basic #{credentials}" }
+    post('/api/v0/auth/token/refresh', headers:)
+    @unsubscribed_rt = JSON.parse(response.body)['refresh_token']
+    puts "Valid user who will be blacklisted refresh token: #{@unsubscribed_rt}"
+
+    headers = { 'HTTP_REFRESH_TOKEN' => @unsubscribed_rt }
+    post('/api/v0/auth/token/access', headers:)
+    @unsubscribed_at = JSON.parse(response.body)['access_token']
+    puts "Valid user who will be blacklisted access token: #{@unsubscribed_at}"
+
     # Blacklisted user refresh/access tokens
     credentials = Base64.strict_encode64("#{@blacklisted_user.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
@@ -222,8 +256,13 @@ RSpec.describe 'JobsController' do
   describe 'Job', type: :request do
     describe '(GET: /api/v0/jobs/{id})' do
       context 'valid normal inputs' do
-        it 'returns [200 Ok] and job JSONs if job exists' do
+        it 'returns [200 Ok] and job JSONs if job is public' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at }
+          get("/api/v0/jobs/#{@job.id}", headers:)
+          expect(response).to have_http_status(200)
+        end
+        it 'returns [200 Ok] and job JSONs if job is public' do
+          headers = { 'HTTP_ACCESS_TOKEN' => @unsubscribed_at }
           get("/api/v0/jobs/#{@job.id}", headers:)
           expect(response).to have_http_status(200)
         end
@@ -647,6 +686,11 @@ RSpec.describe 'JobsController' do
           post('/api/v0/jobs', headers:)
           expect(response).to have_http_status(401)
         end
+        it 'returns [401 Unauthorized] for expired/missing subscription' do
+          headers = { 'HTTP_ACCESS_TOKEN' => @unsubscribed_at }
+          post('/api/v0/jobs', headers:)
+          expect(response).to have_http_status(401)
+        end
         it 'returns [403 Forbidden] for blacklisted user' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_blacklisted }
           post('/api/v0/jobs', headers:)
@@ -1023,6 +1067,11 @@ RSpec.describe 'JobsController' do
       context 'invalid access' do
         it 'returns [401 Unauthorized] for expired/invalid access token' do
           headers = { 'HTTP_ACCESS_TOKEN' => @invalid_access_token }
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", headers:)
+          expect(response).to have_http_status(401)
+        end
+        it 'returns [401 Unauthorized] for expired/missing subscription' do
+          headers = { 'HTTP_ACCESS_TOKEN' => @unsubscribed_at }
           patch("/api/v0/jobs?id=#{@job.id.to_i}", headers:)
           expect(response).to have_http_status(401)
         end
