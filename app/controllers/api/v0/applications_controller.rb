@@ -5,8 +5,11 @@ module Api
     # ApplicationsController handles application-related actions
     class ApplicationsController < ApiController
       include ApplicationBuilder
-      before_action :verify_path_job_id
+      before_action :verify_path_job_id, except: %i[create accept reject]
+      before_action :verify_path_active_job_id, only: %i[accept reject]
+      before_action :verify_path_public_job_id, only: %i[create]
       before_action :must_be_verified!
+      before_action :must_be_subscribed, only: %i[accept reject]
 
       def show
         must_be_owner!(application_show_params[:id], Current.user.id)

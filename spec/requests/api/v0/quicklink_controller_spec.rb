@@ -210,6 +210,8 @@ RSpec.describe 'QuicklinkController' do
         start_slot: Time.now + 1.year,
         key_skills: 'Entrepreneurship',
         duration: '14',
+        job_status: 1,
+        status: 'public',
         currency: 'CHF',
         job_type: 'Retail',
         job_type_value: '1'

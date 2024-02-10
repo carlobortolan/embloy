@@ -141,11 +141,13 @@ RSpec.describe 'ApplicationsController' do
 
     # OWN JOBS & UPCOMING JOBS
     # Create own jobs for valid verified user (valid_user_has_own_jobs) and upcoming jobs for valid verified user (valid_user_has_upcoming_jobs)
-    cv_required = [false, true, true, true, true, true, true, true, true]
+    cv_required = [false, true, true, true, true, true, true, true, true, false, false, false]
     allowed_cv_formats = [['.pdf', '.docx', '.txt', '.xml'], ['.pdf'], ['.docx'], ['.txt'], ['.xml'], ['.pdf'], ['.docx'], ['.txt'], ['.xml']]
+    job_status = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+    status = ['public', 'public', 'public', 'public', 'public', 'public', 'public', 'public', 'public', 'private', 'archived', 'public']
     @jobs = []
     @applications = []
-    9.times do |i|
+    12.times do |i|
       @jobs << Job.create!(
         user_id: @valid_user_has_own_jobs.id,
         title: 'TestJob',
@@ -154,6 +156,8 @@ RSpec.describe 'ApplicationsController' do
         latitude: '0.0',
         position: 'Intern',
         salary: '123',
+        status: status[i],
+        job_status: job_status[i],
         start_slot: Time.now + 1.year,
         key_skills: 'Entrepreneurship',
         duration: '14',
@@ -163,6 +167,7 @@ RSpec.describe 'ApplicationsController' do
         cv_required: cv_required[i],
         allowed_cv_formats: allowed_cv_formats[i]
       )
+      puts @jobs[i].inspect
       puts "Created new job for: #{@valid_user_has_own_jobs.id}"
     end
     6.times do |i|
@@ -174,8 +179,19 @@ RSpec.describe 'ApplicationsController' do
       )
       puts "#{@valid_user_has_applications.id} applied to #{@jobs[i].id}"
     end
-    required = true
-    3.times do |_i|
+
+    @applications << Application.create!(
+      user_id: @valid_user_has_applications.id,
+      job_id: @jobs[9].id,
+      application_text: 'TestUpcomingApplicationText',
+      response: 'No response yet ...'
+    )
+    puts "#{@valid_user_has_applications.id} applied to #{@jobs[9].id}"
+
+    job_status = [1, 1, 1, 1, 1, 0]
+    status = ['public', 'public', 'public', 'private', 'archived', 'public']
+    required = [true, false, false, false, false, false]
+    6.times do |i|
       job = Job.create!(
         user_id: @valid_user_has_own_jobs.id,
         title: 'TestJob',
@@ -184,6 +200,8 @@ RSpec.describe 'ApplicationsController' do
         latitude: '0.0',
         position: 'Intern',
         salary: '123',
+        status: status[i],
+        job_status: job_status[i],
         start_slot: Time.now + 1.year,
         key_skills: 'Entrepreneurship',
         duration: '14',
@@ -195,31 +213,30 @@ RSpec.describe 'ApplicationsController' do
       job.application_options.create!(
         question: 'TEST Text',
         question_type: 'text',
-        required:
+        required: required[i]
       )
       job.application_options.create!(
         question: 'TEST SC',
         question_type: 'single_choice',
-        required:,
+        required: required[i],
         options: %w[TestOption1 TestOption2 TestOption3]
       )
       job.application_options.create!(
         question: 'TEST MC',
         question_type: 'multiple_choice',
-        required:,
+        required: required[i],
         options: %w[TestOption1 TestOption2 TestOption3]
       )
       job.application_options.create!(
         question: 'TEST LINK',
         question_type: 'link',
-        required:
+        required: required[i]
       )
       job.application_options.create!(
         question: 'TEST Yes/No',
         question_type: 'yes_no',
-        required:
+        required: required[i]
       )
-      required = !required
       @jobs << job
       puts "Created new job for: #{@valid_user_has_own_jobs.id}"
     end
@@ -399,6 +416,11 @@ RSpec.describe 'ApplicationsController' do
           patch("/api/v0/jobs/#{@jobs[5].id}/applications/#{@valid_user_has_applications.id}/accept?response=#{message}", headers:)
           expect(response).to have_http_status(200)
         end
+        it 'returns [200 OK] for private job and accepts application' do
+          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          patch("/api/v0/jobs/#{@jobs[9].id}/applications/#{@valid_user_has_applications.id}/accept", headers:)
+          expect(response).to have_http_status(200)
+        end
         it 'returns [404 Not found] if job does not have any applications' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
           patch("/api/v0/jobs/#{@jobs[6].id}/applications/#{@valid_user_has_applications.id}/accept", headers:)
@@ -448,6 +470,16 @@ RSpec.describe 'ApplicationsController' do
           patch("/api/v0/jobs/#{@jobs[0].id}/applications/123123123123123123132/accept", headers:)
           expect(response).to have_http_status(404)
         end
+        it 'returns [409 Conflict] for archived job' do
+          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          patch("/api/v0/jobs/#{@jobs[10].id}/applications/#{@valid_user_has_applications.id}/accept", headers:)
+          expect(response).to have_http_status(409)
+        end
+        it 'returns [409 Conflict] for deactivated job' do
+          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          patch("/api/v0/jobs/#{@jobs[11].id}/applications/#{@valid_user_has_applications.id}/accept", headers:)
+          expect(response).to have_http_status(409)
+        end
       end
     end
 
@@ -464,6 +496,11 @@ RSpec.describe 'ApplicationsController' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
           message = 'Not good enough!'
           patch("/api/v0/jobs/#{@jobs[5].id}/applications/#{@valid_user_has_applications.id}/reject?response=#{message}", headers:)
+          expect(response).to have_http_status(200)
+        end
+        it 'returns [200 OK] for private job and rejects application' do
+          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          patch("/api/v0/jobs/#{@jobs[9].id}/applications/#{@valid_user_has_applications.id}/reject", headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [404 Not found] if job does not have any applications' do
@@ -514,6 +551,16 @@ RSpec.describe 'ApplicationsController' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
           patch("/api/v0/jobs/#{@jobs[0].id}/applications/123123123123123123132/reject", headers:)
           expect(response).to have_http_status(404)
+        end
+        it 'returns [409 Conflict] for archived job' do
+          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          patch("/api/v0/jobs/#{@jobs[10].id}/applications/#{@valid_user_has_applications.id}/reject", headers:)
+          expect(response).to have_http_status(409)
+        end
+        it 'returns [409 Conflict] for deactivated job' do
+          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          patch("/api/v0/jobs/#{@jobs[11].id}/applications/#{@valid_user_has_applications.id}/reject", headers:)
+          expect(response).to have_http_status(409)
         end
       end
     end
@@ -615,6 +662,18 @@ RSpec.describe 'ApplicationsController' do
           post('/api/v0/jobs/123123123/applications', params: valid_attributes_docx, headers:)
           expect(response).to have_http_status(404)
         end
+        it 'returns [409 Conflict] for private job' do
+          post("/api/v0/jobs/#{@jobs[9].id}/applications", params: valid_attributes_basic, headers:)
+          expect(response).to have_http_status(409)
+        end
+        it 'returns [409 Conflict] for archived job' do
+          post("/api/v0/jobs/#{@jobs[10].id}/applications", params: valid_attributes_basic, headers:)
+          expect(response).to have_http_status(409)
+        end
+        it 'returns [409 Conflict] for inactive job' do
+          post("/api/v0/jobs/#{@jobs[11].id}/applications", params: valid_attributes_basic, headers:)
+          expect(response).to have_http_status(409)
+        end
         it 'returns [422 Unprocessable Content] for applying with wrong cv format (\'.pdf\' required)' do
           post("/api/v0/jobs/#{@jobs[5].id}/applications", params: valid_attributes_xml, headers:)
           expect(response).to have_http_status(422)
@@ -660,23 +719,23 @@ RSpec.describe 'ApplicationsController' do
             application_text: 'Hello World',
             application_answers: {
               '0' => {
-                application_option_id: @jobs[9].application_options[0].id,
+                application_option_id: @jobs[12].application_options[0].id,
                 answer: 'Text'
               },
               '1' => {
-                application_option_id: @jobs[9].application_options[1].id,
+                application_option_id: @jobs[12].application_options[1].id,
                 answer: 'TestOption1'
               },
               '2' => {
-                application_option_id: @jobs[9].application_options[2].id,
+                application_option_id: @jobs[12].application_options[2].id,
                 answer: 'TestOption1, TestOption2'
               },
               '3' => {
-                application_option_id: @jobs[9].application_options[3].id,
+                application_option_id: @jobs[12].application_options[3].id,
                 answer: 'https://embloy.com'
               },
               '4' => {
-                application_option_id: @jobs[9].application_options[4].id,
+                application_option_id: @jobs[12].application_options[4].id,
                 answer: 'Yes'
               }
             }
@@ -687,23 +746,23 @@ RSpec.describe 'ApplicationsController' do
             application_text: 'Hello World',
             application_answers: {
               '0' => {
-                application_option_id: @jobs[10].application_options[0].id,
+                application_option_id: @jobs[13].application_options[0].id,
                 answer: 'Text'
               },
               '1' => {
-                application_option_id: @jobs[10].application_options[1].id,
+                application_option_id: @jobs[13].application_options[1].id,
                 answer: 'TestOption1'
               },
               '2' => {
-                application_option_id: @jobs[10].application_options[2].id,
+                application_option_id: @jobs[13].application_options[2].id,
                 answer: 'TestOption1, TestOption2'
               },
               '3' => {
-                application_option_id: @jobs[10].application_options[3].id,
+                application_option_id: @jobs[13].application_options[3].id,
                 answer: 'https://embloy.com'
               },
               '4' => {
-                application_option_id: @jobs[10].application_options[4].id,
+                application_option_id: @jobs[13].application_options[4].id,
                 answer: 'Yes'
               }
             }
@@ -714,23 +773,23 @@ RSpec.describe 'ApplicationsController' do
             application_text: 'Test Text',
             application_answers: {
               '0' => {
-                application_option_id: @jobs[11].application_options[0].id,
+                application_option_id: @jobs[14].application_options[0].id,
                 answer: 'a' * 501
               },
               '1' => {
-                application_option_id: @jobs[11].application_options[1].id,
+                application_option_id: @jobs[14].application_options[1].id,
                 answer: 'TestOption1, TestOption2, TestOption3'
               },
               '2' => {
-                application_option_id: @jobs[11].application_options[2].id,
+                application_option_id: @jobs[14].application_options[2].id,
                 answer: 'TestOption1, TestOption2, TestOption3, TestOption4'
               },
               '3' => {
-                application_option_id: @jobs[11].application_options[3].id,
+                application_option_id: @jobs[14].application_options[3].id,
                 answer: 'not-a-link'
               },
               '4' => {
-                application_option_id: @jobs[11].application_options[4].id,
+                application_option_id: @jobs[14].application_options[4].id,
                 answer: 'Hello World'
               }
             }
@@ -738,133 +797,145 @@ RSpec.describe 'ApplicationsController' do
         end
 
         it 'returns [201 Created] for successful application with required application answer' do
-          post("/api/v0/jobs/#{@jobs[9].id}/applications", params: valid_attributes_with_required_answer, headers:)
+          post("/api/v0/jobs/#{@jobs[12].id}/applications", params: valid_attributes_with_required_answer, headers:)
           expect(response).to have_http_status(201)
         end
         it 'returns [201 Created] for successful application with optional application answer' do
-          post("/api/v0/jobs/#{@jobs[10].id}/applications", params: valid_attributes_with_optional_answer, headers:)
+          post("/api/v0/jobs/#{@jobs[13].id}/applications", params: valid_attributes_with_optional_answer, headers:)
           expect(response).to have_http_status(201)
         end
 
         it 'returns [400 Bad Request] for missing required application answer (text)' do
           valid_attributes = valid_attributes_with_required_answer.dup
           valid_attributes[:application_answers].delete('0')
-          post("/api/v0/jobs/#{@jobs[9].id}/applications", params: valid_attributes, headers:)
+          post("/api/v0/jobs/#{@jobs[12].id}/applications", params: valid_attributes, headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for missing required application answer (single_choice)' do
           valid_attributes = valid_attributes_with_required_answer.dup
           valid_attributes[:application_answers].delete('1')
-          post("/api/v0/jobs/#{@jobs[9].id}/applications", params: valid_attributes, headers:)
+          post("/api/v0/jobs/#{@jobs[12].id}/applications", params: valid_attributes, headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for missing required application answer (multiple_choice)' do
           valid_attributes = valid_attributes_with_required_answer.dup
           valid_attributes[:application_answers].delete('2')
-          post("/api/v0/jobs/#{@jobs[9].id}/applications", params: valid_attributes, headers:)
+          post("/api/v0/jobs/#{@jobs[12].id}/applications", params: valid_attributes, headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for missing required application answer (link)' do
           valid_attributes = valid_attributes_with_required_answer.dup
           valid_attributes[:application_answers].delete('3')
-          post("/api/v0/jobs/#{@jobs[9].id}/applications", params: valid_attributes, headers:)
+          post("/api/v0/jobs/#{@jobs[12].id}/applications", params: valid_attributes, headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for missing required application answer (yes_no)' do
           valid_attributes = valid_attributes_with_required_answer.dup
           valid_attributes[:application_answers].delete('4')
-          post("/api/v0/jobs/#{@jobs[9].id}/applications", params: valid_attributes, headers:)
+          post("/api/v0/jobs/#{@jobs[12].id}/applications", params: valid_attributes, headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for too long text answer' do
           invalid_attributes = invalid_attributes_with_answer.dup
           invalid_attributes[:application_answers] = { '0' => invalid_attributes[:application_answers]['0'] }
-          post("/api/v0/jobs/#{@jobs[10].id}/applications", params: invalid_attributes, headers:)
+          post("/api/v0/jobs/#{@jobs[13].id}/applications", params: invalid_attributes, headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid single choice answer' do
           invalid_attributes = invalid_attributes_with_answer.dup
           invalid_attributes[:application_answers] = { '1' => invalid_attributes[:application_answers]['1'] }
-          post("/api/v0/jobs/#{@jobs[10].id}/applications", params: invalid_attributes, headers:)
+          post("/api/v0/jobs/#{@jobs[13].id}/applications", params: invalid_attributes, headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid multiple choice answer' do
           invalid_attributes = invalid_attributes_with_answer.dup
           invalid_attributes[:application_answers] = { '2' => invalid_attributes[:application_answers]['2'] }
-          post("/api/v0/jobs/#{@jobs[10].id}/applications", params: invalid_attributes, headers:)
+          post("/api/v0/jobs/#{@jobs[13].id}/applications", params: invalid_attributes, headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid link answer' do
           invalid_attributes = invalid_attributes_with_answer.dup
           invalid_attributes[:application_answers] = { '3' => invalid_attributes[:application_answers]['3'] }
-          post("/api/v0/jobs/#{@jobs[10].id}/applications", params: invalid_attributes, headers:)
+          post("/api/v0/jobs/#{@jobs[13].id}/applications", params: invalid_attributes, headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for too long text answer' do
           invalid_attributes = invalid_attributes_with_answer.dup
           invalid_attributes[:application_answers] = [invalid_attributes[:application_answers][0]]
-          post("/api/v0/jobs/#{@jobs[10].id}/applications", params: invalid_attributes, headers:)
+          post("/api/v0/jobs/#{@jobs[13].id}/applications", params: invalid_attributes, headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid single choice answer' do
           invalid_attributes = invalid_attributes_with_answer.dup
           invalid_attributes[:application_answers] = [invalid_attributes[:application_answers][1]]
-          post("/api/v0/jobs/#{@jobs[10].id}/applications", params: invalid_attributes, headers:)
+          post("/api/v0/jobs/#{@jobs[13].id}/applications", params: invalid_attributes, headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid multiple choice answer' do
           invalid_attributes = invalid_attributes_with_answer.dup
           invalid_attributes[:application_answers] = [invalid_attributes[:application_answers][2]]
-          post("/api/v0/jobs/#{@jobs[10].id}/applications", params: invalid_attributes, headers:)
+          post("/api/v0/jobs/#{@jobs[13].id}/applications", params: invalid_attributes, headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid link answer' do
           invalid_attributes = invalid_attributes_with_answer.dup
           invalid_attributes[:application_answers] = [invalid_attributes[:application_answers][3]]
-          post("/api/v0/jobs/#{@jobs[10].id}/applications", params: invalid_attributes, headers:)
+          post("/api/v0/jobs/#{@jobs[13].id}/applications", params: invalid_attributes, headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid application_option_id' do
           invalid_attributes = valid_attributes_with_required_answer.dup
           invalid_attributes[:application_answers]['0'][:application_option_id] = -1
-          post("/api/v0/jobs/#{@jobs[9].id}/applications", params: invalid_attributes, headers:)
+          post("/api/v0/jobs/#{@jobs[12].id}/applications", params: invalid_attributes, headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for missing application_option_id in application_answers' do
           invalid_attributes = valid_attributes_with_required_answer.dup
           invalid_attributes[:application_answers]['0'].delete(:application_option_id)
-          post("/api/v0/jobs/#{@jobs[9].id}/applications", params: invalid_attributes, headers:)
+          post("/api/v0/jobs/#{@jobs[12].id}/applications", params: invalid_attributes, headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for non-integer application_option_id' do
           invalid_attributes = valid_attributes_with_required_answer.dup
           invalid_attributes[:application_answers]['0'][:application_option_id] = 'invalid'
-          post("/api/v0/jobs/#{@jobs[9].id}/applications", params: invalid_attributes, headers:)
+          post("/api/v0/jobs/#{@jobs[12].id}/applications", params: invalid_attributes, headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid single_choice answer' do
           invalid_attributes = invalid_attributes_with_answer.dup
           invalid_attributes[:application_answers]['1'][:answer] = 'InvalidOption'
-          post("/api/v0/jobs/#{@jobs[10].id}/applications", params: invalid_attributes, headers:)
+          post("/api/v0/jobs/#{@jobs[13].id}/applications", params: invalid_attributes, headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid link answer' do
           invalid_attributes = invalid_attributes_with_answer.dup
           invalid_attributes[:application_answers]['3'][:answer] = 'not-a-link'
-          post("/api/v0/jobs/#{@jobs[10].id}/applications", params: invalid_attributes, headers:)
+          post("/api/v0/jobs/#{@jobs[13].id}/applications", params: invalid_attributes, headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid yes_no answer' do
           invalid_attributes = invalid_attributes_with_answer.dup
           invalid_attributes[:application_answers]['4'][:answer] = 'maybe'
-          post("/api/v0/jobs/#{@jobs[10].id}/applications", params: invalid_attributes, headers:)
+          post("/api/v0/jobs/#{@jobs[13].id}/applications", params: invalid_attributes, headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid application_option' do
           invalid_attributes = valid_attributes_with_required_answer.dup
           invalid_attributes[:application_answers]['0'][:application_option_id] = -1
-          post("/api/v0/jobs/#{@jobs[9].id}/applications", params: invalid_attributes, headers:)
+          post("/api/v0/jobs/#{@jobs[12].id}/applications", params: invalid_attributes, headers:)
           expect(response).to have_http_status(400)
+        end
+        it 'returns [409 Conflict] for private job' do
+          post("/api/v0/jobs/#{@jobs[15].id}/applications", params: valid_attributes_with_required_answer, headers:)
+          expect(response).to have_http_status(409)
+        end
+        it 'returns [409 Conflict] for archived job' do
+          post("/api/v0/jobs/#{@jobs[16].id}/applications", params: valid_attributes_with_required_answer, headers:)
+          expect(response).to have_http_status(409)
+        end
+        it 'returns [409 Conflict] for inactive job' do
+          post("/api/v0/jobs/#{@jobs[17].id}/applications", params: valid_attributes_with_required_answer, headers:)
+          expect(response).to have_http_status(409)
         end
       end
     end

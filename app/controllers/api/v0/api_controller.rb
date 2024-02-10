@@ -56,6 +56,22 @@ module Api
         end
       end
 
+      def verify_path_active_job_id
+        if id_blank_or_invalid?
+          blank_error('job')
+        else
+          validate_active_job_id
+        end
+      end
+
+      def verify_path_public_job_id
+        if id_blank_or_invalid?
+          blank_error('job')
+        else
+          validate_public_job_id
+        end
+      end
+
       def verify_path_user_id
         if id_blank_or_invalid?
           blank_error('user')
@@ -107,6 +123,20 @@ module Api
 
       def decode_request_token
         @decoded_request_token = QuicklinkService::Request::Decoder.call(request.headers['HTTP_REQUEST_TOKEN'])[0]
+      end
+
+      def validate_active_job_id
+        @job = Job.find(params[:id])
+        removed_error('job') unless %w[public private].include?(@job.status) && @job.job_status == 1
+      rescue ActiveRecord::RecordNotFound
+        not_found_error('job')
+      end
+
+      def validate_public_job_id
+        @job = Job.find(params[:id])
+        removed_error('job') unless @job.status == 'public' && @job.job_status == 1
+      rescue ActiveRecord::RecordNotFound
+        not_found_error('job')
       end
 
       def validate_job_id

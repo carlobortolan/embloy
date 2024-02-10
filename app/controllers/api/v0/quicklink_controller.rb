@@ -78,8 +78,11 @@ module Api
       # It calls the Encoder class of the `QuicklinkService::Client` module to create the token.
       # It then returns the token in the response.
       def create_client
-        #         verified!(@decoded_token['typ'])
-        generate_and_render_token(check_subscription)
+        token = QuicklinkService::Client::Encoder.call(
+          Current.user.id, check_subscription, parse_expiration_date
+        )
+        render status: 200,
+               json: { 'client_token' => token }
       end
 
       private
@@ -89,21 +92,23 @@ module Api
       # If the job does not exist, it is created with the `job_slug` and `client.id`.
       # The job is then added to the client's jobs.
       def update_or_create_job(session)
-        @client.jobs = [] if @client.jobs.nil?
+        @client.jobs ||= []
 
         @job = @client.jobs.find_by(job_slug: session['job_slug'])
-        unless @job
+        if @job
+          return true if %w[public private].include?(@job.status) && @job.job_status == 1
+        else
           allowed_params = %w[user_id job_type job_slug referrer_url duration code_lang title position description key_skills salary currency start_slot longitude latitude country_code postal_code
                               city address job_notifications cv_required allowed_cv_formats]
           @job = Job.new(session.slice(*allowed_params))
+          @job.status = 'private'
           return false unless @job.save
 
           @job.user = @client
           @client.jobs << @job
           return true
-
         end
-        true
+        false
       end
 
       def parse_expiration_date
@@ -131,14 +136,6 @@ module Api
         subscription
       end
 
-      def generate_and_render_token(subscription)
-        token = QuicklinkService::Client::Encoder.call(
-          Current.user.id, subscription, parse_expiration_date
-        )
-        render status: 200,
-               json: { 'client_token' => token }
-      end
-
       def create_client_params
         params.except(:format).permit(:exp)
       end
@@ -148,8 +145,8 @@ module Api
       end
 
       def portal_params
-        params.except(:format).permit(:mode, :success_url, :cancel_url, :job_slug, :title, :description, :start_slot, :longitude, :latitude, :job_type, :status, :image_url,
-                                      :job_status, :position, :currency, :salary, :key_skills, :duration, :job_notifications, :cv_required, allowed_cv_formats: [])
+        params.except(:format).permit(:mode, :success_url, :cancel_url, :job_slug, :title, :description, :start_slot, :longitude, :latitude, :job_type, :status, :image_url, :position, :currency,
+                                      :salary, :key_skills, :duration, :job_notifications, :cv_required, allowed_cv_formats: [])
       end
     end
   end

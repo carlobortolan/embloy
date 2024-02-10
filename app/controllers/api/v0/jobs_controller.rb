@@ -7,6 +7,7 @@ module Api
     class JobsController < ApiController
       before_action :verify_path_job_id,
                     only: %i[update destroy show]
+      before_action :must_be_subscribed
 
       def create
         job = build_job
@@ -27,10 +28,9 @@ module Api
 
       def update
         must_be_owner!(params[:id], Current.user.id)
-        # TODO: @jh: Set default job_status = 1 / make sure that job can be set to (de-)activated by owner
-        # return removed_error('job') if @job.job_status.zero?
+        return removed_error('job') if @job.job_status.zero?
 
-        if @job.update(job_params)
+        if update_job_attributes
           process_after_save(@job)
           render status: 200, json: { message: 'Job updated!' }
         else
@@ -104,6 +104,10 @@ module Api
       end
 
       private
+
+      def update_job_attributes
+        @job.update(job_params)
+      end
 
       def build_job
         job = Job.new(job_params)
@@ -265,9 +269,8 @@ module Api
       #       end
 
       def job_params
-        params.except(:format).permit(:title, :description, :start_slot, :referrer_url, :longitude, :latitude, :job_type, :status, :image_url,
-                                      :job_status, :position, :currency, :salary, :key_skills, :duration, :job_notifications, :cv_required,
-                                      allowed_cv_formats: [], application_options_attributes: [:id, :question, :question_type, :required, { options: [] }])
+        params.except(:format).permit(:title, :description, :start_slot, :referrer_url, :longitude, :latitude, :job_type, :status, :image_url, :position, :currency, :salary, :key_skills, :duration,
+                                      :job_notifications, :cv_required, allowed_cv_formats: [], application_options_attributes: [:id, :question, :question_type, :required, { options: [] }])
       end
 
       def find_job_params

@@ -117,7 +117,7 @@ ActiveRecord::Schema[7.0].define(version: 20_240_114_012_806) do
     t.string 'job_type'
     t.string 'job_slug', null: false, limit: 100
     t.integer 'job_type_value'
-    t.integer 'job_status', limit: 2, default: 0
+    t.integer 'job_status', limit: 2, default: 1
     t.enum 'status', default: 'public', null: false, enum_type: 'job_status'
     t.integer 'user_id', default: 0
     t.string 'referrer_url'

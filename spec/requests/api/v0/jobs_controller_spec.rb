@@ -59,6 +59,7 @@ RSpec.describe 'JobsController' do
         duration: '14',
         currency: 'CHF',
         job_type: 'Retail',
+        job_status: 1,
         job_type_value: '1'
       )
       puts "Created new job for: #{@valid_user.id}"
@@ -79,12 +80,34 @@ RSpec.describe 'JobsController' do
       duration: '14',
       currency: 'CHF',
       job_type: 'Retail',
+      job_status: 1,
       job_type_value: '1'
     )
-    puts "Created new job for: #{@blacklisted_user.id}"
+    puts "Created new job for: #{@valid_user.id}"
 
     # Create jobs
     @private_job = Job.create!(
+      user_id: @valid_user.id,
+      title: 'TestJob',
+      description: 'TestDescription',
+      longitude: '0.0',
+      latitude: '0.0',
+      position: 'Intern',
+      salary: '123',
+      start_slot: Time.now + 1.year,
+
+      key_skills: 'Entrepreneurship',
+      duration: '14',
+      currency: 'CHF',
+      job_type: 'Retail',
+      job_type_value: '1',
+      job_status: 1,
+      status: 'private'
+    )
+    puts "Created new job for: #{@valid_user.id}"
+
+    # Create jobs
+    @not_owned_private_job = Job.create!(
       user_id: @blacklisted_user.id,
       title: 'TestJob',
       description: 'TestDescription',
@@ -99,9 +122,73 @@ RSpec.describe 'JobsController' do
       currency: 'CHF',
       job_type: 'Retail',
       job_type_value: '1',
+      job_status: 1,
       status: 'private'
     )
-    puts "Created new job for: #{@blacklisted_user.id}"
+    puts "Created new job for: #{@valid_user.id}"
+    
+    # Create jobs
+    @not_owned_archived_job = Job.create!(
+      user_id: @blacklisted_user.id,
+      title: 'TestJob',
+      description: 'TestDescription',
+      longitude: '0.0',
+      latitude: '0.0',
+      position: 'Intern',
+      salary: '123',
+      start_slot: Time.now + 1.year,
+
+      key_skills: 'Entrepreneurship',
+      duration: '14',
+      currency: 'CHF',
+      job_type: 'Retail',
+      job_type_value: '1',
+      job_status: 1,
+      status: 'archived'
+    )
+    puts "Created new job for: #{@valid_user.id}"
+    
+    # Create jobs
+    @archived_job = Job.create!(
+      user_id: @valid_user.id,
+      title: 'TestJob',
+      description: 'TestDescription',
+      longitude: '0.0',
+      latitude: '0.0',
+      position: 'Intern',
+      salary: '123',
+      start_slot: Time.now + 1.year,
+
+      key_skills: 'Entrepreneurship',
+      duration: '14',
+      currency: 'CHF',
+      job_type: 'Retail',
+      job_type_value: '1',
+      job_status: 1,
+      status: 'archived'
+    )
+    puts "Created new job for: #{@valid_user.id}"
+
+    # Create jobs
+    @inactive_job = Job.create!(
+      user_id: @valid_user.id,
+      title: 'TestJob',
+      description: 'TestDescription',
+      longitude: '0.0',
+      latitude: '0.0',
+      position: 'Intern',
+      salary: '123',
+      start_slot: Time.now + 1.year,
+
+      key_skills: 'Entrepreneurship',
+      duration: '14',
+      currency: 'CHF',
+      job_type: 'Retail',
+      job_type_value: '1',
+      status: 0,
+      status: 'public'
+    )
+    puts "Created new job for: #{@valid_user.id}"
 
     # Verified user refresh/access tokens
     credentials = Base64.strict_encode64("#{@valid_user.email}:password")
@@ -144,6 +231,16 @@ RSpec.describe 'JobsController' do
           get("/api/v0/jobs/#{@job.id}", headers:)
           expect(response).to have_http_status(200)
         end
+        it 'returns [200 Ok] and job JSONs if job is private and user is owner' do
+          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at }
+          get("/api/v0/jobs/#{@private_job.id}", headers:)
+          expect(response).to have_http_status(200)
+        end
+        it 'returns [200 Ok] and job JSONs if job is archived and user is owner' do
+          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at }
+          get("/api/v0/jobs/#{@archived_job.id}", headers:)
+          expect(response).to have_http_status(200)
+        end
         it 'returns [204 No Content] if job does not exist' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at }
           get('/api/v0/jobs/123123123123123123123123', headers:)
@@ -167,7 +264,12 @@ RSpec.describe 'JobsController' do
         end
         it 'returns [403 Forbidden] for private job' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at }
-          get("/api/v0/jobs/#{@private_job.id}", headers:)
+          get("/api/v0/jobs/#{@not_owned_private_job.id}", headers:)
+          expect(response).to have_http_status(403)
+        end
+        it 'returns [403 Forbidden] for archived job' do
+          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at }
+          get("/api/v0/jobs/#{@not_owned_archived_job.id}", headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [404 Not Found] if job does not exist' do
@@ -943,9 +1045,14 @@ RSpec.describe 'JobsController' do
           patch("/api/v0/jobs?id=#{@not_owned_job.id.to_i}", headers:)
           expect(response).to have_http_status(403)
         end
-        it 'returns [403 Forbidden] for private not own job' do
+        it 'returns [403 Forbidden] for private not owned job' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at }
-          patch("/api/v0/jobs?id=#{@private_job.id.to_i}", headers:)
+          patch("/api/v0/jobs?id=#{@not_owned_private_job.id.to_i}", headers:)
+          expect(response).to have_http_status(403)
+        end
+        it 'returns [403 Forbidden] for archived not owned job' do
+          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at }
+          patch("/api/v0/jobs?id=#{@not_owned_archived_job.id.to_i}", headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [404 Not Found] if job does not exist' do
@@ -956,6 +1063,10 @@ RSpec.describe 'JobsController' do
           expect(response).to have_http_status(404)
           get('/api/v0/jobs/abc', headers:)
           expect(response).to have_http_status(404)
+        end
+        it 'returns [409 Conflict] if job is inactive' do
+          patch("/api/v0/jobs?id=#{@inactive_job.id.to_i}", params: form_data.except(:status), headers:)
+          expect(response).to have_http_status(409)
         end
       end
     end
