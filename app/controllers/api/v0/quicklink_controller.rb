@@ -93,22 +93,34 @@ module Api
       # The job is then added to the client's jobs.
       def update_or_create_job(session)
         @client.jobs ||= []
-
         @job = @client.jobs.find_by(job_slug: session['job_slug'])
-        if @job
-          return true if %w[public private].include?(@job.status) && @job.job_status == 1
-        else
-          allowed_params = %w[user_id job_type job_slug referrer_url duration code_lang title position description key_skills salary currency start_slot longitude latitude country_code postal_code
-                              city address job_notifications cv_required allowed_cv_formats]
-          @job = Job.new(session.slice(*allowed_params))
-          @job.status = 'private'
-          return false unless @job.save
 
+        return handle_existing_job if @job
+
+        create_new_job(session)
+      end
+
+      def handle_existing_job
+        if %w[public private].include?(@job.status) && @job.job_status == 1
+          true
+        else
+          @job.errors.add(:job, 'Job is either archived or deactivated')
+          false
+        end
+      end
+
+      def create_new_job(session)
+        allowed_params = %w[user_id job_type job_slug referrer_url duration code_lang title position description key_skills salary currency start_slot longitude latitude country_code postal_code
+                            city address job_notifications cv_required allowed_cv_formats]
+        @job = Job.new(session.slice(*allowed_params).merge(status: 'private'))
+
+        if @job.save
           @job.user = @client
           @client.jobs << @job
-          return true
+          true
+        else
+          false
         end
-        false
       end
 
       def parse_expiration_date

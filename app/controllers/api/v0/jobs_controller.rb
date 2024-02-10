@@ -5,8 +5,8 @@ module Api
   module V0
     # JobsController handles job-related actions
     class JobsController < ApiController
-      before_action :verify_path_job_id,
-                    only: %i[update destroy show]
+      before_action :verify_path_job_id, only: %i[destroy show]
+      before_action :verify_path_active_job_id, only: %i[update]
       before_action :must_be_subscribed
 
       def create
@@ -28,9 +28,7 @@ module Api
 
       def update
         must_be_owner!(params[:id], Current.user.id)
-        return removed_error('job') if @job.job_status.zero?
-
-        if update_job_attributes
+        if @job.update(job_params)
           process_after_save(@job)
           render status: 200, json: { message: 'Job updated!' }
         else
@@ -104,10 +102,6 @@ module Api
       end
 
       private
-
-      def update_job_attributes
-        @job.update(job_params)
-      end
 
       def build_job
         job = Job.new(job_params)

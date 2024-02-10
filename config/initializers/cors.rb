@@ -11,12 +11,9 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
   end
 
   allow do
-    origins do |source, _env|
-      source
-    end
+    origins '*'
     resource '/api/v0/sdk/request/auth/token',
              headers: :any,
-             methods: %i[get post put delete options head],
-             credentials: true
+             methods: %i[get post put delete options head]
   end
 end

@@ -116,7 +116,6 @@ RSpec.describe 'JobsController' do
       position: 'Intern',
       salary: '123',
       start_slot: Time.now + 1.year,
-
       key_skills: 'Entrepreneurship',
       duration: '14',
       currency: 'CHF',
@@ -137,7 +136,6 @@ RSpec.describe 'JobsController' do
       position: 'Intern',
       salary: '123',
       start_slot: Time.now + 1.year,
-
       key_skills: 'Entrepreneurship',
       duration: '14',
       currency: 'CHF',
@@ -158,7 +156,6 @@ RSpec.describe 'JobsController' do
       position: 'Intern',
       salary: '123',
       start_slot: Time.now + 1.year,
-
       key_skills: 'Entrepreneurship',
       duration: '14',
       currency: 'CHF',
@@ -179,13 +176,12 @@ RSpec.describe 'JobsController' do
       position: 'Intern',
       salary: '123',
       start_slot: Time.now + 1.year,
-
       key_skills: 'Entrepreneurship',
       duration: '14',
       currency: 'CHF',
       job_type: 'Retail',
       job_type_value: '1',
-      status: 0,
+      job_status: 0,
       status: 'public'
     )
     puts "Created new job for: #{@valid_user.id}"
@@ -1050,11 +1046,6 @@ RSpec.describe 'JobsController' do
           patch("/api/v0/jobs?id=#{@not_owned_private_job.id.to_i}", headers:)
           expect(response).to have_http_status(403)
         end
-        it 'returns [403 Forbidden] for archived not owned job' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at }
-          patch("/api/v0/jobs?id=#{@not_owned_archived_job.id.to_i}", headers:)
-          expect(response).to have_http_status(403)
-        end
         it 'returns [404 Not Found] if job does not exist' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at }
           get('/api/v0/jobs/12312312312312312', headers:)
@@ -1063,6 +1054,16 @@ RSpec.describe 'JobsController' do
           expect(response).to have_http_status(404)
           get('/api/v0/jobs/abc', headers:)
           expect(response).to have_http_status(404)
+        end
+        it 'returns [409 Conflict] for archived job' do
+          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at }
+          patch("/api/v0/jobs?id=#{@archived_job.id.to_i}", headers:)
+          expect(response).to have_http_status(409)
+        end
+        it 'returns [409 Conflict] for archived not owned job' do
+          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at }
+          patch("/api/v0/jobs?id=#{@not_owned_archived_job.id.to_i}", headers:)
+          expect(response).to have_http_status(409)
         end
         it 'returns [409 Conflict] if job is inactive' do
           patch("/api/v0/jobs?id=#{@inactive_job.id.to_i}", params: form_data.except(:status), headers:)
