@@ -35,7 +35,7 @@ RSpec.describe 'ApplicationsController' do
     @valid_user_has_own_jobs.pay_customers
     @valid_user_has_own_jobs.payment_processor.customer
     @valid_user_has_own_jobs.payment_processor.charge(19_00)
-    @valid_user_has_own_jobs.payment_processor.subscribe(plan: 'fake')
+    @valid_user_has_own_jobs.payment_processor.subscribe(plan: 'price_1OUuWFKMiBrigNb6lfAf7ptj')
 
     # Create valid verified user with own jobs
     @valid_user_has_no_jobs = User.create!(
@@ -52,7 +52,7 @@ RSpec.describe 'ApplicationsController' do
     @valid_user_has_no_jobs.pay_customers
     @valid_user_has_no_jobs.payment_processor.customer
     @valid_user_has_no_jobs.payment_processor.charge(19_00)
-    @valid_user_has_no_jobs.payment_processor.subscribe(plan: 'fake')
+    @valid_user_has_no_jobs.payment_processor.subscribe(plan: 'price_1OUuWFKMiBrigNb6lfAf7ptj')
 
     # Create valid verified user with own jobs
     @unsubscribed_user_has_own_jobs = User.create!(
@@ -64,7 +64,12 @@ RSpec.describe 'ApplicationsController' do
       user_role: 'verified',
       activity_status: '1'
     )
-    puts "Created valid verified user with own jobs: #{@valid_user_has_own_jobs.id}"
+    puts "Created valid verified user with own jobs: #{@unsubscribed_user_has_own_jobs.id}"
+    @unsubscribed_user_has_own_jobs.set_payment_processor :fake_processor, allow_fake: true
+    @unsubscribed_user_has_own_jobs.pay_customers
+    @unsubscribed_user_has_own_jobs.payment_processor.customer
+    @unsubscribed_user_has_own_jobs.payment_processor.charge(19_00)
+    @unsubscribed_user_has_own_jobs.payment_processor.subscribe(plan: 'price_1OUuWFKMiBrigNb6lfAf7ptj')
 
     # Create valid verified user with applications
     @valid_user_has_applications = User.create!(
@@ -317,6 +322,7 @@ RSpec.describe 'ApplicationsController' do
       cv_required: false
     )
     puts "Created new job for: #{@unsubscribed_user_has_own_jobs.id}"
+    @unsubscribed_user_has_own_jobs.payment_processor.subscription.cancel_now!
   end
 
   describe 'User', type: :request do

@@ -263,8 +263,9 @@ module Api
       #       end
 
       def job_params
-        params.except(:format).permit(:title, :description, :start_slot, :referrer_url, :longitude, :latitude, :job_type, :status, :image_url, :position, :currency, :salary, :key_skills, :duration,
-                                      :job_notifications, :cv_required, allowed_cv_formats: [], application_options_attributes: [:id, :question, :question_type, :required, { options: [] }])
+        params.except(:format).permit(:id, :job_slug, :title, :description, :start_slot, :referrer_url, :longitude, :latitude, :job_type, :status, :image_url, :position, :currency, :salary,
+                                      :key_skills, :duration, :job_notifications, :cv_required, allowed_cv_formats: [], application_options_attributes: [:id, :question, :question_type,
+                                                                                                                                                         :required, { options: [] }])
       end
 
       def find_job_params

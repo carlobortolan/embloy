@@ -1,17 +1,19 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/ModuleLength
 # The JobValidator module contains custom validation rules for a Job object.
 module Validators
   # These rules are included in the Job model and run when a Job object is saved.
   module JobValidator
     extend ActiveSupport::Concern
-
     # rubocop:disable Metrics/BlockLength
+    # rubocop:disable Metrics/CyclomaticComplexity
     included do
       geocoded_by :latitude_longitude
       after_validation :geocode
       include Visible
       include PgSearch::Model
+
       # include ActiveModel::Serialization
       paginates_per 48
       max_pages 10
@@ -41,7 +43,7 @@ module Validators
       has_rich_text :description
       has_one_attached :image_url
 
-      validates :job_slug, uniqueness: { scope: :user_id, error: 'ERR_BLANK', description: 'Should be unique per user' }
+      validates :job_slug, uniqueness: { scope: :user_id, error: 'ERR_BLANK', description: 'Should be unique per user' }, on: %i[create update]
       validates :title, length: { minimum: 0, maximum: 100, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }, allow_blank: true
       validates :description, length: { minimum: 10, maximum: 1000, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }, allow_blank: true
       validates :longitude, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
@@ -72,10 +74,32 @@ module Validators
       validate :image_format_validation
       validate :application_options_count_validation
       validate :application_options_validity
+      validate :check_subscription_limit
     end
-    # rubocop:enable Metrics/BlockLength
 
     private
+
+    def check_subscription_limit
+      return unless user
+
+      subscription = user.current_subscription
+      subscription_type = subscription ? SubscriptionHelper.subscription_type(subscription.processor_plan) : nil
+
+      max_jobs_allowed = case subscription_type
+                         when 'basic'
+                           3
+                         when 'genius'
+                           50
+                         when 'enterprise_1', 'enterprise_2', 'enterprise_3'
+                           Float::INFINITY
+                         else
+                           0
+                         end
+
+      return unless user.jobs.where(status: %w[public private], job_status: 1).count >= max_jobs_allowed
+
+      errors.add(:base, "You've reached the maximum number of allowed jobs for your subscription type (#{subscription_type || 'no subscription'}).")
+    end
 
     def cv_formats_validation
       self.allowed_cv_formats = ['.pdf', '.docx', '.txt', '.xml'] if allowed_cv_formats.nil?
@@ -123,5 +147,8 @@ module Validators
         end
       end
     end
+    # rubocop:enable Metrics/BlockLength
+    # rubocop:enable Metrics/CyclomaticComplexity
   end
 end
+# rubocop:enable Metrics/ModuleLength

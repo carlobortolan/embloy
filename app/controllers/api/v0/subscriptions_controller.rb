@@ -42,7 +42,6 @@ module Api
       private
 
       def fetch_subscription
-        Current.user.payment_processor.sync_subscriptions(status: 'all')
         if params[:info].present? && params[:info] == '1'
           Current.user.current_subscription_info
         else

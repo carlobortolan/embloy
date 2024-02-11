@@ -158,24 +158,24 @@ class ApplicationController < ActionController::API
 
   def must_be_subscribed(id = nil)
     set_current_id(id)
-    Current.user.active_subscription
+    Current.user.active_subscription?
   end
 
   def self.must_be_subscribed(id = nil)
     set_current_id(id)
-    Current.user.active_subscription
+    Current.user.active_subscription?
   end
 
   def must_be_subscribed!(id = nil)
     set_current_id(id)
-    return if Current.user.active_subscription
+    return if Current.user.active_subscription?
 
     raise CustomExceptions::Subscription::ExpiredOrMissing
   end
 
   def self.must_be_subscribed!(id = nil)
     set_current_id(id)
-    return if Current.user.active_subscription
+    return if Current.user.active_subscription?
 
     raise CustomExceptions::Subscription::ExpiredOrMissing
   end

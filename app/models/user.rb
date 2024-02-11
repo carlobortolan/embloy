@@ -14,7 +14,6 @@ class User < ApplicationRecord
                            dependent: :destroy
   has_many :applications
   has_many :application_attachments
-  # has_many :subscriptions, dependent: :delete_all
 
   pay_customer default_payment_processor: :stripe
   pay_customer stripe_attributes: :stripe_attributes

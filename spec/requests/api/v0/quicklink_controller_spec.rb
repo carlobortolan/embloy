@@ -21,7 +21,7 @@ RSpec.describe 'QuicklinkController' do
     @valid_user.pay_customers
     @valid_user.payment_processor.customer
     @valid_user.payment_processor.charge(19_00)
-    @valid_user.payment_processor.subscribe(plan: 'fake')
+    @valid_user.payment_processor.subscribe(plan: 'price_1OUuWFKMiBrigNb6lfAf7ptj')
     puts "Created subscribed, verified user without own jobs, upcoming jobs, reviews: #{@valid_user.id}"
 
     # Create user with soon expiring subscription, own jobs, upcoming jobs, reviews, ...
@@ -38,7 +38,7 @@ RSpec.describe 'QuicklinkController' do
     @valid_user_exp.pay_customers
     @valid_user_exp.payment_processor.customer
     @valid_user_exp.payment_processor.charge(19_00)
-    @valid_user_exp.payment_processor.subscribe(plan: 'fake')
+    @valid_user_exp.payment_processor.subscribe(plan: 'price_1OUuWFKMiBrigNb6lfAf7ptj')
     puts "Created user with soon expiring subscription: #{@valid_user_exp.id}"
 
     # Create valid verified user with own jobs
@@ -55,7 +55,7 @@ RSpec.describe 'QuicklinkController' do
     @valid_user_has_own_jobs.pay_customers
     @valid_user_has_own_jobs.payment_processor.customer
     @valid_user_has_own_jobs.payment_processor.charge(19_00)
-    @valid_user_has_own_jobs.payment_processor.subscribe(plan: 'fake')
+    @valid_user_has_own_jobs.payment_processor.subscribe(plan: 'price_1OUuWFKMiBrigNb6lfAf7ptj')
     puts "Created valid verified user with own jobs: #{@valid_user_has_own_jobs.id}"
 
     # Create valid verified user who already has applied
@@ -96,7 +96,7 @@ RSpec.describe 'QuicklinkController' do
     @blacklisted_user.pay_customers
     @blacklisted_user.payment_processor.customer
     @blacklisted_user.payment_processor.charge(19_00)
-    @blacklisted_user.payment_processor.subscribe(plan: 'fake')
+    @blacklisted_user.payment_processor.subscribe(plan: 'price_1OUuWFKMiBrigNb6lfAf7ptj')
     puts "Created blacklisted user: #{@blacklisted_user.id}"
 
     ### ACCESS / REFRESH TOKENS ###

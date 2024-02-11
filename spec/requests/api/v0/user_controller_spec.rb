@@ -31,6 +31,11 @@ RSpec.describe 'UserController' do
       activity_status: '1'
     )
     puts "Created valid verified user with own jobs: #{@valid_user_has_own_jobs.id}"
+    @valid_user_has_own_jobs.set_payment_processor :fake_processor, allow_fake: true
+    @valid_user_has_own_jobs.pay_customers
+    @valid_user_has_own_jobs.payment_processor.customer
+    @valid_user_has_own_jobs.payment_processor.charge(19_00)
+    @valid_user_has_own_jobs.payment_processor.subscribe(plan: 'price_1OUuWFKMiBrigNb6lfAf7ptj')
 
     # Create valid verified user with upcoming jobs
     @valid_user_has_upcoming_jobs = User.create!(

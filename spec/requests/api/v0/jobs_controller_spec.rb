@@ -22,7 +22,7 @@ RSpec.describe 'JobsController' do
     @valid_user.pay_customers
     @valid_user.payment_processor.customer
     @valid_user.payment_processor.charge(19_00)
-    @valid_user.payment_processor.subscribe(plan: 'fake')
+    @valid_user.payment_processor.subscribe(plan: 'price_1OUuWFKMiBrigNb6lfAf7ptj')
 
     # Create valid unverified user
     @unverified_user = User.create!(
@@ -39,7 +39,7 @@ RSpec.describe 'JobsController' do
     @unverified_user.pay_customers
     @unverified_user.payment_processor.customer
     @unverified_user.payment_processor.charge(19_00)
-    @unverified_user.payment_processor.subscribe(plan: 'fake')
+    @unverified_user.payment_processor.subscribe(plan: 'price_1OUuWFKMiBrigNb6lfAf7ptj')
 
     # Blacklisted verified user
     @blacklisted_user = User.create!(
@@ -52,6 +52,11 @@ RSpec.describe 'JobsController' do
       activity_status: '1'
     )
     puts "Created blacklisted user: #{@blacklisted_user.id}"
+    @blacklisted_user.set_payment_processor :fake_processor, allow_fake: true
+    @blacklisted_user.pay_customers
+    @blacklisted_user.payment_processor.customer
+    @blacklisted_user.payment_processor.charge(19_00)
+    @blacklisted_user.payment_processor.subscribe(plan: 'price_1OUuWFKMiBrigNb6lfAf7ptj')
 
     # Blacklisted verified user
     @unsubscribed_user = User.create!(
@@ -63,7 +68,7 @@ RSpec.describe 'JobsController' do
       user_role: 'verified',
       activity_status: '1'
     )
-    puts "Created blacklisted user: #{@blacklisted_user.id}"
+    puts "Created unsubscribed user: #{@unsubscribed_user.id}"
 
     # Create jobs
     5.times do
