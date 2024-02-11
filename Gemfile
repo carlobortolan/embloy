@@ -132,3 +132,6 @@ gem "paranoia", "~> 2.6"
 gem "faraday", "~> 2.7"
 
 gem "tempfile", "~> 0.2.1"
+
+# Security and monitoring
+gem 'rack-attack'
