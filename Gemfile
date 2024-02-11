@@ -135,3 +135,4 @@ gem "tempfile", "~> 0.2.1"
 
 # Security and monitoring
 gem 'rack-attack'
+gem 'rack-protection'

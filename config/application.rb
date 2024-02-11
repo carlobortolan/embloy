@@ -19,6 +19,7 @@ module Embloy
     config.action_mailer.default_url_options = { host: 'embloy.com' }
     config.action_controller.forgery_protection_origin_check = true
     config.middleware.use Rack::Attack
+    config.middleware.use Rack::Protection
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
