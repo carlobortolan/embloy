@@ -22,28 +22,17 @@ module Api
         else
           render(status: 200,
                  json: "{\"jobs\": [#{Job.jsons_for(jobs)}]}")
-          #          render(status: 200,
-          #                 json: "{\"jobs\": [#{Job.jsons_for(jobs)}]}")
         end
       end
 
       def own_applications
         applications = Application.where(user_id: Current.user.id)
+                                  .includes(job: %i[rich_text_description
+                                                    application_options
+                                                    user]).includes([:application_answers])
         return render(status: 204, json: { applications: {} }) if applications.empty?
 
-        applications_json = applications.map do |application|
-          application_attachment = ApplicationAttachment.find_by(job_id: application.job_id, user_id: Current.user.id)
-          attachment_url = application_attachment ? rails_blob_url(application_attachment.cv) : nil
-          {
-            application:,
-            application_attachment: {
-              attachment: application_attachment,
-              url: attachment_url
-            }
-          }
-        end
-
-        render status: 200, json: applications_json
+        render status: 200, json: build_applications_json(applications)
       end
 
       def own_reviews
@@ -112,6 +101,23 @@ module Api
       end
 
       private
+
+      def build_applications_json(applications)
+        applications.map do |application|
+          application_attachment = ApplicationAttachment.find_by(job_id: application.job_id, user_id: Current.user.id)
+          attachment_url = application_attachment ? rails_blob_url(application_attachment.cv) : nil
+
+          {
+            application:,
+            job: Job.get_json_include_user_exclude_image(application.job),
+            application_answers: application.application_answers,
+            application_attachment: {
+              attachment: application_attachment,
+              url: attachment_url
+            }
+          }
+        end
+      end
 
       def fetch_upcoming_jobs
         applications = Application.all.where(user_id: Current.user.id, status: '1')

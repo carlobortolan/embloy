@@ -81,8 +81,8 @@ ActiveRecord::Schema[7.0].define(version: 20_240_114_012_806) do
   create_table 'applications', primary_key: %w[job_id user_id], force: :cascade do |t|
     t.integer 'job_id', null: false
     t.integer 'user_id', null: false
-    t.datetime 'updated_at', default: '2023-02-27 23:06:10', null: false
-    t.datetime 'created_at', default: '2023-02-27 23:06:10', null: false
+    t.datetime 'updated_at', null: false
+    t.datetime 'created_at', null: false
     t.enum 'status', default: '0', null: false, enum_type: 'application_status'
     t.string 'application_text', limit: 1000
     t.string 'application_documents', limit: 150
@@ -109,8 +109,8 @@ ActiveRecord::Schema[7.0].define(version: 20_240_114_012_806) do
   end
 
   create_table 'currents', force: :cascade do |t|
-    t.datetime 'created_at', default: '2023-02-27 23:06:11', null: false
-    t.datetime 'updated_at', default: '2023-02-27 23:06:11', null: false
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
   end
 
   create_table 'jobs', primary_key: 'job_id', id: :serial, force: :cascade do |t|
@@ -171,8 +171,8 @@ ActiveRecord::Schema[7.0].define(version: 20_240_114_012_806) do
     t.enum 'question_type', default: 'yes_no', null: false, enum_type: 'question_type'
     t.boolean 'required', default: true
     t.text 'options'
-    t.datetime 'created_at', precision: 6, null: false
-    t.datetime 'updated_at', precision: 6, null: false
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
     t.datetime 'deleted_at'
     t.index ['job_id'], name: 'application_options_job_id_index'
     t.index ['deleted_at'], name: 'index_application_options_on_deleted_at'
@@ -183,8 +183,8 @@ ActiveRecord::Schema[7.0].define(version: 20_240_114_012_806) do
     t.bigint 'user_id', null: false
     t.bigint 'application_option_id', null: false
     t.text 'answer'
-    t.datetime 'created_at', precision: 6, null: false
-    t.datetime 'updated_at', precision: 6, null: false
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
     t.datetime 'deleted_at'
     t.index ['job_id'], name: 'application_answers_job_id_index'
     t.index ['user_id'], name: 'application_answers_user_id_index'

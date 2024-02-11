@@ -40,6 +40,15 @@ module Serializers
       res_hash.to_json
     end
 
+    def self.get_json_include_user_exclude_image(job)
+      return if job.nil?
+
+      res_hash = job_to_hash(job)
+      add_employer_details(job, res_hash)
+
+      res_hash.to_json
+    end
+
     def self.jsons_for(jobs)
       res_json = []
 
@@ -66,17 +75,15 @@ module Serializers
     end
 
     def self.add_image_url(job, res_hash)
-      res_hash['image_url'] = if job.image_url&.url
-                                job.image_url.url
-                              else
-                                ''
-                              end
+      res_hash['image_url'] = job.image_url&.url || ''
     end
 
     def self.add_employer_details(job, res_hash)
-      res_hash['employer_email'] = job.user.email
-      res_hash['employer_name'] = "#{job.user.first_name} + #{job.user.first_name}"
-      res_hash['employer_phone'] = job.user.phone
+      user = job.user
+      res_hash['employer_email'] = user.email
+      res_hash['employer_name'] = "#{user.first_name} #{user.last_name}"
+      res_hash['employer_phone'] = user.phone
+      res_hash['employer_image_url'] = user.image_url&.url || ''
     end
   end
 end

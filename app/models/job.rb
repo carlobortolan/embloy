@@ -54,6 +54,10 @@ class Job < ApplicationRecord
     Serializers::JobSerializer.get_json_include_user(job)
   end
 
+  def self.get_json_include_user_exclude_image(job)
+    Serializers::JobSerializer.get_json_include_user_exclude_image(job)
+  end
+
   def self.jsons_for(jobs)
     Serializers::JobSerializer.jsons_for(jobs)
   end
