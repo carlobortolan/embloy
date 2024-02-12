@@ -46,7 +46,7 @@ Gemfile.lock
 *.iml
 
 # Ignore newrelic config
-.newrelic
+newrelic.yml
 
 # Admin assets
 /node_modules
