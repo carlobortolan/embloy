@@ -5,7 +5,6 @@ require 'tempfile'
 
 # OauthCallbacksController handles oauth-related actions
 class OauthCallbacksController < ApplicationController
-  skip_before_action :set_current_user
   skip_before_action :require_user_not_blacklisted!
 
   def github

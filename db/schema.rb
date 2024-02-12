@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 20_240_114_012_806) do
+ActiveRecord::Schema[7.0].define(version: 20_240_212_052_057) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_trgm'
   enable_extension 'plpgsql'
@@ -25,10 +25,10 @@ ActiveRecord::Schema[7.0].define(version: 20_240_114_012_806) do
   create_enum 'application_status', ['-1', '0', '1']
   create_enum 'job_status', %w[public private archived]
   create_enum 'notify_type', %w[0 1]
+  create_enum 'question_type', %w[yes_no text link single_choice multiple_choice]
   create_enum 'rating_type', %w[1 2 3 4 5]
   create_enum 'user_role', %w[admin editor developer moderator verified spectator]
   create_enum 'user_type', %w[company private]
-  create_enum 'question_type', %w[yes_no text link single_choice multiple_choice]
 
   create_table 'action_text_rich_texts', force: :cascade do |t|
     t.string 'name', null: false
@@ -68,6 +68,41 @@ ActiveRecord::Schema[7.0].define(version: 20_240_114_012_806) do
     t.index %w[blob_id variation_digest], name: 'index_active_storage_variant_records_uniqueness', unique: true
   end
 
+  create_table 'admins', force: :cascade do |t|
+    t.string 'email', default: '', null: false
+    t.string 'encrypted_password', default: '', null: false
+    t.string 'reset_password_token'
+    t.datetime 'reset_password_sent_at'
+    t.datetime 'remember_created_at'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.datetime 'locked_at'
+    t.integer 'failed_attempts'
+    t.string 'unlock_token'
+    t.datetime 'unlocked_at'
+    t.datetime 'current_sign_in_at'
+    t.datetime 'last_sign_in_at'
+    t.string 'current_sign_in_ip'
+    t.string 'last_sign_in_ip'
+    t.integer 'sign_in_count', default: 0
+    t.index ['email'], name: 'index_admins_on_email', unique: true
+    t.index ['reset_password_token'], name: 'index_admins_on_reset_password_token', unique: true
+  end
+
+  create_table 'application_answers', force: :cascade do |t|
+    t.bigint 'job_id', null: false
+    t.bigint 'user_id', null: false
+    t.bigint 'application_option_id', null: false
+    t.text 'answer'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.datetime 'deleted_at'
+    t.index ['application_option_id'], name: 'application_answers_on_application_option_id_index'
+    t.index ['deleted_at'], name: 'index_application_anwers_on_deleted_at'
+    t.index ['job_id'], name: 'application_answers_job_id_index'
+    t.index ['user_id'], name: 'application_answers_user_id_index'
+  end
+
   create_table 'application_attachments', id: :serial, force: :cascade do |t|
     t.integer 'user_id', null: false
     t.integer 'job_id', null: false
@@ -76,6 +111,19 @@ ActiveRecord::Schema[7.0].define(version: 20_240_114_012_806) do
     t.index %w[job_id user_id], name: 'application_attachment_job_id_user_id_index', unique: true
     t.index ['job_id'], name: 'application_attachment_job_id_index'
     t.index ['user_id'], name: 'application_attachment_user_id_index'
+  end
+
+  create_table 'application_options', force: :cascade do |t|
+    t.bigint 'job_id', null: false
+    t.string 'question', limit: 200, null: false
+    t.enum 'question_type', default: 'yes_no', null: false, enum_type: 'question_type'
+    t.boolean 'required', default: true
+    t.text 'options'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.datetime 'deleted_at'
+    t.index ['deleted_at'], name: 'index_application_options_on_deleted_at'
+    t.index ['job_id'], name: 'application_options_job_id_index'
   end
 
   create_table 'applications', primary_key: %w[job_id user_id], force: :cascade do |t|
@@ -165,31 +213,33 @@ ActiveRecord::Schema[7.0].define(version: 20_240_114_012_806) do
   execute('CREATE INDEX IF NOT EXISTS jobs_title_trgm_idx ON jobs USING gin(title gin_trgm_ops);CREATE INDEX IF NOT EXISTS jobs_job_type_trgm_idx ON jobs USING gin(job_type gin_trgm_ops);')
   execute('CREATE EXTENSION IF NOT EXISTS unaccent;')
 
-  create_table 'application_options', force: :cascade do |t|
-    t.bigint 'job_id', null: false
-    t.string 'question', null: false, limit: 200
-    t.enum 'question_type', default: 'yes_no', null: false, enum_type: 'question_type'
-    t.boolean 'required', default: true
-    t.text 'options'
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.datetime 'deleted_at'
-    t.index ['job_id'], name: 'application_options_job_id_index'
-    t.index ['deleted_at'], name: 'index_application_options_on_deleted_at'
+  create_table 'notable_jobs', force: :cascade do |t|
+    t.string 'note_type'
+    t.text 'note'
+    t.text 'job'
+    t.string 'job_id'
+    t.string 'queue'
+    t.float 'runtime'
+    t.float 'queued_time'
+    t.datetime 'created_at'
   end
 
-  create_table 'application_answers', force: :cascade do |t|
-    t.bigint 'job_id', null: false
-    t.bigint 'user_id', null: false
-    t.bigint 'application_option_id', null: false
-    t.text 'answer'
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.datetime 'deleted_at'
-    t.index ['job_id'], name: 'application_answers_job_id_index'
-    t.index ['user_id'], name: 'application_answers_user_id_index'
-    t.index ['application_option_id'], name: 'application_answers_on_application_option_id_index'
-    t.index ['deleted_at'], name: 'index_application_anwers_on_deleted_at'
+  create_table 'notable_requests', force: :cascade do |t|
+    t.string 'note_type'
+    t.text 'note'
+    t.string 'user_type'
+    t.bigint 'user_id'
+    t.text 'action'
+    t.integer 'status'
+    t.text 'url'
+    t.string 'request_id'
+    t.string 'ip'
+    t.text 'user_agent'
+    t.text 'referrer'
+    t.text 'params'
+    t.float 'request_time'
+    t.datetime 'created_at'
+    t.index %w[user_type user_id], name: 'index_notable_requests_on_user'
   end
 
   create_table 'notifications', force: :cascade do |t|
@@ -383,6 +433,7 @@ ActiveRecord::Schema[7.0].define(version: 20_240_114_012_806) do
 
   add_foreign_key 'active_storage_attachments', 'active_storage_blobs', column: 'blob_id'
   add_foreign_key 'active_storage_variant_records', 'active_storage_blobs', column: 'blob_id'
+  add_foreign_key 'application_options', 'jobs', primary_key: 'job_id', on_delete: :cascade
   add_foreign_key 'applications', 'jobs', primary_key: 'job_id', on_delete: :cascade
   add_foreign_key 'applications', 'users', on_delete: :cascade
   add_foreign_key 'company_users', 'users', column: 'id', on_delete: :cascade
@@ -397,5 +448,4 @@ ActiveRecord::Schema[7.0].define(version: 20_240_114_012_806) do
   add_foreign_key 'reviews', 'users' # TODO: ???
   add_foreign_key 'reviews', 'users', column: 'created_by'
   add_foreign_key 'user_blacklists', 'users', on_delete: :cascade
-  add_foreign_key 'application_options', 'jobs', primary_key: 'job_id', on_delete: :cascade
 end

@@ -51,6 +51,10 @@ GEM
       globalid (>= 0.3.6)
     activemodel (7.0.7.2)
       activesupport (= 7.0.7.2)
+    activemodel-serializers-xml (1.0.2)
+      activemodel (> 5.x)
+      activesupport (> 5.x)
+      builder (~> 3.1)
     activerecord (7.0.7.2)
       activemodel (= 7.0.7.2)
       activesupport (= 7.0.7.2)
@@ -109,6 +113,12 @@ GEM
     debug (1.7.1)
       irb (>= 1.5.0)
       reline (>= 0.3.1)
+    devise (4.9.3)
+      bcrypt (~> 3.0)
+      orm_adapter (~> 0.1)
+      railties (>= 4.1.0)
+      responders
+      warden (~> 1.2.3)
     diff-lcs (1.5.0)
     docile (1.4.0)
     domain_name (0.5.20190701)
@@ -205,6 +215,7 @@ GEM
     minitest (5.20.0)
     msgpack (1.6.1)
     multi_xml (0.6.0)
+    nested_form (0.3.2)
     net-imap (0.3.4)
       date
       net-protocol
@@ -214,10 +225,14 @@ GEM
       timeout
     net-smtp (0.3.3)
       net-protocol
+    newrelic_rpm (9.7.1)
     nio4r (2.5.8)
     nokogiri (1.16.2)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
+    notable (0.5.2)
+      activesupport (>= 6.1)
+      safely_block (>= 0.4)
     noticed (1.6.0)
       http (>= 4.0.0)
       rails (>= 5.2.0)
@@ -251,6 +266,7 @@ GEM
     omniauth-rails_csrf_protection (1.0.1)
       actionpack (>= 4.2)
       omniauth (~> 2.0)
+    orm_adapter (0.5.0)
     parallel (1.24.0)
     paranoia (2.6.3)
       activerecord (>= 5.1, < 7.2)
@@ -297,6 +313,12 @@ GEM
       nokogiri (>= 1.6)
     rails-html-sanitizer (1.5.0)
       loofah (~> 2.19, >= 2.19.1)
+    rails_admin (3.1.2)
+      activemodel-serializers-xml (>= 1.0)
+      kaminari (>= 0.14, < 2.0)
+      nested_form (~> 0.3)
+      rails (>= 6.0, < 8)
+      turbo-rails (~> 1.0)
     railties (7.0.7.2)
       actionpack (= 7.0.7.2)
       activesupport (= 7.0.7.2)
@@ -309,6 +331,9 @@ GEM
     regexp_parser (2.7.0)
     reline (0.3.2)
       io-console (~> 0.5)
+    responders (3.1.1)
+      actionpack (>= 5.2)
+      railties (>= 5.2)
     rexml (3.2.5)
     rgeo (3.0.0)
     rgeo-activerecord (7.0.1)
@@ -349,6 +374,17 @@ GEM
       ffi (~> 1.12)
     ruby2_keywords (0.0.5)
     rubyzip (2.3.2)
+    safely_block (0.4.0)
+    sassc (2.4.0)
+      ffi (~> 1.9)
+    sassc (2.4.0-x64-mingw32)
+      ffi (~> 1.9)
+    sassc-rails (2.1.2)
+      railties (>= 4.0.0)
+      sassc (>= 2.0)
+      sprockets (> 3.0)
+      sprockets-rails
+      tilt
     selenium-webdriver (4.8.1)
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
@@ -374,6 +410,7 @@ GEM
     stripe (10.4.0)
     tempfile (0.2.1)
     thor (1.2.1)
+    tilt (2.3.0)
     timeout (0.3.2)
     trix (0.10.1)
       rails
@@ -391,6 +428,8 @@ GEM
     unicode-display_width (2.5.0)
     uniform_notifier (1.16.0)
     version_gem (1.1.2)
+    warden (1.2.9)
+      rack (>= 2.0.9)
     web-console (4.2.0)
       actionview (>= 6.0.0)
       activemodel (>= 6.0.0)
@@ -429,6 +468,7 @@ DEPENDENCIES
   dalli
   database_cleaner
   debug
+  devise
   dotenv-rails
   faker
   faraday (~> 2.7)
@@ -439,7 +479,9 @@ DEPENDENCIES
   iso_country_codes
   jbuilder
   kaminari
+  newrelic_rpm
   nokogiri (>= 1.16.2)
+  notable (~> 0.5.2)
   noticed (~> 1.6)
   omniauth
   omniauth-azure-activedirectory-v2 (~> 2.1)
@@ -456,9 +498,12 @@ DEPENDENCIES
   rack-cors
   rack-protection
   rails (~> 7.0.4, >= 7.0.4.1)
+  rails_admin (~> 3.0)
+  responders (~> 3.1)
   rgeo
   rspec-rails (~> 6.0.0)
   rubocop
+  sassc-rails
   selenium-webdriver
   simplecov
   sprockets-rails

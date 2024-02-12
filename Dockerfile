@@ -8,8 +8,9 @@ WORKDIR /app
 RUN apt-get update -qq && \
     apt-get install -y build-essential \
                        libpq-dev \
-                       nodejs
-
+                       nodejs \
+                       npm
+                       
 # Copy the Gemfile and Gemfile.lock into the container
 COPY Gemfile Gemfile.lock ./
 
