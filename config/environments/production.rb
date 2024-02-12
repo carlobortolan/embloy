@@ -60,7 +60,7 @@ Rails.application.configure do
 
   # Use a different cache store in production.
   # Configure the cache store.  In this case, configure it to use a MemCacheStore, which uses Dalli.
-  # config.cache_store = :mem_cache_store, 'localhost:11211', 'abc.example.com:11211', { pool_size: 10, pool_timeout: 5 }
+  config.cache_store = :mem_cache_store, { size: 64.megabytes }
   # Enable fragment and page caching in ActionController - optional, assuming the application wants to use page fragment caching
   config.action_controller.perform_caching = true # Use a real queuing backend for Active Job (and separate queues per environment).
   # config.active_job.queue_adapter     = :resque

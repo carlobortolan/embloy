@@ -44,3 +44,9 @@ Gemfile.lock
 # Ignore JetBrains IDE files
 .idea/
 *.iml
+
+# Ignore newrelic config
+.newrelic
+
+# Admin assets
+/node_modules

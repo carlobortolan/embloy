@@ -136,3 +136,9 @@ gem "tempfile", "~> 0.2.1"
 # Security and monitoring
 gem 'rack-attack'
 gem 'rack-protection'
+gem 'newrelic_rpm'
+gem "notable", "~> 0.5.2"
+gem 'rails_admin', '~> 3.0'
+# gem "cssbundling-rails"
+gem "sassc-rails"
+gem 'devise'
