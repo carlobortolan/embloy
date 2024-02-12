@@ -5,18 +5,11 @@
 #########################################################
 class ApplicationController < ActionController::API
   include SpatialJobValue
-
+  
   # ============ WEB-APP BEFORE ACTIONS ==============
-  before_action :set_current_user
   before_action :set_notifications, unless: -> { Current.user.nil? }
   before_action :require_user_not_blacklisted!, unless: -> { Current.user.nil? }
-
-  # def set_current_user
-  #  return unless session[:user_id]
-  #
-  #   Current.user = User.find_by(id: session[:user_id])
-  # end
-
+  
   # =============== Blacklisted User Check ===============
   # ================ WITH DATABASE LOOKUP ================
   def require_user_not_blacklisted(id = nil)

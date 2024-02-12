@@ -3,7 +3,7 @@
 #########################################################
 #################### API CONTROLLER #####################
 #########################################################
-require_relative '../../../service/api_exception_handler'
+
 module Api
   module V0
     # ApiController handles API-related actions

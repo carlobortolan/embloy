@@ -126,6 +126,9 @@ module ApiExceptionHandler
     rescue_from CustomExceptions::Subscription::ExpiredOrMissing,
                 with: :subscription_expired_or_missing_error
 
+    rescue_from CustomExceptions::Subscription::LimitReached,
+                with: :subscription_limit_reached_error
+
     #--------------------------------------
 
     rescue_from CustomExceptions::InvalidInput::GeniusQuery::Malformed,
@@ -187,6 +190,10 @@ module ApiExceptionHandler
 
   def subscription_expired_or_missing_error
     unauthorized_error('subscription')
+  end
+
+  def subscription_limit_reached_error
+    too_many_requests_error('subscription', 'You\'ve reached the maximum number of allowed resources for your subscription type')
   end
 
   # ========== Token related exceptions ===========
@@ -335,6 +342,12 @@ module ApiExceptionHandler
 
   def biased_error(attribute)
     render_error(attribute, 'ERR_INVALID', 'Attribute is biased', 422)
+  end
+
+  #--------------------------------------
+
+  def too_many_requests_error(attribute, message = nil)
+    render_error(attribute, 'ERR_LIMIT', message || 'Too many request', 429)
   end
 
   #--------------------------------------

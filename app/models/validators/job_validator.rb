@@ -7,7 +7,6 @@ module Validators
   module JobValidator
     extend ActiveSupport::Concern
     # rubocop:disable Metrics/BlockLength
-    # rubocop:disable Metrics/CyclomaticComplexity
     included do
       geocoded_by :latitude_longitude
       after_validation :geocode
@@ -88,7 +87,7 @@ module Validators
       max_jobs_allowed = case subscription_type
                          when 'basic'
                            3
-                         when 'genius'
+                         when 'premium'
                            50
                          when 'enterprise_1', 'enterprise_2', 'enterprise_3'
                            Float::INFINITY
@@ -96,9 +95,9 @@ module Validators
                            0
                          end
 
-      return unless user.jobs.where(status: %w[public private], job_status: 1).count >= max_jobs_allowed
+      return unless user.jobs.where(status: %w[public private], job_status: 1).count > max_jobs_allowed
 
-      errors.add(:base, "You've reached the maximum number of allowed jobs for your subscription type (#{subscription_type || 'no subscription'}).")
+      raise CustomExceptions::Subscription::LimitReached
     end
 
     def cv_formats_validation
@@ -148,7 +147,6 @@ module Validators
       end
     end
     # rubocop:enable Metrics/BlockLength
-    # rubocop:enable Metrics/CyclomaticComplexity
   end
 end
 # rubocop:enable Metrics/ModuleLength

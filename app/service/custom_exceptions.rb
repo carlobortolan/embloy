@@ -123,5 +123,9 @@ class CustomExceptions < StandardError
     # Subscription is either expired or not existent
     class ExpiredOrMissing < StandardError
     end
+
+    # Throttling Resource Manager requests based on subscription level
+    class LimitReached < StandardError
+    end
   end
 end

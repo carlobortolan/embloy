@@ -24,6 +24,40 @@ RSpec.describe 'JobsController' do
     @valid_user.payment_processor.charge(19_00)
     @valid_user.payment_processor.subscribe(plan: 'price_1OUuWFKMiBrigNb6lfAf7ptj')
 
+    # Create user with embloy-basic subscription
+    @user_basic = User.create!(
+      first_name: 'Max',
+      last_name: 'Mustermann',
+      email: "#{(0...16).map { charset.sample }.join}@embloy.com",
+      password: 'password',
+      password_confirmation: 'password',
+      user_role: 'verified',
+      activity_status: '1'
+    )
+    puts "Created valid user: #{@user_basic.id}"
+    @user_basic.set_payment_processor :fake_processor, allow_fake: true
+    @user_basic.pay_customers
+    @user_basic.payment_processor.customer
+    @user_basic.payment_processor.charge(19_00)
+    @user_basic.payment_processor.subscribe(plan: 'price_1OUuTgKMiBrigNb6R7xzRzTL')
+
+    # Create user with embloy-premium subscription
+    @user_premium = User.create!(
+      first_name: 'Max',
+      last_name: 'Mustermann',
+      email: "#{(0...16).map { charset.sample }.join}@embloy.com",
+      password: 'password',
+      password_confirmation: 'password',
+      user_role: 'verified',
+      activity_status: '1'
+    )
+    puts "Created user with embloy-premium subscription: #{@user_premium.id}"
+    @user_premium.set_payment_processor :fake_processor, allow_fake: true
+    @user_premium.pay_customers
+    @user_premium.payment_processor.customer
+    @user_premium.payment_processor.charge(19_00)
+    @user_premium.payment_processor.subscribe(plan: 'price_1OUqrPKMiBrigNb6lia8VWiD')
+
     # Create valid unverified user
     @unverified_user = User.create!(
       first_name: 'Max',
@@ -224,6 +258,30 @@ RSpec.describe 'JobsController' do
     post('/api/v0/auth/token/access', headers:)
     @valid_at = JSON.parse(response.body)['access_token']
     puts "Valid user with own jobs access token: #{@valid_at}"
+
+    # User with embloy-basic subscription refresh/access tokens
+    credentials = Base64.strict_encode64("#{@user_basic.email}:password")
+    headers = { 'Authorization' => "Basic #{credentials}" }
+    post('/api/v0/auth/token/refresh', headers:)
+    @basic_rt = JSON.parse(response.body)['refresh_token']
+    puts "User with embloy-basic subscription refresh token: #{@basic_rt}"
+
+    headers = { 'HTTP_REFRESH_TOKEN' => @basic_rt }
+    post('/api/v0/auth/token/access', headers:)
+    @basic_at = JSON.parse(response.body)['access_token']
+    puts "User with embloy-basic subscription access token: #{@basic_at}"
+
+    # User with embloy-premium subscription refresh/access tokens
+    credentials = Base64.strict_encode64("#{@user_premium.email}:password")
+    headers = { 'Authorization' => "Basic #{credentials}" }
+    post('/api/v0/auth/token/refresh', headers:)
+    @premium_rt = JSON.parse(response.body)['refresh_token']
+    puts "User with embloy-premium subscription refresh token: #{@premium_rt}"
+
+    headers = { 'HTTP_REFRESH_TOKEN' => @premium_rt }
+    post('/api/v0/auth/token/access', headers:)
+    @premium_at = JSON.parse(response.body)['access_token']
+    puts "Valid with embloy-premium subscription access token: #{@premium_at}"
 
     # Unsubscribed user refresh/access tokens
     credentials = Base64.strict_encode64("#{@unsubscribed_user.email}:password")
@@ -506,6 +564,28 @@ RSpec.describe 'JobsController' do
         }
       end
       let(:headers) { { 'HTTP_ACCESS_TOKEN' => @valid_at } }
+
+      context 'subscription limits reached' do
+        it 'returns [429 Too many request] if user creates more jobs than what his subscription (basic) allows' do
+          headers = { 'HTTP_ACCESS_TOKEN' => @basic_at }
+          3.times do
+            post('/api/v0/jobs', params: form_data, headers:)
+            expect(response).to have_http_status(201)
+          end
+          post('/api/v0/jobs', params: form_data, headers:)
+          expect(response).to have_http_status(429)
+        end
+        it 'returns [429 Too many request] if user creates more jobs than what his subscription (premium) allows' do
+          headers = { 'HTTP_ACCESS_TOKEN' => @premium_at }
+          50.times do
+            post('/api/v0/jobs', params: form_data, headers:)
+            expect(response).to have_http_status(201)
+          end
+          post('/api/v0/jobs', params: form_data, headers:)
+          expect(response).to have_http_status(429)
+        end
+      end
+
       context 'valid normal inputs' do
         it 'returns [201 Created] and job JSONs if job exists' do
           post('/api/v0/jobs', params: form_data, headers:)

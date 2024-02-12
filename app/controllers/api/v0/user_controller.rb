@@ -49,10 +49,7 @@ module Api
       def preferences
         if Current.user.preferences.nil?
           Current.user.create_preferences
-          unless Current.user.save
-            flash[:alert] = 'Preferences could not be saved'
-            render :preferences, status: :unprocessable_entity
-          end
+          render :preferences, status: :unprocessable_entity unless Current.user.save
         end
         render(status: 200, json: { preferences: Current.user.preferences })
       end
