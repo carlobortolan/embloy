@@ -16,7 +16,7 @@ RSpec.describe 'SubscriptionsController' do
       password: 'password',
       password_confirmation: 'password',
       user_role: 'verified',
-      activity_status: '1'
+      activity_status: 1
     )
     puts "Created verified user without jobs, applications: #{@valid_user.id}"
 
@@ -28,7 +28,7 @@ RSpec.describe 'SubscriptionsController' do
       password: 'password',
       password_confirmation: 'password',
       user_role: 'verified',
-      activity_status: '1'
+      activity_status: 1
     )
     puts "Created valid verified user with subscriptions: #{@valid_user_has_subscriptions.id}"
     @valid_user_has_subscriptions.set_payment_processor :fake_processor, allow_fake: true
@@ -45,7 +45,7 @@ RSpec.describe 'SubscriptionsController' do
       password: 'password',
       password_confirmation: 'password',
       user_role: 'verified',
-      activity_status: '1'
+      activity_status: 1
     )
     puts "Created blacklisted user: #{@blacklisted_user.id}"
 

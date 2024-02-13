@@ -54,7 +54,7 @@ gem "bootsnap", require: false
 gem 'dotenv-rails'
 
 # Use Sass to process CSS
-# gem "sassc-rails"
+gem "sassc-rails"
 # gem 'faker', :git => 'https://github.com/faker-ruby/faker.git', :branch => 'main'
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
@@ -139,6 +139,4 @@ gem 'rack-protection'
 gem 'newrelic_rpm'
 gem "notable", "~> 0.5.2"
 gem 'rails_admin', '~> 3.0'
-# gem "cssbundling-rails"
-gem "sassc-rails"
 gem 'devise'

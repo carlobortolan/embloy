@@ -12,32 +12,37 @@ module Api
       def create
         job = build_job
         job.assign_job_type_value
-        # job.job_status = 1
+        # job.activity_status = 1
 
         if job.save
           process_after_save(job)
           render status: 201, json: { message: 'Job created!' }
         else
-          render status: 400, json: job.errors.details
+          render status: 400, json: { error: 'Bad request', details: job.errors.details }
         end
+      rescue ActionController::ParameterMissing
+        render status: 400, json: { error: 'Bad request', details: { job: ['parameters are missing'] } }
+      rescue ActionController::BadRequest => e
+        render status: 400, json: { error: e.message }
       rescue ActiveSupport::MessageVerifier::InvalidSignature
         malformed_error('image_url')
-      rescue ActionController::ParameterMissing
-        blank_error('job')
       end
 
       def update
         must_be_owner!(params[:id], Current.user.id)
+
         if @job.update(job_params)
           process_after_save(@job)
           render status: 200, json: { message: 'Job updated!' }
         else
-          render status: 400, json: @job.errors.details
+          render status: 400, json: { error: 'Bad request', details: @job.errors.details }
         end
+      rescue ActionController::ParameterMissing
+        render status: 400, json: { error: 'Bad request', details: { job: ['parameters are missing'] } }
+      rescue ActionController::BadRequest => e
+        render status: 400, json: { error: e.message }
       rescue ActiveSupport::MessageVerifier::InvalidSignature
         malformed_error('image_url')
-      rescue ActionController::ParameterMissing
-        blank_error('job')
       end
 
       def destroy
@@ -86,7 +91,7 @@ module Api
         rescue ActiveRecord::RecordNotFound
           render(status: 404, json: { message: "Job with id #{params[:id]} does not exist!" }) and return
         end
-        return access_denied_error('job') if (job.user_id != Current.user.id && job.status != 'public') || job.nil?
+        return access_denied_error('job') if (job.user_id != Current.user.id && job.job_status != 'listed') || job.nil?
 
         render(status: 200, json: "{\"job\": #{Job.json_for(job)}}")
       end
@@ -197,7 +202,7 @@ module Api
         query = "%#{ActiveRecord::Base.sanitize_sql_like(find_job_params[:query])}%"
         Job.includes(image_url_attachment: :blob)
            .includes([:rich_text_description])
-           .where("status = 'public' AND " \
+           .where("job_status = 'listed' AND " \
                   '(title ILIKE :query OR ' \
                   'description ILIKE :query OR ' \
                   'position ILIKE :query OR ' \
@@ -263,9 +268,24 @@ module Api
       #       end
 
       def job_params
-        params.except(:format).permit(:id, :job_slug, :title, :description, :start_slot, :referrer_url, :longitude, :latitude, :job_type, :status, :image_url, :position, :currency, :salary,
-                                      :key_skills, :duration, :job_notifications, :cv_required, allowed_cv_formats: [], application_options_attributes: [:id, :question, :question_type,
-                                                                                                                                                         :required, { options: [] }])
+        permitted_params = params.except(:format).permit(
+          :id, :job_slug, :title, :description, :start_slot, :referrer_url, :longitude, :latitude, :job_type,
+          :job_status, :image_url, :position, :currency, :salary, :key_skills, :duration, :job_notifications,
+          :cv_required, allowed_cv_formats: [], application_options_attributes: [:id, :question, :question_type,
+                                                                                 :required, { options: [] }]
+        )
+        check_question_types(permitted_params)
+        raise ActionController::BadRequest, 'Invalid job_status' if permitted_params[:job_status].present? && !Job::VALID_JOB_TYPES.include?(permitted_params[:job_status])
+
+        permitted_params
+      end
+
+      def check_question_types(permitted_params)
+        return unless permitted_params[:application_options_attributes].present?
+
+        permitted_params[:application_options_attributes].each do |option_params|
+          raise ActionController::BadRequest, 'Invalid question_type' if option_params[:question_type].present? && !ApplicationOption::VALID_QUESTION_TYPES.include?(option_params[:question_type])
+        end
       end
 
       def find_job_params

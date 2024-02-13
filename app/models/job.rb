@@ -5,9 +5,13 @@
 # as well as other helper methods related to jobs.
 class Job < ApplicationRecord
   include Validators::JobValidator
+  VALID_JOB_TYPES = %w[listed unlisted archived].freeze
+
   before_save :set_default_job_slug, if: -> { job_slug.nil? }
   before_validation :set_default_values
   acts_as_paranoid
+  enum :allowed_cv_format, { pdf: '.pdf', docx: '.docx', txt: '.txt', xml: '.xml' }
+  enum :job_status, { listed: 'listed', unlisted: 'unlisted', archived: 'archived' }, default: 'listed' # include ActiveModel::Serialization
 
   TIME_UNITS = {
     0...60 => :less_than_a_minute,

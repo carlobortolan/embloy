@@ -13,7 +13,7 @@ RSpec.describe 'AuthenticationController' do
       password: 'password',
       password_confirmation: 'password',
       user_role: 'verified',
-      activity_status: '1'
+      activity_status: 1
     )
     Rails.logger.info("Created valid user: #{@valid_user.id}")
 
@@ -24,7 +24,7 @@ RSpec.describe 'AuthenticationController' do
       password: 'password',
       password_confirmation: 'password',
       user_role: 'verified',
-      activity_status: '1'
+      activity_status: 1
     )
     Rails.logger.info("Created blacklisted user: #{@blacklisted_user.id}")
 

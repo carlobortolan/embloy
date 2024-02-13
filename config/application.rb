@@ -21,6 +21,9 @@ module Embloy
     config.middleware.use Rack::Attack
     # config.middleware.use Rack::Protection
 
+    config.active_record.encryption.key_derivation_salt = ENV.fetch('KEY_DERIVATION_SALT_VALUE', nil)
+    config.active_record.encryption.primary_key = ENV.fetch('PRIMRY_KEY_VALUE', nil)
+
     # RailsAdmin related
     config.api_only = true
     config.middleware.use ActionDispatch::Cookies

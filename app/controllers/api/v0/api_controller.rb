@@ -64,11 +64,11 @@ module Api
         end
       end
 
-      def verify_path_public_job_id
+      def verify_path_listed_job_id
         if id_blank_or_invalid?
           blank_error('job')
         else
-          validate_public_job_id
+          validate_listed_job_id
         end
       end
 
@@ -127,14 +127,14 @@ module Api
 
       def validate_active_job_id
         @job = Job.find(params[:id])
-        removed_error('job') unless %w[public private].include?(@job.status) && @job.job_status == 1
+        removed_error('job') unless %w[listed unlisted].include?(@job.job_status) && @job.activity_status == 1
       rescue ActiveRecord::RecordNotFound
         not_found_error('job')
       end
 
-      def validate_public_job_id
+      def validate_listed_job_id
         @job = Job.find(params[:id])
-        removed_error('job') unless @job.status == 'public' && @job.job_status == 1
+        removed_error('job') unless @job.job_status == 'listed' && @job.activity_status == 1
       rescue ActiveRecord::RecordNotFound
         not_found_error('job')
       end

@@ -15,7 +15,7 @@ RSpec.describe 'QuicklinkController' do
       password: 'password',
       password_confirmation: 'password',
       user_role: 'verified',
-      activity_status: '1'
+      activity_status: 1
     )
     @valid_user.set_payment_processor :fake_processor, allow_fake: true
     @valid_user.pay_customers
@@ -32,7 +32,7 @@ RSpec.describe 'QuicklinkController' do
       password: 'password',
       password_confirmation: 'password',
       user_role: 'verified',
-      activity_status: '1'
+      activity_status: 1
     )
     @valid_user_exp.set_payment_processor :fake_processor, allow_fake: true
     @valid_user_exp.pay_customers
@@ -49,7 +49,7 @@ RSpec.describe 'QuicklinkController' do
       password: 'password',
       password_confirmation: 'password',
       user_role: 'verified',
-      activity_status: '1'
+      activity_status: 1
     )
     @valid_user_has_own_jobs.set_payment_processor :fake_processor, allow_fake: true
     @valid_user_has_own_jobs.pay_customers
@@ -66,7 +66,7 @@ RSpec.describe 'QuicklinkController' do
       password: 'password',
       password_confirmation: 'password',
       user_role: 'verified',
-      activity_status: '1'
+      activity_status: 1
     )
     puts "Created valid verified user who has already applied: #{@valid_user_has_applied.id}"
 
@@ -78,7 +78,7 @@ RSpec.describe 'QuicklinkController' do
       password: 'password',
       password_confirmation: 'password',
       user_role: 'verified',
-      activity_status: '1'
+      activity_status: 1
     )
     puts "Created verified unsubscribed user without own jobs, upcoming jobs, reviews: #{@unsubscribed_user.id}"
 
@@ -90,7 +90,7 @@ RSpec.describe 'QuicklinkController' do
       password: 'password',
       password_confirmation: 'password',
       user_role: 'verified',
-      activity_status: '1'
+      activity_status: 1
     )
     @blacklisted_user.set_payment_processor :fake_processor, allow_fake: true
     @blacklisted_user.pay_customers
@@ -210,8 +210,8 @@ RSpec.describe 'QuicklinkController' do
         start_slot: Time.now + 1.year,
         key_skills: 'Entrepreneurship',
         duration: '14',
-        job_status: 1,
-        status: 'public',
+        activity_status: 1,
+        job_status: 'listed',
         currency: 'CHF',
         job_type: 'Retail',
         job_type_value: '1'

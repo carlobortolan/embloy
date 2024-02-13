@@ -52,7 +52,7 @@ class OauthCallbacksController < ApplicationController
   #           first_name: auth.info.name.split[0],
   #           last_name: auth.info.name.split[1],
   #           user_role: 'verified',
-  #           activity_status: '1'
+  #           activity_status: 1
   #         )
   #
   #         if user.save!
@@ -111,7 +111,7 @@ class OauthCallbacksController < ApplicationController
       first_name: auth.info.name.split[0],
       last_name: auth.info.name.split[1],
       user_role: 'verified',
-      activity_status: '1'
+      activity_status: 1
     )
   end
 

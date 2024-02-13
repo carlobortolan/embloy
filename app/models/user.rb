@@ -5,7 +5,8 @@ class User < ApplicationRecord
   include SubscriptionStatus
 
   has_secure_password
-
+  enum :user_type, { company: 'company', user_private: 'private' }, default: 'private'
+  enum :user_role, { admin: 'admin', editor: 'editor', developer: 'developer', moderator: 'moderator', verified: 'verified', spectator: 'spectator' }, default: :spectator
   has_one :preferences, dependent: :delete
   has_one_attached :image_url
   has_many :jobs, dependent: :delete_all
@@ -40,10 +41,8 @@ class User < ApplicationRecord
   validates :postal_code, presence: false
   validates :city, presence: false
   validates :address, presence: false
-  validates :user_type,
-            inclusion: { in: %w[company private], error: 'ERR_INVALID', description: 'Attribute is invalid' }, presence: false
-  validates :user_role,
-            inclusion: { in: %w[admin editor developer moderator verified spectator], error: 'ERR_INVALID', description: 'Attribute is invalid' }, presence: false
+  # validates :user_type, inclusion: { in: %w[company private], message: 'ERR_INVALID', description: 'Attribute is invalid' }, presence: false
+  validates :user_role, inclusion: { in: %w[admin editor developer moderator verified spectator], error: 'ERR_INVALID', description: 'Attribute is invalid' }, presence: false
   validates :image_url, presence: false
 
   validate :country_code_validation

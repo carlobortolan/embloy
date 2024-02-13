@@ -16,7 +16,7 @@ RSpec.describe 'UserController' do
       password: 'password',
       password_confirmation: 'password',
       user_role: 'verified',
-      activity_status: '1'
+      activity_status: 1
     )
     puts "Created verified user without own jobs, upcoming jobs, reviews: #{@valid_user.id}"
 
@@ -28,7 +28,7 @@ RSpec.describe 'UserController' do
       password: 'password',
       password_confirmation: 'password',
       user_role: 'verified',
-      activity_status: '1'
+      activity_status: 1
     )
     puts "Created valid verified user with own jobs: #{@valid_user_has_own_jobs.id}"
     @valid_user_has_own_jobs.set_payment_processor :fake_processor, allow_fake: true
@@ -45,7 +45,7 @@ RSpec.describe 'UserController' do
       password: 'password',
       password_confirmation: 'password',
       user_role: 'verified',
-      activity_status: '1'
+      activity_status: 1
     )
     puts "Created valid verified user with upcoming jobs: #{@valid_user_has_upcoming_jobs.id}"
 
@@ -57,7 +57,7 @@ RSpec.describe 'UserController' do
       password: 'password',
       password_confirmation: 'password',
       user_role: 'spectator',
-      activity_status: '0'
+      activity_status: 0
     )
     puts "Created unverified user: #{@unverified_user.id}"
 
@@ -69,7 +69,7 @@ RSpec.describe 'UserController' do
       password: 'password',
       password_confirmation: 'password',
       user_role: 'verified',
-      activity_status: '1'
+      activity_status: 1
     )
     puts "Created blacklisted user: #{@blacklisted_user.id}"
 

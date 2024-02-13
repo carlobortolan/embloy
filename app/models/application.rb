@@ -6,30 +6,32 @@ class Application < ApplicationRecord
   after_create_commit :notify_recipient
   # after_update_commit :notify_applicant
   before_destroy :cleanup_notifications
-  has_many :application_answers, foreign_key: %i[user_id job_id], primary_key: %i[user_id job_id], dependent: :destroy
-  accepts_nested_attributes_for :application_answers
 
   self.primary_keys = :user_id, :job_id
 
-  has_noticed_notifications model_name: 'Notification'
   # has_rich_text :application_text
   # has_one_attached :cv
 
   belongs_to :job, counter_cache: true
   belongs_to :user, counter_cache: true
+  has_noticed_notifications model_name: 'Notification'
+  has_many :application_answers, foreign_key: %i[user_id job_id], primary_key: %i[user_id job_id], dependent: :destroy
   has_one :application_attachment,
           dependent: :destroy
-  accepts_nested_attributes_for :application_attachment
   delegate :cv, to: :application_attachment,
                 allow_nil: true
 
+  accepts_nested_attributes_for :application_answers
+  accepts_nested_attributes_for :application_attachment
+
+  enum :status, { rejected: '-1', pending: '0', accepted: '1' }, default: '0'
   # validates :user_id, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
   #                   uniqueness: { scope: :job_id, error: 'ERR_TAKEN', description: 'You already submitted an application for this job' }
   validates :job_id, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" }
   validates :application_text, length: { minimum: 0, maximum: 1000, error: 'ERR_LENGTH', description: 'Attribute length is invalid' },
                                presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" }
   # validates :response, length: { minimum: 0, maximum: 500, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }, presence: false
-  validates :status, inclusion: { in: %w[-1 0 1], error: 'ERR_INVALID', description: 'Attribute is invalid' }, presence: false
+  #  validates :status, inclusion: { in: %w[-1 0 1], error: 'ERR_INVALID', description: 'Attribute is invalid' }, presence: false
 
   def notify_recipient
     return if job.user.eql? user
@@ -46,14 +48,14 @@ class Application < ApplicationRecord
     raise 'ERR_LENGTH: Attribute length is invalid' unless response.length.between?(0, 500)
 
     notify_applicant(1, response)
-    Application.where(user_id:, job_id:).update_all(status: 1, response:)
+    Application.where(user_id:, job_id:).update_all(status: :accepted, response:)
   end
 
   def reject(response)
     raise 'ERR_LENGTH: Attribute length is invalid' unless response.length.between?(0, 500)
 
     notify_applicant(-1, response)
-    Application.where(user_id:, job_id:).update_all(status: -1, response:)
+    Application.where(user_id:, job_id:).update_all(status: :rejected, response:)
   end
 
   private

@@ -14,8 +14,8 @@ RSpec.describe 'JobsController' do
       email: "#{(0...16).map { charset.sample }.join}@embloy.com",
       password: 'password',
       password_confirmation: 'password',
-      user_role: 'verified',
-      activity_status: '1'
+      user_role: :verified,
+      activity_status: 1
     )
     puts "Created valid user: #{@valid_user.id}"
     @valid_user.set_payment_processor :fake_processor, allow_fake: true
@@ -32,7 +32,7 @@ RSpec.describe 'JobsController' do
       password: 'password',
       password_confirmation: 'password',
       user_role: 'verified',
-      activity_status: '1'
+      activity_status: 1
     )
     puts "Created valid user: #{@user_basic.id}"
     @user_basic.set_payment_processor :fake_processor, allow_fake: true
@@ -49,7 +49,7 @@ RSpec.describe 'JobsController' do
       password: 'password',
       password_confirmation: 'password',
       user_role: 'verified',
-      activity_status: '1'
+      activity_status: 1
     )
     puts "Created user with embloy-premium subscription: #{@user_premium.id}"
     @user_premium.set_payment_processor :fake_processor, allow_fake: true
@@ -66,7 +66,7 @@ RSpec.describe 'JobsController' do
       password: 'password',
       password_confirmation: 'password',
       user_role: 'spectator',
-      activity_status: '0'
+      activity_status: 0
     )
     puts "Created unverified user: #{@unverified_user.id}"
     @unverified_user.set_payment_processor :fake_processor, allow_fake: true
@@ -83,7 +83,7 @@ RSpec.describe 'JobsController' do
       password: 'password',
       password_confirmation: 'password',
       user_role: 'verified',
-      activity_status: '1'
+      activity_status: 1
     )
     puts "Created blacklisted user: #{@blacklisted_user.id}"
     @blacklisted_user.set_payment_processor :fake_processor, allow_fake: true
@@ -100,7 +100,7 @@ RSpec.describe 'JobsController' do
       password: 'password',
       password_confirmation: 'password',
       user_role: 'verified',
-      activity_status: '1'
+      activity_status: 1
     )
     puts "Created unsubscribed user: #{@unsubscribed_user.id}"
 
@@ -115,12 +115,12 @@ RSpec.describe 'JobsController' do
         position: 'Intern',
         salary: '123',
         start_slot: Time.now + 1.year,
-
+        job_status: 'listed',
         key_skills: 'Entrepreneurship',
         duration: '14',
         currency: 'CHF',
         job_type: 'Retail',
-        job_status: 1,
+        activity_status: 1,
         job_type_value: '1'
       )
       puts "Created new job for: #{@valid_user.id}"
@@ -134,20 +134,19 @@ RSpec.describe 'JobsController' do
       longitude: '0.0',
       latitude: '0.0',
       position: 'Intern',
-
       salary: '123',
       start_slot: Time.now + 1.year,
       key_skills: 'Entrepreneurship',
       duration: '14',
       currency: 'CHF',
       job_type: 'Retail',
-      job_status: 1,
+      activity_status: 1,
       job_type_value: '1'
     )
     puts "Created new job for: #{@valid_user.id}"
 
     # Create jobs
-    @private_job = Job.create!(
+    @unlisted_job = Job.create!(
       user_id: @valid_user.id,
       title: 'TestJob',
       description: 'TestDescription',
@@ -156,19 +155,18 @@ RSpec.describe 'JobsController' do
       position: 'Intern',
       salary: '123',
       start_slot: Time.now + 1.year,
-
       key_skills: 'Entrepreneurship',
       duration: '14',
       currency: 'CHF',
       job_type: 'Retail',
       job_type_value: '1',
-      job_status: 1,
-      status: 'private'
+      activity_status: 1,
+      job_status: 'unlisted'
     )
     puts "Created new job for: #{@valid_user.id}"
 
     # Create jobs
-    @not_owned_private_job = Job.create!(
+    @not_owned_unlisted_job = Job.create!(
       user_id: @blacklisted_user.id,
       title: 'TestJob',
       description: 'TestDescription',
@@ -182,8 +180,8 @@ RSpec.describe 'JobsController' do
       currency: 'CHF',
       job_type: 'Retail',
       job_type_value: '1',
-      job_status: 1,
-      status: 'private'
+      activity_status: 1,
+      job_status: 'unlisted'
     )
     puts "Created new job for: #{@valid_user.id}"
 
@@ -202,8 +200,8 @@ RSpec.describe 'JobsController' do
       currency: 'CHF',
       job_type: 'Retail',
       job_type_value: '1',
-      job_status: 1,
-      status: 'archived'
+      activity_status: 1,
+      job_status: 'archived'
     )
     puts "Created new job for: #{@valid_user.id}"
 
@@ -222,8 +220,8 @@ RSpec.describe 'JobsController' do
       currency: 'CHF',
       job_type: 'Retail',
       job_type_value: '1',
-      job_status: 1,
-      status: 'archived'
+      activity_status: 1,
+      job_status: 'archived'
     )
     puts "Created new job for: #{@valid_user.id}"
 
@@ -242,8 +240,8 @@ RSpec.describe 'JobsController' do
       currency: 'CHF',
       job_type: 'Retail',
       job_type_value: '1',
-      job_status: 0,
-      status: 'public'
+      activity_status: 0,
+      job_status: 'listed'
     )
     puts "Created new job for: #{@valid_user.id}"
 
@@ -319,19 +317,19 @@ RSpec.describe 'JobsController' do
   describe 'Job', type: :request do
     describe '(GET: /api/v0/jobs/{id})' do
       context 'valid normal inputs' do
-        it 'returns [200 Ok] and job JSONs if job is public' do
+        it 'returns [200 Ok] and job JSONs if job is listed' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at }
           get("/api/v0/jobs/#{@job.id}", headers:)
           expect(response).to have_http_status(200)
         end
-        it 'returns [200 Ok] and job JSONs if job is public' do
+        it 'returns [200 Ok] and job JSONs if job is listed' do
           headers = { 'HTTP_ACCESS_TOKEN' => @unsubscribed_at }
           get("/api/v0/jobs/#{@job.id}", headers:)
           expect(response).to have_http_status(200)
         end
-        it 'returns [200 Ok] and job JSONs if job is private and user is owner' do
+        it 'returns [200 Ok] and job JSONs if job is unlisted and user is owner' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at }
-          get("/api/v0/jobs/#{@private_job.id}", headers:)
+          get("/api/v0/jobs/#{@unlisted_job.id}", headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [200 Ok] and job JSONs if job is archived and user is owner' do
@@ -360,9 +358,9 @@ RSpec.describe 'JobsController' do
           get("/api/v0/jobs/#{@job.id}", headers:)
           expect(response).to have_http_status(403)
         end
-        it 'returns [403 Forbidden] for private job' do
+        it 'returns [403 Forbidden] for unlisted job' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at }
-          get("/api/v0/jobs/#{@not_owned_private_job.id}", headers:)
+          get("/api/v0/jobs/#{@not_owned_unlisted_job.id}", headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [403 Forbidden] for archived job' do
@@ -553,7 +551,7 @@ RSpec.describe 'JobsController' do
           duration: '9',
           salary: '9',
           description: '<div>This is the description</div>',
-          status: 'public',
+          job_status: 'listed',
           longitude: '11.613942994844358',
           latitude: '48.1951076',
           job_notifications: '1',
@@ -591,8 +589,8 @@ RSpec.describe 'JobsController' do
           post('/api/v0/jobs', params: form_data, headers:)
           expect(response).to have_http_status(201)
         end
-        it 'returns [201 Created] even if missing status' do
-          post('/api/v0/jobs', params: form_data.except(:status), headers:)
+        it 'returns [201 Created] even if missing job_status' do
+          post('/api/v0/jobs', params: form_data.except(:job_status), headers:)
           expect(response).to have_http_status(201)
         end
         it 'returns [201 Created] even if missing job_notifications' do
@@ -700,16 +698,16 @@ RSpec.describe 'JobsController' do
                params: form_data.merge(description: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'), headers:)
           expect(response).to have_http_status(400)
         end
-        it 'returns [400 Bad Request] for invalid status' do
-          post('/api/v0/jobs', params: form_data.merge(status: 'invalid'), headers:)
+        it 'returns [400 Bad Request] for invalid job_status' do
+          post('/api/v0/jobs', params: form_data.merge(job_status: 'invalid'), headers:)
           expect(response).to have_http_status(400)
         end
-        it 'returns [400 Bad Request] for invalid status' do
-          post('/api/v0/jobs', params: form_data.merge(status: 123), headers:)
+        it 'returns [400 Bad Request] for invalid job_status' do
+          post('/api/v0/jobs', params: form_data.merge(job_status: 123), headers:)
           expect(response).to have_http_status(400)
         end
-        it 'returns [400 Bad Request] for invalid status' do
-          post('/api/v0/jobs', params: form_data.merge(status: -123), headers:)
+        it 'returns [400 Bad Request] for invalid job_status' do
+          post('/api/v0/jobs', params: form_data.merge(job_status: -123), headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid longitude' do
@@ -901,7 +899,7 @@ RSpec.describe 'JobsController' do
           duration: '9',
           salary: '9',
           description: '<div>This is the description</div>',
-          status: 'public',
+          job_status: 'listed',
           longitude: '11.613942994844358',
           latitude: '48.1951076',
           job_notifications: '1',
@@ -917,8 +915,8 @@ RSpec.describe 'JobsController' do
           patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data, headers:)
           expect(response).to have_http_status(200)
         end
-        it 'returns [200 OK] even if missing status' do
-          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.except(:status), headers:)
+        it 'returns [200 OK] even if missing job_status' do
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.except(:job_status), headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [200 OK] even if missing job_notifications' do
@@ -978,16 +976,16 @@ RSpec.describe 'JobsController' do
                 params: form_data.merge(description: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'), headers:)
           expect(response).to have_http_status(400)
         end
-        it 'returns [400 Bad Request] for invalid status' do
-          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(status: 'invalid'), headers:)
+        it 'returns [400 Bad Request] for invalid job_status' do
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(job_status: 'invalid'), headers:)
           expect(response).to have_http_status(400)
         end
-        it 'returns [400 Bad Request] for invalid status' do
-          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(status: 123), headers:)
+        it 'returns [400 Bad Request] for invalid job_status' do
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(job_status: 123), headers:)
           expect(response).to have_http_status(400)
         end
-        it 'returns [400 Bad Request] for invalid status' do
-          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(status: -123), headers:)
+        it 'returns [400 Bad Request] for invalid job_status' do
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(job_status: -123), headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid longitude' do
@@ -1175,9 +1173,9 @@ RSpec.describe 'JobsController' do
           patch("/api/v0/jobs?id=#{@not_owned_job.id.to_i}", headers:)
           expect(response).to have_http_status(403)
         end
-        it 'returns [403 Forbidden] for private not owned job' do
+        it 'returns [403 Forbidden] for unlisted not owned job' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at }
-          patch("/api/v0/jobs?id=#{@not_owned_private_job.id.to_i}", headers:)
+          patch("/api/v0/jobs?id=#{@not_owned_unlisted_job.id.to_i}", headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [404 Not Found] if job does not exist' do

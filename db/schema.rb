@@ -23,7 +23,7 @@ ActiveRecord::Schema[7.0].define(version: 20_240_212_052_057) do
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum 'allowed_cv_format', ['.pdf', '.docx', '.txt', '.xml']
   create_enum 'application_status', ['-1', '0', '1']
-  create_enum 'job_status', %w[public private archived]
+  create_enum 'job_status', %w[listed unlisted archived]
   create_enum 'notify_type', %w[0 1]
   create_enum 'question_type', %w[yes_no text link single_choice multiple_choice]
   create_enum 'rating_type', %w[1 2 3 4 5]
@@ -165,8 +165,8 @@ ActiveRecord::Schema[7.0].define(version: 20_240_212_052_057) do
     t.string 'job_type'
     t.string 'job_slug', null: false, limit: 100
     t.integer 'job_type_value'
-    t.integer 'job_status', limit: 2, default: 1
-    t.enum 'status', default: 'public', null: false, enum_type: 'job_status'
+    t.integer 'activity_status', limit: 2, default: 1, null: false
+    t.enum 'job_status', default: 'listed', null: false, enum_type: 'job_status'
     t.integer 'user_id', default: 0
     t.string 'referrer_url'
     t.integer 'duration', default: 0

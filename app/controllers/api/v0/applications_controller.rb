@@ -7,7 +7,7 @@ module Api
       include ApplicationBuilder
       before_action :verify_path_job_id, except: %i[create accept reject]
       before_action :verify_path_active_job_id, only: %i[accept reject]
-      before_action :verify_path_public_job_id, only: %i[create]
+      before_action :verify_path_listed_job_id, only: %i[create]
       before_action :must_be_verified!
       before_action :must_be_subscribed!, only: %i[accept reject]
 
@@ -73,30 +73,30 @@ module Api
       def handle_accept(application)
         if application.nil?
           render status: 404, json: { message: 'Not found.' }
-        elsif application.status != '1'
+        elsif application.accepted?
+          render status: 400, json: { message: 'Already accepted.' }
+        else
           begin
             application.accept(application_modify_params[:response] || 'ACCEPTED')
             render status: 200, json: { message: 'Application successfully accepted.' }
           rescue RuntimeError => e
             render status: 400, json: { message: e.message }
           end
-        else
-          render status: 400, json: { message: 'Already accepted.' }
         end
       end
 
       def handle_reject(application)
         if application.nil?
           render status: 404, json: { message: 'Not found.' }
-        elsif application.status != '-1'
+        elsif application.rejected?
+          render status: 400, json: { message: 'Already rejected.' }
+        else
           begin
-            application.reject(application_modify_params[:response] || 'REJECTED')
+            application.accept(application_modify_params[:response] || 'REJECTED')
             render status: 200, json: { message: 'Application successfully rejected.' }
           rescue RuntimeError => e
             render status: 400, json: { message: e.message }
           end
-        else
-          render status: 400, json: { message: 'Already rejected.' }
         end
       end
 

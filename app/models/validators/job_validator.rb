@@ -10,10 +10,7 @@ module Validators
     included do
       geocoded_by :latitude_longitude
       after_validation :geocode
-      include Visible
       include PgSearch::Model
-
-      # include ActiveModel::Serialization
       paginates_per 48
       max_pages 10
       multisearchable against: %i[title job_type
@@ -55,7 +52,7 @@ module Validators
       validates :duration, numericality: { only_integer: true, greater_than: 0, error: 'ERR_INVALID', description: 'Attribute is malformed or unknown' }
       validates :salary, numericality: { only_integer: true, greater_than: 0, error: 'ERR_INVALID', description: 'Attribute is malformed or unknown' }, allow_blank: true
       validates :currency, format: { with: /\A[A-Z]{3}\z/, message: { error: 'ERR_INVALID', description: 'Attribute is malformed or unknown' } }, allow_blank: true
-      validates :status, inclusion: { in: %w[public private archived], error: 'ERR_INVALID', description: 'Attribute is invalid' }, presence: false
+      validates :job_status, inclusion: { in: %w[listed unlisted archived], error: 'ERR_INVALID', description: 'Attribute is invalid' }, presence: false
 
       validates :longitude, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
                             numericality: { greater_than_or_equal_to: -180, less_than_or_equal_to: 180, error: 'ERR_INVALID', description: 'Attribute is malformed or unknown' }
@@ -95,7 +92,7 @@ module Validators
                            0
                          end
 
-      return unless user.jobs.where(status: %w[public private], job_status: 1).count > max_jobs_allowed
+      return unless user.jobs.where(job_status: %w[listed unlisted], activity_status: 1).count > max_jobs_allowed
 
       raise CustomExceptions::Subscription::LimitReached
     end

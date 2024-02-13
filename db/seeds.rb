@@ -55,8 +55,8 @@ require 'benchmark'
 #       job = Job.new(
 #         job_type: Faker::Job.field,
 #         job_type_value: rand(29),
-#         job_status: 0,
-#         status: 'public',
+#         activity_status: 0,
+#         status: 'listed',
 #         user_id: (Faker::Number.number % 619) + 4,
 #         duration: Faker::Number.number(digits: 4),
 #         code_lang: address_full.country_code,

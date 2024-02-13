@@ -16,7 +16,7 @@ RSpec.describe 'ApplicationsController' do
       password: 'password',
       password_confirmation: 'password',
       user_role: 'verified',
-      activity_status: '1'
+      activity_status: 1
     )
     puts "Created verified user without jobs, applications: #{@valid_user.id}"
 
@@ -28,7 +28,7 @@ RSpec.describe 'ApplicationsController' do
       password: 'password',
       password_confirmation: 'password',
       user_role: 'verified',
-      activity_status: '1'
+      activity_status: 1
     )
     puts "Created valid verified user with own jobs: #{@valid_user_has_own_jobs.id}"
     @valid_user_has_own_jobs.set_payment_processor :fake_processor, allow_fake: true
@@ -45,7 +45,7 @@ RSpec.describe 'ApplicationsController' do
       password: 'password',
       password_confirmation: 'password',
       user_role: 'verified',
-      activity_status: '1'
+      activity_status: 1
     )
     puts "Created valid verified user with own jobs: #{@valid_user_has_no_jobs.id}"
     @valid_user_has_no_jobs.set_payment_processor :fake_processor, allow_fake: true
@@ -62,7 +62,7 @@ RSpec.describe 'ApplicationsController' do
       password: 'password',
       password_confirmation: 'password',
       user_role: 'verified',
-      activity_status: '1'
+      activity_status: 1
     )
     puts "Created valid verified user with own jobs: #{@unsubscribed_user_has_own_jobs.id}"
     @unsubscribed_user_has_own_jobs.set_payment_processor :fake_processor, allow_fake: true
@@ -79,7 +79,7 @@ RSpec.describe 'ApplicationsController' do
       password: 'password',
       password_confirmation: 'password',
       user_role: 'verified',
-      activity_status: '1'
+      activity_status: 1
     )
     puts "Created valid verified user with applications: #{@valid_user_has_applications.id}"
 
@@ -91,7 +91,7 @@ RSpec.describe 'ApplicationsController' do
       password: 'password',
       password_confirmation: 'password',
       user_role: 'verified',
-      activity_status: '1'
+      activity_status: 1
     )
     puts "Created valid verified user with applications: #{@valid_applicant.id}"
 
@@ -103,7 +103,7 @@ RSpec.describe 'ApplicationsController' do
       password: 'password',
       password_confirmation: 'password',
       user_role: 'verified',
-      activity_status: '1'
+      activity_status: 1
     )
     puts "Created blacklisted user: #{@blacklisted_user.id}"
 
@@ -206,8 +206,8 @@ RSpec.describe 'ApplicationsController' do
     # Create own jobs for valid verified user (valid_user_has_own_jobs) and upcoming jobs for valid verified user (valid_user_has_upcoming_jobs)
     cv_required = [false, true, true, true, true, true, true, true, true, false, false, false]
     allowed_cv_formats = [['.pdf', '.docx', '.txt', '.xml'], ['.pdf'], ['.docx'], ['.txt'], ['.xml'], ['.pdf'], ['.docx'], ['.txt'], ['.xml']]
-    job_status = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
-    status = %w[public public public public public public public public public private archived public]
+    activity_status = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+    status = %w[listed listed listed listed listed listed listed listed listed unlisted archived listed]
     @jobs = []
     @applications = []
     12.times do |i|
@@ -219,8 +219,8 @@ RSpec.describe 'ApplicationsController' do
         latitude: '0.0',
         position: 'Intern',
         salary: '123',
-        status: status[i],
-        job_status: job_status[i],
+        job_status: status[i],
+        activity_status: activity_status[i],
         start_slot: Time.now + 1.year,
         key_skills: 'Entrepreneurship',
         duration: '14',
@@ -237,7 +237,8 @@ RSpec.describe 'ApplicationsController' do
         user_id: @valid_user_has_applications.id,
         job_id: @jobs[i].id,
         application_text: 'TestUpcomingApplicationText',
-        response: 'No response yet ...'
+        response: 'No response yet ...',
+        status: '0'
       )
       puts "#{@valid_user_has_applications.id} applied to #{@jobs[i].id}"
     end
@@ -246,12 +247,13 @@ RSpec.describe 'ApplicationsController' do
       user_id: @valid_user_has_applications.id,
       job_id: @jobs[9].id,
       application_text: 'TestUpcomingApplicationText',
-      response: 'No response yet ...'
+      response: 'No response yet ...',
+      status: '0'
     )
     puts "#{@valid_user_has_applications.id} applied to #{@jobs[9].id}"
 
-    job_status = [1, 1, 1, 1, 1, 0]
-    status = %w[public public public private archived public]
+    activity_status = [1, 1, 1, 1, 1, 0]
+    status = %w[listed listed listed unlisted archived listed]
     required = [true, false, false, false, false, false]
     6.times do |i|
       job = Job.create!(
@@ -262,8 +264,8 @@ RSpec.describe 'ApplicationsController' do
         latitude: '0.0',
         position: 'Intern',
         salary: '123',
-        status: status[i],
-        job_status: job_status[i],
+        job_status: status[i],
+        activity_status: activity_status[i],
         start_slot: Time.now + 1.year,
         key_skills: 'Entrepreneurship',
         duration: '14',
@@ -311,8 +313,8 @@ RSpec.describe 'ApplicationsController' do
       latitude: '0.0',
       position: 'Intern',
       salary: '123',
-      status: 'public',
-      job_status: 1,
+      job_status: 'listed',
+      activity_status: 1,
       start_slot: Time.now + 1.year,
       key_skills: 'Entrepreneurship',
       duration: '14',
@@ -504,7 +506,7 @@ RSpec.describe 'ApplicationsController' do
           patch("/api/v0/jobs/#{@jobs[5].id}/applications/#{@valid_user_has_applications.id}/accept?response=#{message}", headers:)
           expect(response).to have_http_status(200)
         end
-        it 'returns [200 OK] for private job and accepts application' do
+        it 'returns [200 OK] for unlisted job and accepts application' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
           patch("/api/v0/jobs/#{@jobs[9].id}/applications/#{@valid_user_has_applications.id}/accept", headers:)
           expect(response).to have_http_status(200)
@@ -591,7 +593,7 @@ RSpec.describe 'ApplicationsController' do
           patch("/api/v0/jobs/#{@jobs[5].id}/applications/#{@valid_user_has_applications.id}/reject?response=#{message}", headers:)
           expect(response).to have_http_status(200)
         end
-        it 'returns [200 OK] for private job and rejects application' do
+        it 'returns [200 OK] for unlisted job and rejects application' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
           patch("/api/v0/jobs/#{@jobs[9].id}/applications/#{@valid_user_has_applications.id}/reject", headers:)
           expect(response).to have_http_status(200)
@@ -760,7 +762,7 @@ RSpec.describe 'ApplicationsController' do
           post('/api/v0/jobs/123123123/applications', params: valid_attributes_docx, headers:)
           expect(response).to have_http_status(404)
         end
-        it 'returns [409 Conflict] for private job' do
+        it 'returns [409 Conflict] for unlisted job' do
           post("/api/v0/jobs/#{@jobs[9].id}/applications", params: valid_attributes_basic, headers:)
           expect(response).to have_http_status(409)
         end
@@ -1023,7 +1025,7 @@ RSpec.describe 'ApplicationsController' do
           post("/api/v0/jobs/#{@jobs[12].id}/applications", params: invalid_attributes, headers:)
           expect(response).to have_http_status(400)
         end
-        it 'returns [409 Conflict] for private job' do
+        it 'returns [409 Conflict] for unlisted job' do
           post("/api/v0/jobs/#{@jobs[15].id}/applications", params: valid_attributes_with_required_answer, headers:)
           expect(response).to have_http_status(409)
         end

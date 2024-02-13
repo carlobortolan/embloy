@@ -101,7 +101,7 @@ module Api
       end
 
       def handle_existing_job
-        if %w[public private].include?(@job.status) && @job.job_status == 1
+        if %w[listed unlisted].include?(@job.job_status) && @job.activity_status == 1
           true
         else
           @job.errors.add(:job, 'Job is either archived or deactivated')
@@ -112,7 +112,7 @@ module Api
       def create_new_job(session)
         allowed_params = %w[user_id job_type job_slug referrer_url duration code_lang title position description key_skills salary currency start_slot longitude latitude country_code postal_code
                             city address job_notifications cv_required allowed_cv_formats]
-        @job = Job.new(session.slice(*allowed_params).merge(status: 'private'))
+        @job = Job.new(session.slice(*allowed_params).merge(job_status: 'unlisted'))
 
         if @job.save
           @job.user = @client
@@ -157,7 +157,7 @@ module Api
       end
 
       def portal_params
-        params.except(:format).permit(:mode, :success_url, :cancel_url, :job_slug, :title, :description, :start_slot, :longitude, :latitude, :job_type, :status, :image_url, :position, :currency,
+        params.except(:format).permit(:mode, :success_url, :cancel_url, :job_slug, :title, :description, :start_slot, :longitude, :latitude, :job_type, :job_status, :image_url, :position, :currency,
                                       :salary, :key_skills, :duration, :job_notifications, :cv_required, allowed_cv_formats: [])
       end
     end
