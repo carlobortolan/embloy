@@ -15,7 +15,6 @@ RSpec.describe 'PasswordsController' do
       user_role: 'verified',
       activity_status: 1
     )
-    puts "Created valid user: #{@valid_user.id}"
 
     @blacklisted_user = User.create!(
       first_name: 'Max',
@@ -26,30 +25,25 @@ RSpec.describe 'PasswordsController' do
       user_role: 'verified',
       activity_status: 1
     )
-    puts "Created blacklisted user: #{@blacklisted_user.id}"
 
     # Verified user refresh/access/client tokens
     credentials = Base64.strict_encode64("#{@valid_user.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
     post('/api/v0/auth/token/refresh', headers:)
     @valid_refresh_token = JSON.parse(response.body)['refresh_token']
-    puts "Valid user refresh token: #{@valid_refresh_token}"
 
     headers = { 'HTTP_REFRESH_TOKEN' => @valid_refresh_token }
     post('/api/v0/auth/token/access', headers:)
     @valid_access_token = JSON.parse(response.body)['access_token']
-    puts "Valid user access token: #{@valid_access_token}"
 
     credentials = Base64.strict_encode64("#{@blacklisted_user.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
     post('/api/v0/auth/token/refresh', headers:)
     @valid_rt_blacklisted = JSON.parse(response.body)['refresh_token']
-    puts "Valid user who will be blacklisted refresh token: #{@valid_rt_blacklisted}"
 
     headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt_blacklisted }
     post('/api/v0/auth/token/access', headers:)
     @valid_at_blacklisted = JSON.parse(response.body)['access_token']
-    puts "Valid user who will be blacklisted access token: #{@valid_at_blacklisted}"
 
     UserBlacklist.create!(
       user_id: @blacklisted_user.id,

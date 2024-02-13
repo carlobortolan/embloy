@@ -5,18 +5,17 @@ module Api
     # GeniusQueriesController handles genius query-related actions
     class GeniusQueriesController < ApiController
       skip_before_action :set_current_user, only: :query
-      before_action :must_be_subscribed!, only: :create
       before_action :must_be_verified!, only: :create
+      before_action :must_be_subscribed!, only: :create
 
       def create
-        res = GeniusQueryService::Encoder.call(Current.user.id, create_params)
-        render status: 200, json: { 'query_token' => res }
+        raise CustomExceptions::InvalidInput::GeniusQuery::Blank if create_params[:job_id].blank? && create_params[:user_id].blank?
+
+        render status: 200, json: { 'query_token' => GeniusQueryService::Encoder.call(Current.user.id, create_params) }
       end
 
       def query
-        token = params[:genius]
-        res = GeniusQueryService::Decoder.call(token)
-        render status: 200, json: { 'query_result' => res }
+        render status: 200, json: GeniusQueryService::Decoder.call(query_params[:genius])
       rescue ActiveRecord::RecordNotFound
         not_found_error('genius_query')
       end
@@ -24,7 +23,11 @@ module Api
       private
 
       def create_params
-        params.permit(:job_id, :user_id, :expires_at)
+        params.except(:format).permit(:job_id, :user_id, :exp)
+      end
+
+      def query_params
+        params.except(:format).permit(:genius)
       end
     end
   end

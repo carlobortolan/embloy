@@ -83,6 +83,9 @@ class CustomExceptions < StandardError
 
       class Malformed < StandardError
       end
+
+      class Removed < StandardError
+      end
     end
 
     class Quicklink < StandardError
@@ -115,6 +118,10 @@ class CustomExceptions < StandardError
   class InvalidJob < StandardError
     # Should be risen when there is no record in jobs for a given job_id
     class Unknown < StandardError
+    end
+
+    # Should be risen when job is inactive
+    class Inactive < StandardError
     end
   end
 

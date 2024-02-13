@@ -97,6 +97,13 @@ class AuthenticationTokenService
       # man_interval is no integer or either negative or 0
     end
 
+    def self.verify_expiration!(man_interval, max, min)
+      raise CustomExceptions::InvalidInput::CustomEXP unless man_interval.instance_of?(Integer) && man_interval.positive?
+      return man_interval if man_interval <= max && man_interval >= min
+
+      raise CustomExceptions::InvalidInput::CustomEXP
+    end
+
     # TODO: ISSUE #25
     #     def self.sub?(sub)
     #       # checks whether a user exists in the database

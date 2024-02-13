@@ -36,12 +36,6 @@ module Api
       rescue ActionController::ParameterMissing
         blank_error('refresh_token')
         # ======== Overwrite APIExceptionHandler =======
-      rescue CustomExceptions::InvalidUser::Unknown
-        # The requested token subject (User) doesn't exists BUT user.authenticate(refresh_token_params["password"]) says true
-        render status: 500, json: { error: 'Please try again later. If this error persists, we recommend to contact our support team.' }
-      rescue CustomExceptions::InvalidInput::SUB
-        # Invalid Input (User Attribute is malformed) BUT user.authenticate(refresh_token_params["password"]) says true
-        render status: 500, json: { error: 'Please try again later. If this error persists, we recommend to contact our support team.' }
       end
 
       def create_access
@@ -55,7 +49,6 @@ module Api
           ] }
         else
           token = AuthenticationTokenService::Access::Encoder.call(request.headers['HTTP_REFRESH_TOKEN'])
-          # token = AuthenticationTokenService::Access::Encoder.call(access_token_params["refresh_token"])
           render status: 200, json: { 'access_token' => token }
 
         end
@@ -70,15 +63,6 @@ module Api
         else
           {}
         end
-      end
-
-      def user
-        # enables to not explicitly define user by just calling this method
-        if refresh_token_params['email'].nil? || refresh_token_params['email'].empty? || refresh_token_params['password'].nil? || refresh_token_params['password'].empty?
-          raise CustomExceptions::InvalidInput::BlankCredentials
-        end
-
-        @user ||= User.find_by(email: refresh_token_params['email'])
       end
     end
   end

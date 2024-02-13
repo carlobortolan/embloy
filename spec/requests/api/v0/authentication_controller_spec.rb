@@ -15,7 +15,6 @@ RSpec.describe 'AuthenticationController' do
       user_role: 'verified',
       activity_status: 1
     )
-    Rails.logger.info("Created valid user: #{@valid_user.id}")
 
     @blacklisted_user = User.create!(
       first_name: 'Max',
@@ -26,7 +25,6 @@ RSpec.describe 'AuthenticationController' do
       user_role: 'verified',
       activity_status: 1
     )
-    Rails.logger.info("Created blacklisted user: #{@blacklisted_user.id}")
 
     @unverified_user = User.create!(
       first_name: 'Max',
@@ -36,21 +34,16 @@ RSpec.describe 'AuthenticationController' do
       password_confirmation: 'password',
       user_role: 'spectator'
     )
-    Rails.logger.info("Created unverified user: #{@unverified_user.id}")
 
     credentials = Base64.strict_encode64("#{@valid_user.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
-    Rails.logger.info("Making request: POST /api/v0/auth/token/refresh with headers: #{headers}")
     post('/api/v0/auth/token/refresh', headers:)
     @valid_refresh_token = JSON.parse(response.body)['refresh_token']
-    Rails.logger.info("Valid refresh token: #{@valid_refresh_token}")
 
     credentials = Base64.strict_encode64("#{@blacklisted_user.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
-    Rails.logger.info("Making request: POST /api/v0/auth/token/refresh with headers: #{headers}")
     post('/api/v0/auth/token/refresh', headers:)
     @valid_rt_blacklisted = JSON.parse(response.body)['refresh_token']
-    Rails.logger.info("Valid refresh token for blacklisted user: #{@valid_rt_blacklisted}")
     UserBlacklist.create!(
       user_id: @blacklisted_user.id,
       reason: 'Test blacklist'
@@ -65,7 +58,6 @@ RSpec.describe 'AuthenticationController' do
         it 'returns [200 OK] and a new refresh token' do
           credentials = Base64.strict_encode64("#{@valid_user.email}:password")
           headers = { 'Authorization' => "Basic #{credentials}" }
-          Rails.logger.info("Making request: POST /api/v0/auth/token/refresh with headers: #{headers}")
           post('/api/v0/auth/token/refresh', headers:)
           expect(response).to have_http_status(200)
         end
@@ -73,42 +65,36 @@ RSpec.describe 'AuthenticationController' do
 
       context 'invalid inputs' do
         it 'returns [400 Bad Request] for missing authentication' do
-          Rails.logger.info("Making request: POST /api/v0/auth/token/refresh with headers: #{headers}")
           post '/api/v0/auth/token/refresh'
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for missing email field' do
           credentials = Base64.strict_encode64(':password')
           headers = { 'Authorization' => "Basic #{credentials}" }
-          Rails.logger.info("Making request: POST /api/v0/auth/token/refresh with headers: #{headers}")
           post('/api/v0/auth/token/refresh', headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for missing password field' do
           credentials = Base64.strict_encode64(@valid_user.email.to_s)
           headers = { 'Authorization' => "Basic #{credentials}" }
-          Rails.logger.info("Making request: POST /api/v0/auth/token/refresh with headers: #{headers}")
           post('/api/v0/auth/token/refresh', headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for non-existing user' do
           credentials = Base64.strict_encode64('nonexistinguser@embloy.com:password')
           headers = { 'Authorization' => "Basic #{credentials}" }
-          Rails.logger.info("Making request: POST /api/v0/auth/token/refresh with headers: #{headers}")
           post('/api/v0/auth/token/refresh', headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for unverified user' do
           credentials = Base64.strict_encode64("#{@unverified_user.email}:password")
           headers = { 'Authorization' => "Basic #{credentials}" }
-          Rails.logger.info("Making request: POST /api/v0/auth/token/refresh with headers: #{headers}")
           post('/api/v0/auth/token/refresh', headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
           credentials = Base64.strict_encode64("#{@blacklisted_user.email}:password")
           headers = { 'Authorization' => "Basic #{credentials}" }
-          Rails.logger.info("Making request: POST /api/v0/auth/token/refresh with headers: #{headers}")
           post('/api/v0/auth/token/refresh', headers:)
           expect(response).to have_http_status(403)
         end
@@ -121,7 +107,6 @@ RSpec.describe 'AuthenticationController' do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and new access token' do
           headers = { 'HTTP_REFRESH_TOKEN' => @valid_refresh_token }
-          Rails.logger.info("Making request: POST /api/v0/auth/token/refresh with headers: #{headers}")
           post('/api/v0/auth/token/access', headers:)
           expect(response).to have_http_status(200)
         end
@@ -129,19 +114,16 @@ RSpec.describe 'AuthenticationController' do
 
       context 'invalid inputs' do
         it 'returns [400 Bad Request] for missing refresh token in header' do
-          Rails.logger.info("Making request: POST /api/v0/auth/token/refresh with headers: #{headers}")
           post '/api/v0/auth/token/access'
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid refresh token' do
           headers = { 'HTTP_REFRESH_TOKEN' => @invalid_refresh_token }
-          Rails.logger.info("Making request: POST /api/v0/auth/token/refresh with headers: #{headers}")
           post('/api/v0/auth/token/access', headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [200 OK] for blacklisted user' do # TODO: Should this return 200 OK or 403 Forbidden?
           headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt_blacklisted }
-          Rails.logger.info("Making request: POST /api/v0/auth/token/refresh with headers: #{headers}")
           post('/api/v0/auth/token/access', headers:)
           expect(response).to have_http_status(200)
         end

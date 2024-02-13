@@ -23,21 +23,26 @@ class GeniusQueryService < AuthenticationTokenService
   end
 
   def self.query(args)
-    if args.key?('job_id') && !args.key('user_id')
-      job = Job.find(args['job_id'])
-      res = Job.json_for(job)
+    return unless args.key?('job_id') && !args.key('user_id')
 
-      { job: res }
+    job = Job.find(args['job_id'])
+    ApplicationController.user_not_blacklisted!(job.user_id)
+    raise CustomExceptions::Subscription::ExpiredOrMissing unless job.user.active_subscription?
 
-    elsif !args.key?('job_id') && args.key('user_id')
-      # TODO: query users
-      []
-      # elsif args.key?('job_id') && args.key('user_id')
-      # # TODO: query applications
-      #  []
-      #    else
-      #     []
-    end
+    raise CustomExceptions::InvalidInput::GeniusQuery::Removed unless %w[listed unlisted].include?(job.job_status) && job.activity_status == 1
+
+    res = Job.json_for(job)
+
+    { job: res }
+
+    # elsif !args.key?('job_id') && args.key('user_id')
+    # TODO: query users
+    []
+    # elsif args.key?('job_id') && args.key('user_id')
+    # # TODO: query applications
+    #  []
+    #    else
+    #     []
   end
 
   # The Encoder class is responsible for encoding tokens.
@@ -61,12 +66,12 @@ class GeniusQueryService < AuthenticationTokenService
     def self.prepare_token_values(user_id, args)
       iat = Time.now.to_i
       sub = user_id
-      bin_exp = if args.include?('expires_at') && !args['expires_at'].nil?
-                  iat + AuthenticationTokenService::Refresh.verify_expiration(args['expires_at'], MAX_INTERVAL, MIN_INTERVAL)
+      bin_exp = if args.include?('exp') && !args['exp'].nil?
+                  iat + AuthenticationTokenService::Refresh.verify_expiration!(args['exp'], MAX_INTERVAL, MIN_INTERVAL)
                 else
-                  iat + 3600 # standard validity interval (1 hour == 60 min == 3600 sec)
+                  iat + 86_400 # standard validity interval (1 day == 24 hrs == 1440 min == 86400 sec)
                 end
-      args.delete('expires_at')
+      args.delete('exp')
       [iat, sub, bin_exp]
     end
 

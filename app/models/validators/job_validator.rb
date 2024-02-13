@@ -70,31 +70,40 @@ module Validators
       validate :image_format_validation
       validate :application_options_count_validation
       validate :application_options_validity
-      validate :check_subscription_limit
+      validate :check_subscription_limit_create, on: :create
+      validate :check_subscription_limit_update, on: :update
     end
 
     private
 
-    def check_subscription_limit
+    def check_subscription_limit_create
       return unless user
+      return unless user.jobs.where(job_status: %w[listed unlisted], activity_status: 1).count >= max_jobs_allowed
 
-      subscription = user.current_subscription
-      subscription_type = subscription ? SubscriptionHelper.subscription_type(subscription.processor_plan) : nil
+      raise CustomExceptions::Subscription::LimitReached
+    end
 
-      max_jobs_allowed = case subscription_type
-                         when 'basic'
-                           3
-                         when 'premium'
-                           50
-                         when 'enterprise_1', 'enterprise_2', 'enterprise_3'
-                           Float::INFINITY
-                         else
-                           0
-                         end
-
+    def check_subscription_limit_update
+      return unless user
       return unless user.jobs.where(job_status: %w[listed unlisted], activity_status: 1).count > max_jobs_allowed
 
       raise CustomExceptions::Subscription::LimitReached
+    end
+
+    def max_jobs_allowed
+      subscription = user.current_subscription
+      subscription_type = subscription ? SubscriptionHelper.subscription_type(subscription.processor_plan) : nil
+
+      case subscription_type
+      when 'basic'
+        3
+      when 'premium'
+        50
+      when 'enterprise_1', 'enterprise_2', 'enterprise_3'
+        Float::INFINITY
+      else
+        0
+      end
     end
 
     def cv_formats_validation

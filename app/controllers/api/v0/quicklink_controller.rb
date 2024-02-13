@@ -18,7 +18,6 @@ module Api
 
       # The apply method is responsible for handling the application process.
       # It finds the user and client based on the decoded tokens, updates or creates the job, and applies for the job.
-      # rubocop:disable Metrics/AbcSize
       def apply
         begin
           @client = User.find(@decoded_request_token['sub'].to_i)
@@ -26,13 +25,7 @@ module Api
           return not_found_error('client')
         end
 
-        session = @decoded_request_token['session']
-
-        return render status: 401, json: { 'error' => 'Malformed Request Token' } if session.nil? || session['job_slug'].nil? || session['user_id'].nil? || session['subscription_type'].nil?
-
-        session['referrer_url'] = request.referrer
-
-        if update_or_create_job(session)
+        if update_or_create_job(validate_session)
           apply_for_job
         else
           render status: 400, json: @job.errors.details
@@ -48,19 +41,12 @@ module Api
           return not_found_error('client')
         end
 
-        session = @decoded_request_token['session']
-
-        return render status: 401, json: { 'error' => 'Malformed Request Token' } if session.nil? || session['job_slug'].nil? || session['user_id'].nil? || session['subscription_type'].nil?
-
-        session['referrer_url'] = request.referrer
-
-        if update_or_create_job(session)
+        if update_or_create_job(validate_session)
           render status: 200, json: { session:, job: Job.json_for(@job) }
         else
           render status: 400, json: @job.errors.details
         end
       end
-      # rubocop:enable Metrics/AbcSize
 
       # The create_request method is responsible for creating a `request_token`.
       # It calls the Encoder class of the `QuicklinkService::Request` module to create the token.
@@ -78,14 +64,21 @@ module Api
       # It calls the Encoder class of the `QuicklinkService::Client` module to create the token.
       # It then returns the token in the response.
       def create_client
-        token = QuicklinkService::Client::Encoder.call(
-          Current.user.id, check_subscription, parse_expiration_date
-        )
-        render status: 200,
-               json: { 'client_token' => token }
+        token = QuicklinkService::Client::Encoder.call(Current.user.id, check_subscription, parse_expiration_date)
+        render status: 200, json: { 'client_token' => token }
       end
 
       private
+
+      def validate_session
+        raise CustomExceptions::Subscription::ExpiredOrMissing unless @client&.active_subscription?
+
+        session = @decoded_request_token['session']
+        raise CustomExceptions::InvalidInput::Quicklink::Request::Malformed if session.nil? || session['job_slug'].nil? || session['user_id'].nil? || session['subscription_type'].nil?
+
+        session['referrer_url'] = request.referrer
+        session
+      end
 
       # The update_or_create_job method is responsible for updating an existing job or creating a new one.
       # It takes a `job_slug` as a parameter, which is used to find or create the job.

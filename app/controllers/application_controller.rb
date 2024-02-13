@@ -385,6 +385,22 @@ class ApplicationController < ActionController::API
     end
   end
 
+  def self.user_not_blacklisted(id = nil)
+    if id.nil?
+      !Current.user.nil? && UserBlacklist.find_by_user_id(Current.user.id).nil?
+    else
+      !id.nil? && UserBlacklist.find_by_user_id(id).nil?
+    end
+  end
+
+  def self.user_not_blacklisted!(id = nil)
+    if id.nil? && !Current.user.nil? && !UserBlacklist.find_by_user_id(Current.user.id).nil?
+      raise CustomExceptions::Unauthorized::Blocked
+    elsif !id.nil? && !UserBlacklist.find_by_user_id(id).nil?
+      raise CustomExceptions::Unauthorized::Blocked
+    end
+  end
+
   # ============== Helper methods =================
   # ===============================================
 
@@ -394,14 +410,14 @@ class ApplicationController < ActionController::API
     @job = Job.find_by(job_id:) unless job_id.nil?
 
     raise CustomExceptions::InvalidJob::Unknown if @job.nil?
+    raise CustomExceptions::InvalidJob::Inactive if @job.activity_status.zero?
   end
 
   def self.set_at_job(job_id = nil)
     @job = Job.find_by(job_id:) unless job_id.nil?
 
-    return unless @job.nil?
-
-    raise CustomExceptions::InvalidJob::Unknown
+    raise CustomExceptions::InvalidJob::Unknown if @job.nil?
+    raise CustomExceptions::InvalidJob::Inactive if @job.activity_status.zero?
   end
 
   # ======== that model the role hierarchy ========

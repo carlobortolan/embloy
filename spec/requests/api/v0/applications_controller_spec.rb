@@ -18,7 +18,6 @@ RSpec.describe 'ApplicationsController' do
       user_role: 'verified',
       activity_status: 1
     )
-    puts "Created verified user without jobs, applications: #{@valid_user.id}"
 
     # Create valid verified user with own jobs
     @valid_user_has_own_jobs = User.create!(
@@ -30,7 +29,6 @@ RSpec.describe 'ApplicationsController' do
       user_role: 'verified',
       activity_status: 1
     )
-    puts "Created valid verified user with own jobs: #{@valid_user_has_own_jobs.id}"
     @valid_user_has_own_jobs.set_payment_processor :fake_processor, allow_fake: true
     @valid_user_has_own_jobs.pay_customers
     @valid_user_has_own_jobs.payment_processor.customer
@@ -47,7 +45,6 @@ RSpec.describe 'ApplicationsController' do
       user_role: 'verified',
       activity_status: 1
     )
-    puts "Created valid verified user with own jobs: #{@valid_user_has_no_jobs.id}"
     @valid_user_has_no_jobs.set_payment_processor :fake_processor, allow_fake: true
     @valid_user_has_no_jobs.pay_customers
     @valid_user_has_no_jobs.payment_processor.customer
@@ -64,7 +61,6 @@ RSpec.describe 'ApplicationsController' do
       user_role: 'verified',
       activity_status: 1
     )
-    puts "Created valid verified user with own jobs: #{@unsubscribed_user_has_own_jobs.id}"
     @unsubscribed_user_has_own_jobs.set_payment_processor :fake_processor, allow_fake: true
     @unsubscribed_user_has_own_jobs.pay_customers
     @unsubscribed_user_has_own_jobs.payment_processor.customer
@@ -81,7 +77,6 @@ RSpec.describe 'ApplicationsController' do
       user_role: 'verified',
       activity_status: 1
     )
-    puts "Created valid verified user with applications: #{@valid_user_has_applications.id}"
 
     # Create valid verified user who will apply for jobs
     @valid_applicant = User.create!(
@@ -93,7 +88,6 @@ RSpec.describe 'ApplicationsController' do
       user_role: 'verified',
       activity_status: 1
     )
-    puts "Created valid verified user with applications: #{@valid_applicant.id}"
 
     # Blacklisted verified user
     @blacklisted_user = User.create!(
@@ -105,7 +99,6 @@ RSpec.describe 'ApplicationsController' do
       user_role: 'verified',
       activity_status: 1
     )
-    puts "Created blacklisted user: #{@blacklisted_user.id}"
 
     ### ACCESS / REFRESH TOKENS ###
 
@@ -114,90 +107,75 @@ RSpec.describe 'ApplicationsController' do
     headers = { 'Authorization' => "Basic #{credentials}" }
     post('/api/v0/auth/token/refresh', headers:)
     @valid_refresh_token = JSON.parse(response.body)['refresh_token']
-    puts "Valid user refresh token: #{@valid_refresh_token}"
 
     headers = { 'HTTP_REFRESH_TOKEN' => @valid_refresh_token }
     post('/api/v0/auth/token/access', headers:)
     @valid_access_token = JSON.parse(response.body)['access_token']
-    puts "Valid user access token: #{@valid_access_token}"
 
     # Valid user with own jobs refresh/access tokens
     credentials = Base64.strict_encode64("#{@valid_user_has_own_jobs.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
     post('/api/v0/auth/token/refresh', headers:)
     @valid_rt_has_own_jobs = JSON.parse(response.body)['refresh_token']
-    puts "Valid user with own jobs refresh token: #{@valid_rt_has_own_jobs}"
 
     headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt_has_own_jobs }
     post('/api/v0/auth/token/access', headers:)
     @valid_at_has_own_jobs = JSON.parse(response.body)['access_token']
-    puts "Valid user with own jobs access token: #{@valid_at_has_own_jobs}"
 
     # Valid user with no jobs refresh/access tokens
     credentials = Base64.strict_encode64("#{@valid_user_has_no_jobs.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
     post('/api/v0/auth/token/refresh', headers:)
     @valid_rt_has_no_jobs = JSON.parse(response.body)['refresh_token']
-    puts "Valid user with own jobs refresh token: #{@valid_rt_has_no_jobs}"
 
     headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt_has_no_jobs }
     post('/api/v0/auth/token/access', headers:)
     @valid_at_has_no_jobs = JSON.parse(response.body)['access_token']
-    puts "Valid user with own jobs access token: #{@valid_at_has_no_jobs}"
 
     # Not subscribed user with own jobs refresh/access tokens
     credentials = Base64.strict_encode64("#{@unsubscribed_user_has_own_jobs.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
     post('/api/v0/auth/token/refresh', headers:)
     @unsubscribed_rt_has_own_jobs = JSON.parse(response.body)['refresh_token']
-    puts "Valid user with own jobs refresh token: #{@unsubscribed_rt_has_own_jobs}"
 
     headers = { 'HTTP_REFRESH_TOKEN' => @unsubscribed_rt_has_own_jobs }
     post('/api/v0/auth/token/access', headers:)
     @unsubscribed_at_has_own_jobs = JSON.parse(response.body)['access_token']
-    puts "Valid user with own jobs access token: #{@unsubscribed_at_has_own_jobs}"
 
     # Valid user with upcoming jobs refresh/access tokens
     credentials = Base64.strict_encode64("#{@valid_user_has_applications.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
     post('/api/v0/auth/token/refresh', headers:)
     @valid_rt_has_applications = JSON.parse(response.body)['refresh_token']
-    puts "Valid user with upcoming jobs refresh token: #{@valid_rt_has_applications}"
 
     headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt_has_applications }
     post('/api/v0/auth/token/access', headers:)
     @valid_at_has_applications = JSON.parse(response.body)['access_token']
-    puts "Valid user with own jobs access token: #{@valid_at_has_applications}"
 
     # Valid user who will apply for jobs refresh/access tokens
     credentials = Base64.strict_encode64("#{@valid_applicant.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
     post('/api/v0/auth/token/refresh', headers:)
     @valid_rt_applicant = JSON.parse(response.body)['refresh_token']
-    puts "Valid user with upcoming jobs refresh token: #{@valid_rt_applicant}"
 
     headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt_applicant }
     post('/api/v0/auth/token/access', headers:)
     @valid_at_applicant = JSON.parse(response.body)['access_token']
-    puts "Valid user with own jobs access token: #{@valid_at_applicant}"
 
     # Blacklisted user refresh/access tokens
     credentials = Base64.strict_encode64("#{@blacklisted_user.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
     post('/api/v0/auth/token/refresh', headers:)
     @valid_rt_blacklisted = JSON.parse(response.body)['refresh_token']
-    puts "Valid user who will be blacklisted refresh token: #{@valid_rt_blacklisted}"
 
     headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt_blacklisted }
     post('/api/v0/auth/token/access', headers:)
     @valid_at_blacklisted = JSON.parse(response.body)['access_token']
-    puts "Valid user who will be blacklisted access token: #{@valid_at_blacklisted}"
 
     UserBlacklist.create!(
       user_id: @blacklisted_user.id,
       reason: 'Test blacklist'
     )
-    puts "Blacklisted user #{@blacklisted_user.id}}"
 
     # Invalid/expired access tokens
     @invalid_access_token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWILOjQ6LCJleHAiOjE2OTgxNzk0MjgsImp0aSI6IjQ1NDMyZWUyNWE4YWUyMjc1ZGY0YTE2ZTNlNmQ0YTY4IiwiaWF0IjoxNjk4MTY1MDI4LCJpc3MiOiJDQl9TdXJmYWNlUHJvOCJ9.nqGgQ6Z52CbaHZzPGcwQG6U-nMDxb1yIe7HQMxjoDTs'
@@ -213,24 +191,11 @@ RSpec.describe 'ApplicationsController' do
     12.times do |i|
       @jobs << Job.create!(
         user_id: @valid_user_has_own_jobs.id,
-        title: 'TestJob',
-        description: 'TestDescription',
-        longitude: '0.0',
-        latitude: '0.0',
-        position: 'Intern',
-        salary: '123',
         job_status: status[i],
         activity_status: activity_status[i],
-        start_slot: Time.now + 1.year,
-        key_skills: 'Entrepreneurship',
-        duration: '14',
-        currency: 'CHF',
-        job_type: 'Retail',
-        job_type_value: '1',
         cv_required: cv_required[i],
         allowed_cv_formats: allowed_cv_formats[i]
       )
-      puts "Created new job for: #{@valid_user_has_own_jobs.id}"
     end
     6.times do |i|
       @applications << Application.create!(
@@ -240,7 +205,6 @@ RSpec.describe 'ApplicationsController' do
         response: 'No response yet ...',
         status: '0'
       )
-      puts "#{@valid_user_has_applications.id} applied to #{@jobs[i].id}"
     end
 
     @applications << Application.create!(
@@ -250,7 +214,6 @@ RSpec.describe 'ApplicationsController' do
       response: 'No response yet ...',
       status: '0'
     )
-    puts "#{@valid_user_has_applications.id} applied to #{@jobs[9].id}"
 
     activity_status = [1, 1, 1, 1, 1, 0]
     status = %w[listed listed listed unlisted archived listed]
@@ -258,21 +221,8 @@ RSpec.describe 'ApplicationsController' do
     6.times do |i|
       job = Job.create!(
         user_id: @valid_user_has_own_jobs.id,
-        title: 'TestJob',
-        description: 'TestDescription',
-        longitude: '0.0',
-        latitude: '0.0',
-        position: 'Intern',
-        salary: '123',
         job_status: status[i],
-        activity_status: activity_status[i],
-        start_slot: Time.now + 1.year,
-        key_skills: 'Entrepreneurship',
-        duration: '14',
-        currency: 'CHF',
-        job_type: 'Retail',
-        job_type_value: '1',
-        cv_required: false
+        activity_status: activity_status[i]
       )
       job.application_options.create!(
         question: 'TEST Text',
@@ -302,28 +252,13 @@ RSpec.describe 'ApplicationsController' do
         required: required[i]
       )
       @jobs << job
-      puts "Created new job for: #{@valid_user_has_own_jobs.id}"
     end
 
     @jobs << Job.create!(
       user_id: @unsubscribed_user_has_own_jobs.id,
-      title: 'TestJob',
-      description: 'TestDescription',
-      longitude: '0.0',
-      latitude: '0.0',
-      position: 'Intern',
-      salary: '123',
       job_status: 'listed',
-      activity_status: 1,
-      start_slot: Time.now + 1.year,
-      key_skills: 'Entrepreneurship',
-      duration: '14',
-      currency: 'CHF',
-      job_type: 'Retail',
-      job_type_value: '1',
-      cv_required: false
+      activity_status: 1
     )
-    puts "Created new job for: #{@unsubscribed_user_has_own_jobs.id}"
     @unsubscribed_user_has_own_jobs.payment_processor.subscription.cancel_now!
   end
 
@@ -540,10 +475,10 @@ RSpec.describe 'ApplicationsController' do
           patch("/api/v0/jobs/#{@jobs[0].id}/applications/#{@valid_user_has_applications.id}/accept", headers:)
           expect(response).to have_http_status(401)
         end
-        it 'returns [401 Unauthorized] for unsubscribed user' do
+        it 'returns [403 Forbidden] for unsubscribed user' do
           headers = { 'HTTP_ACCESS_TOKEN' => @unsubscribed_at_has_own_jobs }
           patch("/api/v0/jobs/#{@jobs[18].id}/applications/#{@valid_user_has_applications.id}/accept", headers:)
-          expect(response).to have_http_status(401)
+          expect(response).to have_http_status(403)
         end
         it 'returns [403 Forbidden] if user is not owner' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_no_jobs }
@@ -627,10 +562,10 @@ RSpec.describe 'ApplicationsController' do
           patch("/api/v0/jobs/#{@jobs[0].id}/applications/#{@valid_user_has_applications.id}/reject", headers:)
           expect(response).to have_http_status(401)
         end
-        it 'returns [401 Unauthorized] for unsubscribed user' do
+        it 'returns [403 Forbidden] for unsubscribed user' do
           headers = { 'HTTP_ACCESS_TOKEN' => @unsubscribed_at_has_own_jobs }
           patch("/api/v0/jobs/#{@jobs[18].id}/applications/#{@valid_user_has_applications.id}/reject", headers:)
-          expect(response).to have_http_status(401)
+          expect(response).to have_http_status(403)
         end
         it 'returns [403 Forbidden] if user is not owner' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_no_jobs }

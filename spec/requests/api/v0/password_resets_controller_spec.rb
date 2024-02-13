@@ -15,7 +15,6 @@ RSpec.describe 'PasswordResetsController' do
       user_role: 'verified',
       activity_status: 1
     )
-    puts "Created valid user: #{@valid_user.id}"
 
     @unverified_user = User.create!(
       first_name: 'Max',
@@ -26,7 +25,6 @@ RSpec.describe 'PasswordResetsController' do
       user_role: 'spectator',
       activity_status: 1
     )
-    puts "Created valid user: #{@valid_user.id}"
 
     @blacklisted_user = User.create!(
       first_name: 'Max',
@@ -37,7 +35,6 @@ RSpec.describe 'PasswordResetsController' do
       user_role: 'verified',
       activity_status: 1
     )
-    puts "Created blacklisted user: #{@blacklisted_user.id}"
 
     UserBlacklist.create!(
       user_id: @blacklisted_user.id,

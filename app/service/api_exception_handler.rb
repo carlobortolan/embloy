@@ -52,6 +52,9 @@ module ApiExceptionHandler
     rescue_from CustomExceptions::InvalidJob::Unknown,
                 with: :job_unknown_error
 
+    rescue_from CustomExceptions::InvalidJob::Inactive,
+                with: :job_inactive_error
+
     # =========== User related exceptions ===========
     # ===============================================
 
@@ -135,6 +138,8 @@ module ApiExceptionHandler
                 with: :genius_query_malformed_error
     rescue_from CustomExceptions::InvalidInput::GeniusQuery::Blank,
                 with: :genius_query_blank_error
+    rescue_from CustomExceptions::InvalidInput::GeniusQuery::Removed,
+                with: :genius_query_removed_error
   end
 
   private
@@ -144,6 +149,10 @@ module ApiExceptionHandler
 
   def job_unknown_error
     not_found_error('job')
+  end
+
+  def job_inactive_error
+    access_denied_error('job')
   end
 
   # =========== User related exceptions ===========
@@ -189,7 +198,7 @@ module ApiExceptionHandler
   end
 
   def subscription_expired_or_missing_error
-    unauthorized_error('subscription')
+    access_denied_error('subscription')
   end
 
   def subscription_limit_reached_error
@@ -229,6 +238,10 @@ module ApiExceptionHandler
 
   def genius_query_blank_error
     blank_error('genius_query')
+  end
+
+  def genius_query_removed_error
+    removed_error('genius_query')
   end
 
   def custom_validity_invalid_input_error

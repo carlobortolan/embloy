@@ -268,7 +268,7 @@ module Api
       #       end
 
       def job_params
-        permitted_params = params.except(:format).permit(
+        permitted_params = params.except(:format, :_json, :job).permit(
           :id, :job_slug, :title, :description, :start_slot, :referrer_url, :longitude, :latitude, :job_type,
           :job_status, :image_url, :position, :currency, :salary, :key_skills, :duration, :job_notifications,
           :cv_required, allowed_cv_formats: [], application_options_attributes: [:id, :question, :question_type,
@@ -284,7 +284,10 @@ module Api
         return unless permitted_params[:application_options_attributes].present?
 
         permitted_params[:application_options_attributes].each do |option_params|
-          raise ActionController::BadRequest, 'Invalid question_type' if option_params[:question_type].present? && !ApplicationOption::VALID_QUESTION_TYPES.include?(option_params[:question_type])
+          if option_params[:question_type].nil? || (option_params[:question_type].present? && !ApplicationOption::VALID_QUESTION_TYPES.include?(option_params[:question_type]))
+            raise ActionController::BadRequest,
+                  'Invalid question_type'
+          end
         end
       end
 

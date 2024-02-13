@@ -17,7 +17,6 @@ RSpec.describe 'JobsController' do
       user_role: :verified,
       activity_status: 1
     )
-    puts "Created valid user: #{@valid_user.id}"
     @valid_user.set_payment_processor :fake_processor, allow_fake: true
     @valid_user.pay_customers
     @valid_user.payment_processor.customer
@@ -34,7 +33,6 @@ RSpec.describe 'JobsController' do
       user_role: 'verified',
       activity_status: 1
     )
-    puts "Created valid user: #{@user_basic.id}"
     @user_basic.set_payment_processor :fake_processor, allow_fake: true
     @user_basic.pay_customers
     @user_basic.payment_processor.customer
@@ -51,7 +49,6 @@ RSpec.describe 'JobsController' do
       user_role: 'verified',
       activity_status: 1
     )
-    puts "Created user with embloy-premium subscription: #{@user_premium.id}"
     @user_premium.set_payment_processor :fake_processor, allow_fake: true
     @user_premium.pay_customers
     @user_premium.payment_processor.customer
@@ -68,7 +65,6 @@ RSpec.describe 'JobsController' do
       user_role: 'spectator',
       activity_status: 0
     )
-    puts "Created unverified user: #{@unverified_user.id}"
     @unverified_user.set_payment_processor :fake_processor, allow_fake: true
     @unverified_user.pay_customers
     @unverified_user.payment_processor.customer
@@ -85,7 +81,6 @@ RSpec.describe 'JobsController' do
       user_role: 'verified',
       activity_status: 1
     )
-    puts "Created blacklisted user: #{@blacklisted_user.id}"
     @blacklisted_user.set_payment_processor :fake_processor, allow_fake: true
     @blacklisted_user.pay_customers
     @blacklisted_user.payment_processor.customer
@@ -102,214 +97,127 @@ RSpec.describe 'JobsController' do
       user_role: 'verified',
       activity_status: 1
     )
-    puts "Created unsubscribed user: #{@unsubscribed_user.id}"
 
     # Create jobs
     5.times do
       @job = Job.create!(
         user_id: @valid_user.id,
-        title: 'TestJob',
-        description: 'TestDescription',
-        longitude: '0.0',
-        latitude: '0.0',
-        position: 'Intern',
-        salary: '123',
-        start_slot: Time.now + 1.year,
         job_status: 'listed',
-        key_skills: 'Entrepreneurship',
-        duration: '14',
-        currency: 'CHF',
-        job_type: 'Retail',
-        activity_status: 1,
-        job_type_value: '1'
+        activity_status: 1
       )
-      puts "Created new job for: #{@valid_user.id}"
+    end
+
+    # Create jobs
+    3.times do
+      @user_basic_job = Job.create!(
+        user_id: @user_basic.id
+      )
+    end
+
+    # Create jobs
+    50.times do
+      @user_premium_job = Job.create!(
+        user_id: @user_premium.id,
+        job_status: 'listed',
+        activity_status: 1
+      )
     end
 
     # Create jobs
     @not_owned_job = Job.create!(
       user_id: @blacklisted_user.id,
-      title: 'TestJob',
-      description: 'TestDescription',
-      longitude: '0.0',
-      latitude: '0.0',
-      position: 'Intern',
-      salary: '123',
-      start_slot: Time.now + 1.year,
-      key_skills: 'Entrepreneurship',
-      duration: '14',
-      currency: 'CHF',
-      job_type: 'Retail',
-      activity_status: 1,
-      job_type_value: '1'
+      activity_status: 1
     )
-    puts "Created new job for: #{@valid_user.id}"
 
     # Create jobs
     @unlisted_job = Job.create!(
       user_id: @valid_user.id,
-      title: 'TestJob',
-      description: 'TestDescription',
-      longitude: '0.0',
-      latitude: '0.0',
-      position: 'Intern',
-      salary: '123',
-      start_slot: Time.now + 1.year,
-      key_skills: 'Entrepreneurship',
-      duration: '14',
-      currency: 'CHF',
-      job_type: 'Retail',
-      job_type_value: '1',
       activity_status: 1,
       job_status: 'unlisted'
     )
-    puts "Created new job for: #{@valid_user.id}"
 
     # Create jobs
     @not_owned_unlisted_job = Job.create!(
       user_id: @blacklisted_user.id,
-      title: 'TestJob',
-      description: 'TestDescription',
-      longitude: '0.0',
-      latitude: '0.0',
-      position: 'Intern',
-      salary: '123',
-      start_slot: Time.now + 1.year,
-      key_skills: 'Entrepreneurship',
-      duration: '14',
-      currency: 'CHF',
-      job_type: 'Retail',
-      job_type_value: '1',
       activity_status: 1,
       job_status: 'unlisted'
     )
-    puts "Created new job for: #{@valid_user.id}"
 
     # Create jobs
     @not_owned_archived_job = Job.create!(
       user_id: @blacklisted_user.id,
-      title: 'TestJob',
-      description: 'TestDescription',
-      longitude: '0.0',
-      latitude: '0.0',
-      position: 'Intern',
-      salary: '123',
-      start_slot: Time.now + 1.year,
-      key_skills: 'Entrepreneurship',
-      duration: '14',
-      currency: 'CHF',
-      job_type: 'Retail',
-      job_type_value: '1',
       activity_status: 1,
       job_status: 'archived'
     )
-    puts "Created new job for: #{@valid_user.id}"
 
     # Create jobs
     @archived_job = Job.create!(
       user_id: @valid_user.id,
-      title: 'TestJob',
-      description: 'TestDescription',
-      longitude: '0.0',
-      latitude: '0.0',
-      position: 'Intern',
-      salary: '123',
-      start_slot: Time.now + 1.year,
-      key_skills: 'Entrepreneurship',
-      duration: '14',
-      currency: 'CHF',
-      job_type: 'Retail',
-      job_type_value: '1',
       activity_status: 1,
       job_status: 'archived'
     )
-    puts "Created new job for: #{@valid_user.id}"
 
     # Create jobs
     @inactive_job = Job.create!(
       user_id: @valid_user.id,
-      title: 'TestJob',
-      description: 'TestDescription',
-      longitude: '0.0',
-      latitude: '0.0',
-      position: 'Intern',
-      salary: '123',
-      start_slot: Time.now + 1.year,
-      key_skills: 'Entrepreneurship',
-      duration: '14',
-      currency: 'CHF',
-      job_type: 'Retail',
-      job_type_value: '1',
       activity_status: 0,
       job_status: 'listed'
     )
-    puts "Created new job for: #{@valid_user.id}"
 
     # Verified user refresh/access tokens
     credentials = Base64.strict_encode64("#{@valid_user.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
     post('/api/v0/auth/token/refresh', headers:)
     @valid_rt = JSON.parse(response.body)['refresh_token']
-    puts "Valid user with upcoming jobs refresh token: #{@valid_rt}"
 
     headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt }
     post('/api/v0/auth/token/access', headers:)
     @valid_at = JSON.parse(response.body)['access_token']
-    puts "Valid user with own jobs access token: #{@valid_at}"
 
     # User with embloy-basic subscription refresh/access tokens
     credentials = Base64.strict_encode64("#{@user_basic.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
     post('/api/v0/auth/token/refresh', headers:)
     @basic_rt = JSON.parse(response.body)['refresh_token']
-    puts "User with embloy-basic subscription refresh token: #{@basic_rt}"
 
     headers = { 'HTTP_REFRESH_TOKEN' => @basic_rt }
     post('/api/v0/auth/token/access', headers:)
     @basic_at = JSON.parse(response.body)['access_token']
-    puts "User with embloy-basic subscription access token: #{@basic_at}"
 
     # User with embloy-premium subscription refresh/access tokens
     credentials = Base64.strict_encode64("#{@user_premium.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
     post('/api/v0/auth/token/refresh', headers:)
     @premium_rt = JSON.parse(response.body)['refresh_token']
-    puts "User with embloy-premium subscription refresh token: #{@premium_rt}"
 
     headers = { 'HTTP_REFRESH_TOKEN' => @premium_rt }
     post('/api/v0/auth/token/access', headers:)
     @premium_at = JSON.parse(response.body)['access_token']
-    puts "Valid with embloy-premium subscription access token: #{@premium_at}"
 
     # Unsubscribed user refresh/access tokens
     credentials = Base64.strict_encode64("#{@unsubscribed_user.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
     post('/api/v0/auth/token/refresh', headers:)
     @unsubscribed_rt = JSON.parse(response.body)['refresh_token']
-    puts "Valid user who will be blacklisted refresh token: #{@unsubscribed_rt}"
 
     headers = { 'HTTP_REFRESH_TOKEN' => @unsubscribed_rt }
     post('/api/v0/auth/token/access', headers:)
     @unsubscribed_at = JSON.parse(response.body)['access_token']
-    puts "Valid user who will be blacklisted access token: #{@unsubscribed_at}"
 
     # Blacklisted user refresh/access tokens
     credentials = Base64.strict_encode64("#{@blacklisted_user.email}:password")
     headers = { 'Authorization' => "Basic #{credentials}" }
     post('/api/v0/auth/token/refresh', headers:)
     @valid_rt_blacklisted = JSON.parse(response.body)['refresh_token']
-    puts "Valid user who will be blacklisted refresh token: #{@valid_rt_blacklisted}"
 
     headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt_blacklisted }
     post('/api/v0/auth/token/access', headers:)
     @valid_at_blacklisted = JSON.parse(response.body)['access_token']
-    puts "Valid user who will be blacklisted access token: #{@valid_at_blacklisted}"
 
     UserBlacklist.create!(
       user_id: @blacklisted_user.id,
       reason: 'Test blacklist'
     )
-    puts "Blacklisted user #{@blacklisted_user.id}}"
 
     @invalid_access_token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWILOjQ5LCJleHAiOjE2OTgxNzk0MjgsImp0aSI6IjQ1NDMyZWUyNWE4YWUyMjc1ZGY0YTE2ZTNlNmQ0YTY4IiwiaWF0IjoxNjk4MTY1MDI4LCJpc3MiOiJDQl9TdXJmYWNlUHJvOCJ9.nqGgQ6Z52CbaHZzPGcwQG6U-nMDxb1yIe7HQMxjoDTs'
   end
@@ -564,26 +472,15 @@ RSpec.describe 'JobsController' do
       let(:headers) { { 'HTTP_ACCESS_TOKEN' => @valid_at } }
 
       context 'subscription limits reached' do
-        it 'returns [429 Too many request] if user creates more jobs than what his subscription (basic) allows' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @basic_at }
-          3.times do
-            post('/api/v0/jobs', params: form_data, headers:)
-            expect(response).to have_http_status(201)
-          end
-          post('/api/v0/jobs', params: form_data, headers:)
+        it 'returns [429 Too Many Requests] if user creates more jobs than what his subscription (basic) allows' do
+          post('/api/v0/jobs', params: form_data, headers: { 'HTTP_ACCESS_TOKEN' => @basic_at })
           expect(response).to have_http_status(429)
         end
-        it 'returns [429 Too many request] if user creates more jobs than what his subscription (premium) allows' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @premium_at }
-          50.times do
-            post('/api/v0/jobs', params: form_data, headers:)
-            expect(response).to have_http_status(201)
-          end
-          post('/api/v0/jobs', params: form_data, headers:)
+        it 'returns [429 Too Many Requests] if user creates more jobs than what his subscription (premium) allows' do
+          post('/api/v0/jobs', params: form_data, headers: { 'HTTP_ACCESS_TOKEN' => @premium_at })
           expect(response).to have_http_status(429)
         end
       end
-
       context 'valid normal inputs' do
         it 'returns [201 Created] and job JSONs if job exists' do
           post('/api/v0/jobs', params: form_data, headers:)
@@ -764,15 +661,15 @@ RSpec.describe 'JobsController' do
         end
       end
       context 'invalid user' do
-        it 'returns [401 Unauthorized] for expired/invalid access token' do
+        it 'returns [403 Forbidden] for expired/invalid access token' do
           headers = { 'HTTP_ACCESS_TOKEN' => @invalid_access_token }
           post('/api/v0/jobs', headers:)
           expect(response).to have_http_status(401)
         end
-        it 'returns [401 Unauthorized] for expired/missing subscription' do
+        it 'returns [403 Forbidden] for expired/missing subscription' do
           headers = { 'HTTP_ACCESS_TOKEN' => @unsubscribed_at }
           post('/api/v0/jobs', headers:)
-          expect(response).to have_http_status(401)
+          expect(response).to have_http_status(403)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_blacklisted }
@@ -1156,7 +1053,7 @@ RSpec.describe 'JobsController' do
         it 'returns [401 Unauthorized] for expired/missing subscription' do
           headers = { 'HTTP_ACCESS_TOKEN' => @unsubscribed_at }
           patch("/api/v0/jobs?id=#{@job.id.to_i}", headers:)
-          expect(response).to have_http_status(401)
+          expect(response).to have_http_status(403)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_blacklisted }
@@ -1176,6 +1073,16 @@ RSpec.describe 'JobsController' do
         it 'returns [403 Forbidden] for unlisted not owned job' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at }
           patch("/api/v0/jobs?id=#{@not_owned_unlisted_job.id.to_i}", headers:)
+          expect(response).to have_http_status(403)
+        end
+        it 'returns [403 Forbidden] if user updates jobs with cancelled subscription' do
+          @user_basic.payment_processor.subscription.cancel_now!
+          patch("/api/v0/jobs?id=#{@user_basic_job.id.to_i}", params: form_data, headers: { 'HTTP_ACCESS_TOKEN' => @basic_at })
+          expect(response).to have_http_status(403)
+        end
+        it 'returns [403 Forbidden] if user updates jobs with cancelled subscription' do
+          @user_premium.payment_processor.subscription.cancel_now!
+          patch("/api/v0/jobs?id=#{@user_premium_job.id.to_i}", params: form_data, headers: { 'HTTP_ACCESS_TOKEN' => @premium_at })
           expect(response).to have_http_status(403)
         end
         it 'returns [404 Not Found] if job does not exist' do
@@ -1198,8 +1105,14 @@ RSpec.describe 'JobsController' do
           expect(response).to have_http_status(409)
         end
         it 'returns [409 Conflict] if job is inactive' do
-          patch("/api/v0/jobs?id=#{@inactive_job.id.to_i}", params: form_data.except(:status), headers:)
+          patch("/api/v0/jobs?id=#{@inactive_job.id.to_i}", params: form_data, headers:)
           expect(response).to have_http_status(409)
+        end
+        it 'returns [429 Too Many Requests] if user updates jobs while having more jobs than what his subscription (premium) allows' do
+          @user_premium.payment_processor.subscription.cancel_now!
+          @user_premium.payment_processor.subscribe(plan: 'price_1OUuTgKMiBrigNb6R7xzRzTL')
+          patch("/api/v0/jobs?id=#{@user_premium_job.id.to_i}", params: form_data, headers: { 'HTTP_ACCESS_TOKEN' => @premium_at })
+          expect(response).to have_http_status(429)
         end
       end
     end

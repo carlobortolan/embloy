@@ -140,3 +140,5 @@ gem 'newrelic_rpm'
 gem "notable", "~> 0.5.2"
 gem 'rails_admin', '~> 3.0'
 gem 'devise'
+gem "rails-controller-testing", "~> 1.0"
+  
