@@ -1,0 +1,27 @@
+# core-api-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: core
+  name: core
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: core
+  template:
+    metadata:
+      labels:
+        app: core
+    spec:
+      containers:
+      - image: carlobortolan/embloy-core
+        name: core
+        ports:
+        - containerPort: 3000
+          name: core
+      imagePullSecrets:
+      - name: registrykey
+
+

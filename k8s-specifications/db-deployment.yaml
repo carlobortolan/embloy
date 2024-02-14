@@ -1,3 +1,4 @@
+# db-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -15,13 +16,13 @@ spec:
         app: db
     spec:
       containers:
-      - image: postgres:15-alpine
+      - image: postgres:latest
         name: postgres
         env:
         - name: POSTGRES_USER
-          value: postgres
+          value: embloy_dev_db
         - name: POSTGRES_PASSWORD
-          value: postgres
+          value: password
         ports:
         - containerPort: 5432
           name: postgres

@@ -1,16 +1,16 @@
+# core-api-service.yaml
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: vote
-  name: vote
+    app: core
+  name: core
 spec:
   type: NodePort
   ports:
-  - name: "vote-service"
-    port: 5000
+  - name: "core-api"
+    port: 3000
     targetPort: 80
     nodePort: 31000
   selector:
-    app: vote
-  
+    app: core
