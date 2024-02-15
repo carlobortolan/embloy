@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: embloycore 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: embloycore
+  template:
+    metadata:
+      labels:
+        app: embloycore 
+    spec:
+      containers:
+        - name: embloycore 
+          image: embloy.azurecr.io/embloycore
+          ports:
+          - containerPort: 3000
