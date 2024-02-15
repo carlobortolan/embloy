@@ -12,12 +12,6 @@ backblaze:
   bucket_id: <%=ENV['BUCKET_ID']%>
   key_id: <%=ENV['BUCKET_APPLICATION_KEY_ID']%>
   key_token: <%= ENV['BUCKET_APPLICATION_KEY']%>
-  #service: Backblaze
-  #service_adapter: Backblaze
-  #application_key_id: <%= ENV['BUCKET_APPLICATION_KEY_ID']%>
-  #application_key: <%= ENV['BUCKET_APPLICATION_KEY']%>
-  #bucket: <%=ENV['BUCKET_NAME']%>
-  #region: <%=ENV['BUCKET_REGION']%>
 
 # Use bin/rails credentials:edit to set the AWS secrets (as aws:access_key_id|secret_access_key)
 # amazon:
@@ -35,11 +29,11 @@ backblaze:
 #   bucket: your_own_bucket-<%= Rails.env %>
 
 # Use bin/rails credentials:edit to set the Azure Storage secret (as azure_storage:storage_access_key)
-# microsoft:
-#   service: AzureStorage
-#   storage_account_name: your_account_name
-#   storage_access_key: <%= Rails.application.credentials.dig(:azure_storage, :storage_access_key) %>
-#   container: your_container_name-<%= Rails.env %>
+microsoft:
+  service: AzureStorage
+  storage_account_name: <%= ENV['AZURE_STORAGE_ACCOUNT_NAME']%>
+  storage_access_key: <%= ENV['AZURE_STORAGE_ACCESS_KEY']%>
+  container: <%= ENV['AZURE_CONTAINER']%>
 
 # mirror:
 #   service: Mirror

@@ -69,7 +69,7 @@ class GeniusQueryService < AuthenticationTokenService
       bin_exp = if args.include?('exp') && !args['exp'].nil?
                   iat + AuthenticationTokenService::Refresh.verify_expiration!(args['exp'], MAX_INTERVAL, MIN_INTERVAL)
                 else
-                  iat + 86_400 # standard validity interval (1 day == 24 hrs == 1440 min == 86400 sec)
+                  iat + 1.month.to_i # standard validity interval (1 month)
                 end
       args.delete('exp')
       [iat, sub, bin_exp]

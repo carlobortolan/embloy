@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: genius-front
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: genius-front
+  template:
+    metadata:
+      labels:
+        app: genius-front
+    spec:
+      nodeSelector:
+        "kubernetes.io/os": linux
+      containers:
+      - name: genius-front
+        image: embloy.azurecr.io/embloy-genius-front:latest
+        ports:
+        - containerPort: 3000
+          name: genius-front
+        resources:
+          requests:
+            cpu: 1m
+            memory: 200Mi
+          limits:
+            cpu: 1000m
+            memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: genius-front
+spec:
+  ports:
+  - port: 80
+    targetPort: 3000
+  selector:
+    app: genius-front
+  type: LoadBalancer

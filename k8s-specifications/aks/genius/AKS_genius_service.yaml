@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: genius-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: genius-service
+  template:
+    metadata:
+      labels:
+        app: genius-service
+    spec:
+      nodeSelector:
+        "kubernetes.io/os": linux
+      containers:
+      - name: genius-service
+        image: embloy.azurecr.io/embloy-genius:latest
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: 1m
+            memory: 50Mi
+          limits:
+            cpu: 75m
+            memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: genius-service
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: genius-service
+  type: LoadBalancer

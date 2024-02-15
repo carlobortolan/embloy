@@ -115,8 +115,8 @@ class AuthenticationTokenService
     #     end
     # helper class for token generation
     class Encoder
-      MAX_INTERVAL = 1_209_600 # == 336 hours == 2 weeks
-      MIN_INTERVAL = 1800 # == 0.5 hours == 30 min
+      MAX_INTERVAL = 2.weeks.to_i # == 336 hours == 2 weeks
+      MIN_INTERVAL = 2.hours.to_i # == 0.5 hours == 30 min
 
       def self.call(user_id, man_interval = nil)
         #         if user_id.class != Integer || !user_id.positive? # is user_id parameter not an integer?
@@ -137,7 +137,7 @@ class AuthenticationTokenService
         sub = user_id # who "owns" the token
 
         bin_exp = if man_interval.nil? # the man_interval parameter is not given/used
-                    iat + 14_400 # standard validity interval (4 hours == 240 min == 14400 sec)
+                    iat + 2.weeks.to_i # standard validity interval (2 weeks)
 
                   else
                     #           # the man_interval parameter is given/user -> a manual token expiration time is required
@@ -209,7 +209,7 @@ class AuthenticationTokenService
         # AuthenticationTokenService::Refresh.must_be_verified_id!(sub)
         # ApplicationController.must_be_verified!(sub)
         typ = Current.user.user_role
-        exp = Time.now.to_i + 1200 # standard validity interval;: 1200 sec == 20 min
+        exp = Time.now.to_i + 20.minutes.to_i # standard validity interval;: 1200 sec == 20 min
         AuthenticationTokenService::Access.encode(
           sub, exp, typ
         )

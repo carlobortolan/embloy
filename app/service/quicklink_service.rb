@@ -37,14 +37,14 @@ class QuicklinkService < AuthenticationTokenService
         QuicklinkService::Client.encode(user_id, exp.to_i, typ, iat)
       end
 
-      def self.calculate_expiration(custom_exp, subscription)
-        exp = if custom_exp.nil? || custom_exp < Time.now
-                Time.now.to_i + (60 * 60 * 24 * 31 * 3) # standard validity interval: 3 months or end of subscription
-              else
-                custom_exp.to_i # Set custom expiration date if available
-              end
+      def self.calculate_expiration(custom_exp, _subscription)
+        if custom_exp.nil? || custom_exp < Time.now
+          Time.now.to_i + 3.months # standard validity interval: 3 months
+        else
+          custom_exp.to_i # Set custom expiration date if available
+        end
 
-        [exp, subscription.current_period_end.to_i].min # Token can't be valid longer than subscription
+        # [exp, subscription.current_period_end.to_i].min # Token can't be valid longer than subscription
       end
     end
 
@@ -96,7 +96,7 @@ class QuicklinkService < AuthenticationTokenService
         # TODO: @cb verify job / account validity / price category?
 
         # job = job_slug # Other encoding/id options possible?
-        exp = Time.now.to_i + (60 * 60 * 30) # standard validity interval: 30 minutes
+        exp = Time.now.to_i + 30.minutes.to_i # standard validity interval: 30 minutes
         iat = Time.now.to_i
         QuicklinkService::Request.encode(user_id, exp, session, iat)
       end

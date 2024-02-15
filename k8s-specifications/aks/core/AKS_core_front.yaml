@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: core-front
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: core-front
+  template:
+    metadata:
+      labels:
+        app: core-front
+    spec:
+      nodeSelector:
+        "kubernetes.io/os": linux
+      containers:
+      - name: core-front
+        image: embloy.azurecr.io/embloy-core-front:latest
+        ports:
+        - containerPort: 3000
+          name: core-front
+        env:
+        - name: NEXT_PUBLIC_APP_URL
+          value: "https://embloy.com"
+        resources:
+          requests:
+            cpu: 1m
+            memory: 200Mi
+          limits:
+            cpu: 1000m
+            memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: core-front
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 3000
+  selector:
+    app: core-front

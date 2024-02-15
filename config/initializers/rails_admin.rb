@@ -1,5 +1,18 @@
 # frozen_string_literal: true
 
+module RailsAdmin
+  module Config
+    module Fields
+      module Types
+        # See: https://github.com/railsadminteam/rails_admin/issues/1681#issuecomment-20476738
+        class Geography < RailsAdmin::Config::Fields::Base
+          RailsAdmin::Config::Fields::Types.register(self)
+        end
+      end
+    end
+  end
+end
+
 RailsAdmin.config do |config|
   config.asset_source = :sprockets
   config.main_app_name = %w[Embloy Core-API]
