@@ -1,4 +1,4 @@
-name: deploy_to_azure_core_server
+name: deploy_to_aks_core_server
 "on":
     push:
         branches:
