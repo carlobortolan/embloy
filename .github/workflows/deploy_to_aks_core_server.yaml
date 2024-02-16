@@ -14,27 +14,20 @@ env:
         ./k8s-specifications/aks/core/AKS_core_service.yaml
 jobs:
     buildImage:
+        permissions:
+            contents: read
+            id-token: write
         runs-on: ubuntu-latest
         steps:
-        - name: 'Checkout GitHub Action'
-          uses: actions/checkout@main
-        - name: 'Login via Azure CLI'
-          uses: azure/login@v1
-          with:
-            creds: ${{ secrets.AZURE_CREDENTIALS }}
-        - name: Create .env file
-          run: echo "$ENV_CONTENT" > .env
-          env:
-            ENV_CONTENT: ${{ secrets.CORE_ENV }}
-        - name: 'Build and push image'
-          uses: azure/docker-login@v1
-          with:
-            login-server: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io
-            username: ${{ secrets.REGISTRY_USERNAME }}
-            password: ${{ secrets.REGISTRY_PASSWORD }}
-        - run: |
-            docker build . -t ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}:${{ github.sha }}
-            docker push ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}:${{ github.sha }}
+            - uses: actions/checkout@v3
+            - uses: azure/login@92a5484dfaf04ca78a94597f4f19fea633851fa2
+              name: Azure login
+              with:
+                client-id: ${{ secrets.AZURE_CLIENT_ID }}
+                subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+                tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+            - name: Build and push image to ACR
+              run: az acr build --image ${{ env.CONTAINER_NAME }}:${{ github.sha }} --registry ${{ env.AZURE_CONTAINER_REGISTRY }} -g ${{ env.ACR_RESOURCE_GROUP }} -f ./Dockerfile ./
     deploy:
         permissions:
             actions: read
