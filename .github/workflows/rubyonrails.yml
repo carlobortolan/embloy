@@ -75,6 +75,7 @@ jobs:
       STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
       STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
       STRIPE_SIGNING_SECRET: ${{ secrets.STRIPE_SIGNING_SECRET }}
+      GENIUS_QUERY_TOKEN_SECRET: ${{ secrets.GENIUS_QUERY_TOKEN_SECRET }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
