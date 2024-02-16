@@ -18,19 +18,17 @@ default: &default
   username: <%= ENV["DATABASE_USER"] %>
   password: <%= ENV["DATABASE_PASSWORD"] %>
   host: <%= ENV["DATABASE_HOST"] %>
-  DATABASE_URL: <%= ENV["DATABASE_URL"] %>
-  url: <%= ENV["DATABASE_URL"] %>
 
 
 development:
   <<: *default
-  database: embloy_dev_beta
+  database: dev_core_db
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: embloy_test_beta
+  database: test_core_db
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -54,7 +52,7 @@ test:
 #
 production:
   <<: *default
-  database: embloy_prod_beta
+  database: prod_core_db
 
   connect_timeout: 2
   checkout_timeout: 5
