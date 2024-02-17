@@ -22,11 +22,11 @@ spec:
           name: core-service
         resources:
           requests:
-            cpu: 1m
-            memory: 50Mi
+            cpu: 1m50Mi
+            memory: 150Mi
           limits:
             cpu: 75m
-            memory: 256Mi
+            memory: 1000Mi
 ---
 apiVersion: v1
 kind: Service
