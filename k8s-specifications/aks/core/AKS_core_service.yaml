@@ -22,7 +22,7 @@ spec:
           name: core-service
         resources:
           requests:
-            cpu: 1m50Mi
+            cpu: 1m
             memory: 150Mi
           limits:
             cpu: 75m
