@@ -8,12 +8,15 @@ env:
     ACR_RESOURCE_GROUP: core
     AZURE_CONTAINER_REGISTRY: embloy
     CLUSTER_NAME: K8s
-    CLUSTER_RESOURCE_GROUP: k8s_group
+    CLUSTER_RESOURCE_GROUP: K8s
     CONTAINER_NAME: embloy-core
     DEPLOYMENT_MANIFEST_PATH: |
         ./k8s-specifications/aks/core/AKS_core_service.yaml
 jobs:
     buildImage:
+        permissions:
+            contents: read
+            id-token: write
         runs-on: ubuntu-latest
         steps:
         - name: 'Checkout GitHub Action'
