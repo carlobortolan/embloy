@@ -15,6 +15,7 @@ spec:
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
+        "kubernetes.azure.com/mode": user
       containers:
       - name: mongodb
         image: mcr.microsoft.com/mirror/docker/library/mongo:4.2

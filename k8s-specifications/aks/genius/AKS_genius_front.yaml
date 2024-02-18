@@ -14,6 +14,7 @@ spec:
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
+        "kubernetes.azure.com/mode": user
       containers:
       - name: genius-front
         image: embloy.azurecr.io/embloy-genius-front:latest
