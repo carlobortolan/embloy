@@ -107,7 +107,7 @@ RSpec.describe 'QuicklinkController' do
     @user_basic.pay_customers
     @user_basic.payment_processor.customer
     @user_basic.payment_processor.charge(19_00)
-    @user_basic.payment_processor.subscribe(plan: 'price_1OUuTgKMiBrigNb6R7xzRzTL')
+    @user_basic.payment_processor.subscribe(plan: 'price_1On8ItKMiBrigNb6eZ9PKFG0')
 
     # Create user with embloy-premium subscription
     @user_premium = User.create!(
@@ -123,7 +123,7 @@ RSpec.describe 'QuicklinkController' do
     @user_premium.pay_customers
     @user_premium.payment_processor.customer
     @user_premium.payment_processor.charge(19_00)
-    @user_premium.payment_processor.subscribe(plan: 'price_1OUqrPKMiBrigNb6lia8VWiD')
+    @user_premium.payment_processor.subscribe(plan: 'price_1On8KvKMiBrigNb6bZG4nWQh')
 
     ### JOB CREATION ###
 

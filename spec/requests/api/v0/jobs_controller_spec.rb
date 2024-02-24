@@ -37,7 +37,7 @@ RSpec.describe 'JobsController' do
     @user_basic.pay_customers
     @user_basic.payment_processor.customer
     @user_basic.payment_processor.charge(19_00)
-    @user_basic.payment_processor.subscribe(plan: 'price_1OUuTgKMiBrigNb6R7xzRzTL')
+    @user_basic.payment_processor.subscribe(plan: 'price_1On8ItKMiBrigNb6eZ9PKFG0')
 
     # Create user with embloy-premium subscription
     @user_premium = User.create!(
@@ -53,7 +53,7 @@ RSpec.describe 'JobsController' do
     @user_premium.pay_customers
     @user_premium.payment_processor.customer
     @user_premium.payment_processor.charge(19_00)
-    @user_premium.payment_processor.subscribe(plan: 'price_1OUqrPKMiBrigNb6lia8VWiD')
+    @user_premium.payment_processor.subscribe(plan: 'price_1On8KvKMiBrigNb6bZG4nWQh')
 
     # Create valid unverified user
     @unverified_user = User.create!(
@@ -1110,7 +1110,7 @@ RSpec.describe 'JobsController' do
         end
         it 'returns [429 Too Many Requests] if user updates jobs while having more jobs than what his subscription (premium) allows' do
           @user_premium.payment_processor.subscription.cancel_now!
-          @user_premium.payment_processor.subscribe(plan: 'price_1OUuTgKMiBrigNb6R7xzRzTL')
+          @user_premium.payment_processor.subscribe(plan: 'price_1On8ItKMiBrigNb6eZ9PKFG0')
           patch("/api/v0/jobs?id=#{@user_premium_job.id.to_i}", params: form_data, headers: { 'HTTP_ACCESS_TOKEN' => @premium_at })
           expect(response).to have_http_status(429)
         end

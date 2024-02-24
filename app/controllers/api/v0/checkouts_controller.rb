@@ -95,7 +95,7 @@ module Api
         when 'core'
           "#{ENV.fetch('CORE_CLIENT_URL', '')}/dashboard/billing"
         when 'genius'
-          "#{ENV.fetch('GENIUS_CLIENT_URL', '')}/dashboard/billing"
+          ENV.fetch('GENIUS_CLIENT_URL', '').to_s
         else
           api_v0_checkout_failure_url
         end
@@ -104,9 +104,9 @@ module Api
       def determine_cancel_url
         case checkout_params[:origin]
         when 'core'
-          "#{ENV.fetch('GENIUS_CLIENT_URL', '')}/dashboard/billing"
-        when 'genius'
           "#{ENV.fetch('CORE_CLIENT_URL', '')}/dashboard/billing"
+        when 'genius'
+          ENV.fetch('GENIUS_CLIENT_URL', '').to_s
         else
           api_v0_checkout_failure_url
         end
