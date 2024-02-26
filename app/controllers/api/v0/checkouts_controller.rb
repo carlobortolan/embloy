@@ -73,7 +73,7 @@ module Api
           if default_customer
             portal_session = Stripe::BillingPortal::Session.create(
               customer: default_customer.processor_id,
-              return_url: 'https://genius.embloy.com'
+              return_url: determine_portal_url
             )
             render json: { portal_session: }, status: 200
           else
@@ -88,6 +88,21 @@ module Api
 
       def checkout_params
         params.except(:format).permit(:payment_mode, :tier, :origin, :session_id)
+      end
+
+      def portal_params
+        params.except(:format).permit(:origin)
+      end
+
+      def determine_portal_url
+        case portal_params[:origin]
+        when 'core'
+          "#{ENV.fetch('CORE_CLIENT_URL', '')}/dashboard/billing"
+        when 'genius'
+          ENV.fetch('GENIUS_CLIENT_URL', '').to_s
+        else
+          api_v0_checkout_failure_url
+        end
       end
 
       def determine_success_url

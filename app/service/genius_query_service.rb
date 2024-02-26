@@ -32,12 +32,11 @@ class GeniusQueryService < AuthenticationTokenService
     raise CustomExceptions::InvalidInput::GeniusQuery::Removed unless %w[listed unlisted].include?(job.job_status) && job.activity_status == 1
 
     res = Job.json_for(job)
-
     { job: res }
 
     # elsif !args.key?('job_id') && args.key('user_id')
     # TODO: query users
-    []
+    # []
     # elsif args.key?('job_id') && args.key('user_id')
     # # TODO: query applications
     #  []
