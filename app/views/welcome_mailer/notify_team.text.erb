@@ -1,0 +1,12 @@
+Hi <%= params[:user].first_name %>,
+
+<%= params[:user].first_name %> has successfully signed up to Embloy!
+Email: <%= @user.email %>.
+Name: <%= @user.full_name %>.
+
+Click on the link below to activate the account.
+https://api.embloy.com/api/v0/user/activate?token=<%= @token %>
+
+Best,
+
+The Embloy Team

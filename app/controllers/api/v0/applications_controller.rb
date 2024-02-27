@@ -92,7 +92,7 @@ module Api
           render status: 400, json: { message: 'Already rejected.' }
         else
           begin
-            application.accept(application_modify_params[:response] || 'REJECTED')
+            application.reject(application_modify_params[:response] || 'REJECTED')
             render status: 200, json: { message: 'Application successfully rejected.' }
           rescue RuntimeError => e
             render status: 400, json: { message: e.message }

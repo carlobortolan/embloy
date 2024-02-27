@@ -11,12 +11,6 @@ class ApplicationStatusNotification < Noticed::Base
         :response
 
   def email_notifications?
-    puts 'STARTED NOTIFICATION STATUS CHANGE'
-    puts "params = #{params}"
-    puts
-    puts "Job = #{params[:job]}"
-    puts "Jobid = #{params[:job][:id]}"
-    puts
     recipient.application_notifications?
   end
 
@@ -25,7 +19,6 @@ class ApplicationStatusNotification < Noticed::Base
   end
 
   def url
-    puts "PARAMS = #{params}"
     return unless params[:job].present? && params[:id].present?
 
     "#{job_path(params[:job][:id])}#applicationForm"

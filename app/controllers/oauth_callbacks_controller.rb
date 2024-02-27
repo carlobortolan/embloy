@@ -98,6 +98,7 @@ class OauthCallbacksController < ApplicationController
 
     attach_user_image(user)
     WelcomeMailer.with(user:).welcome_email.deliver_later
+    WelcomeMailer.with(user:).notify_team.deliver_later
     refresh_token = AuthenticationTokenService::Refresh::Encoder.call(user.id.to_i)
     redirect_to("#{ENV.fetch('CORE_CLIENT_URL')}/oauth/redirect?refresh_token=#{refresh_token}", allow_other_host: true) and return
   end

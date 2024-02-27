@@ -48,14 +48,39 @@ module Api
         return unnecessary_error('user') unless @user.activity_status.zero?
 
         update_user_status(email, password)
-        issue_refresh_token
+        send_activation_mail
       end
 
+      def activate
+        begin
+          @user = User.find_signed!(activation_params[:token], purpose: 'activate_account')
+        rescue ActiveRecord::RecordNotFound
+          render(status: 404, json: {message:"User does not exist."}) and return
+        rescue ActiveSupport::MessageVerifier::InvalidSignature
+          render(status: 422, json: {message: "Token has either expired, has a purpose mismatch, is for another record, or has been tampered with."}) and return
+        end
+
+        unless @user 
+          redirect_to api_v0_activate_account_path, status: :unprocessable_entity, alert: "Token has either expired, has a purpose mismatch, is for another record, or has been tampered with" and return 
+        end 
+
+        if @user.update(activity_status: 1)
+          redirect_to ("https://embloy.com/login"), allow_other_host: true
+        else
+          redirect_to ("https://embloy.com/login?error=Could not activate user"), allow_other_host: true
+        end
+      end
+
+      
+      private
+      
       def user_params
         params.require(:user).permit(:email, :first_name, :last_name, :password, :password_confirmation)
       end
 
-      private
+      def activation_params
+        params.permit(:token)
+      end
 
       def handle_errors
         if email_taken?
@@ -130,13 +155,15 @@ module Api
 
         # TODO: Exception handling
         @user.update_column('user_role', 'verified')
-        @user.update_column('activity_status', 1)
       end
 
-      def issue_refresh_token
-        token = AuthenticationTokenService::Refresh::Encoder.call(@user.id)
-
-        render status: 200, json: { refresh_token: token }
+      def send_activation_mail
+        # token = AuthenticationTokenService::Refresh::Encoder.call(@user.id)
+        # render status: 200, json: { refresh_token: token }
+        WelcomeMailer.with(user: @user).welcome_email.deliver_later
+        WelcomeMailer.with(user: @user).notify_team.deliver_later
+    
+        render status: 200, json: { message: "Account verified. Please check your email for the activation link." }
       end
     end
   end

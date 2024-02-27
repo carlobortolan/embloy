@@ -217,9 +217,12 @@
                         <div style="font-size: 14px; line-height: 140%; text-align: justify; word-wrap: break-word;">
                           <p style="line-height: 140%;"><strong>Hi <%= params[:user].first_name %></strong>,</p>
                           <br>
-                          <p style="line-height: 140%;">Someone requested a password reset.
-                            Click on the link below if you recognize the activity. The link
-                            expires in 15 minutes.</p>
+                          <p style="line-height: 140%;">
+                            You have successfully signed up to Embloy!
+                            Your user email is: <%= @user.email %>.
+                            <br>
+                            Before you can start, you first have to activate your account using the link below - it only takes one click.
+                          </p>
                           <br>
                           <p style="line-height: 140%;">Best,</p>
                           <br>
@@ -285,11 +288,11 @@
                             <w:anchorlock/>
                             <center style="color:#000000;font-family:'Lexend', sans-serif;">
                           <![endif]-->
-                          <a href="https://embloy.com/password-reset/new?reset_token=<%=@token%>"
+                          <a href="https://api.embloy.com/api/v0/user/activate?token=<%= @token %>"
                              target="_blank" class="v-button v-size-width"
                              style="box-sizing: border-box;display: inline-block;font-family:'Lexend', sans-serif;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #000000; background-color: #99ffff; border-radius: 4px;-webkit-border-radius: 4px; -moz-border-radius: 4px; width:32%; max-width:100%; overflow-wrap: break-word; word-break: break-word; word-wrap:break-word; mso-border-alt: none;font-size: 14px;">
                                                         <span style="display:block;padding:10px 20px;line-height:120%;"><strong><span
-                                                          style="line-height: 16.8px;">Reset Password<br/></span></strong></span>
+                                                          style="line-height: 16.8px;">Activate Account<br/></span></strong></span>
                           </a>
                           <!--[if mso]></center></v:roundrect><![endif]-->
                         </div>
@@ -308,8 +311,8 @@
                           align="left">
 
                         <div style="font-size: 14px; line-height: 140%; text-align: justify; word-wrap: break-word;">
-                          <p style="line-height: 140%;"><strong>You didn't reset your
-                            password?</strong> If you didn't request this change, you can
+                          <p style="line-height: 140%;"><strong>You didn't sign up for Embloy?</strong> If you didn't
+                            create this account, you can
                             safely ignore this email.</p>
                         </div>
 
@@ -377,7 +380,7 @@
                         <div style="font-family: inherit; font-size: 14px; line-height: 140%; text-align: center; word-wrap: break-word;">
                           <p style="line-height: 140%;">You can contact us directly at:</p>
                           <p style="line-height: 140%;"><a rel="noopener"
-                                                           href="mailto:help@embloy.com?subject=I%20need%20help%20resetting%20my%20password"
+                                                           href="mailto:help@embloy.com?subject=I%20need%20help%20creating%20a%20new%20account"
                                                            target="_blank">help@embloy.com</a>
                           </p>
                           <br>

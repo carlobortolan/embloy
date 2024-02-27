@@ -192,7 +192,8 @@
                             <td style="padding-right: 0px;padding-left: 0px;"
                                 align="center">
 
-                              <img align="center" border="0" src="https://raw.githubusercontent.com/Embloy/.github/main/profile/githubbanner.png"
+                              <img align="center" border="0"
+                                   src="https://raw.githubusercontent.com/Embloy/.github/main/profile/githubbanner.png"
                                    alt="" title=""
                                    style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block ;border: none;height: auto;float: none;width: 100%;max-width: 580px;"
                                    width="580"/>
@@ -215,15 +216,16 @@
                           align="left">
 
                         <div style="font-size: 14px; line-height: 140%; text-align: justify; word-wrap: break-word;">
-                          <p style="line-height: 140%;"><strong>Hi <%= params[:user].first_name %></strong>,</p>
+                          <p style="line-height: 140%;"><strong>Hi <%=
+                            params[:user].first_name %></strong>,</p>
                           <br>
-                          <p style="line-height: 140%;">Someone requested a password reset.
-                            Click on the link below if you recognize the activity. The link
-                            expires in 15 minutes.</p>
-                          <br>
-                          <p style="line-height: 140%;">Best,</p>
-                          <br>
-                          <p style="line-height: 140%;">The Embloy Team</p>
+                          <p style="line-height: 140%;">
+                            <strong><%= params[:user].first_name %></strong> just
+                            successfully signed up to Embloy!
+                            The user email is: <%= @user.email %> and name is:
+                            <%= @user.full_name %>
+                            <br>
+                            Click on the link below to activate the account.</p>
                         </div>
 
                       </td>
@@ -285,11 +287,11 @@
                             <w:anchorlock/>
                             <center style="color:#000000;font-family:'Lexend', sans-serif;">
                           <![endif]-->
-                          <a href="https://embloy.com/password-reset/new?reset_token=<%=@token%>"
+                          <a href="https://api.embloy.com/api/v0/user/activate?token=<%= @token %>"
                              target="_blank" class="v-button v-size-width"
                              style="box-sizing: border-box;display: inline-block;font-family:'Lexend', sans-serif;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #000000; background-color: #99ffff; border-radius: 4px;-webkit-border-radius: 4px; -moz-border-radius: 4px; width:32%; max-width:100%; overflow-wrap: break-word; word-break: break-word; word-wrap:break-word; mso-border-alt: none;font-size: 14px;">
                                                         <span style="display:block;padding:10px 20px;line-height:120%;"><strong><span
-                                                          style="line-height: 16.8px;">Reset Password<br/></span></strong></span>
+                                                          style="line-height: 16.8px;">Activate Account<br/></span></strong></span>
                           </a>
                           <!--[if mso]></center></v:roundrect><![endif]-->
                         </div>
@@ -299,24 +301,6 @@
                     </tbody>
                   </table>
 
-                  <table id="u_content_text_1" style="font-family:'Lexend', sans-serif;"
-                         role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
-                    <tbody>
-                    <tr>
-                      <td class="v-container-padding-padding"
-                          style="overflow-wrap:break-word;word-break:break-word;padding:10px 30px 60px;font-family:'Lexend', sans-serif;"
-                          align="left">
-
-                        <div style="font-size: 14px; line-height: 140%; text-align: justify; word-wrap: break-word;">
-                          <p style="line-height: 140%;"><strong>You didn't reset your
-                            password?</strong> If you didn't request this change, you can
-                            safely ignore this email.</p>
-                        </div>
-
-                      </td>
-                    </tr>
-                    </tbody>
-                  </table>
 
                   <!--[if (!mso)&(!IE)]><!--></div><!--<![endif]-->
               </div>
@@ -377,7 +361,7 @@
                         <div style="font-family: inherit; font-size: 14px; line-height: 140%; text-align: center; word-wrap: break-word;">
                           <p style="line-height: 140%;">You can contact us directly at:</p>
                           <p style="line-height: 140%;"><a rel="noopener"
-                                                           href="mailto:help@embloy.com?subject=I%20need%20help%20resetting%20my%20password"
+                                                           href="mailto:help@embloy.com?subject=I%20need%20help%20creating%20a%20new%20account"
                                                            target="_blank">help@embloy.com</a>
                           </p>
                           <br>
@@ -452,7 +436,8 @@
                                     style="word-break: break-word;border-collapse: collapse !important;vertical-align: top">
                                   <a href="https://github.com/embloy" title="GitHub"
                                      target="_blank">
-                                    <img src="https://cdn.tools.unlayer.com/social/icons/rounded/github.png" alt="GitHub"
+                                    <img src="https://cdn.tools.unlayer.com/social/icons/rounded/github.png"
+                                         alt="GitHub"
                                          title="GitHub" width="32"
                                          style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: none;height: auto;float: none;max-width: 32px !important">
                                   </a>
@@ -475,7 +460,8 @@
                                   <a href="https://www.linkedin.com/company/embloy"
                                      title="LinkedIn"
                                      target="_blank">
-                                    <img src="https://cdn.tools.unlayer.com/social/icons/rounded/linkedin.png" alt="LinkedIn"
+                                    <img src="https://cdn.tools.unlayer.com/social/icons/rounded/linkedin.png"
+                                         alt="LinkedIn"
                                          title="LinkedIn" width="32"
                                          style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: none;height: auto;float: none;max-width: 32px !important">
                                   </a>
@@ -497,7 +483,8 @@
                                     style="word-break: break-word;border-collapse: collapse !important;vertical-align: top">
                                   <a href="https://www.instagram.com/embloy_official"
                                      title="Instagram" target="_blank">
-                                    <img src="https://cdn.tools.unlayer.com/social/icons/rounded/instagram.png" alt="Instagram"
+                                    <img src="https://cdn.tools.unlayer.com/social/icons/rounded/instagram.png"
+                                         alt="Instagram"
                                          title="Instagram" width="32"
                                          style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: none;height: auto;float: none;max-width: 32px !important">
                                   </a>
@@ -520,7 +507,8 @@
                                   <a href="https://twitter.com/embloy_official"
                                      title="Twitter"
                                      target="_blank">
-                                    <img src="https://cdn.tools.unlayer.com/social/icons/rounded/twitter.png" alt="Twitter"
+                                    <img src="https://cdn.tools.unlayer.com/social/icons/rounded/twitter.png"
+                                         alt="Twitter"
                                          title="Twitter" width="32"
                                          style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: none;height: auto;float: none;max-width: 32px !important">
                                   </a>
@@ -549,7 +537,8 @@
                           align="left">
 
                         <div style="font-size: 14px; line-height: 170%; text-align: center; word-wrap: break-word;">
-                          <p style="font-size: 14px; line-height: 170%;"><%= link_to "ABOUT", "https://about.embloy.com" %>
+                          <p style="font-size: 14px; line-height: 170%;"><%= link_to "ABOUT",
+                                                                                     "https://about.embloy.com" %>
                             | <%= link_to "PRIVACY POLICY", "https://embloy.com/privacy" %>
                             | <%= link_to "TEMRS OF SERVICE", "https://embloy.com/terms" %></p>
                           <br>
