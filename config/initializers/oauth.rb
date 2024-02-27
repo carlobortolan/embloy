@@ -12,7 +12,7 @@ Rails.application.config.middleware.use OmniAuth::Builder do
 end
 
 Rails.application.config.middleware.use OmniAuth::Builder do
-  provider :azure_activedirectory_v2, client_id: ENV.fetch('AZURE_CLIENT_ID', nil), client_secret: ENV.fetch('AZURE_CLIENT_SECRET', nil)
+  provider :azure_activedirectory_v2, ENV.fetch('AZURE_CLIENT_ID', nil), ENV.fetch('AZURE_CLIENT_SECRET', nil)
 end
 
 Rails.application.config.middleware.use OmniAuth::Builder do
