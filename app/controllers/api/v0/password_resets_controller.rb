@@ -7,13 +7,13 @@ module Api
       skip_before_action :set_current_user
 
       def create
-        if params[:email].present?
-          @user = User.find_by(email: params[:email])
+        if create_params[:email].present?
+          @user = User.find_by(email: create_params[:email])
           PasswordMailer.with(user: @user).reset.deliver_later if !@user.nil? && user_not_blacklisted(@user.id) && @user.present?
 
           render status: 202, json: { message: 'Password reset process initiated! Please check your mailbox.' }
         else
-          malformed_error('email')
+          blank_error('email')
         end
       end
 
@@ -51,6 +51,10 @@ module Api
 
       def password_params
         params.require(:user).permit(:password, :password_confirmation)
+      end
+
+      def create_params
+        params.except(:format).permit(:email)
       end
     end
   end

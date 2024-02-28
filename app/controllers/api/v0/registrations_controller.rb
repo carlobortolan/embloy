@@ -71,7 +71,17 @@ module Api
         end
       end
 
-      
+      def reactivate
+        if reactivation_params[:email].present?
+          @user = User.find_by(email: reactivation_params[:email])
+          WelcomeMailer.with(user: @user).reactivate.deliver_later if !@user.nil? && user_not_blacklisted(@user.id) && @user.present?
+
+          render status: 202, json: { message: 'Activation process initiated! Please check your mailbox for the activation link.' }
+        else
+          blank_error('email')
+        end
+      end
+
       private
       
       def user_params
@@ -79,7 +89,11 @@ module Api
       end
 
       def activation_params
-        params.permit(:token)
+        params.except(:format).permit(:token)
+      end
+
+      def reactivation_params
+        params.except(:format).permit(:email)
       end
 
       def handle_errors
@@ -158,8 +172,6 @@ module Api
       end
 
       def send_activation_mail
-        # token = AuthenticationTokenService::Refresh::Encoder.call(@user.id)
-        # render status: 200, json: { refresh_token: token }
         WelcomeMailer.with(user: @user).welcome_email.deliver_later
         WelcomeMailer.with(user: @user).notify_team.deliver_later
     

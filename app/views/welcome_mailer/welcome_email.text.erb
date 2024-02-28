@@ -1,10 +1,13 @@
 Hi <%= params[:user].first_name %>,
 
-You have successfully signed up to our prototype!
+You have successfully signed up to Embloy!
 Your user email is: <%= @user.email %>.
 
-Click on the link below to activate your account.
-https://api.embloy.com/api/v0/user/activate?token=<%= @token %>
+Click on the link below to activate your account. The link expires in 24 hours.
+https://api.embloy.com/api/v0/user/activate?token=<%=@token%>
+
+If your activation link expires, you can request a new one by visiting the following URL:
+https://embloy.com/activation-token
 
 Best,
 

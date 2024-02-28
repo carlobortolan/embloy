@@ -36,6 +36,7 @@ Rails.application.routes.draw do
       delete 'user', to: 'user#destroy'
       get 'user/verify', to: 'registrations#verify'
       get 'user/activate', to: 'registrations#activate', as: :activate_account
+      post 'user/activate', to: 'registrations#reactivate'
       get 'user/jobs', to: 'user#own_jobs'
       get 'user/applications', to: 'user#own_applications'
       get 'user/reviews', to: 'user#own_reviews'

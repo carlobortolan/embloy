@@ -217,12 +217,9 @@
                         <div style="font-size: 14px; line-height: 140%; text-align: justify; word-wrap: break-word;">
                           <p style="line-height: 140%;"><strong>Hi <%= params[:user].first_name %></strong>,</p>
                           <br>
-                          <p style="line-height: 140%;">
-                            You have successfully signed up to Embloy!
-                            Your user email is: <%= @user.email %>.
-                            <br>
-                            Before you can start, you first have to activate your account using the link below - it only takes one click.
-                          </p>
+                          <p style="line-height: 140%;">Someone requested a new activation link.
+                            Click on the link below to activate your account if you recognize the activity. The link
+                            expires in 24 hours.</p>
                           <br>
                           <p style="line-height: 140%;">Best,</p>
                           <br>
@@ -288,7 +285,7 @@
                             <w:anchorlock/>
                             <center style="color:#000000;font-family:'Lexend', sans-serif;">
                           <![endif]-->
-                          <a href="https://api.embloy.com/api/v0/user/activate?token=<%= @token %>"
+                          <a href="https://api.embloy.com/api/v0/user/activate?token=<%=@token%>"
                              target="_blank" class="v-button v-size-width"
                              style="box-sizing: border-box;display: inline-block;font-family:'Lexend', sans-serif;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #000000; background-color: #99ffff; border-radius: 4px;-webkit-border-radius: 4px; -moz-border-radius: 4px; width:32%; max-width:100%; overflow-wrap: break-word; word-break: break-word; word-wrap:break-word; mso-border-alt: none;font-size: 14px;">
                                                         <span style="display:block;padding:10px 20px;line-height:120%;"><strong><span
@@ -309,20 +306,12 @@
                       <td class="v-container-padding-padding"
                           style="overflow-wrap:break-word;word-break:break-word;padding:10px 30px 60px;font-family:'Lexend', sans-serif;"
                           align="left">
+
                         <div style="font-size: 14px; line-height: 140%; text-align: justify; word-wrap: break-word;">
-                          <p style="line-height: 140%;"><strong>Please note that this link will expire in 24 hours.</strong></p>
-                          <p>
-                            If your activation link expires, you can request a new one by clicking
-                            <a href="https://embloy.com/activation-token"
-                             target="_blank"> here</a>.
-                          </p>
+                          <p style="line-height: 140%;"><strong>You didn't request a new activation link?</strong>
+                           If you didn't request this, you can safely ignore this email.</p>
                         </div>
-                        <br>
-                        <div style="font-size: 14px; line-height: 140%; text-align: justify; word-wrap: break-word;">
-                          <p style="line-height: 140%;"><strong>You didn't sign up for Embloy?</strong> If you didn't
-                            create this account, you can
-                            safely ignore this email.</p>
-                        </div>
+
                       </td>
                     </tr>
                     </tbody>
@@ -387,7 +376,7 @@
                         <div style="font-family: inherit; font-size: 14px; line-height: 140%; text-align: center; word-wrap: break-word;">
                           <p style="line-height: 140%;">You can contact us directly at:</p>
                           <p style="line-height: 140%;"><a rel="noopener"
-                                                           href="mailto:help@embloy.com?subject=I%20need%20help%20creating%20a%20new%20account"
+                                                           href="mailto:help@embloy.com?subject=I%20need%20help%20activating%20my%20account"
                                                            target="_blank">help@embloy.com</a>
                           </p>
                           <br>
