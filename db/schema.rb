@@ -399,12 +399,12 @@ ActiveRecord::Schema[7.0].define(version: 20_240_212_052_057) do
   end
 
   create_table 'users', id: :serial, force: :cascade do |t|
-    t.string 'email', null: false
+    t.string 'email', limit: 500, null: false
     t.string 'password_digest'
     t.integer 'activity_status', limit: 2, default: 0, null: false
     t.string 'image_url', limit: 500
-    t.string 'first_name', null: false
-    t.string 'last_name', null: false
+    t.string 'first_name', limit: 128, null: false
+    t.string 'last_name', limit: 128, null: false
     t.float 'longitude'
     t.float 'latitude'
     t.string 'country_code', limit: 45
@@ -420,6 +420,9 @@ ActiveRecord::Schema[7.0].define(version: 20_240_212_052_057) do
     t.integer 'jobs_count', default: 0
     t.enum 'user_role', default: 'spectator', null: false, enum_type: 'user_role'
     t.boolean 'application_notifications', default: true, null: false
+    t.boolean 'communication_notifications', default: true, null: false
+    t.boolean 'marketing_notifications', default: false, null: false
+    t.boolean 'security_notifications', default: true, null: false
     t.string 'twitter_url', limit: 500
     t.string 'facebook_url', limit: 500
     t.string 'instagram_url', limit: 500

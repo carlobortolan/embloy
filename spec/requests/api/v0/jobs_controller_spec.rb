@@ -102,6 +102,8 @@ RSpec.describe 'JobsController' do
     5.times do
       @job = Job.create!(
         user_id: @valid_user.id,
+        title: "TestJob",
+        job_type: "Retail",
         job_status: 'listed',
         activity_status: 1
       )

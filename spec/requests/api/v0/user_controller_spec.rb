@@ -400,6 +400,84 @@ RSpec.describe 'UserController' do
           post '/api/v0/user', params: user_data.to_json, headers: { 'Content-Type' => 'application/json' }
           expect(response).to have_http_status(400)
         end
+        it 'returns [400 Bad Request] for invalid email' do
+          user_data = {
+            user: {
+              email: 'invalidemail',
+              first_name: 'Max',
+              last_name: 'Mustermann',
+              password: '123456789',
+              password_confirmation: '123456789'
+            }
+          }
+          post '/api/v0/user', params: user_data.to_json, headers: { 'Content-Type' => 'application/json' }
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for too long email' do
+          user_data = {
+            user: {
+              email: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@embloy.com',
+              first_name: 'Max',
+              last_name: 'Mustermann',
+              password: '123456789',
+              password_confirmation: '123456789'
+            }
+          }
+          post '/api/v0/user', params: user_data.to_json, headers: { 'Content-Type' => 'application/json' }
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for too long first name' do
+          user_data = {
+            user: {
+              email: 'tooLongFirstName@embloy.com',
+              first_name: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+              last_name: 'Mustermann',
+              password: '123456789',
+              password_confirmation: '123456789'
+            }
+          }
+          post '/api/v0/user', params: user_data.to_json, headers: { 'Content-Type' => 'application/json' }
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for too long last name' do
+          user_data = {
+            user: {
+              email: 'TooLongLastName@embloy.com',
+              first_name: 'Max',
+              last_name: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+              password: '123456789',
+              password_confirmation: '123456789'
+            }
+          }
+          post '/api/v0/user', params: user_data.to_json, headers: { 'Content-Type' => 'application/json' }
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for too long password' do
+          user_data = {
+            user: {
+              email: 'TooLongPassword@embloy.com',
+              first_name: 'Max',
+              last_name: 'Mustermann',
+              password: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+              password_confirmation: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+            }
+          }
+          post '/api/v0/user', params: user_data.to_json, headers: { 'Content-Type' => 'application/json' }
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for too short password' do
+          user_data = {
+            user: {
+              email: 'TooShortPassword@embloy.com',
+              first_name: 'Max',
+              last_name: 'Mustermann',
+              password: '1234567',
+              password_confirmation: '1234567'
+            }
+          }
+          post '/api/v0/user', params: user_data.to_json, headers: { 'Content-Type' => 'application/json' }
+          expect(response).to have_http_status(400)
+        end
         it 'returns [400 Bad Request] for password and password confirmation mismatch' do
           user_data = {
             user: {

@@ -68,6 +68,7 @@ module Validators
       validate :start_slot_validation
       validate :job_type_validation
       validate :image_format_validation
+      validate :validate_image_size
       validate :application_options_count_validation
       validate :application_options_validity
       validate :check_subscription_limit_create, on: :create
@@ -137,6 +138,13 @@ module Validators
       return if allowed_formats.include?(image_url.content_type)
 
       errors.add(:image_url, { error: 'ERR_INVALID', description: 'must be a PNG, JPG, or JPEG image' })
+    end
+
+    def validate_image_size
+      return unless image_url.attached? && image_url.blob.byte_size > 2.megabytes
+
+      image_url.purge
+      errors.add(:image_url, { error: 'ERR_INVALID', description: 'is too large (max is 2 MB)' })
     end
 
     def application_options_count_validation

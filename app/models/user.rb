@@ -21,20 +21,24 @@ class User < ApplicationRecord
 
   validates :email, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
                     uniqueness: { error: 'ERR_TAKEN', description: 'Attribute exists' },
-                    format: { with: /\A[^@\s]+@[^@\s]+\z/, error: 'ERR_INVALID', description: 'Attribute is malformed or unknown' }
+                    format: { with: /\A[^@\s]+@[^@\s]+\z/, error: 'ERR_INVALID', description: 'Attribute is malformed or unknown' },
+                    length: { maximum: 500, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
+
   validates :first_name, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
-                         uniqueness: false
-  validates :last_name,
-            presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" }, uniqueness: false
+                         uniqueness: false,
+                         length: { maximum: 128, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
+  validates :last_name, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
+                        uniqueness: false,
+                        length: { maximum: 128, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
+
   validates :password, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank", if: :password_required? },
                        length: { minimum: 8, maximum: 72, error: 'ERR_LENGTH', description: 'Attribute length is invalid', if: :password_required? }
   validates :password_confirmation, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank", if: :password_required? },
                                     length: { minimum: 8, maximum: 72, error: 'ERR_LENGTH', description: 'Attribute length is invalid', if: :password_required? }
-  # allow_nil: false,
-  # allow_blank: false
-  validates :application_notifications,
-            presence: { error: 'ERR_BLANK',
-                        description: "Attribute can't be blank" }
+  # validates :application_notifications, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" }
+  # validates :communication_notifications, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" }
+  # validates :marketing_notifications, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" }
+  # validates :security_notifications, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" }
   validates :longitude, presence: false
   validates :latitude, presence: false
   validates :country_code, presence: false
@@ -44,7 +48,7 @@ class User < ApplicationRecord
   # validates :user_type, inclusion: { in: %w[company private], message: 'ERR_INVALID', description: 'Attribute is invalid' }, presence: false
   validates :user_role, inclusion: { in: %w[admin editor developer moderator verified spectator], error: 'ERR_INVALID', description: 'Attribute is invalid' }, presence: false
   validates :image_url, presence: false
-
+  validate :validate_image_size
   validate :country_code_validation
   validate :image_format_validation
 
@@ -134,5 +138,12 @@ class User < ApplicationRecord
     return unless password_required?
 
     password == password_confirmation
+  end
+
+  def validate_image_size
+    return unless image_url.attached? && image_url.blob.byte_size > 2.megabytes
+
+    image_url.purge
+    errors.add(:image_url, { error: 'ERR_INVALID', description: 'is too large (max is 2 MB)' })
   end
 end
