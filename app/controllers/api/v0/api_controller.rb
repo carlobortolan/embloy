@@ -80,6 +80,14 @@ module Api
         end
       end
 
+      def verify_path_notification_id
+        if id_blank_or_invalid?
+          blank_error('notification')
+        else
+          validate_notification_id
+        end
+      end
+
       private
 
       def token_blank?
@@ -149,6 +157,13 @@ module Api
         @user = User.find(params[:id])
       rescue ActiveRecord::RecordNotFound
         not_found_error('user')
+      end
+
+      def validate_notification_id
+        @notification = Notification.find(params[:id])
+        raise CustomExceptions::Unauthorized::Blocked if @notification.recipient.id.to_i != Current.user.id.to_i
+      rescue ActiveRecord::RecordNotFound
+        not_found_error('notification')
       end
     end
   end

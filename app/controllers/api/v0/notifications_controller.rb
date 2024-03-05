@@ -4,8 +4,10 @@ module Api
   module V0
     # NotificationsController handles user-related actions
     class NotificationsController < ApiController
+      before_action :verify_path_notification_id, only: %i[mark_as_read]
+
       def show
-        notifications = Notification.where(recipient: User.first).newest_first.limit(9)
+        notifications = Notification.where(recipient: Current.user).newest_first.limit(9)
         if notifications.empty?
           render(status: 204, json: { notifications: [] })
         else
@@ -14,7 +16,7 @@ module Api
       end
 
       def unread_applications
-        notifications = Notification.where(recipient: User.first, read_at: nil, type: 'ApplicationStatusNotification')
+        notifications = Notification.where(recipient: Current.user, read_at: nil, type: 'ApplicationStatusNotification')
         if notifications.empty?
           render(status: 204, json: [])
         else
@@ -24,12 +26,7 @@ module Api
       end
 
       def mark_as_read
-        notification = Notification.find(mark_as_read_params[:id])
-        if mark_as_read_params[:read] == '1'
-          notification.update(read_at: Time.current)
-        elsif mark_as_read_params[:read] == '0'
-          notification.update(read_at: nil)
-        end
+        mark_as_read_params[:read] == '0' ? @notification.update(read_at: Time.current) : @notification.update(read_at: nil)
         render json: { success: true }
       rescue ActiveRecord::RecordNotFound
         not_found_error
