@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
 >
 <div class="preheader" style="font-size: 1px; display: none !important;">
-  <%= @applicant.first_name %> applied for <%= @job.title %>
+  <%= @applicant.first_name %> applied for <%= @job_title %>
 </div>
 
 <head>
@@ -407,7 +407,7 @@
                           <p style="line-height: 140%;"><strong>Hi <%= @recipient.first_name %></strong>,</p>
                           <br>
                           <p style="line-height: 140%;">We wanted to let you know that you
-                            received a new application for <strong><em><%= link_to @job.title, "https://genius.embloy.com/jobs/#{@job.id.to_i}" %>
+                            received a new application for <strong><em><%= link_to @job_title, "https://genius.embloy.com/jobs/#{@application[:job_id]}" %>
                           </em></strong>.</p>
                           <p style="line-height: 140%;">You can contact the applicant directly
                             by using the contact information below or accept/reject the
@@ -845,7 +845,7 @@
                             <w:anchorlock/>
                             <center style="color:#ffffff;font-family:'Lexend', sans-serif;">
                           <![endif]-->
-                          <a href="https://genius.embloy.com/jobs/<%= @job.id.to_i %>/accept" target="_blank" class="v-button v-size-width"
+                          <a href="https://genius.embloy.com/jobs/<%= @application[:job_id] %>/accept" target="_blank" class="v-button v-size-width"
                              style="box-sizing: border-box;display: inline-block;font-family:'Lexend', sans-serif;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #ffffff; background-color: #f800ff; border-radius: 4px;-webkit-border-radius: 4px; -moz-border-radius: 4px; width:auto; max-width:100%; overflow-wrap: break-word; word-break: break-word; word-wrap:break-word; mso-border-alt: none;border-top-width: 0px; border-top-style: solid; border-top-color: #CCC; border-left-width: 0px; border-left-style: solid; border-left-color: #CCC; border-right-width: 0px; border-right-style: solid; border-right-color: #CCC; border-bottom-width: 0px; border-bottom-style: solid; border-bottom-color: #CCC;font-size: 14px;">
                                                         <span style="display:block;padding:10px 20px;line-height:120%;"><strong><span
                                                           style="line-height: 16.8px;">ACCEPT</span></strong></span>
@@ -895,7 +895,7 @@
                             <w:anchorlock/>
                             <center style="color:#FFFFFF;font-family:'Lexend', sans-serif;">
                           <![endif]-->
-                          <a href="https://genius.embloy.com/jobs/<%= @job.id.to_i %>/reject" target="_blank" class="v-button v-size-width"
+                          <a href="https://genius.embloy.com/jobs/<%= @application[:job_id] %>/reject" target="_blank" class="v-button v-size-width"
                              style="box-sizing: border-box;display: inline-block;font-family:'Lexend', sans-serif;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #FFFFFF; background-color: #f800ff; border-radius: 4px;-webkit-border-radius: 4px; -moz-border-radius: 4px; width:auto; max-width:100%; overflow-wrap: break-word; word-break: break-word; word-wrap:break-word; mso-border-alt: none;border-top-width: 0px; border-top-style: solid; border-top-color: #CCC; border-left-width: 0px; border-left-style: solid; border-left-color: #CCC; border-right-width: 0px; border-right-style: solid; border-right-color: #CCC; border-bottom-width: 0px; border-bottom-style: solid; border-bottom-color: #CCC;font-size: 14px;">
                                                         <span style="display:block;padding:10px 20px;line-height:120%;"><strong><span
                                                           style="line-height: 16.8px;">REJECT</span></strong></span>
@@ -963,7 +963,7 @@
                             <w:anchorlock/>
                             <center style="color:#000000;font-family:'Lexend', sans-serif;">
                           <![endif]-->
-                          <a href="https://genius.embloy.com/jobs/<%= @job.id.to_i %>" target="_blank"
+                          <a href="https://genius.embloy.com/jobs/<%= @application[:job_id] %>" target="_blank"
                              class="v-button v-size-width"
                              style="box-sizing: border-box;display: inline-block;font-family:'Lexend', sans-serif;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #000000; background-color: #99ffff; border-radius: 4px;-webkit-border-radius: 4px; -moz-border-radius: 4px; width:32%; max-width:100%; overflow-wrap: break-word; word-break: break-word; word-wrap:break-word; mso-border-alt: none;border-top-width: 0px; border-top-style: solid; border-top-color: #CCC; border-left-width: 0px; border-left-style: solid; border-left-color: #CCC; border-right-width: 0px; border-right-style: solid; border-right-color: #CCC; border-bottom-width: 0px; border-bottom-style: solid; border-bottom-color: #CCC;font-size: 14px;">
                                                         <span style="display:block;padding:10px 20px;line-height:120%;"><strong><span

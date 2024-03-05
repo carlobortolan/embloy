@@ -7,20 +7,19 @@ class ApplicationStatusNotification < Noticed::Base
                      if: :email_notifications?
   #  deliver_by :email, mailer: "EmployeeApplicationMailer", if: :email_notifications?, unless: :read?, debug: true
 
-  param :application, :user, :job, :status,
-        :response
+  param :application, :user_email, :user_first_name, :job_title, :status, :response
 
   def email_notifications?
     recipient.application_notifications?
   end
 
   def message
-    "Update on #{params[:job][:title]}"
+    "Update on #{params[:job_title]}"
   end
 
   def url
-    return unless params[:job].present? && params[:id].present?
+    return unless params[:job_title].present?
 
-    "#{job_path(params[:job][:id])}#applicationForm"
+    "#{job_path(params[:job_title])}#applicationForm"
   end
 end

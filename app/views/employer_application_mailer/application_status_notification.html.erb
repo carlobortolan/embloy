@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
 >
 <div class="preheader" style="font-size: 1px; display: none !important;">
-  Update on your application for <%= @job.title %>
+  Update on your application for <%= @job_title %>
 </div>
 
 <head>
@@ -401,12 +401,12 @@
 
                         <div class="v-text-align"
                              style="font-size: 14px; line-height: 140%; text-align: justify; word-wrap: break-word;">
-                          <p style="line-height: 140%;"><strong>Hi <%= @user.first_name
+                          <p style="line-height: 140%;"><strong>Hi <%= @user_first_name
                           %></strong>,</p>
                           <br>
                           <p style="line-height: 140%;">We wanted to let you know that your
                             application for
-                            <strong><em><%= link_to @job.title, "https://embloy.com/dashboard" %>
+                            <strong><em><%= link_to @job_title, "https://embloy.com/dashboard" %>
                             </em></strong> has been
                             <strong><%= @status == 1 ? "accepted" : "rejected" %></strong>.
                           </p>

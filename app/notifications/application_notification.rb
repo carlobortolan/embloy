@@ -9,18 +9,17 @@ class ApplicationNotification < Noticed::Base
   #
   deliver_by :database, debug: false
   # deliver_by :action_cable, format: :to_action_cable
-  deliver_by :email,
-             mailer: 'EmployerApplicationMailer', debug: false, if: :email_notifications?
+  deliver_by :email, mailer: 'EmployerApplicationMailer', debug: false, if: :email_notifications?
   # unless: :read?,
   # deliver_by :email, mailer: "ApplicationMailer", if: :email_notifications?, delay: 15.minutes, unless: :read?, debug: true
   # deliver_by :slack
   # deliver_by DeliveryMethods::Discord
 
   def email_notifications?
-    !!params[:job].job_notifications?
+    !!params[:job_notifications]
   end
 
-  param :application, :job
+  param :application, :job_title
 
   def message
     @job = params[:job]

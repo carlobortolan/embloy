@@ -45,6 +45,9 @@ Rails.application.routes.draw do
       post 'user/image', to: 'user#upload_image'
       get 'user/preferences', to: 'user#preferences'
       patch 'user/preferences', to: 'user#update_preferences'
+      get 'user/notifications', to: 'notifications#show'
+      get 'user/notifications/unread', to: 'notifications#unread_applications'
+      patch 'user/notifications/(/:id)', to: 'notifications#mark_as_read'
 
       post 'user/(/:id)/reviews', to: 'reviews#create'
       delete 'user/(/:id)/reviews', to: 'reviews#destroy'

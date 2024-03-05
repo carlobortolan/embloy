@@ -34,14 +34,13 @@ class Application < ApplicationRecord
   #  validates :status, inclusion: { in: %w[-1 0 1], error: 'ERR_INVALID', description: 'Attribute is invalid' }, presence: false
 
   def notify_recipient
-    return if job.user.eql? user
-
-    ApplicationNotification.with(application: %i[user_id job_id], job:).deliver_later(job.user)
+    ApplicationNotification.with(application: { user_id:, job_id: }, job_title: job.title || job.job_slug, job_notifications: !!job.job_notifications?).deliver_later(job.user)
   end
 
   def notify_applicant(new_status, new_response)
     #    return unless job.user.eql? user
-    ApplicationStatusNotification.with(application: %i[user_id job_id], user:, job:, status: new_status, response: new_response).deliver_later(user)
+    ApplicationStatusNotification.with(application: { user_id:, job_id: }, user_email: user.email, user_first_name: user.first_name, job_title: job.title || job.job_slug,
+                                       status: new_status, response: new_response).deliver_later(user)
   end
 
   def accept(response)

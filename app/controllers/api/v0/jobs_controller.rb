@@ -93,6 +93,7 @@ module Api
         end
         return access_denied_error('job') if (job.user_id != Current.user.id && job.job_status != 'listed') || job.nil?
 
+        mark_notifications_as_read
         render(status: 200, json: "{\"job\": #{Job.json_for(job)}}")
       end
 
@@ -259,13 +260,12 @@ module Api
         lng.abs <= 180.0
       end
 
-      # mark_notifications_as_read is not implemented because i dont understand how it works
-      #       def mark_notifications_as_read
-      #         if Current.user
-      #           notifications_to_mark_as_read = @job.notifications_as_job.where(recipient: Current.user)
-      #           notifications_to_mark_as_read.update_all(read_at: Time.zone.now)
-      #         end
-      #       end
+      def mark_notifications_as_read
+        return unless Current.user
+
+        notifications_to_mark_as_read = @job.notifications_as_job.where(recipient: Current.user)
+        notifications_to_mark_as_read.update_all(read_at: Time.zone.now)
+      end
 
       def job_params
         permitted_params = params.except(:format, :_json, :job).permit(
