@@ -20,7 +20,7 @@ module Api
         if notifications.empty?
           render(status: 204, json: [])
         else
-          job_ids = notifications.map { |n| n.params[:application][:job] }
+          job_ids = notifications.map { |n| n&.params&.[](:application)&.[](:job) }.compact
           render(status: 200, json: { job_ids: })
         end
       end
