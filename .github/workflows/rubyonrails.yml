@@ -79,6 +79,7 @@ jobs:
       STRIPE_SIGNING_SECRET: ${{ secrets.STRIPE_SIGNING_SECRET }}
       GENIUS_QUERY_TOKEN_SECRET: ${{ secrets.GENIUS_QUERY_TOKEN_SECRET }}
       SERVICE_HOST: 'noreply.embloy.com'
+      EMAIL_NOREPLY_USER: 'noreply@noreply.embloy.com'
 
     steps:
       - name: Checkout code
