@@ -723,6 +723,16 @@ RSpec.describe 'JobsController' do
           post('/api/v0/jobs', params: form_data_with_options, headers:)
           expect(response).to have_http_status(201)
         end
+        it 'returns [201 Created] and job JSONs if application options are valid' do
+          form_data_with_options[:application_options_attributes][1][:options] = Array.new(50, 'a' * 100)
+          post('/api/v0/jobs', params: form_data_with_options, headers:)
+          expect(response).to have_http_status(201)
+        end
+        it 'returns [201 Created] and job JSONs if application options are valid' do
+          form_data_with_options[:application_options_attributes][2][:options] = Array.new(50, 'a' * 100)
+          post('/api/v0/jobs', params: form_data_with_options, headers:)
+          expect(response).to have_http_status(201)
+        end
         it 'returns [400 Bad Request] if application options question is empty' do
           form_data_with_options[:application_options_attributes][0][:question] = ''
           post('/api/v0/jobs', params: form_data_with_options, headers:)
@@ -738,18 +748,23 @@ RSpec.describe 'JobsController' do
           post('/api/v0/jobs', params: form_data_with_options, headers:)
           expect(response).to have_http_status(400)
         end
-        it 'returns [400 Bad Request] if application options options field has more than 25 options' do
-          form_data_with_options[:application_options_attributes][1][:options] = Array.new(26, 'a')
+        it 'returns [400 Bad Request] if application options options field has more than 50 options' do
+          form_data_with_options[:application_options_attributes][1][:options] = Array.new(51, 'a')
           post('/api/v0/jobs', params: form_data_with_options, headers:)
           expect(response).to have_http_status(400)
         end
-        it 'returns [400 Bad Request] if application options options field has more than 25 options' do
-          form_data_with_options[:application_options_attributes][2][:options] = Array.new(26, 'a')
+        it 'returns [400 Bad Request] if application options options field has more than 50 options' do
+          form_data_with_options[:application_options_attributes][2][:options] = Array.new(51, 'a')
           post('/api/v0/jobs', params: form_data_with_options, headers:)
           expect(response).to have_http_status(400)
         end
-        it 'returns [400 Bad Request] if application options options is too long' do
-          form_data_with_options[:application_options_attributes][1][:options] = ['aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa']
+        it 'returns [400 Bad Request] if application options options field has is longer than 100 characters' do
+          form_data_with_options[:application_options_attributes][1][:options] = Array.new(1, 'a' * 101)
+          post('/api/v0/jobs', params: form_data_with_options, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] if application options options field has is longer than 100 characters' do
+          form_data_with_options[:application_options_attributes][2][:options] = Array.new(1, 'a' * 101)
           post('/api/v0/jobs', params: form_data_with_options, headers:)
           expect(response).to have_http_status(400)
         end
@@ -764,8 +779,7 @@ RSpec.describe 'JobsController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] if application question is too long' do
-          form_data_with_options[:application_options_attributes][0][:question] =
-            'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+          form_data_with_options[:application_options_attributes][0][:question] = 'a' * 501
           post('/api/v0/jobs', params: form_data_with_options, headers:)
           expect(response).to have_http_status(400)
         end
@@ -999,18 +1013,23 @@ RSpec.describe 'JobsController' do
           patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data_with_options, headers:)
           expect(response).to have_http_status(400)
         end
-        it 'returns [400 Bad Request] if application options options field has more than 25 options' do
-          form_data_with_options[:application_options_attributes][1][:options] = Array.new(26, 'a')
+        it 'returns [400 Bad Request] if application options options field has more than 50 options' do
+          form_data_with_options[:application_options_attributes][1][:options] = Array.new(51, 'a')
           patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data_with_options, headers:)
           expect(response).to have_http_status(400)
         end
-        it 'returns [400 Bad Request] if application options options field has more than 25 options' do
-          form_data_with_options[:application_options_attributes][2][:options] = Array.new(26, 'a')
+        it 'returns [400 Bad Request] if application options options field has more than 50 options' do
+          form_data_with_options[:application_options_attributes][2][:options] = Array.new(51, 'a')
           patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data_with_options, headers:)
           expect(response).to have_http_status(400)
         end
-        it 'returns [400 Bad Request] if application options options is too long' do
-          form_data_with_options[:application_options_attributes][1][:options] = ['aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa']
+        it 'returns [400 Bad Request] if application options options field has is longer than 100 characters' do
+          form_data_with_options[:application_options_attributes][1][:options] = Array.new(1, 'a' * 101)
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data_with_options, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] if application options options field has is longer than 100 characters' do
+          form_data_with_options[:application_options_attributes][2][:options] = Array.new(1, 'a' * 101)
           patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data_with_options, headers:)
           expect(response).to have_http_status(400)
         end
@@ -1025,8 +1044,7 @@ RSpec.describe 'JobsController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] if application question is too long' do
-          form_data_with_options[:application_options_attributes][0][:question] =
-            'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+          form_data_with_options[:application_options_attributes][0][:question] = 'a' * 501
           patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data_with_options, headers:)
           expect(response).to have_http_status(400)
         end

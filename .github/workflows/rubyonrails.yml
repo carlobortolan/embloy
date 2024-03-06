@@ -98,6 +98,6 @@ jobs:
       #- name: Setup database
       #  run: bundle exec rails db:setup
       - name: Run tests
-        run: bundle exec rspec ./spec/requests/api/v0/notifications_controller_spec.rb
+        run: bundle exec rspec
       - name: Output coverage report
         run: cat coverage/index.html

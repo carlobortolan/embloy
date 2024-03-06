@@ -11,13 +11,13 @@ class ApplicationOption < ApplicationRecord
 
   serialize :options, Array
   validates :question, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
-                       length: { minimum: 0, maximum: 200, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
+                       length: { minimum: 0, maximum: 500, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
   validates :question_type,
             presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
             inclusion: { in: VALID_QUESTION_TYPES, error: 'ERR_INVALID', description: 'Attribute is invalid' }
   validates :required, inclusion: { in: [true, false], error: 'ERR_INVALID', description: 'Attribute is invalid' }
   validates :options, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" }, if: :options_required?
-  validates :options, length: { maximum: 25, message: 'cannot have more than 25 options' }, if: :options_required?
+  validates :options, length: { maximum: 50, message: 'cannot have more than 50 options' }, if: :options_required?
   validate :options_length_validation, if: :options_required?
   validate :options_count_validation, if: :options_required?
   validate :options_type_validation
@@ -38,15 +38,15 @@ class ApplicationOption < ApplicationRecord
   end
 
   def options_count_validation
-    return unless options.size > 25
+    return unless options.size > 50
 
-    job.errors.add(:options, 'At most 25 options can be set')
+    job.errors.add(:options, 'At most 50 options can be set')
   end
 
   def options_length_validation
-    return unless options.any? { |option| option.length > 50 }
+    return unless options.any? { |option| option.length > 100 }
 
-    job.errors.add(:options, 'Each option can be at most 50 characters long')
+    job.errors.add(:options, 'Each option can be at most 100 characters long')
   end
 
   def options_type_validation
