@@ -217,7 +217,7 @@ RSpec.describe 'ApplicationsController' do
 
     activity_status = [1, 1, 1, 1, 1, 0]
     status = %w[listed listed listed unlisted archived listed]
-    required = [true, false, false, false, false, false]
+    required = [true, true, false, false, false, false]
     6.times do |i|
       job = Job.create!(
         user_id: @valid_user_has_own_jobs.id,

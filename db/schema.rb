@@ -399,7 +399,7 @@ ActiveRecord::Schema[7.0].define(version: 20_240_212_052_057) do
   end
 
   create_table 'users', id: :serial, force: :cascade do |t|
-    t.string 'email', limit: 500, null: false
+    t.string 'email', limit: 150, null: false
     t.string 'password_digest'
     t.integer 'activity_status', limit: 2, default: 0, null: false
     t.string 'image_url', limit: 500
@@ -423,12 +423,12 @@ ActiveRecord::Schema[7.0].define(version: 20_240_212_052_057) do
     t.boolean 'communication_notifications', default: true, null: false
     t.boolean 'marketing_notifications', default: false, null: false
     t.boolean 'security_notifications', default: true, null: false
-    t.string 'twitter_url', limit: 500
-    t.string 'facebook_url', limit: 500
-    t.string 'instagram_url', limit: 500
-    t.decimal 'phone'
+    t.string 'twitter_url', limit: 150
+    t.string 'facebook_url', limit: 150
+    t.string 'instagram_url', limit: 150
+    t.string 'linkedin_url', limit: 150
+    t.decimal 'phone', limit: 100
     t.string 'degree', limit: 50
-    t.string 'linkedin_url', limit: 500
     t.index ['email'], name: 'user_email_index', unique: true
     t.index %w[first_name last_name], name: 'user_name_index'
     t.index ['user_type'], name: 'user_user_type_index'

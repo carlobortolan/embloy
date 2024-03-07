@@ -68,9 +68,8 @@ module ApplicationBuilder
         answer_array = process_answer(option, answer_params)
 
         ApplicationAnswer.create!(job_id: @job.id.to_i, user_id: Current.user.id.to_i, application_option: option, answer: answer_array)
-      else
-        # TODO: elsif option.required
-        @application.errors.add(:base, 'Invalid application answer parameters')
+      elsif option.required
+        @application.errors.add(:base, "Invalid application answer parameters for option #{option.id}")
         raise ActiveRecord::RecordInvalid, @application
       end
     end

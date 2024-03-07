@@ -22,7 +22,7 @@ class User < ApplicationRecord
   validates :email, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
                     uniqueness: { error: 'ERR_TAKEN', description: 'Attribute exists' },
                     format: { with: /\A[^@\s]+@[^@\s]+\z/, error: 'ERR_INVALID', description: 'Attribute is malformed or unknown' },
-                    length: { maximum: 500, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
+                    length: { maximum: 150, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
 
   validates :first_name, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
                          uniqueness: false,
@@ -44,7 +44,12 @@ class User < ApplicationRecord
   validates :country_code, presence: false
   validates :postal_code, presence: false
   validates :city, presence: false
-  validates :address, presence: false
+  validates :address, presence: false, length: { maximum: 150, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
+  validates :linkedin_url, presence: false, length: { maximum: 150, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
+  validates :instagram_url, presence: false, length: { maximum: 150, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
+  validates :twitter_url, presence: false, length: { maximum: 150, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
+  validates :facebook_url, presence: false, length: { maximum: 150, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
+  validates :phone, presence: false, length: { maximum: 100, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
   # validates :user_type, inclusion: { in: %w[company private], message: 'ERR_INVALID', description: 'Attribute is invalid' }, presence: false
   validates :user_role, inclusion: { in: %w[admin editor developer moderator verified spectator], error: 'ERR_INVALID', description: 'Attribute is invalid' }, presence: false
   validates :image_url, presence: false
