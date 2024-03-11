@@ -14,7 +14,7 @@ spec:
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
-        "kubernetes.azure.com/mode": user
+        "kubernetes.azure.com/mode": system
       containers:
       - name: core-service
         image: embloy.azurecr.io/embloy-core:latest
