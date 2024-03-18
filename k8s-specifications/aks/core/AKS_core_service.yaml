@@ -17,7 +17,7 @@ spec:
         "kubernetes.azure.com/mode": system
       containers:
       - name: core-service
-        image: embloy.azurecr.io/embloy-core:latest
+        image: embloy2.azurecr.io/embloy-core:latest
         ports:
         - containerPort: 3000
           name: core-service
