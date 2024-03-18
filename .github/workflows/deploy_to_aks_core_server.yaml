@@ -1,64 +1,135 @@
 name: deploy_to_aks_core_server
 "on":
+"on":
+    push:
     push:
         branches:
+        branches:
+            - master
             - master
     workflow_dispatch: {}
+    workflow_dispatch: {}
+env:
 env:
     ACR_RESOURCE_GROUP: core
+    ACR_RESOURCE_GROUP: core
+    AZURE_CONTAINER_REGISTRY: embloy2
     AZURE_CONTAINER_REGISTRY: embloy2
     CLUSTER_NAME: K8s
+    CLUSTER_NAME: K8s
+    CLUSTER_RESOURCE_GROUP: K8s
     CLUSTER_RESOURCE_GROUP: K8s
     CONTAINER_NAME: embloy-core
+    CONTAINER_NAME: embloy-core
+    DEPLOYMENT_MANIFEST_PATH: |
     DEPLOYMENT_MANIFEST_PATH: |
         ./k8s-specifications/aks/core/AKS_core_service.yaml
+        ./k8s-specifications/aks/core/AKS_core_service.yaml
+jobs:
 jobs:
     buildImage:
+    buildImage:
+        permissions:
         permissions:
             contents: read
+            contents: read
+            id-token: write
             id-token: write
         runs-on: ubuntu-latest
+        runs-on: ubuntu-latest
         steps:
+        steps:
+        - name: 'Checkout GitHub Action'
             - uses: actions/checkout@v3
+          uses: actions/checkout@main
             - uses: azure/login@92a5484dfaf04ca78a94597f4f19fea633851fa2
+        - name: 'Login via Azure CLI'
               name: Azure login
+          uses: azure/login@v1
               with:
+          with:
                 client-id: ${{ secrets.AZURE_CLIENT_ID }}
+            creds: ${{ secrets.AZURE_CREDENTIALS }}
                 subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        - name: Create .env file
                 tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          run: echo "$ENV_CONTENT" > .env
             - name: Build and push image to ACR
+          env:
               run: az acr build --image ${{ env.CONTAINER_NAME }}:${{ github.sha }} --registry ${{ env.AZURE_CONTAINER_REGISTRY }} -g ${{ env.ACR_RESOURCE_GROUP }} -f ./Dockerfile ./
+            ENV_CONTENT: ${{ secrets.CORE_ENV }}
+        - name: 'Build and push image'
+          uses: azure/docker-login@v1
+          with:
+            login-server: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io
+            username: ${{ secrets.REGISTRY_USERNAME }}
+            password: ${{ secrets.REGISTRY_PASSWORD }}
+        - run: |
+            docker build . -t ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}:${{ github.sha }}
+            docker push ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}:${{ github.sha }}
+    deploy:
     deploy:
         permissions:
+        permissions:
+            actions: read
             actions: read
             contents: read
+            contents: read
+            id-token: write
             id-token: write
         runs-on: ubuntu-latest
+        runs-on: ubuntu-latest
+        needs:
         needs:
             - buildImage
+            - buildImage
+        steps:
         steps:
             - uses: actions/checkout@v3
+            - uses: actions/checkout@v3
+            - uses: azure/login@92a5484dfaf04ca78a94597f4f19fea633851fa2
             - uses: azure/login@92a5484dfaf04ca78a94597f4f19fea633851fa2
               name: Azure login
+              name: Azure login
+              with:
               with:
                 client-id: ${{ secrets.AZURE_CLIENT_ID }}
+                client-id: ${{ secrets.AZURE_CLIENT_ID }}
+                subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
                 subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
                 tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+                tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+            - uses: azure/use-kubelogin@v1
             - uses: azure/use-kubelogin@v1
               name: Set up kubelogin for non-interactive login
+              name: Set up kubelogin for non-interactive login
+              with:
               with:
                 kubelogin-version: v0.0.25
+                kubelogin-version: v0.0.25
+            - uses: azure/aks-set-context@v3
             - uses: azure/aks-set-context@v3
               name: Get K8s context
+              name: Get K8s context
+              with:
               with:
                 admin: "false"
+                admin: "false"
+                cluster-name: ${{ env.CLUSTER_NAME }}
                 cluster-name: ${{ env.CLUSTER_NAME }}
                 resource-group: ${{ env.CLUSTER_RESOURCE_GROUP }}
+                resource-group: ${{ env.CLUSTER_RESOURCE_GROUP }}
+                use-kubelogin: "true"
                 use-kubelogin: "true"
             - uses: Azure/k8s-deploy@v4
+            - uses: Azure/k8s-deploy@v4
+              name: Deploys application
               name: Deploys application
               with:
+              with:
                 action: deploy
+                action: deploy
+                images: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}:${{ github.sha }}
                 images: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}:${{ github.sha }}
                 manifests: ${{ env.DEPLOYMENT_MANIFEST_PATH }}
                 namespace: namespace-workflow-1710775903996
