@@ -1,5 +1,5 @@
 [![Ruby on Rails CI](https://github.com/Embloy/Embloy-Core-Server/actions/workflows/rubyonrails.yml/badge.svg)](https://github.com/Embloy/Embloy-Core-Server/actions/workflows/rubyonrails.yml) ![Codecov](https://img.shields.io/codecov/c/github/embloy/embloy-core-server)
-
+ 
 <h1><a href="https://embloy.com">Embloy</a></h1>
 
 > __NOTE__: _The current prototype deployed at ***[beta.embloy.com](beta.embloy.com)*** can take up to 60
