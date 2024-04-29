@@ -263,7 +263,7 @@ RSpec.describe 'GeniusQueriesController' do
         expect(response).to have_http_status(200)
       end
       it 'returns [200 OK] and creates genius query with custom expiration date' do
-        post("/api/v0/resource?job_id=#{@job.id.to_i}$exp=#{1.day.to_i}", headers: { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs })
+        post("/api/v0/resource?job_id=#{@job.id.to_i}&exp=#{Time.now.to_i + 1.day.to_i}", headers: { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs })
         expect(response).to have_http_status(200)
       end
       it 'returns [200 OK] for archived posting' do
@@ -281,7 +281,7 @@ RSpec.describe 'GeniusQueriesController' do
         expect(response).to have_http_status(400)
       end
       it 'returns [400 Bad Request] and creates genius query with invalid custom expiration date' do
-        post("/api/v0/resource?job_id=#{@job.id.to_i}&exp=#{2.year.to_i}", headers: { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs })
+        post("/api/v0/resource?job_id=#{@job.id.to_i}&exp=#{Time.now.to_i + 10.years.to_i}", headers: { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs })
         expect(response).to have_http_status(400)
       end
       it 'returns [400 Bad Request] and creates genius query with invalid custom expiration date' do

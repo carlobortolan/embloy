@@ -2,7 +2,8 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins ENV.fetch('CORS_CORE_CLIENT_HOST', nil), ENV.fetch('CORS_GENIUS_CLIENT_HOST', nil), ENV.fetch('CORS_GENIUS_SERVER_HOST', nil), 'localhost:3000', 'localhost:3001', 'localhost:8080'
+    origins ENV.fetch('CORS_CORE_CLIENT_HOST', nil), ENV.fetch('CORS_GENIUS_CLIENT_HOST', nil), ENV.fetch('CORS_GENIUS_SERVER_HOST', nil), 'localhost:3000', 'localhost:3001', 'localhost:3002',
+            'localhost:8080'
 
     resource '*',
              headers: :any,

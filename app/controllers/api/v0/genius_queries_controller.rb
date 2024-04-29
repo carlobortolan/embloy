@@ -9,9 +9,13 @@ module Api
       before_action :must_be_subscribed!, only: :create
 
       def create
-        raise CustomExceptions::InvalidInput::GeniusQuery::Blank if create_params[:job_id].blank? && create_params[:user_id].blank?
+        params = validate_params(create_params)
+        if params[:qr] == '1' && !params[:job_id].present?
+          job = create_job(params)
+          render status: 400, json: job.errors.details if job.errors.present?
+        end
 
-        render status: 200, json: { 'query_token' => GeniusQueryService::Encoder.call(Current.user.id, create_params) }
+        render status: 200, json: { 'query_token' => GeniusQueryService::Encoder.call(Current.user.id, params) }
       end
 
       def query
@@ -22,8 +26,28 @@ module Api
 
       private
 
+      def create_job(params)
+        job = Job.new(job_status: 'unlisted', user_id: Current.user.id)
+        params[:job_id] = job.id.to_i if job.save && job.update(title: "Generated QR ##{job.job_slug}")
+        job
+      end
+
+      def validate_params(params)
+        raise CustomExceptions::InvalidInput::GeniusQuery::Blank if params[:job_id].blank? && params[:user_id].blank? && params[:qr].blank?
+
+        validate_time(params)
+      end
+
+      def validate_time(params)
+        params[:exp] = Time.parse(params[:exp]).to_i
+        params
+      rescue ArgumentError, TypeError
+        params.delete(:exp)
+        params
+      end
+
       def create_params
-        params.except(:format).permit(:job_id, :user_id, :exp)
+        params.except(:format).permit(:job_id, :user_id, :exp, :qr)
       end
 
       def query_params
