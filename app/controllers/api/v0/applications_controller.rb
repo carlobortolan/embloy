@@ -5,25 +5,40 @@ module Api
     # ApplicationsController handles application-related actions
     class ApplicationsController < ApiController
       include ApplicationBuilder
-      before_action :verify_path_job_id, except: %i[create accept reject]
+      before_action :verify_path_job_id, except: %i[show_all create accept reject]
       before_action :verify_path_active_job_id, only: %i[accept reject]
       before_action :verify_path_listed_job_id, only: %i[create]
       before_action :must_be_verified!
       before_action :must_be_subscribed!, only: %i[accept reject]
 
+      # Returns all applications for a given job
       def show
         must_be_owner!(application_show_params[:id], Current.user.id)
         applications = @job.applications.find_by_sql("SELECT * FROM applications a WHERE a.job_id = #{@job.job_id}")
-        render_applications(applications)
+        render_applications(applications || [])
       end
 
+      # Returns all applications submitted to an employer
+      def show_all
+        jobs = Current.user.jobs
+        applications = Application.where(job_id: jobs.pluck(:job_id))
+        render_applications(applications || [])
+      end
+
+      # rubocop:disable Metrics/AbcSize
+      # Returns a single application including details
       def show_single
         set_at_job(application_show_params[:id])
+        must_be_owner!(application_show_params[:id], Current.user.id) if application_show_params[:application_id]
         application = @job.applications.includes(:application_attachment,
-                                                 :application_answers).find_by_sql(['SELECT * FROM applications a WHERE a.job_id = ? AND a.user_id = ?', @job.job_id, Current.user.id]).first
-        application_attachment = ApplicationAttachment.find_by(job_id: @job.job_id, user_id: Current.user.id)
+                                                 :application_answers).find_by_sql(['SELECT * FROM applications a WHERE a.job_id = ? AND a.user_id = ?', @job.job_id,
+                                                                                    application_show_params[:application_id] || Current.user.id]).first
+
+        application_attachment = ApplicationAttachment.find_by(job_id: @job.id, user_id: application_show_params[:application_id] || Current.user.id)
+
         render_application(application, application_attachment)
       end
+      # rubocop:enable Metrics/AbcSize
 
       def create
         apply_for_job
@@ -105,11 +120,11 @@ module Api
       end
 
       def application_modify_params
-        params.except(:format).permit(:application_id, :response, :id, :job_id)
+        params.except(:format).permit(:application_id, :response, :id)
       end
 
       def application_show_params
-        params.except(:format).permit(:id)
+        params.except(:format).permit(:application_id, :id)
       end
     end
   end
