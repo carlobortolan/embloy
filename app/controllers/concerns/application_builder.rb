@@ -87,7 +87,7 @@ module ApplicationBuilder
     return unless answer_params && !answer_params.last[:answer].blank?
 
     if option.question_type == 'multiple_choice' && answer_params.last[:answer]
-      answer_params.last[:answer].split(', ').map(&:strip)
+      answer_params.last[:answer].split('||| ').map(&:strip)
     else
       answer_params.last[:answer]
     end

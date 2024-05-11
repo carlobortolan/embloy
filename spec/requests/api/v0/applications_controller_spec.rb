@@ -843,7 +843,7 @@ RSpec.describe 'ApplicationsController' do
               },
               '2' => {
                 application_option_id: @jobs[12].application_options[2].id,
-                answer: 'TestOption1, TestOption2'
+                answer: 'TestOption1||| TestOption2'
               },
               '3' => {
                 application_option_id: @jobs[12].application_options[3].id,
@@ -870,7 +870,7 @@ RSpec.describe 'ApplicationsController' do
               },
               '2' => {
                 application_option_id: @jobs[13].application_options[2].id,
-                answer: 'TestOption1, TestOption2'
+                answer: 'TestOption1||| TestOption2'
               },
               '3' => {
                 application_option_id: @jobs[13].application_options[3].id,
@@ -893,11 +893,11 @@ RSpec.describe 'ApplicationsController' do
               },
               '1' => {
                 application_option_id: @jobs[14].application_options[1].id,
-                answer: 'TestOption1, TestOption2, TestOption3'
+                answer: 'TestOption1||| TestOption2||| TestOption3'
               },
               '2' => {
                 application_option_id: @jobs[14].application_options[2].id,
-                answer: 'TestOption1, TestOption2, TestOption3, TestOption4'
+                answer: 'TestOption1||| TestOption2||| TestOption3||| TestOption4'
               },
               '3' => {
                 application_option_id: @jobs[14].application_options[3].id,
