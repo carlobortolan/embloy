@@ -70,7 +70,6 @@ class GeniusQueryService < AuthenticationTokenService
                 else
                   iat + 1.month.to_i # standard validity interval (1 month)
                 end
-      puts "BIN_EXP = #{bin_exp}"
       args.delete('exp')
       [iat, sub, bin_exp]
     end

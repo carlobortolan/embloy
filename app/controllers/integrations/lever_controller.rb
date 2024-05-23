@@ -6,9 +6,7 @@ require 'json'
 
 module Integrations
   # LeverController handles oauth-related actions
-  class LeverController < ApplicationController
-    skip_before_action :require_user_not_blacklisted!
-
+  class LeverController < IntegrationsController
     LEVER_OAUTH_URL = 'https://sandbox-lever.auth0.com/oauth/token'
 
     def authorize
@@ -33,7 +31,11 @@ module Integrations
 
       # TODO: Verify state here
 
-      uri = URI.parse(LEVER_OAUTH_URL)
+      url = URI.parse(LEVER_OAUTH_URL)
+
+      http = Net::HTTP.new(url.host, url.port)
+      http.use_ssl = true
+
       request = Net::HTTP::Post.new(uri)
       request.basic_auth(ENV.fetch('LEVER_API_KEY', nil), '')
       request.content_type = 'application/x-www-form-urlencoded'
@@ -45,16 +47,9 @@ module Integrations
                                            'redirect_uri' => callback_url
                                          })
 
-      req_options = {
-        use_ssl: uri.scheme == 'https'
-      }
-
-      response = Net::HTTP.start(uri.hostname, uri.port, req_options) do |http|
-        http.request(request)
-      end
-
+      response = http.request(request)
       # TODO: Handle response
-      puts response.body
+      puts response.read_body
     end
     # rubocop:enable Metrics/AbcSize
 
@@ -64,6 +59,8 @@ module Integrations
 
       request = Net::HTTP::Post.new(uri)
       request['Content-Type'] = 'application/json'
+      # TODO: LEVER_API_KEY needs to be replaced with client's own Embloy-LEVER_API_KEY or Embloy-Lever AccessToken
+      # (e.g., client.integrations.lever_access_key)
       request['Authorization'] = "Basic #{Base64.strict_encode64(ENV.fetch('LEVER_API_KEY', ''))}"
       request.body = application_details.to_json
 
@@ -80,7 +77,7 @@ module Integrations
     end
 
     def self.get_posting(posting_id, client, job)
-      # TODO: CALL POSTINGS API to fetch/update job
+      # TODO: CALL POSTINGS API with API-Key or AccessToken to fetch/update job
 
       if job.nil?
         job = Job.new(job_slug: "lever__#{posting_id}", user_id: client.id.to_i)
@@ -94,13 +91,13 @@ module Integrations
     end
 
     def self.get_questions(posting_id, client, job)
-      # TODO: CALL POSTINGS API to fetch/update application options
+      # TODO: CALL POSTINGS API with API-Key or AccessToken to fetch/update application options
     end
 
     private
 
     def valid_token?(access_token)
-      # Implement your logic to validate the token here
+      # Implement logic to validate the Embloy-Lever AccessToken
     end
 
     def refresh_token(refresh_token)

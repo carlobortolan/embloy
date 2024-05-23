@@ -15,8 +15,9 @@ Rails.application.routes.draw do
 
   #= <<<<< *INTEGRATIONS* >>>>>>
   namespace :integrations, defaults: { format: 'json' } do
-    get 'auth/lever/authorize', to: 'lever#authorize'
-    get 'auth/lever/callback', to: 'lever#callback', as: :lever_callback
+    get 'lever/auth', to: 'lever#authorize'
+    get 'lever/callback', to: 'lever#callback', as: :lever_callback
+    post 'ashby/register', to: 'ashby#register'
   end
 
   #= <<<<< *API* >>>>>>
