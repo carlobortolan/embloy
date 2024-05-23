@@ -337,33 +337,33 @@ RSpec.describe 'ApplicationsController' do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and JSON application JSONs employer has applications' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
-          get("/api/v0/applications", headers:)
+          get('/api/v0/applications', headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [204 No Content] if employer does not have any applications' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_applicant }
-          get("/api/v0/applications", headers:)
+          get('/api/v0/applications', headers:)
           expect(response).to have_http_status(204)
         end
       end
       context 'invalid inputs' do
         it 'returns [400 Bad Request] for missing access token in header' do
-          get("/api/v0/jobs/applications")
+          get('/api/v0/jobs/applications')
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
           headers = { 'HTTP_ACCESS_TOKEN' => @invalid_access_token }
-          get("/api/v0/jobs/applications", headers:)
+          get('/api/v0/jobs/applications', headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
           headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_blacklisted }
-          get("/api/v0/jobs/applications", headers:)
+          get('/api/v0/jobs/applications', headers:)
           expect(response).to have_http_status(403)
         end
       end
     end
-    
+
     describe '(GET: /api/v0/jobs/{id}/applications)' do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and JSON application JSONs if job has applications' do
