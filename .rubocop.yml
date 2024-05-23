@@ -21,5 +21,9 @@ Metrics/MethodLength:
   Max: 40
 Metrics/ClassLength:
   Enabled: false
+Metrics/AbcSize:
+  Max: 20
+Metrics/CyclomaticComplexity:
+  Max: 8
 Lint/SuppressedException:
   Enabled: true

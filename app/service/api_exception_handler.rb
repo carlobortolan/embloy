@@ -359,6 +359,12 @@ module ApiExceptionHandler
 
   #--------------------------------------
 
+  def failed_dependency_error(attribute, message = nil)
+    render_error(attribute, 'ERR_FAILED_DEPENDENCY', message || 'Failed Dependency', 424)
+  end
+
+  #--------------------------------------
+
   def too_many_requests_error(attribute, message = nil)
     render_error(attribute, 'ERR_LIMIT', message || 'Too many request', 429)
   end
