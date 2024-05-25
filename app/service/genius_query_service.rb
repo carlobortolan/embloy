@@ -46,8 +46,8 @@ class GeniusQueryService < AuthenticationTokenService
 
   # The Encoder class is responsible for encoding tokens.
   class Encoder
-    MAX_INTERVAL = 1.year.to_i # == 12 months == 1 year
-    MIN_INTERVAL = 1.minute.to_i # == 1 min
+    MAX_INTERVAL = 31_557_600 # == 12 months == 1 year
+    MIN_INTERVAL = 60 # == 1 min
 
     # Encodes a token for a given user ID and arguments.
     def self.call(user_id, args)

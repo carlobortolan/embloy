@@ -41,8 +41,7 @@ module Api
           return not_found_error('client')
         end
 
-        session = validate_session
-        if update_or_create_job(session)
+        if update_or_create_job(validate_session)
           render status: 200, json: { session:, job: Job.json_for(@job) }
         else
           render status: 400, json: @job.errors.details
@@ -75,9 +74,7 @@ module Api
         raise CustomExceptions::Subscription::ExpiredOrMissing unless @client&.active_subscription?
 
         session = @decoded_request_token['session']
-        if session.nil? || session['job_slug'].nil? || session['user_id'].nil? || session['subscription_type'].nil? || session['mode'].nil?
-          raise CustomExceptions::InvalidInput::Quicklink::Request::Malformed
-        end
+        raise CustomExceptions::InvalidInput::Quicklink::Request::Malformed if session.nil? || session['job_slug'].nil? || session['user_id'].nil? || session['subscription_type'].nil?
 
         session['referrer_url'] = request.referrer
         session
@@ -90,15 +87,6 @@ module Api
       def update_or_create_job(session)
         @client.jobs ||= []
         @job = @client.jobs.find_by(job_slug: session['job_slug'])
-
-        case session['mode']
-        when 'lever'
-          @job = Integrations::LeverController.get_posting(session['job_slug'].sub('lever__', ''), @client, @job)
-        when 'ashby'
-          @job = Integrations::AshbyController.get_posting(session['job_slug'].sub('ashby__', ''), @client, @job)
-        when 'softgarden'
-          @job = Integrations::SoftgardenController.get_posting(session['job_slug'].sub('softgarden__', ''), @client, @job)
-        end
 
         return handle_existing_job if @job
 
@@ -143,7 +131,6 @@ module Api
         session = portal_params.to_unsafe_h.transform_keys(&:to_s)
         session['user_id'] = @decoded_client_token['sub'].to_i
         session['subscription_type'] = @decoded_client_token['typ']
-        session['job_slug'] = "#{portal_params[:mode]}__#{portal_params[:job_slug]}"
         session
       end
 

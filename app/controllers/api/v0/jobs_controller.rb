@@ -16,7 +16,7 @@ module Api
 
         if job.save
           process_after_save(job)
-          render status: 201, json: { message: 'Job created!', job_id: job.id, job_slug: job.job_slug }
+          render status: 201, json: { message: 'Job created!' }
         else
           render status: 400, json: { error: 'Bad request', details: job.errors.details }
         end

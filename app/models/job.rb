@@ -105,7 +105,7 @@ class Job < ApplicationRecord
   end
 
   def set_default_job_slug
-    self.job_slug = "job__#{SecureRandom.uuid}"
+    self.job_slug = SecureRandom.uuid
   end
 
   def set_default_values

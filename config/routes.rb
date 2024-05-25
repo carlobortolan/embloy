@@ -13,13 +13,6 @@ Rails.application.routes.draw do
   get 'auth/azure_activedirectory_v2/callback', to: 'oauth_callbacks#azure', as: :auth_azure_callback
   get 'auth/linkedin/callback', to: 'oauth_callbacks#linkedin', as: :auth_linkedin_callback
 
-  #= <<<<< *INTEGRATIONS* >>>>>>
-  namespace :integrations, defaults: { format: 'json' } do
-    get 'lever/auth', to: 'lever#authorize'
-    get 'lever/callback', to: 'lever#callback', as: :lever_callback
-    post 'ashby/register', to: 'ashby#register'
-  end
-
   #= <<<<< *API* >>>>>>
   namespace :api, defaults: { format: 'json' } do
     namespace :v0 do
