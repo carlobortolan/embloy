@@ -14,8 +14,7 @@ gem 'rack-cors'
 # gem "mysql2", "~> 0.5.4"
 
 # Use postgresql as the database for Active Record
-gem "pg"
-
+gem "pg", "~> 1.1"
 
 # Use PG's postgis extension
 gem 'rgeo'
