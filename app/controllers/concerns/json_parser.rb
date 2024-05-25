@@ -6,8 +6,7 @@ module JsonParser
 
   def parse(input, config_file)
     config = YAML.load_file(config_file)
-    prefixes = config.delete('path')
-    prefixes.each { |key| input = input[key] }
+    config.delete('path').each { |key| input = input[key] }
     output = {}
 
     config.each do |origin, target|
