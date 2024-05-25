@@ -16,10 +16,13 @@ module JsonParser
         unless output_draft.nil?
           output = output_draft
         end
-
-
       elsif target.class == Array
-
+        target.each do |target_key|
+          output_draft = insert(extract(input, origin), target_key, output)
+          unless output_draft.nil?
+            output = output_draft
+          end
+        end
       end
 
     end
@@ -28,6 +31,8 @@ module JsonParser
   end
 
   private
+
+
 
   def insert (value, path, output)
     path = path.split('.')
