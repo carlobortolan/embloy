@@ -41,7 +41,6 @@ module JsonParser
 
     path.each do |key|
       if key == path.last
-        puts 1
         output[key] = value
       elsif !output[key].nil?
         output = output[key]
