@@ -1,0 +1,12 @@
+path:
+  - results
+id: job_slug
+title:
+  - title
+  - position
+descriptionHtml: description.body
+departmentName: job_type
+locationIds: fetch.location_ids #TODO: fetch location from Ashby API and use for city
+publishedDate: created_at
+updatedAt: updated_at
+externalLink: referrer_url
