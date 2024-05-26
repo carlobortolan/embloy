@@ -4,9 +4,9 @@
   "job_slug": "id",
   "job_type_value": "~",
   "activity_status": "~",
-  "job_status": "isListed-<enum|true:listed, false:unlisted>",
+  "job_status": "isListed-<enum|true:listed,false:unlisted>",
   "user_id": "~",
-  "referrer_url": "https://www.tum-venture-labs.de/apply",
+  "referrer_url": "externalLink",
   "duration": "~",
   "code_lang": "~",
   "title": "title",
@@ -30,7 +30,7 @@
   "latitude": "~",
   "country_code": "~",
   "postal_code": "~",
-  "city": "~",
+  "city": "primaryLocationId-<fetch|A|https://api.ashbyhq.com/location.info,POST,JSON,ASHBY_API_KEY,locationId,results.name>",
   "address": "~",
   "view_count": "~",
   "created_at": "publishedDate",
@@ -40,14 +40,9 @@
   "job_notifications": "~",
   "boost": "~",
   "cv_required": "~",
-  "allowed_cv_formats": [
-    ".pdf",
-    ".docx",
-    ".txt",
-    ".xml"
-  ],
+  "allowed_cv_formats": [],
   "deleted_at": "~",
-  "job_value": "POINT (48.1951076 11.613942994844358 25.0)",
+  "job_value": "~",
   "allowed_cv_format": "~",
   "application_options": [
     {
