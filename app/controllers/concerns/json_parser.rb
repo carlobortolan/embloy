@@ -6,7 +6,72 @@ require 'net/http'
 require 'base64'
 require 'dotenv'
 Dotenv.load(".env")
+
 module JsonParser
+  extend ActiveSupport::Concern
+  VISITED = {}
+
+  def parse(config, data)
+    label(data.dup)
+
+    # puts(find_value_by_key(data, config))
+  end
+
+  private
+
+  def label(data, label = -1)
+    data.each do |key, value|
+      if value.class == Hash
+        label(value)
+      elsif value.class == Array
+        new = []
+        value.each do |item|
+          new << label!(item, label + 1) if item.class != String
+          label(item) if item.class != String
+        end
+        data[key] = new
+      end
+    end
+    return data
+  end
+
+  def label!(data, label)
+    if data.class == Hash
+      new_data = {}
+      data.each do |key, value|
+        new_key = "#{key}-#{label}"
+        new_data[new_key] = data.delete(key)
+        new_data[new_key] = label!(value, label) if value.class != String
+      end
+    elsif data.class == Array
+      new_data = []
+      data.each do |item|
+        bin = label!(item, label) if item.class != String
+        new_data << bin if bin
+      end
+    end
+    new_data
+
+  end
+
+  def find_value_by_key(data, key)
+    if data.class == Hash
+      return data[key] if data.key?(key)
+      data.each_value do |value|
+        result = find_value_by_key(value, key)
+        return result if result
+      end
+    elsif data.class == Array
+      data.each do |item|
+        result = find_value_by_key(item, key)
+        return result if result
+      end
+    end
+    nil
+  end
+end
+
+module JsonParser_2
   extend ActiveSupport::Concern
   DELIMITER = '\\'
 
@@ -17,8 +82,25 @@ module JsonParser
 
     config.each do |origin, target|
       Array(target).each do |target|
-        output_draft = insert(extract(input, origin), target, output)
-        output = output_draft unless output_draft.nil?
+        case target
+        when String
+          output_draft = insert(extract(input, origin), target, output)
+          output = output_draft unless output_draft.nil?
+        when Array
+          output[target.first] = []
+          bin = {}
+          target.last.each do |target|
+            # target: {"isRequired"=>"required"}
+            target.each do |origin, target|
+              extract(input, origin).each do |input|
+                bin = insert(input, target, bin)
+              end
+            end
+          end
+        else
+          puts "do nothing"
+        end
+
       end
     end
 
@@ -44,7 +126,6 @@ module JsonParser
       elsif !output[key].nil?
         output = output[key]
       end
-
     end
     return output
 
@@ -52,7 +133,13 @@ module JsonParser
 
   def extract (input, path)
     path.split(DELIMITER).each do |key|
-      input = input[key]
+      if key.split('*')[1] == 'A'
+        index = key.split('*')[-2]
+        break if index == 'A'
+        input = input[index.to_i]
+      end
+
+      input = input[key.split('*')[-1]]
     end
     input
   end
@@ -75,7 +162,7 @@ module JsonParser
 
     request.body = "{\"#{path[-2]}\":\"#{input["primaryLocationId"]}\"}"
     p
-    request['authorization'] = "Basic #{Base64.strict_encode64(ENV.fetch(path[1], '')+':')}"
+    request['authorization'] = "Basic #{Base64.strict_encode64(ENV.fetch(path[1], '') + ':')}"
     response = http.request(request)
 
     case response # TODO: Handle errors

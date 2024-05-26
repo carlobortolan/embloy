@@ -1,0 +1,31 @@
+{
+  "id": "BA",
+  "departmentName": "BS",
+  "isListed":"<enum|true:listed,false:unlisted>-BT",
+  "externalLink": "BU",
+  "title": "BB",
+  "descriptionHtml": "BD",
+  "primaryLocationID": "<fetch|A|https://api.ashbyhq.com/location.info,POST,JSON,ASHBY_API_KEY,locationId,results.name>-BLA",
+  "publishedDate": "BN",
+  "updatedAt": "BW",
+  "applicationFormDefinition": {
+    "sections": [
+      {
+        "fields": [
+          {
+            "isRequired": "BSA-sections-*a*-fields-*b*",
+            "field": {
+              "id": "BSA-sections-*a*-fields-*b*-A",
+              "type": "BSA-sections-*a*-fields-*b*-A",
+              "path": "_systemfield_name",
+              "humanReadablePath": "Name",
+              "title": "BSA-sections-*a*-fields-*b*-A",
+              "isNullable": false
+            }
+          }
+        ]
+      }
+    ]
+  }
+
+}
