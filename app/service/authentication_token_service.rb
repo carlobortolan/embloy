@@ -80,6 +80,14 @@ class AuthenticationTokenService
       end
     end
 
+    def self.must_be_active!(user)
+      if user.activity_status.zero? # is the user for the given id deactivated?
+        raise CustomExceptions::InvalidUser::Inactive
+      elsif UserBlacklist.find_by(user_id: user.id.to_i).present? # is the user for the given id blacklisted/actively blocked?
+        raise CustomExceptions::Unauthorized::Blocked
+      end
+    end
+
     def self.verify_expiration(man_interval, max, min)
       # is man_interval a positive integer?
       raise CustomExceptions::InvalidInput::CustomEXP unless man_interval.instance_of?(Integer) && man_interval.positive?
@@ -104,6 +112,14 @@ class AuthenticationTokenService
       raise CustomExceptions::InvalidInput::CustomEXP
     end
 
+    def self.calculate_bin_exp(iat, man_interval)
+      if man_interval.nil?
+        iat + 2.weeks.to_i
+      else
+        iat + AuthenticationTokenService::Refresh.verify_expiration(man_interval, MAX_INTERVAL, MIN_INTERVAL)
+      end
+    end
+
     # TODO: ISSUE #25
     #     def self.sub?(sub)
     #       # checks whether a user exists in the database
@@ -118,53 +134,26 @@ class AuthenticationTokenService
       MAX_INTERVAL = 2.weeks.to_i # == 336 hours == 2 weeks
       MIN_INTERVAL = 2.hours.to_i # == 0.5 hours == 30 min
 
-      def self.call(user_id, man_interval = nil)
-        #         if user_id.class != Integer || !user_id.positive? # is user_id parameter not an integer?
-        #           raise CustomExceptions::InvalidInput::SUB
-        #
-        #         elsif User.find_by(id: user_id).blank? # is the given id referencing an non-existing user?
-        #           raise CustomExceptions::InvalidUser::Unknown
-        #
-        #         elsif User.find_by(id: user_id).activity_status == 0 # is the user for the given id deactivated?
-        #           raise CustomExceptions::InvalidUser::Inactive
-        #
-        #         elsif UserBlacklist.find_by(user_id: user_id).present? # is the user for the given id blacklisted/actively blocked?
-        #           raise CustomExceptions::Unauthorized::Blocked
-        AuthenticationTokenService::Refresh.must_be_verified_id!(user_id)
-        ApplicationController.must_be_verified!(user_id) # if not: ApplicationController::InvalidUser::Taboo is risen
+      def self.call(user, man_interval = nil)
+        AuthenticationTokenService::Refresh.must_be_active!(user)
+        ApplicationController.verified!(user.user_role) # if not: ApplicationController::InvalidUser::Taboo is risen
         # the given id references an existing user, who is active and not blacklisted
         iat = Time.now.to_i # timestamp
-        sub = user_id # who "owns" the token
+        sub = user.id.to_i # who "owns" the token
 
-        bin_exp = if man_interval.nil? # the man_interval parameter is not given/used
-                    iat + 2.weeks.to_i # standard validity interval (2 weeks)
-
-                  else
-                    #           # the man_interval parameter is given/user -> a manual token expiration time is required
-                    #           if man_interval.class == Integer && man_interval.positive? # is man_interval a positive integer?
-                    #
-                    #             if man_interval <= MAX_INTERVAL && man_interval >= MIN_INTERVAL
-                    # is the given required validity interval not longer than MAX_INTERVAL and not shorter than MIN_INTERVAL?
-                    #               bin_exp = iat + man_interval # the given required validity interval is sufficient
-                    #
-                    #             elsif man_interval > MAX_INTERVAL # the given required validity interval is too long, so the token validity interval gets set to MAX_INTERVAL
-                    #               bin_exp = iat + MAX_INTERVAL
-                    #
-                    #             elsif man_interval < MIN_INTERVAL # the given required validity interval is too short, so the token validity interval gets set to MIN_INTERVAL
-                    #               bin_exp = iat + MIN_INTERVAL
-                    #             end
-                    #
-                    #           else
-                    #             # man_interval is no integer or either negative or 0
-                    #             raise CustomExceptions::InvalidInput::CustomEXP
-                    #           end
-                    iat + AuthenticationTokenService::Refresh.verify_expiration(man_interval, MAX_INTERVAL,
-                                                                                MIN_INTERVAL)
-
-                  end
-        exp = bin_exp # placeholder for a standard value or a manually set value
+        exp = AuthenticationTokenService::Refresh.calculate_bin_exp(iat, man_interval) # placeholder for a standard value or a manually set value
         jti = AuthenticationTokenService::Refresh.jti(iat) # unique token identifier based on the issuing time and the issuer (more info above)
-        AuthenticationTokenService::Refresh.encode(sub, exp, jti, iat) # make a refresh token
+        refresh_token = AuthenticationTokenService::Refresh.encode(sub, exp, jti, iat) # make a refresh token
+        Token.create!(
+          user:,
+          name: 'Automatically generated refresh token',
+          issuer: 'embloy',
+          token: refresh_token,
+          issued_at: Time.at(iat),
+          expires_at: Time.at(exp),
+          token_type: 'refresh_token'
+        )
+        refresh_token
       end
     end
 
@@ -210,9 +199,19 @@ class AuthenticationTokenService
         # ApplicationController.must_be_verified!(sub)
         typ = Current.user.user_role
         exp = Time.now.to_i + 20.minutes.to_i # standard validity interval;: 1200 sec == 20 min
-        AuthenticationTokenService::Access.encode(
+        access_token = AuthenticationTokenService::Access.encode(
           sub, exp, typ
         )
+        Token.create!(
+          user: Current.user,
+          name: 'Automatically generated access token',
+          issuer: 'embloy',
+          token: access_token,
+          issued_at: Time.now,
+          expires_at: Time.at(exp),
+          token_type: 'access_token'
+        )
+        access_token
       end
     end
 

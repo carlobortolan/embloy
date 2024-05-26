@@ -64,7 +64,7 @@ module Api
       # It calls the Encoder class of the `QuicklinkService::Client` module to create the token.
       # It then returns the token in the response.
       def create_client
-        token = QuicklinkService::Client::Encoder.call(Current.user.id, check_subscription, parse_expiration_date)
+        token = QuicklinkService::Client::Encoder.call(check_subscription, parse_expiration_date)
         render status: 200, json: { 'client_token' => token }
       end
 

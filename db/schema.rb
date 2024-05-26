@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 20_240_526_012_600) do
+ActiveRecord::Schema[7.0].define(version: 20_240_526_133_828) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_trgm'
   enable_extension 'plpgsql'
@@ -392,9 +392,8 @@ ActiveRecord::Schema[7.0].define(version: 20_240_526_012_600) do
 
   create_table 'tokens', force: :cascade do |t|
     t.string 'name', null: false
-    t.string 'type', null: false
+    t.string 'token_type', null: false
     t.string 'issuer'
-    t.string 'token', null: false
     t.datetime 'issued_at', precision: nil, null: false
     t.datetime 'expires_at', precision: nil, null: false
     t.datetime 'last_used_at', precision: nil
@@ -403,6 +402,7 @@ ActiveRecord::Schema[7.0].define(version: 20_240_526_012_600) do
     t.bigint 'user_id', null: false
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
+    t.string 'encrypted_token_iv'
     t.index ['user_id'], name: 'index_tokens_on_user_id'
   end
 

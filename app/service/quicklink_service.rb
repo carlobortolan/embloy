@@ -29,12 +29,21 @@ class QuicklinkService < AuthenticationTokenService
     class Encoder
       include SubscriptionHelper
       # Encodes a client token for a given user ID and subscription and expiration date.
-      def self.call(user_id, subscription, custom_exp)
-        ApplicationController.must_be_verified!(user_id)
+      def self.call(subscription, custom_exp)
         exp = calculate_expiration(custom_exp, subscription)
         typ = SubscriptionHelper.subscription_type(subscription.processor_plan) # Needed for quick authorization when token is used
         iat = Time.now.to_i
-        QuicklinkService::Client.encode(user_id, exp.to_i, typ, iat)
+        client_token = QuicklinkService::Client.encode(Current.user.id.to_i, exp.to_i, typ, iat)
+        Token.create!(
+          user: Current.user,
+          name: 'Automatically generated client token',
+          issuer: 'embloy',
+          token: client_token,
+          issued_at: Time.at(iat),
+          expires_at: Time.at(exp),
+          token_type: 'client_token'
+        )
+        client_token
       end
 
       def self.calculate_expiration(custom_exp, _subscription)
@@ -92,7 +101,6 @@ class QuicklinkService < AuthenticationTokenService
 
         SubscriptionHelper.check_valid_mode(typ, mode)
 
-        # ApplicationController.must_be_verified!(user_id) # TODO: This shouldn't be needed here as verification already happens on client_token creation
         # TODO: @cb verify job / account validity / price category?
 
         # job = job_slug # Other encoding/id options possible?

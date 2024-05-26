@@ -146,3 +146,4 @@ gem 'rails_admin', '~> 3.0'
 gem 'devise'
 gem "rails-controller-testing", "~> 1.0"
   
+gem "attr_encrypted", "~> 4.0"

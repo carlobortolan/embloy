@@ -80,6 +80,8 @@ GEM
     addressable (2.8.6)
       public_suffix (>= 2.0.2, < 6.0)
     ast (2.4.2)
+    attr_encrypted (4.0.0)
+      encryptor (~> 3.0.0)
     azure-storage-blob (2.0.3)
       azure-storage-common (~> 2.0)
       nokogiri (~> 1, >= 1.10.8)
@@ -136,6 +138,7 @@ GEM
     dotenv-rails (3.1.0)
       dotenv (= 3.1.0)
       railties (>= 6.1)
+    encryptor (3.0.0)
     erubi (1.12.0)
     excon (0.110.0)
     faker (3.2.3)
@@ -504,6 +507,7 @@ DEPENDENCIES
   activerecord-postgis-adapter
   activestorage-backblaze
   activesupport (>= 7.0.7.1)
+  attr_encrypted (~> 4.0)
   azure-storage-blob (~> 2.0)
   bcrypt (~> 3.1.7)
   benchmark (~> 0.2.1)
