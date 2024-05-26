@@ -4,9 +4,9 @@ id: job_slug
 title:
   - title
   - position
-descriptionHtml: description.body
+descriptionHtml: description\body
 departmentName: job_type
-locationIds: fetch.location_ids #TODO: fetch location from Ashby API and use for city
+locationIds: fetch\https://api.ashbyhq.com/location.info\ASHBY_API_KEY\post\json\locationId\location
 publishedDate: created_at
 updatedAt: updated_at
 externalLink: referrer_url
