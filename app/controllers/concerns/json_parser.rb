@@ -9,8 +9,6 @@ Dotenv.load(".env")
 
 module JsonParser
   extend ActiveSupport::Concern
-  VISITED = {}
-
   def parse(config, data)
     label(data.dup)
 
@@ -20,18 +18,28 @@ module JsonParser
   private
 
   def label(data, label = -1)
-    data.each do |key, value|
-      if value.class == Hash
-        label(value)
-      elsif value.class == Array
-        new = []
-        value.each do |item|
-          new << label!(item, label + 1) if item.class != String
-          label(item) if item.class != String
+    if data.class == Hash
+      data.each do |key, value|
+        if value.class == Hash
+          label(value)
+        elsif value.class == Array
+          new = []
+          value.each do |item|
+            label += 1
+            new << label(label!(item, label))
+          end
+          data[key] = new
         end
-        data[key] = new
       end
+    elsif data.class == Array
+      new = []
+      data.each do |item|
+        label += 1
+        new << label!(item, label)
+      end
+      data = new
     end
+
     return data
   end
 
@@ -49,6 +57,8 @@ module JsonParser
         bin = label!(item, label) if item.class != String
         new_data << bin if bin
       end
+    else
+      new_data = data
     end
     new_data
 
