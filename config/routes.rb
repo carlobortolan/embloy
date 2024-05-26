@@ -29,6 +29,12 @@ Rails.application.routes.draw do
       post 'auth/token/access', to: 'authentications#create_access'
       post 'auth/token/client', to: 'quicklink#create_client'
 
+      # -----> TOKENS <-----
+      get 'tokens', to: 'tokens#index'
+      post 'tokens', to: 'tokens#create'
+      patch 'tokens/:id', to: 'tokens#update'
+      delete 'tokens/:id', to: 'tokens#destroy'
+
       # -----> USER <-----
       get 'user', to: 'user#show'
       post 'user', to: 'registrations#create'
