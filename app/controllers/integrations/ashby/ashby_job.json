@@ -1,31 +1,109 @@
 {
-  "id": "BA",
-  "departmentName": "BS",
-  "isListed":"<enum|true:listed,false:unlisted>-BT",
-  "externalLink": "BU",
-  "title": "BB",
-  "descriptionHtml": "BD",
-  "primaryLocationID": "<fetch|A|https://api.ashbyhq.com/location.info,POST,JSON,ASHBY_API_KEY,locationId,results.name>-BLA",
-  "publishedDate": "BN",
-  "updatedAt": "BW",
-  "applicationFormDefinition": {
-    "sections": [
-      {
-        "fields": [
-          {
-            "isRequired": "BSA-sections-*a*-fields-*b*",
-            "field": {
-              "id": "BSA-sections-*a*-fields-*b*-A",
-              "type": "BSA-sections-*a*-fields-*b*-A",
-              "path": "_systemfield_name",
-              "humanReadablePath": "Name",
-              "title": "BSA-sections-*a*-fields-*b*-A",
-              "isNullable": false
+  "success": true,
+  "results": {
+    "id": "a6a6b95e-17ae-45f7-a5b0-c46a871b4c7e",
+    "title": "Backend Engineer",
+    "descriptionPlain": "Example org is a leading software company. Example org allows real-time collaboration on important example workflows. Founded in 2012 we have over 10,000 customers worldwide and are backed by fantastic investors such as Example Capital. Example has raised its Series C and is valued at $750 million dollars. http://example.com/\n\nThis example role will be part of an example team and will report to the example manager. The new hire plays a critical role in various example workflows.\n\n\n\n\nWHAT YOU'LL DO\n\n - Participate in example meetings\n\n - Lead example initiatives\n\n - Recruit new team members to example team\n\n - Mentor and develop existing team members\n\n\n\n\nREQUIREMENTS\n\n - Experience writing good example job descriptions\n\n - Other exemplary skills\n\n - 3-5 years prior experience in this role\n\n - Motivation\n\n - Great english language skills\n\n\n\n\nWHY YOU MIGHT WANT TO WORK WITH US\n\n - We take care of you and your family with comprehensive health, vision, and dental insurance.\n\n - We're serious about food. Free catered lunch every day, and a fully stocked kitchen with occasional snack appearances from our Japanese office. Healthy and not-so-healthy options are available, as are foods for those with dietary restrictions.\n\n - You're excited to work on a product that will impact almost any consumer, almost anywhere.\n\n - We dress casually. If you want, you can wear slippers in the office. You should see the creative collection our team has built.\n\n - We believe in a culture of learning, and want to keep building our skills, experiences, and capabilities.\n\n - We offer flexible work schedules. We trust our team to know how they will do their best work.\n\n - We're family friendly. We want our teammates to focus on what they need to when they need to.\n\n - We offer very competitive compensation, including equity in Standard, to each one of our employees.\n\n\n\nExample org provides equal employment opportunities (EEO) to all employees and applicants for employment without regard to race, color, religion, sex, national origin, age, disability, genetics, sexual orientation, gender identity, or gender expression. We are committed to a diverse and inclusive workforce and welcome people from all backgrounds, experiences, perspectives, and abilities.\n\n\n\nDo you have further questions about this role? Reach out to our talent team at example@example.com.\n",
+    "descriptionHtml": "<p>Example org is a leading software company. Example org allows real-time collaboration on important example workflows. Founded in 2012 we have over 10,000 customers worldwide and are backed by fantastic investors such as Example Capital. <a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"http://example.com/\">Example has raised its Series C and is valued at $750 million dollars. </a></p><p>This example role will be part of an example team and will report to the example manager. The new hire plays a critical role in various example workflows.</p><p></p><h1>What you'll do</h1><ul><li><p>Participate in example meetings</p></li><li><p>Lead example initiatives</p></li><li><p>Recruit new team members to example team</p></li><li><p>Mentor and develop existing team members</p></li></ul><p></p><h1>Requirements</h1><ul><li><p>Experience writing good example job descriptions</p></li><li><p>Other exemplary skills</p></li><li><p>3-5 years prior experience in this role</p></li><li><p>Motivation</p></li><li><p>Great english language skills</p></li></ul><p></p><h1>Why you might want to work with us</h1><ul><li><p>We take care of you and your family with comprehensive health, vision, and dental insurance.</p></li><li><p>We're serious about food. Free catered lunch every day, and a fully stocked kitchen with occasional snack appearances from our Japanese office. Healthy and not-so-healthy options are available, as are foods for those with dietary restrictions.</p></li><li><p>You're excited to work on a product that will impact almost any consumer, almost anywhere.</p></li><li><p>We dress casually. If you want, you can wear slippers in the office. You should see the creative collection our team has built.</p></li><li><p>We believe in a culture of learning, and want to keep building our skills, experiences, and capabilities.</p></li><li><p>We offer flexible work schedules. We trust our team to know how they will do their best work.</p></li><li><p>We're family friendly. We want our teammates to focus on what they need to when they need to.</p></li><li><p>We offer very competitive compensation, including equity in Standard, to each one of our employees.</p></li></ul><p></p><p>Example org provides equal employment opportunities (EEO) to all employees and applicants for employment without regard to race, color, religion, sex, national origin, age, disability, genetics, sexual orientation, gender identity, or gender expression. We are committed to a diverse and inclusive workforce and welcome people from all backgrounds, experiences, perspectives, and abilities. </p><p></p><p>Do you have further questions about this role? Reach out to our talent team at example@example.com.<br /></p>",
+    "descriptionSocial": null,
+    "descriptionParts": {
+      "descriptionOpening": null,
+      "descriptionBody": {
+        "html": "<p>Example org is a leading software company. Example org allows real-time collaboration on important example workflows. Founded in 2012 we have over 10,000 customers worldwide and are backed by fantastic investors such as Example Capital. <a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"http://example.com/\">Example has raised its Series C and is valued at $750 million dollars. </a></p><p>This example role will be part of an example team and will report to the example manager. The new hire plays a critical role in various example workflows.</p><p></p><h1>What you'll do</h1><ul><li><p>Participate in example meetings</p></li><li><p>Lead example initiatives</p></li><li><p>Recruit new team members to example team</p></li><li><p>Mentor and develop existing team members</p></li></ul><p></p><h1>Requirements</h1><ul><li><p>Experience writing good example job descriptions</p></li><li><p>Other exemplary skills</p></li><li><p>3-5 years prior experience in this role</p></li><li><p>Motivation</p></li><li><p>Great english language skills</p></li></ul><p></p><h1>Why you might want to work with us</h1><ul><li><p>We take care of you and your family with comprehensive health, vision, and dental insurance.</p></li><li><p>We're serious about food. Free catered lunch every day, and a fully stocked kitchen with occasional snack appearances from our Japanese office. Healthy and not-so-healthy options are available, as are foods for those with dietary restrictions.</p></li><li><p>You're excited to work on a product that will impact almost any consumer, almost anywhere.</p></li><li><p>We dress casually. If you want, you can wear slippers in the office. You should see the creative collection our team has built.</p></li><li><p>We believe in a culture of learning, and want to keep building our skills, experiences, and capabilities.</p></li><li><p>We offer flexible work schedules. We trust our team to know how they will do their best work.</p></li><li><p>We're family friendly. We want our teammates to focus on what they need to when they need to.</p></li><li><p>We offer very competitive compensation, including equity in Standard, to each one of our employees.</p></li></ul><p></p><p>Example org provides equal employment opportunities (EEO) to all employees and applicants for employment without regard to race, color, religion, sex, national origin, age, disability, genetics, sexual orientation, gender identity, or gender expression. We are committed to a diverse and inclusive workforce and welcome people from all backgrounds, experiences, perspectives, and abilities. </p><p></p><p>Do you have further questions about this role? Reach out to our talent team at example@example.com.<br /></p>",
+        "plain": "Example org is a leading software company. Example org allows real-time collaboration on important example workflows. Founded in 2012 we have over 10,000 customers worldwide and are backed by fantastic investors such as Example Capital. Example has raised its Series C and is valued at $750 million dollars. http://example.com/\n\nThis example role will be part of an example team and will report to the example manager. The new hire plays a critical role in various example workflows.\n\n\n\n\nWHAT YOU'LL DO\n\n - Participate in example meetings\n\n - Lead example initiatives\n\n - Recruit new team members to example team\n\n - Mentor and develop existing team members\n\n\n\n\nREQUIREMENTS\n\n - Experience writing good example job descriptions\n\n - Other exemplary skills\n\n - 3-5 years prior experience in this role\n\n - Motivation\n\n - Great english language skills\n\n\n\n\nWHY YOU MIGHT WANT TO WORK WITH US\n\n - We take care of you and your family with comprehensive health, vision, and dental insurance.\n\n - We're serious about food. Free catered lunch every day, and a fully stocked kitchen with occasional snack appearances from our Japanese office. Healthy and not-so-healthy options are available, as are foods for those with dietary restrictions.\n\n - You're excited to work on a product that will impact almost any consumer, almost anywhere.\n\n - We dress casually. If you want, you can wear slippers in the office. You should see the creative collection our team has built.\n\n - We believe in a culture of learning, and want to keep building our skills, experiences, and capabilities.\n\n - We offer flexible work schedules. We trust our team to know how they will do their best work.\n\n - We're family friendly. We want our teammates to focus on what they need to when they need to.\n\n - We offer very competitive compensation, including equity in Standard, to each one of our employees.\n\n\n\nExample org provides equal employment opportunities (EEO) to all employees and applicants for employment without regard to race, color, religion, sex, national origin, age, disability, genetics, sexual orientation, gender identity, or gender expression. We are committed to a diverse and inclusive workforce and welcome people from all backgrounds, experiences, perspectives, and abilities.\n\n\n\nDo you have further questions about this role? Reach out to our talent team at example@example.com.\n"
+      },
+      "descriptionClosing": null
+    },
+    "departmentName": "Engineering",
+    "teamName": "Product Engineering",
+    "teamNameHierarchy": [
+      "Engineering",
+      "Product Engineering"
+    ],
+    "jobId": "a5ccdf1d-91ee-41e7-9059-cc972940004e",
+    "locationName": "San Francisco",
+    "locationIds": {
+      "primaryLocationId": "a8f50799-0f0f-446d-932f-a20e1304f6d2",
+      "secondaryLocationIds": []
+    },
+    "linkedData": {
+      "@context": "https://schema.org/",
+      "@type": "JobPosting",
+      "title": "Backend Engineer",
+      "description": "<p>Example org is a leading software company. Example org allows real-time collaboration on important example workflows. Founded in 2012 we have over 10,000 customers worldwide and are backed by fantastic investors such as Example Capital. <a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"http://example.com/\">Example has raised its Series C and is valued at $750 million dollars. </a></p><p>This example role will be part of an example team and will report to the example manager. The new hire plays a critical role in various example workflows.</p><p></p><h1>What you'll do</h1><ul><li><p>Participate in example meetings</p></li><li><p>Lead example initiatives</p></li><li><p>Recruit new team members to example team</p></li><li><p>Mentor and develop existing team members</p></li></ul><p></p><h1>Requirements</h1><ul><li><p>Experience writing good example job descriptions</p></li><li><p>Other exemplary skills</p></li><li><p>3-5 years prior experience in this role</p></li><li><p>Motivation</p></li><li><p>Great english language skills</p></li></ul><p></p><h1>Why you might want to work with us</h1><ul><li><p>We take care of you and your family with comprehensive health, vision, and dental insurance.</p></li><li><p>We're serious about food. Free catered lunch every day, and a fully stocked kitchen with occasional snack appearances from our Japanese office. Healthy and not-so-healthy options are available, as are foods for those with dietary restrictions.</p></li><li><p>You're excited to work on a product that will impact almost any consumer, almost anywhere.</p></li><li><p>We dress casually. If you want, you can wear slippers in the office. You should see the creative collection our team has built.</p></li><li><p>We believe in a culture of learning, and want to keep building our skills, experiences, and capabilities.</p></li><li><p>We offer flexible work schedules. We trust our team to know how they will do their best work.</p></li><li><p>We're family friendly. We want our teammates to focus on what they need to when they need to.</p></li><li><p>We offer very competitive compensation, including equity in Standard, to each one of our employees.</p></li></ul><p></p><p>Example org provides equal employment opportunities (EEO) to all employees and applicants for employment without regard to race, color, religion, sex, national origin, age, disability, genetics, sexual orientation, gender identity, or gender expression. We are committed to a diverse and inclusive workforce and welcome people from all backgrounds, experiences, perspectives, and abilities. </p><p></p><p>Do you have further questions about this role? Reach out to our talent team at example@example.com.<br /></p>",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "Backend Engineer",
+        "value": "a6a6b95e-17ae-45f7-a5b0-c46a871b4c7e"
+      },
+      "datePosted": "2024-05-21",
+      "hiringOrganization": {
+        "@type": "Organization",
+        "name": "Embloy",
+        "sameAs": "demo.embloy"
+      },
+      "jobLocation": {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress"
+        }
+      },
+      "employmentType": "FULL_TIME"
+    },
+    "publishedDate": "2024-05-21",
+    "address": null,
+    "applicationDeadline": null,
+    "isRemote": null,
+    "employmentType": "FullTime",
+    "applicationFormDefinition": {
+      "sections": [
+        {
+          "fields-*a*": [
+            {
+              "isRequired-*a*-*b*": true,
+              "field-*a*-*b*": {
+                "id-*a*-*b*": "06926231-dcac-451f-8078-577e1c38efbc",
+                "type-*a*-*b*": "String",
+                "path-*a*-*b*": "_systemfield_name",
+                "humanReadablePath-*a*-*b*": "Name",
+                "title-*a*-*b*": "Name",
+                "isNullable-*a*-*b*": false
+              }
+            },
+            {
+              "isRequired-*a*-*b*": true,
+              "field-*a*-*b*": {
+                "id-*a*-*b*": "e01ceeb6-4102-4358-a3d1-16d359da2034",
+                "type-*a*-*b*": "Email",
+                "path-*a*-*b*": "_systemfield_email",
+                "humanReadablePath-*a*-*b*": "Email",
+                "title-*a*-*b*": "Email",
+                "isNullable-*a*-*b*": false
+              }
+            },
+            {
+              "": true,
+              "field-*a*-*b*": {
+                "id-*a*-*b*": "397e8227-6ce2-414e-84f1-dde71752d936",
+                "type-*a*-*b*": "File",
+                "path-*a*-*b*": "_systemfield_resume",
+                "humanReadablePath-*a*-*b*": "Resume",
+                "title-*a*-*b*": "Resume",
+                "isNullable-*a*-*b*": false
+              }
             }
-          }
-        ]
-      }
-    ]
+          ]
+        }
+      ]
+    },
+    "isListed": true,
+    "externalLink": "https://jobs.ashbyhq.com/demo.embloy/a6a6b95e-17ae-45f7-a5b0-c46a871b4c7e",
+    "compensation": {
+      "compensationTierSummary": null,
+      "summaryComponents": [],
+      "compensationTiers": [],
+      "shouldDisplayCompensation": false
+    },
+    "updatedAt": "2024-05-21T19:41:39.366Z"
   }
-
 }
