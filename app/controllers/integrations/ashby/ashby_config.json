@@ -30,7 +30,7 @@
   "latitude": "~",
   "country_code": "~",
   "postal_code": "~",
-  "city": "primaryLocationId-<fetch|A|https://api.ashbyhq.com/location.info,POST,JSON,ASHBY_API_KEY,locationId,results.name>",
+  "city": "primaryLocationId-<fetch|https://api.ashbyhq.com/location.info,POST,JSON,ASHBY_API_KEY,locationId,results.name>",
   "address": "~",
   "view_count": "~",
   "created_at": "publishedDate",

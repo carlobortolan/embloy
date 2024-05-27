@@ -11,7 +11,7 @@ module JobParser
   extend ActiveSupport::Concern
 
   def parse(config, data)
-    # TODO: handle fetch
+    # TODO: handle fetch, redo application options
     data = label(data.dup)
     bin = {}
     config.each do |target, origin|
@@ -54,7 +54,6 @@ module JobParser
         else
           bin[target] = lol
         end
-
       end
     end
     bin
@@ -63,26 +62,23 @@ module JobParser
 
   private
 
-  def fetch (path, input = nil)
-
+  def fetch (path, origin_key, input = nil)
     url = URI(path.first)
     http = Net::HTTP.new(url.host, url.port)
     http.use_ssl = true
-    if path[2] == 'post'
+    if path[1] == 'POST'
       request = Net::HTTP::Post.new(url)
     else
       request = Net::HTTP::Get.new(url)
     end
 
-    if path[3] == 'json'
+    if path[2] == 'JSON'
       request["accept"] = 'application/json'
       request["content-type"] = 'application/json'
     end
-
-    request.body = "{\"#{path[-2]}\":\"#{input["primaryLocationId"]}\"}"
-    request['authorization'] = "Basic #{Base64.strict_encode64(ENV.fetch(path[1], '') + ':')}"
+    request.body = "{\"#{path[-2]}\":\"#{find_value_by_key(input, origin_key)}\"}"
+    request['authorization'] = "Basic #{Base64.strict_encode64("94befa3e484fbfa12ae6929f81c9b289ec37e3a6072473c6dbdf2992eb6c5ccf" + ':')}"
     response = http.request(request)
-
     case response # TODO: Handle errors
     when Net::HTTPSuccess
       JSON.parse(response.body)
@@ -118,8 +114,11 @@ module JobParser
     task = task_string[1..-2].split('|')
     case task.first
     when 'fetch'
-      # Implement fetch logic here if needed
-      nil
+      task.shift
+      path = task[0].split(',')
+      results = fetch(path,origin_key, data)
+      path[-1].split('.').each { |key| results = results[key] }
+      results
     when 'enum'
       value = find_value_by_key(data, origin_key)
       pairs = task.last.split(',').map { |pair| pair.split(':') }
