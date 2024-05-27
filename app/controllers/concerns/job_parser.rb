@@ -20,69 +20,37 @@ module JobParser
         if lol.class == Array
           lol_bin = []
           path = []
-          it_id = 0
-          lol.each do |lol_item|
-            only_arrays = lol_item.select { |k, v| v.class == Array }
-            res = []
 
-            0.upto(only_arrays.values[0].length - 1) do |i|
-              res_b = {}
-              lol_item.each do |k, v|
-                orgs = origin[it_id][k].split('*')
-                orgs.shift
-                targs = k.split('*')
-                targs.shift
+          lol.each_with_index do |lol_item, it_id|
+            only_arrays = lol_item.select { |_, v| v.is_a?(Array) }
+            result_set = []
+
+            only_arrays.values[0].each_index do |i|
+              transformed_item = {}
+
+              lol_item.each do |key, value|
+                orgs = origin[it_id][key].split('*').drop(1)
+                targs = key.split('*').drop(1)
                 intersection = orgs & targs
-                intersection.each do |int|
-                  if int == '~'
-                    next
-                  end
-                  k = k.split('*')
 
-                  k[k.index(int)] = i
-                  k = k.join
-                  if v.class == Array
-                    res_b[k] = v[i]
-                  else
-                    res_b[k] = v
-                  end
+                intersection.reject { |int| int == '~' }.each do |int|
+                  new_key = key.split('*').tap { |k| k[k.index(int)] = i }.join
+                  transformed_item[new_key] = value.is_a?(Array) ? value[i] : value
                 end
-                res << res_b
-                res.uniq!
-              end
-            end
-            orgs = origin[it_id]
-
-            orgs.each do |k, v|
-              vs = v.split('*')
-              vs.shift
-              xi = 0
-              vs.each do |x|
-                if x == "~"
-                  path[xi] = true
-                else
-                  path[xi] = false
-                end
-                xi = +1
               end
 
+              result_set << transformed_item unless result_set.include?(transformed_item)
             end
 
-            lol_bin << res
+            origin[it_id].each do |_, value|
+              path.concat(value.split('*').drop(1).map { |x| x == "~" })
+            end
 
-            it_id += 1
+            lol_bin << result_set
           end
 
-          ind = 0
           bin[target] = lol_bin
-          path.each do |p|
-            if p == true
-              bin[target] = bin[target][ind].flatten
-            end
-            ind = +1
-          end
-
-
+          path.each_with_index { |p, i| bin[target] = bin[target].flatten if p }
         else
           bin[target] = lol
         end
