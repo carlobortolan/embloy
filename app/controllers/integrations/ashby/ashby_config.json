@@ -40,7 +40,7 @@
   "job_notifications": "~",
   "boost": "~",
   "cv_required": "~",
-  "allowed_cv_formats": [],
+  "allowed_cv_formats": "~",
   "deleted_at": "~",
   "job_value": "~",
   "allowed_cv_format": "~",
@@ -51,7 +51,7 @@
       "question-*a*": "title-*~*-*a*",
       "question_type-*a*": "type-*~*-*a*",
       "required-*a*": "isRequired-*~*-*a*",
-      "options-*a*": [],
+      "options-*a*": "~",
       "created_at-*a*": "~",
       "updated_at-*a*": "~",
       "deleted_at-*a*": "~"
