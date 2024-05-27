@@ -19,10 +19,12 @@ module JobParser
         lol = origin_to_target(data, origin)
         if lol.class == Array
           lol_bin = []
+          path = []
           it_id = 0
           lol.each do |lol_item|
             only_arrays = lol_item.select { |k, v| v.class == Array }
             res = []
+
             0.upto(only_arrays.values[0].length - 1) do |i|
               res_b = {}
               lol_item.each do |k, v|
@@ -47,15 +49,39 @@ module JobParser
                 end
                 res << res_b
                 res.uniq!
-
-
               end
             end
+            orgs = origin[it_id]
 
-            lol_bin = res
+            orgs.each do |k, v|
+              vs = v.split('*')
+              vs.shift
+              xi = 0
+              vs.each do |x|
+                if x == "~"
+                  path[xi] = true
+                else
+                  path[xi] = false
+                end
+                xi = +1
+              end
+
+            end
+
+            lol_bin << res
+
             it_id += 1
           end
+
+          ind = 0
           bin[target] = lol_bin
+          path.each do |p|
+            if p == true
+              bin[target] = bin[target][ind].flatten
+            end
+            ind = +1
+          end
+
 
         else
           bin[target] = lol
@@ -68,6 +94,7 @@ module JobParser
   end
 
   private
+
   def fetch (path, input = nil)
 
     url = URI(path.first)
