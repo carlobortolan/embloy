@@ -10,6 +10,7 @@ class User < ApplicationRecord
   has_one :preferences, dependent: :delete
   has_one_attached :image_url
   has_many :jobs, dependent: :delete_all
+  has_many :tokens, dependent: :delete_all
   has_many :reviews, dependent: :delete_all
   has_many :notifications, as: :recipient,
                            dependent: :destroy

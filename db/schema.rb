@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 20_240_212_052_057) do
+ActiveRecord::Schema[7.0].define(version: 20_240_526_133_828) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_trgm'
   enable_extension 'plpgsql'
@@ -163,7 +163,7 @@ ActiveRecord::Schema[7.0].define(version: 20_240_212_052_057) do
 
   create_table 'jobs', primary_key: 'job_id', id: :serial, force: :cascade do |t|
     t.string 'job_type'
-    t.string 'job_slug', null: false, limit: 100
+    t.string 'job_slug', limit: 100, null: false
     t.integer 'job_type_value'
     t.integer 'activity_status', limit: 2, default: 1, null: false
     t.enum 'job_status', default: 'listed', null: false, enum_type: 'job_status'
@@ -194,24 +194,24 @@ ActiveRecord::Schema[7.0].define(version: 20_240_212_052_057) do
     t.integer 'employer_rating', default: 0, null: false
     t.text 'job_notifications', default: '1', null: false
     t.integer 'boost', default: 0, null: false
-    t.boolean 'cv_required', null: false, default: false
+    t.boolean 'cv_required', default: false, null: false
     t.string 'allowed_cv_formats', default: ['.pdf', '.docx', '.txt', '.xml'], null: false, array: true
     t.datetime 'deleted_at'
-    t.index ['job_slug'], name: ' job_job_slug_index '
+    t.geography 'job_value', limit: { srid: 4326, type: 'st_point', has_z: true, geographic: true }
+    t.index "to_tsvector('simple'::regconfig, (((((((((((((((((COALESCE(title, ''::character varying))::text || ' '::text) || (COALESCE(job_type, ''::character varying))::text) || ' '::text) || (COALESCE(\"position\", ''::character varying))::text) || ' '::text) || (COALESCE(key_skills, ''::character varying))::text) || ' '::text) || COALESCE(description, ''::text)) || ' '::text) || (COALESCE(country_code, ''::character varying))::text) || ' '::text) || (COALESCE(city, ''::character varying))::text) || ' '::text) || (COALESCE(postal_code, ''::character varying))::text) || ' '::text) || (COALESCE(address, ''::character varying))::text))",
+            name: 'jobs_tsvector_idx', using: :gin
     t.index ['country_code'], name: ' job_country_code_index '
-    t.index ['job_id'], name: 'job_job_id_index'
-    t.index ['postal_code'], name: ' job_postal_code_index '
-    t.index ['user_id'], name: 'job_user_id_index '
-    t.index ['position'], name: 'job_position_index '
-    t.index ['job_type'], name: 'job_job_type_index '
     t.index ['deleted_at'], name: 'index_jobs_on_deleted_at'
+    t.index ['job_id'], name: 'job_job_id_index'
+    t.index ['job_slug'], name: ' job_job_slug_index '
+    t.index ['job_type'], name: 'job_job_type_index '
+    t.index ['job_type'], name: 'jobs_job_type_trgm_idx', opclass: :gin_trgm_ops, using: :gin
+    t.index ['job_value'], name: 'job_job_value_index', using: :gist
+    t.index ['position'], name: 'job_position_index '
+    t.index ['postal_code'], name: ' job_postal_code_index '
+    t.index ['title'], name: 'jobs_title_trgm_idx', opclass: :gin_trgm_ops, using: :gin
+    t.index ['user_id'], name: 'job_user_id_index '
   end
-
-  execute('ALTER TABLE jobs ADD COLUMN job_value public.geography(PointZ,4326);CREATE INDEX IF NOT EXISTS job_job_value_index ON public.jobs USING gist(job_value)TABLESPACE pg_default;')
-  execute("CREATE INDEX jobs_tsvector_idx ON jobs USING gin(to_tsvector('simple', coalesce(title,'') || ' ' || coalesce(job_type,'') || ' ' || coalesce(position,'') || ' ' || coalesce(key_skills,'') || ' ' || coalesce(description,'') || ' ' || coalesce(country_code,'') || ' ' || coalesce(city,'') || ' ' || coalesce(postal_code,'') || ' ' || coalesce(address,'')));")
-  execute('CREATE EXTENSION IF NOT EXISTS pg_trgm;')
-  execute('CREATE INDEX IF NOT EXISTS jobs_title_trgm_idx ON jobs USING gin(title gin_trgm_ops);CREATE INDEX IF NOT EXISTS jobs_job_type_trgm_idx ON jobs USING gin(job_type gin_trgm_ops);')
-  execute('CREATE EXTENSION IF NOT EXISTS unaccent;')
 
   create_table 'notable_jobs', force: :cascade do |t|
     t.string 'note_type'
@@ -390,6 +390,22 @@ ActiveRecord::Schema[7.0].define(version: 20_240_212_052_057) do
     t.index ['deleted_at'], name: 'index_reviews_on_deleted_at'
   end
 
+  create_table 'tokens', force: :cascade do |t|
+    t.string 'name', null: false
+    t.string 'token_type', null: false
+    t.string 'issuer'
+    t.datetime 'issued_at', precision: nil, null: false
+    t.datetime 'expires_at', precision: nil, null: false
+    t.datetime 'last_used_at', precision: nil
+    t.boolean 'active', default: true, null: false
+    t.string 'scopes'
+    t.bigint 'user_id', null: false
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.string 'encrypted_token_iv'
+    t.index ['user_id'], name: 'index_tokens_on_user_id'
+  end
+
   create_table 'user_blacklists', force: :cascade do |t|
     t.integer 'user_id', null: false
     t.integer 'reason'
@@ -427,7 +443,7 @@ ActiveRecord::Schema[7.0].define(version: 20_240_212_052_057) do
     t.string 'facebook_url', limit: 150
     t.string 'instagram_url', limit: 150
     t.string 'linkedin_url', limit: 150
-    t.decimal 'phone', limit: 100
+    t.decimal 'phone'
     t.string 'degree', limit: 50
     t.index ['email'], name: 'user_email_index', unique: true
     t.index %w[first_name last_name], name: 'user_name_index'
@@ -448,7 +464,8 @@ ActiveRecord::Schema[7.0].define(version: 20_240_212_052_057) do
   add_foreign_key 'preferences', 'users', on_delete: :cascade
   add_foreign_key 'private_users', 'users', column: 'id', on_delete: :cascade
   add_foreign_key 'reviews', 'jobs', primary_key: 'job_id'
-  add_foreign_key 'reviews', 'users' # TODO: ???
+  add_foreign_key 'reviews', 'users'
   add_foreign_key 'reviews', 'users', column: 'created_by'
+  add_foreign_key 'tokens', 'users'
   add_foreign_key 'user_blacklists', 'users', on_delete: :cascade
 end
