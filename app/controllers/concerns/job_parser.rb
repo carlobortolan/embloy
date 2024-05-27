@@ -11,7 +11,7 @@ module JobParser
   extend ActiveSupport::Concern
 
   def parse(config, data)
-    # TODO: handle fetch, redo application options
+    # TODO: redo application options
     data = label(data.dup)
     bin = {}
     config.each do |target, origin|
