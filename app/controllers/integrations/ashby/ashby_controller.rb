@@ -6,7 +6,7 @@ require 'json'
 
 module Integrations
   # LeverController handles oauth-related actions
-  class LeverController < IntegrationsController
+  class AshbyController < IntegrationsController
     ASHBY_POST_FORM_URL = 'https://api.ashbyhq.com'
 
     def register
@@ -35,7 +35,6 @@ module Integrations
 
     def self.get_posting(posting_id, client, job)
       # TODO: https://developers.ashbyhq.com/reference/jobinfo
-
       if job.nil?
         job = Job.new(job_slug: "ashby__#{posting_id}", user_id: client.id.to_i)
         job.save!
