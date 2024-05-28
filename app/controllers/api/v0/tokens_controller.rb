@@ -57,7 +57,7 @@ module Api
       end
 
       def token_params
-        params.require(:token).permit(:name, :token_type, :issuer, :token, :issued_at, :expires_at, :active, :last_used_at, :scopes)
+        params.permit(:name, :token_type, :issuer, :token, :issued_at, :expires_at, :active, :last_used_at, :scopes)
       end
 
       def show_params

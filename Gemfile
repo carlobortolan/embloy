@@ -147,3 +147,5 @@ gem 'devise'
 gem "rails-controller-testing", "~> 1.0"
   
 gem "attr_encrypted", "~> 4.0"
+
+gem "rails-healthcheck", "~> 1.4"
