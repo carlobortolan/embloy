@@ -37,25 +37,27 @@ module JobParser
       data
     end
 
-    def to_active_record!(data = self, rec = false)
+    def to_active_record!(data = self, ignore = [], rec = false)
       new_job = {}
       data = to_active_record(data) if !rec
       rec = true if !rec
       data.each do |key, value|
-        if value.is_a?(Hash)
-          to_active_record!(value, rec)
-        elsif value.is_a?(Array)
-          value.each { |item| to_active_record!(item, rec) if item.is_a?(Hash) }
+        unless ignore.include?(key)
+          if value.is_a?(Hash)
+            to_active_record!(value, ignore, rec)
+          elsif value.is_a?(Array)
+            value.each { |item| to_active_record!(item, ignore, rec) if item.is_a?(Hash) }
+          else
+            new_job[key] = value if !value.nil?
+          end
         else
-          new_job[key] = value if !value.nil?
+          new_job[key] = value
         end
       end
       new_job
     end
 
   end
-
-
 
 
   def self.parse(config, data)
