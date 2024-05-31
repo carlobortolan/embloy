@@ -111,6 +111,7 @@ class Job < ApplicationRecord
   def set_default_values
     self.longitude ||= 0.0
     self.latitude ||= 0.0
+    self.duration = 0 if duration.nil?
     self.duration = duration.zero? ? 1 : duration
   end
 end

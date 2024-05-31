@@ -108,7 +108,6 @@ module Api
       end
 
       def handle_existing_job
-        puts "CLass: #{@job.class}"
         if %w[listed unlisted].include?(@job.job_status) && @job.activity_status == 1
           true
         else

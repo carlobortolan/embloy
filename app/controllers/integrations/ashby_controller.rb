@@ -58,22 +58,19 @@ module Integrations
       when Net::HTTPSuccess
         job = JobParser.parse(JSON.parse(File.read('app/controllers/integrations/ashby_config.json')), JSON.parse(response.body))
         job["job_slug"] = "ashby__#{job["job_slug"]}"
-        job = job.to_active_record
+        job["user_id"] = client.id.to_i
+        job = job.to_active_record!
       else
         nil
       end
 
       unless client.jobs.find_by(job_slug: job['job_slug']).nil?
-
         return client.jobs.find_by(job_slug: job['job_slug'])
-
       else
-        job = Job.new(job_slug: "ashby__#{posting_id}", user_id: client.id.to_i)
+        job = Job.new(job)
         job.save!
         job.user = client
         client.jobs << job
-        client.jobs << job
-        #job.update!(title: 'test')
       end
       job
     end
