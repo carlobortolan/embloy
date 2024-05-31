@@ -115,6 +115,7 @@ ActiveRecord::Schema[7.0].define(version: 20_240_526_133_828) do
 
   create_table 'application_options', force: :cascade do |t|
     t.bigint 'job_id', null: false
+    t.string 'ext_id', limit: 100
     t.string 'question', limit: 500, null: false
     t.enum 'question_type', default: 'yes_no', null: false, enum_type: 'question_type'
     t.boolean 'required', default: true
