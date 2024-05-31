@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 module Integrations
   # IntegrationsController handles Integration-related actions and verifications
   class IntegrationsController < ApplicationController

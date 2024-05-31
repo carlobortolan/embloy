@@ -9,8 +9,39 @@ Dotenv.load(".env")
 
 module JobParser
   extend ActiveSupport::Concern
+  class JobParserResult < Hash
+    def initialize(data = {})
+      super()
+      data.each { |key, value| self[key] = value }
+    end
 
-  def parse(config, data)
+    def to_active_record(data = self)
+      data.keys.each do |key|
+        value = data[key]
+
+        data[key] = [] if key.to_s == 'application_options' #TODO: REMOVE AND HANDLE APPLICATION OPTIONS SEPERATELY
+
+        if value.is_a?(Array)
+          value.each { |item| to_active_record(item) if item.is_a?(Hash) }
+        elsif value.is_a?(Hash)
+          to_active_record(value)
+        else
+          data[key] = nil if value == '~'
+        end
+
+        if key.to_s.include?('-')
+          new_key = key.split('-').first
+          data[new_key] = data.delete(key)
+        end
+      end
+      data
+    end
+
+  end
+
+
+
+  def self.parse(config, data)
     # TODO: redo application options
     data = label(data.dup)
     bin = {}
@@ -56,13 +87,13 @@ module JobParser
         end
       end
     end
-    bin
+    JobParserResult.new(bin)
 
   end
 
   private
 
-  def fetch (path, origin_key, input = nil)
+  def self.fetch (path, origin_key, input = nil)
     url = URI(path.first)
     http = Net::HTTP.new(url.host, url.port)
     http.use_ssl = true
@@ -87,7 +118,7 @@ module JobParser
     end
   end
 
-  def origin_to_target(data, origin)
+  def self.origin_to_target(data, origin)
     case origin
     when Array
       origin.map { |item| origin_to_target(data, item) }
@@ -100,7 +131,7 @@ module JobParser
     end
   end
 
-  def process_string_origin(data, origin)
+  def self.process_string_origin(data, origin)
     value = origin.split('-')
     origin_key = value.shift
     if value.last&.start_with?('<') && value.last&.end_with?('>')
@@ -110,7 +141,7 @@ module JobParser
     end
   end
 
-  def process_task_string(data, origin_key, task_string)
+  def self.process_task_string(data, origin_key, task_string)
     task = task_string[1..-2].split('|')
     case task.first
     when 'fetch'
@@ -126,7 +157,7 @@ module JobParser
     end
   end
 
-  def process_indices(data, origin_key, value)
+  def self.process_indices(data, origin_key, value)
     indices = value.select { |val| val.start_with?('*') && val.end_with?('*') }.map { |val| val[1..-2] }
     if indices.any?
       generate_combinations_and_fetch_values(data, origin_key, indices)
@@ -135,7 +166,7 @@ module JobParser
     end
   end
 
-  def generate_combinations_and_fetch_values(data, origin_key, indices)
+  def self.generate_combinations_and_fetch_values(data, origin_key, indices)
     values = []
     i = Array.new(indices.length, 0)
 
@@ -151,7 +182,7 @@ module JobParser
     values
   end
 
-  def increment_indices(i, max_value)
+  def self.increment_indices(i, max_value)
     n = i.length - 1
     while n >= 0
       if i[n] < max_value
@@ -165,7 +196,7 @@ module JobParser
     false
   end
 
-  def label(data, label = -1)
+  def self.label(data, label = -1)
     if data.class == Hash
       data.each do |key, value|
         if value.class == Hash
@@ -191,7 +222,7 @@ module JobParser
     return data
   end
 
-  def label!(data, label)
+  def self.label!(data, label)
     if data.class == Hash
       new_data = {}
       data.each do |key, value|
@@ -212,7 +243,7 @@ module JobParser
 
   end
 
-  def find_value_by_key(data, key)
+  def self.find_value_by_key(data, key)
     return "~" if key == '~'
     if data.class == Hash
       return data[key] if data.key?(key)
