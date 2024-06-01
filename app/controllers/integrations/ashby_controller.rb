@@ -12,11 +12,6 @@ module Integrations
   # LeverController handles oauth-related actions
   class AshbyController < IntegrationsController
     ASHBY_POST_FORM_URL = 'https://api.ashbyhq.com'
-
-    def register
-      # Save Ashby API-key (sent using basic auth) to current user
-    end
-
     def self.submit_form(_posting_id, application_details)
       # TODO: https://developers.ashbyhq.com/reference/applicationformsubmit
       puts 'STARTING TO SEND TO ASHBY'
@@ -59,7 +54,6 @@ module Integrations
         job = JobParser.parse(JSON.parse(File.read('app/controllers/integrations/ashby_config.json')), JSON.parse(response.body))
         job["job_slug"] = "ashby__#{job["job_slug"]}"
         job["user_id"] = client.id.to_i
-
         job = job.to_active_record!(job, ignore=["description"])
       else
         nil
