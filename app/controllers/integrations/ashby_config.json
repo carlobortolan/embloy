@@ -11,15 +11,7 @@
   "code_lang": "~",
   "title": "title",
   "position": "title",
-  "description": {
-    "id": "~",
-    "name": "~",
-    "body": "descriptionHtml",
-    "record_type": "~",
-    "record_id": "~",
-    "created_at": "~",
-    "updated_at": "~"
-  },
+  "description": "descriptionHtml",
   "key_skills": "~",
   "salary": "~",
   "euro_salary": "~",
@@ -44,18 +36,6 @@
   "deleted_at": "~",
   "job_value": "~",
   "allowed_cv_format": "~",
-  "application_options": [
-    {
-      "id-*a*": "id-*~*-*a*",
-      "job_id-*a*": "~",
-      "question-*a*": "title-*~*-*a*",
-      "question_type-*a*": "type-*~*-*a*",
-      "required-*a*": "isRequired-*~*-*a*",
-      "options-*a*": "~",
-      "created_at-*a*": "~",
-      "updated_at-*a*": "~",
-      "deleted_at-*a*": "~"
-    }
-  ],
+  "application_options": "fields-<lambda|parse_application>",
   "image_url": "~"
 }

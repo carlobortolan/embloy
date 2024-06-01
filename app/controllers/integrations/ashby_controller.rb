@@ -51,15 +51,15 @@ module Integrations
       response = http.request(request)
       case response # TODO: Handle errors
       when Net::HTTPSuccess
-        job = JobParser.parse(JSON.parse(File.read('app/controllers/integrations/ashby_config.json')), JSON.parse(response.body))
+        job = JobParser.parse(JSON.parse(File.read('app/controllers/integrations/ashby_config.json')), JSON.parse(response.body), AshbyLambdas)
         job["job_slug"] = "ashby__#{job["job_slug"]}"
         job["user_id"] = client.id.to_i
-        job = job.to_active_record!(job, ignore=["description"])
+        job = job.to_active_record!(job)
       else
         nil
       end
 
-
+      puts "JOB: #{job.inspect}"
       unless client.jobs.find_by(job_slug: job['job_slug']).nil?
         client.jobs.find_by(job_slug: job['job_slug']).update!(job)
         return client.jobs.find_by(job_slug: job['job_slug'])

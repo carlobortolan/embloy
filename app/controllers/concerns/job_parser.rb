@@ -9,101 +9,16 @@ Dotenv.load(".env")
 
 module JobParser
   extend ActiveSupport::Concern
-  class JobParserResult < Hash
-    def initialize(data = {})
-      super()
-      data.each { |key, value| self[key] = value }
-    end
+  attr_accessor :external
 
-    def to_active_record(data = self)
-      data.keys.each do |key|
-        value = data[key]
-
-        data[key] = [] if key.to_s == 'application_options' #TODO: REMOVE AND HANDLE APPLICATION OPTIONS SEPERATELY
-
-        if value.is_a?(Array)
-          value.each { |item| to_active_record(item) if item.is_a?(Hash) }
-        elsif value.is_a?(Hash)
-          to_active_record(value)
-        else
-          data[key] = nil if value == '~'
-        end
-
-        if key.to_s.include?('-')
-          new_key = key.split('-').first
-          data[new_key] = data.delete(key)
-        end
-      end
-      data
-    end
-
-    def to_active_record!(data = self, ignore = [], rec = false)
-      new_job = {}
-      data = to_active_record(data) if !rec
-      rec = true if !rec
-      data.each do |key, value|
-        unless ignore.include?(key)
-          if value.is_a?(Hash)
-            to_active_record!(value, ignore, rec)
-          elsif value.is_a?(Array)
-            value.each { |item| to_active_record!(item, ignore, rec) if item.is_a?(Hash) }
-          else
-            new_job[key] = value if !value.nil?
-          end
-        else
-          new_job[key] = value
-        end
-      end
-      new_job
-    end
-
-  end
-
-
-  def self.parse(config, data)
+  def self.parse(config, data, external = nil)
+    @external = external if external
     # TODO: redo application options
-    data = label(data.dup)
+    # data = label(data.dup)
     bin = {}
     config.each do |target, origin|
       Array(target).each do |target|
-        lol = origin_to_target(data, origin)
-        if lol.class == Array
-          lol_bin = []
-          path = []
-
-          lol.each_with_index do |lol_item, it_id|
-            only_arrays = lol_item.select { |_, v| v.is_a?(Array) }
-            result_set = []
-
-            only_arrays.values[0].each_index do |i|
-              transformed_item = {}
-
-              lol_item.each do |key, value|
-                orgs = origin[it_id][key].split('*').drop(1)
-                targs = key.split('*').drop(1)
-                intersection = orgs & targs
-
-                intersection.reject { |int| int == '~' }.each do |int|
-                  new_key = key.split('*').tap { |k| k[k.index(int)] = i }.join
-                  transformed_item[new_key] = value.is_a?(Array) ? value[i] : value
-                end
-              end
-
-              result_set << transformed_item unless result_set.include?(transformed_item)
-            end
-
-            origin[it_id].each do |_, value|
-              path.concat(value.split('*').drop(1).map { |x| x == "~" })
-            end
-
-            lol_bin << result_set
-          end
-
-          bin[target] = lol_bin
-          path.each_with_index { |p, i| bin[target] = bin[target].flatten if p }
-        else
-          bin[target] = lol
-        end
+        bin[target] = origin_to_target(data, origin)
       end
     end
     JobParserResult.new(bin)
@@ -166,13 +81,20 @@ module JobParser
     when 'fetch'
       task.shift
       path = task[0].split(',')
-      results = fetch(path,origin_key, data)
+      results = fetch(path, origin_key, data)
       path[-1].split('.').each { |key| results = results[key] }
       results
     when 'enum'
       value = find_value_by_key(data, origin_key)
       pairs = task.last.split(',').map { |pair| pair.split(':') }
       pairs.to_h[value.to_s] || value
+    when 'lambda'
+      task.shift
+      value = find_value_by_key(data, origin_key)
+      unless @external.nil?
+        @external.public_send(task.first, value)
+      end
+      value
     end
   end
 
@@ -188,7 +110,6 @@ module JobParser
   def self.generate_combinations_and_fetch_values(data, origin_key, indices)
     values = []
     i = Array.new(indices.length, 0)
-
     loop do
       current_origin = origin_key.dup
       i.each { |index| current_origin += "-#{index}" }
@@ -277,5 +198,56 @@ module JobParser
       end
     end
     nil
+  end
+
+  class JobParserResult < Hash
+    def initialize(data = {})
+      super()
+      data.each { |key, value| self[key] = value }
+    end
+
+    def to_active_record(data = self)
+      data.keys.each do |key|
+        value = data[key]
+        if value.is_a?(Array)
+          value.each { |item| to_active_record(item) if item.is_a?(Hash) }
+        elsif value.is_a?(Hash)
+          to_active_record(value)
+        else
+          data[key] = nil if value == '~'
+        end
+
+        if key.to_s.include?('-')
+          new_key = key.split('-').first
+          data[new_key] = data.delete(key)
+        end
+      end
+      data
+    end
+
+    def to_active_record!(data = self, ignore = [], rec = false)
+      new_job = {}
+      data = to_active_record(data) if !rec
+      rec = true if !rec
+      data.each do |key, value|
+        unless ignore.include?(key)
+          if value.is_a?(Hash)
+            to_active_record!(value, ignore, rec)
+          elsif value.is_a?(Array)
+            new_job[key] = []
+            value.each do |item|
+              to_active_record!(item, ignore, rec) if item.is_a?(Hash)
+              new_job[key] << item
+            end
+          else
+            new_job[key] = value if !value.nil?
+          end
+        else
+          new_job[key] = value
+        end
+      end
+      new_job
+    end
+
   end
 end
