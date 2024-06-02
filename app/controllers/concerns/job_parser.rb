@@ -92,7 +92,7 @@ module JobParser
       task.shift
       value = find_value_by_key(data, origin_key)
       unless @external.nil?
-        @external.public_send(task.first, value)
+        value = @external.public_send(task.first, value)
       end
       value
     end
@@ -206,24 +206,7 @@ module JobParser
       data.each { |key, value| self[key] = value }
     end
 
-    def to_active_record(data = self)
-      data.keys.each do |key|
-        value = data[key]
-        if value.is_a?(Array)
-          value.each { |item| to_active_record(item) if item.is_a?(Hash) }
-        elsif value.is_a?(Hash)
-          to_active_record(value)
-        else
-          data[key] = nil if value == '~'
-        end
 
-        if key.to_s.include?('-')
-          new_key = key.split('-').first
-          data[new_key] = data.delete(key)
-        end
-      end
-      data
-    end
 
     def to_active_record!(data = self, ignore = [], rec = false)
       new_job = {}
@@ -247,6 +230,25 @@ module JobParser
         end
       end
       new_job
+    end
+    private
+    def to_active_record(data = self)
+      data.keys.each do |key|
+        value = data[key]
+        if value.is_a?(Array)
+          value.each { |item| to_active_record(item) if item.is_a?(Hash) }
+        elsif value.is_a?(Hash)
+          to_active_record(value)
+        else
+          data[key] = nil if value == '~'
+        end
+
+        if key.to_s.include?('-')
+          new_key = key.split('-').first
+          data[new_key] = data.delete(key)
+        end
+      end
+      data
     end
 
   end

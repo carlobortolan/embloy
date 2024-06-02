@@ -36,6 +36,6 @@
   "deleted_at": "~",
   "job_value": "~",
   "allowed_cv_format": "~",
-  "application_options": "fields-<lambda|parse_application>",
+  "application_options_attributes": "fields-<lambda|parse_application>",
   "image_url": "~"
 }

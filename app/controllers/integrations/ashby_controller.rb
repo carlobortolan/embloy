@@ -59,7 +59,6 @@ module Integrations
         nil
       end
 
-      puts "JOB: #{job.inspect}"
       unless client.jobs.find_by(job_slug: job['job_slug']).nil?
         client.jobs.find_by(job_slug: job['job_slug']).update!(job)
         return client.jobs.find_by(job_slug: job['job_slug'])
