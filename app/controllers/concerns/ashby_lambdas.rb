@@ -8,11 +8,17 @@ module AshbyLambdas
       res = {}
       res["required"] = field["isRequired"]
       res["question_type"] = "text"
-      res["question"] = field["field"]["humanReadablePath"]
+      res["question"] = field["field"]["title"]
       res["ext_id"] = field["field"]["id"]
       new_data << res
     end
     puts "NEW DATA: #{new_data}"
     new_data
+  end
+
+
+  private
+  def self.type_map (type)
+    return "text" if %w[String Email].include?(type)
   end
 end

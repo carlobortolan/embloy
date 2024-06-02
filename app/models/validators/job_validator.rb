@@ -159,9 +159,6 @@ module Validators
           errors.add(:application_options, message)
         end
       end
-      if Job.find(id).any?
-        puts "JOB FOUND: #{Job.find(id)}"
-      end
     end
     # rubocop:enable Metrics/BlockLength
   end
