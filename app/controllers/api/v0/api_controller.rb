@@ -88,6 +88,14 @@ module Api
         end
       end
 
+      def verify_path_token_id
+        if id_blank_or_invalid?
+          blank_error('token')
+        else
+          set_token
+        end
+      end
+
       private
 
       def token_blank?
@@ -113,6 +121,12 @@ module Api
         rescue ActiveRecord::RecordNotFound
           not_found_error('user')
         end
+      end
+
+      def set_token
+        @token = Current.user.tokens.find(params[:id])
+      rescue ActiveRecord::RecordNotFound
+        not_found_error('token')
       end
 
       def set_user_subscription

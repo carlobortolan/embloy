@@ -2,6 +2,7 @@
 
 # rubocop:disable Metrics/BlockLength
 Rails.application.routes.draw do
+  Healthcheck.routes(self)
   devise_for :admins
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
@@ -12,13 +13,6 @@ Rails.application.routes.draw do
   get 'auth/google_oauth2/callback', to: 'oauth_callbacks#google', as: :auth_google_callback
   get 'auth/azure_activedirectory_v2/callback', to: 'oauth_callbacks#azure', as: :auth_azure_callback
   get 'auth/linkedin/callback', to: 'oauth_callbacks#linkedin', as: :auth_linkedin_callback
-
-  #= <<<<< *INTEGRATIONS* >>>>>>
-  namespace :integrations, defaults: { format: 'json' } do
-    get 'lever/auth', to: 'lever#authorize'
-    get 'lever/callback', to: 'lever#callback', as: :lever_callback
-    post 'ashby/register', to: 'ashby#register'
-  end
 
   #= <<<<< *API* >>>>>>
   namespace :api, defaults: { format: 'json' } do
@@ -35,6 +29,12 @@ Rails.application.routes.draw do
       post 'auth/token/refresh', to: 'authentications#create_refresh'
       post 'auth/token/access', to: 'authentications#create_access'
       post 'auth/token/client', to: 'quicklink#create_client'
+
+      # -----> TOKENS <-----
+      get 'tokens', to: 'tokens#index'
+      post 'tokens', to: 'tokens#create'
+      patch 'tokens/:id', to: 'tokens#update'
+      delete 'tokens/:id', to: 'tokens#destroy'
 
       # -----> USER <-----
       get 'user', to: 'user#show'

@@ -416,7 +416,7 @@ RSpec.describe 'UserController' do
         it 'returns [400 Bad Request] for too long email' do
           user_data = {
             user: {
-              email: "#{'a' * 140}@embloy.com",
+              email: 'a'*140 + '@embloy.com',
               first_name: 'Max',
               last_name: 'Mustermann',
               password: '123456789',
@@ -430,7 +430,7 @@ RSpec.describe 'UserController' do
           user_data = {
             user: {
               email: 'tooLongFirstName@embloy.com',
-              first_name: 'a' * 129,
+              first_name: 'a'*129,
               last_name: 'Mustermann',
               password: '123456789',
               password_confirmation: '123456789'
@@ -444,7 +444,7 @@ RSpec.describe 'UserController' do
             user: {
               email: 'TooLongLastName@embloy.com',
               first_name: 'Max',
-              last_name: 'a' * 129,
+              last_name: 'a'*129,
               password: '123456789',
               password_confirmation: '123456789'
             }
@@ -458,7 +458,7 @@ RSpec.describe 'UserController' do
               email: 'TooLongPassword@embloy.com',
               first_name: 'Max',
               last_name: 'Mustermann',
-              password: 'a' * 73,
+              password: 'a'*73,
               password_confirmation: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
             }
           }

@@ -24,7 +24,6 @@ module ApplicationBuilder
         end
         create_application_attachment!
       end
-      submit_to_ats
     end
     render status: 201, json: { message: 'Application submitted!' }
   rescue ActiveRecord::RecordInvalid => e
@@ -33,8 +32,6 @@ module ApplicationBuilder
     malformed_error('image_url')
   rescue ActiveRecord::RecordNotUnique
     unnecessary_error('application')
-  rescue StandardError => e
-    failed_dependency_error('ats_provider', e.message)
   end
   # rubocop:enable Metrics/AbcSize
 
@@ -104,20 +101,5 @@ module ApplicationBuilder
     )
     application_attachment.save!
     application_attachment.cv.attach(application_params[:application_attachment])
-  end
-
-  def submit_to_ats
-    case @job.job_slug
-    when /^lever__/
-      Integrations::LeverController.submit_form(@job.job_slug.sub('lever__', ''), @application)
-    when /^ashby__/
-      Integrations::AshbyController.submit_form(@job.job_slug.sub('ashby__', ''), @application)
-    when /^softgarden__/
-      Integrations::SoftgardenController.submit_form(@job.job_slug.sub('softgarden__', ''), @application)
-    when /^job__/
-      nil
-    else
-      raise 'Unknown job slug prefix'
-    end
   end
 end

@@ -46,20 +46,14 @@ class GeniusQueryService < AuthenticationTokenService
 
   # The Encoder class is responsible for encoding tokens.
   class Encoder
-    MAX_INTERVAL = 1.year.to_i # == 12 months == 1 year
-    MIN_INTERVAL = 1.minute.to_i # == 1 min
+    MAX_INTERVAL = 31_557_600 # == 12 months == 1 year
+    MIN_INTERVAL = 60 # == 1 min
 
     # Encodes a token for a given user ID and arguments.
     def self.call(user_id, args)
-      must_be_verified_and_args(user_id, args)
+      ApplicationController.must_be_owner!(args['job_id'], user_id) if args.key?('job_id')
       iat, sub, bin_exp = prepare_token_values(user_id, args)
       GeniusQueryService.encode(sub, bin_exp, jti(iat), iat, args).gsub('.', REPLACEMENT_CHARACTER)
-    end
-
-    def self.must_be_verified_and_args(user_id, args)
-      AuthenticationTokenService::Refresh.must_be_verified_id!(user_id)
-      ApplicationController.must_be_verified!(user_id)
-      ApplicationController.must_be_owner!(args['job_id'], user_id) if args.key?('job_id')
     end
 
     def self.prepare_token_values(user_id, args)

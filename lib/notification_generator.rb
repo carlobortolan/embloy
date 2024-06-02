@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # # require 'net/smtp'
 # require 'erb'
 # class NotificationGenerator

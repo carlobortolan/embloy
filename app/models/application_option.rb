@@ -22,6 +22,7 @@ class ApplicationOption < ApplicationRecord
   validate :options_count_validation, if: :options_required?
   validate :options_type_validation
   validate :options_presence_validation, if: :options_required?
+  validates :options, length: { minimum: 0, maximum: 100, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
 
   enum question_type: { yes_no: 'yes_no', text: 'text', link: 'link', single_choice: 'single_choice', multiple_choice: 'multiple_choice' }
 

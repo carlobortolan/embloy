@@ -25,9 +25,9 @@ module Api
 
           # ============ Token gets claimed ==============
           token = if refresh_token_params['validity'].present? # is a custom token validity interval requested
-                    AuthenticationTokenService::Refresh::Encoder.call(@user.id, refresh_token_params['validity'])
+                    AuthenticationTokenService::Refresh::Encoder.call(@user, refresh_token_params['validity'])
                   else
-                    AuthenticationTokenService::Refresh::Encoder.call(@user.id)
+                    AuthenticationTokenService::Refresh::Encoder.call(@user)
                   end
 
           render status: 200, json: { 'refresh_token' => token }
