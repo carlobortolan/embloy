@@ -12,7 +12,6 @@ module AshbyLambdas
       res["ext_id"] = field["field"]["id"]
       new_data << res
     end
-    puts "NEW DATA: #{new_data}"
     new_data
   end
 
