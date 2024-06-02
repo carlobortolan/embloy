@@ -24,7 +24,7 @@ module SubscriptionHelper
   end
 
   def self.check_valid_mode(subscription_type, mode)
-    raise CustomExceptions::InvalidInput::Quicklink::Mode::Malformed unless %w[job].include?(mode)
+    raise CustomExceptions::InvalidInput::Quicklink::Mode::Malformed unless %w[job lever ashby softgarden].include?(mode)
     raise CustomExceptions::Subscription::ExpiredOrMissing unless %w[basic premium enterprise_1 enterprise_2 enterprise_3].include?(subscription_type)
   end
 
