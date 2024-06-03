@@ -12,8 +12,14 @@ module Integrations
   # LeverController handles oauth-related actions
   class AshbyController < IntegrationsController
     ASHBY_POST_FORM_URL = 'https://api.ashbyhq.com'
-    def self.submit_form(_posting_id, application_details)
+    def self.submit_form(_posting_id, client, application_details)
       # TODO: https://developers.ashbyhq.com/reference/applicationformsubmit
+
+=begin
+      application_details << {"path":"_systemfield_name","value":client.name_first + " " + client.name_last}
+      application_details << {"path":"_systemfield_email","value":client.email}
+      application_details << {"path":"_systemfield_resume","value":"resume_1"}
+=end
       puts 'STARTING TO SEND TO ASHBY'
       url = URI('https://api.ashbyhq.com/applicationForm.submit')
 
@@ -71,8 +77,6 @@ module Integrations
       job
     end
 
-    def self.get_questions(posting_id, client, job)
-      # TODO: https://developers.ashbyhq.com/reference/applicationinfo
-    end
+
   end
 end
