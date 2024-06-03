@@ -9,7 +9,7 @@ module AshbyLambdas
       res["required"] = field["isRequired"]
       res["question_type"] = "text"
       res["question"] = field["field"]["title"]
-      res["ext_id"] = field["field"]["id"]
+      res["ext_id"] = field["field"]["path"]
       new_data << res
     end
     new_data
