@@ -1,0 +1,5 @@
+PreCommit:
+  Brakeman:
+    enabled: true
+  RuboCop:
+    enabled: true
