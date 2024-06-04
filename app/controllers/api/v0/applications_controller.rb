@@ -80,7 +80,7 @@ module Api
           render status: 200, json: {
             application:,
             application_attachment: { attachment: application_attachment, url: attachment_url },
-            application_answers: application.application_answers
+            application_answers: application.application_answers.as_json(include: { attachment: { methods: :url } })
           }
         end
       end
@@ -116,7 +116,7 @@ module Api
       end
 
       def application_params
-        params.except(:format).permit(:id, :application_text, :application_attachment, application_answers: %i[application_option_id answer])
+        params.except(:format).permit(:id, :application_text, :application_attachment, application_answers: %i[application_option_id answer file])
       end
 
       def application_modify_params

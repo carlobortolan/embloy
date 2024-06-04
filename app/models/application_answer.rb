@@ -9,9 +9,11 @@ class ApplicationAnswer < ApplicationRecord
   belongs_to :user
   belongs_to :job
 
+  has_one_attached :attachment, dependent: :destroy
+
   validates :application_option, presence: true
   validates :answer, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
-                     length: { minimum: 0, maximum: 1000, error: 'ERR_LENGTH', description: 'Answer must be no more than 1000 characters' }
+                     length: { minimum: 0, maximum: 1000, error: 'ERR_LENGTH', description: 'Answer must be no more than 1000 characters' }, if: -> { application_option.question_type != 'file' }
   validate :validate_answer
 
   VALIDATORS = {
@@ -23,7 +25,8 @@ class ApplicationAnswer < ApplicationRecord
     'long_text' => :validate_long_text_answer,
     'date' => :validate_date_answer,
     'location' => :validate_location_answer,
-    'number' => :validate_number_answer
+    'number' => :validate_number_answer,
+    'file' => :validate_file_answer
   }.freeze
 
   private
@@ -90,5 +93,27 @@ class ApplicationAnswer < ApplicationRecord
     return if answer_array.is_a?(Array) && (answer_array - application_option.options).empty?
 
     errors.add(:answer, 'All answers must be in the provided options for multiple_choice')
+  end
+
+  def validate_file_answer # rubocop:disable Metrics/AbcSize
+    puts 'validate_file_answer 1'
+    return unless attachment.attached?
+
+    puts 'not attachment.attached'
+
+    if attachment.blob.byte_size > 2.megabytes
+      attachment.purge
+      puts 'attachment.blob.byte_size > 2.megabytes'
+      errors.add(:attachment, 'is too large (max is 2 MB)')
+      return
+    end
+
+    puts 'check file type'
+    allowed_file_types = (application_option.options.presence & ApplicationOption::ALLOWED_FILE_TYPES) || ['pdf']
+    return if allowed_file_types.include?(attachment.blob.content_type.split('/').last)
+
+    puts 'file type not allowed'
+    attachment.purge
+    errors.add(:attachment, "File type is not allowed. Allowed types: #{allowed_file_types.join(', ')}")
   end
 end

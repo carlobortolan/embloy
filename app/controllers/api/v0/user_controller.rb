@@ -107,7 +107,7 @@ module Api
           {
             application:,
             job: Job.get_json_include_user_exclude_image(application.job),
-            application_answers: application.application_answers,
+            application_answers: application.application_answers.as_json(include: { attachment: { methods: :url } }),
             application_attachment: {
               attachment: application_attachment,
               url: attachment_url
