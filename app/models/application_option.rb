@@ -7,7 +7,7 @@
 class ApplicationOption < ApplicationRecord
   belongs_to :job
   acts_as_paranoid
-  VALID_QUESTION_TYPES = %w[yes_no text link single_choice multiple_choice].freeze
+  VALID_QUESTION_TYPES = %w[yes_no short_text long_text number link single_choice multiple_choice date location].freeze
 
   serialize :options, Array
   validates :question, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
@@ -28,7 +28,8 @@ class ApplicationOption < ApplicationRecord
 
   validates :ext_id, uniqueness: { scope: :job_id, message: 'Should be unique per job' }, on: %i[create update], if: -> { deleted_at.nil? }
 
-  enum question_type: { yes_no: 'yes_no', text: 'text', link: 'link', single_choice: 'single_choice', multiple_choice: 'multiple_choice' }
+  enum question_type: { yes_no: 'yes_no', short_text: 'short_text', long_text: 'long_text', number: 'number', date: 'date', location: 'location', link: 'link', single_choice: 'single_choice',
+                        multiple_choice: 'multiple_choice' }
 
   def options_required?
     %w[single_choice multiple_choice].include?(question_type)

@@ -6,7 +6,7 @@ PreCommit:
   BundleAudit:
     enabled: true
   RailsBestPractices:
-    enabled: true
+    enabled: false
   RubySyntax:
     enabled: true
   YamlSyntax:

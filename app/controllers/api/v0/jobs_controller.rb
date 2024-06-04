@@ -286,7 +286,7 @@ module Api
         permitted_params[:application_options_attributes].each do |option_params|
           if option_params[:question_type].nil? || (option_params[:question_type].present? && !ApplicationOption::VALID_QUESTION_TYPES.include?(option_params[:question_type]))
             raise ActionController::BadRequest,
-                  'Invalid question_type'
+                  "Invalid question_type: #{option_params[:question_type]}"
           end
         end
       end
