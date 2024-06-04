@@ -11,6 +11,11 @@ PreCommit:
     enabled: true
   YamlSyntax:
     enabled: true
-PrePush:
-  RSpec:
-    enabled: true
+#PrePush:
+#  RSpec:
+#    enabled: true
+#CommitMsg:
+#  TextWidth:
+#    enabled: true
+#  SpellCheck:
+#    enabled: true
