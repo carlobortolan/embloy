@@ -126,6 +126,18 @@ module ApiExceptionHandler
     rescue_from CustomExceptions::InvalidInput::Quicklink::Mode::Malformed,
                 with: :request_mode_malformed_error
 
+    rescue_from CustomExceptions::InvalidInput::Quicklink::ApiKey::Unauthorized,
+                with: :api_key_unauthorized_error
+
+    rescue_from CustomExceptions::InvalidInput::Quicklink::ApiKey::Missing,
+                with: :api_key_missing_error
+
+    rescue_from CustomExceptions::InvalidInput::Quicklink::ApiKey::Malformed,
+                with: :api_key_malformed_error
+
+    rescue_from CustomExceptions::InvalidInput::Quicklink::ApiKey::Inactive,
+                with: :api_key_inactive_error
+
     rescue_from CustomExceptions::Subscription::ExpiredOrMissing,
                 with: :subscription_expired_or_missing_error
 
@@ -248,6 +260,22 @@ module ApiExceptionHandler
     malformed_error('validity')
   end
 
+  def api_key_unauthorized_error
+    unauthorized_error('api_key')
+  end
+
+  def api_key_missing_error
+    blank_error('api_key')
+  end
+
+  def api_key_malformed_error
+    malformed_error('api_key')
+  end
+
+  def api_key_inactive_error
+    access_denied_error('api_key', 'API key is inactive')
+  end
+
   #--------------------------------------
 
   def token_expired_error
@@ -323,8 +351,8 @@ module ApiExceptionHandler
 
   #--------------------------------------
 
-  def access_denied_error(attribute)
-    render_error(attribute, 'ERR_RAC', 'Proceeding is inhibited by an access restriction', 403)
+  def access_denied_error(attribute, message = nil)
+    render_error(attribute, 'ERR_RAC', message || 'Proceeding is inhibited by an access restriction', 403)
   end
 
   #--------------------------------------

@@ -3,3 +3,14 @@ PreCommit:
     enabled: true
   RuboCop:
     enabled: true
+  BundleAudit:
+    enabled: true
+  RailsBestPractices:
+    enabled: true
+  RubySyntax:
+    enabled: true
+  YamlSyntax:
+    enabled: true
+PrePush:
+  RSpec:
+    enabled: true

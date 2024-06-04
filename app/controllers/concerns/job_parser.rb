@@ -1,24 +1,12 @@
 # frozen_string_literal: true
-
 require 'json'
 require 'yaml'
 require 'uri'
 require 'net/http'
 require 'base64'
 require 'dotenv'
-Dotenv.load('.env')
+Dotenv.load(".env")
 
-# The JobParser module is used to parse job data from an external source.
-# It is a concern that can be included in any class, and it provides a method
-# to parse job data based on a configuration file. The configuration file is a
-# YAML file that specifies how to map the external data to the internal data
-# model. The module also provides a way to fetch data from an external source
-# using a URL and a set of parameters. The module is designed to be extensible,
-# allowing for custom parsing logic to be added as needed.module JobParser
-
-# rubocop:disable Metrics/AbcSize
-# rubocop:disable Metrics/PerceivedComplexity
-# rubocop:disable Metrics/ModuleLength
 module JobParser
   extend ActiveSupport::Concern
   attr_accessor :external
@@ -29,33 +17,38 @@ module JobParser
     # data = label(data.dup)
     bin = {}
     config.each do |target, origin|
-      Array(target).each do |t|
-        bin[t] = origin_to_target(data, origin)
+      Array(target).each do |target|
+        bin[target] = origin_to_target(data, origin)
       end
     end
     JobParserResult.new(bin)
+
   end
 
-  def self.fetch(path, origin_key, input = nil)
+  private
+
+  def self.fetch (path, origin_key, input = nil)
     url = URI(path.first)
     http = Net::HTTP.new(url.host, url.port)
     http.use_ssl = true
-    request = if path[1] == 'POST'
-                Net::HTTP::Post.new(url)
-              else
-                Net::HTTP::Get.new(url)
-              end
+    if path[1] == 'POST'
+      request = Net::HTTP::Post.new(url)
+    else
+      request = Net::HTTP::Get.new(url)
+    end
 
     if path[2] == 'JSON'
-      request['accept'] = 'application/json'
-      request['content-type'] = 'application/json'
+      request["accept"] = 'application/json'
+      request["content-type"] = 'application/json'
     end
     request.body = "{\"#{path[-2]}\":\"#{find_value_by_key(input, origin_key)}\"}"
-    request['authorization'] = "Basic #{Base64.strict_encode64('94befa3e484fbfa12ae6929f81c9b289ec37e3a6072473c6dbdf2992eb6c5ccf:')}"
+    request['authorization'] = "Basic #{Base64.strict_encode64("94befa3e484fbfa12ae6929f81c9b289ec37e3a6072473c6dbdf2992eb6c5ccf" + ':')}"
     response = http.request(request)
     case response # TODO: Handle errors
     when Net::HTTPSuccess
       JSON.parse(response.body)
+    else
+      nil
     end
   end
 
@@ -98,7 +91,9 @@ module JobParser
     when 'lambda'
       task.shift
       value = find_value_by_key(data, origin_key)
-      value = @external.public_send(task.first, value) unless @external.nil?
+      unless @external.nil?
+        value = @external.public_send(task.first, value)
+      end
       value
     end
   end
@@ -127,14 +122,14 @@ module JobParser
     values
   end
 
-  def self.increment_indices(index, max_value)
-    n = index.length - 1
+  def self.increment_indices(i, max_value)
+    n = i.length - 1
     while n >= 0
-      if index[n] < max_value
-        index[n] += 1
+      if i[n] < max_value
+        i[n] += 1
         return true
       else
-        index[n] = 0
+        i[n] = 0
         n -= 1
       end
     end
@@ -142,11 +137,11 @@ module JobParser
   end
 
   def self.label(data, label = -1)
-    if data.instance_of?(Hash)
+    if data.class == Hash
       data.each do |key, value|
-        if value.instance_of?(Hash)
+        if value.class == Hash
           label(value)
-        elsif value.instance_of?(Array)
+        elsif value.class == Array
           new = []
           value.each do |item|
             label += 1
@@ -155,7 +150,7 @@ module JobParser
           data[key] = new
         end
       end
-    elsif data.instance_of?(Array)
+    elsif data.class == Array
       new = []
       data.each do |item|
         label += 1
@@ -164,18 +159,18 @@ module JobParser
       data = new
     end
 
-    data
+    return data
   end
 
   def self.label!(data, label)
-    if data.instance_of?(Hash)
+    if data.class == Hash
       new_data = {}
       data.each do |key, value|
         new_key = "#{key}-#{label}"
         new_data[new_key] = data.delete(key)
         new_data[new_key] = label!(value, label) if value.class != String
       end
-    elsif data.instance_of?(Array)
+    elsif data.class == Array
       new_data = []
       data.each do |item|
         bin = label!(item, label) if item.class != String
@@ -185,19 +180,18 @@ module JobParser
       new_data = data
     end
     new_data
+
   end
 
   def self.find_value_by_key(data, key)
-    return '~' if key == '~'
-
-    if data.instance_of?(Hash)
+    return "~" if key == '~'
+    if data.class == Hash
       return data[key] if data.key?(key)
-
       data.each_value do |value|
         result = find_value_by_key(value, key)
         return result if result
       end
-    elsif data.instance_of?(Array)
+    elsif data.class == Array
       data.each do |item|
         result = find_value_by_key(item, key)
         return result if result
@@ -206,47 +200,47 @@ module JobParser
     nil
   end
 
-  # JobParserResult class
   class JobParserResult < Hash
     def initialize(data = {})
       super()
       data.each { |key, value| self[key] = value }
     end
 
-    def to_active_record!(data = self, ignore = [], rec: false)
+
+
+    def to_active_record!(data = self, ignore = [], rec = false)
       new_job = {}
-      data = to_active_record(data) unless rec
-      rec ||= true
+      data = to_active_record(data) if !rec
+      rec = true if !rec
       data.each do |key, value|
-        if ignore.include?(key)
-          new_job[key] = value
-        elsif value.is_a?(Hash)
-          to_active_record!(value, ignore, rec)
-        elsif value.is_a?(Array)
-          new_job[key] = []
-          value.each do |item|
-            to_active_record!(item, ignore, rec) if item.is_a?(Hash)
-            new_job[key] << item
+        unless ignore.include?(key)
+          if value.is_a?(Hash)
+            to_active_record!(value, ignore, rec)
+          elsif value.is_a?(Array)
+            new_job[key] = []
+            value.each do |item|
+              to_active_record!(item, ignore, rec) if item.is_a?(Hash)
+              new_job[key] << item
+            end
+          else
+            new_job[key] = value if !value.nil?
           end
         else
-          new_job[key] = value unless value.nil?
+          new_job[key] = value
         end
       end
       new_job
     end
-
     private
-
     def to_active_record(data = self)
-      data.each_key do |key|
+      data.keys.each do |key|
         value = data[key]
-        case value
-        when Array
+        if value.is_a?(Array)
           value.each { |item| to_active_record(item) if item.is_a?(Hash) }
-        when Hash
+        elsif value.is_a?(Hash)
           to_active_record(value)
         else
-          data[key] = nil if key == '~'
+          data[key] = nil if value == '~'
         end
 
         if key.to_s.include?('-')
@@ -256,8 +250,6 @@ module JobParser
       end
       data
     end
+
   end
 end
-# rubocop:enable Metrics/AbcSize
-# rubocop:enable Metrics/PerceivedComplexity
-# rubocop:enable Metrics/ModuleLength

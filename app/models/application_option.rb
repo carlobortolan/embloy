@@ -23,7 +23,10 @@ class ApplicationOption < ApplicationRecord
   validate :options_type_validation
   validate :options_presence_validation, if: :options_required?
   validates :options, length: { minimum: 0, maximum: 100, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
-  validates :ext_id, uniqueness: { scope: :job_id, error: 'ERR_UNIQUE', description: 'Should be unique per job' }, on: %i[create update]
+  validates :ext_id, uniqueness: { scope: :job_id, error: 'ERR_UNIQUE', description: 'Should be unique per job' }, on: %i[create update], if: -> { deleted_at.nil? }
+  before_validation :set_default_ext_id, on: %i[create update], if: -> { ext_id.blank? && deleted_at.nil? }
+
+  validates :ext_id, uniqueness: { scope: :job_id, message: 'Should be unique per job' }, on: %i[create update], if: -> { deleted_at.nil? }
 
   enum question_type: { yes_no: 'yes_no', text: 'text', link: 'link', single_choice: 'single_choice', multiple_choice: 'multiple_choice' }
 
@@ -55,5 +58,9 @@ class ApplicationOption < ApplicationRecord
     return if options.is_a?(Array)
 
     job.errors.add(:options, 'Options must be an array')
+  end
+
+  def set_default_ext_id
+    self.ext_id = "embloy__#{SecureRandom.uuid}"
   end
 end

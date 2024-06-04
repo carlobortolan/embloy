@@ -7,7 +7,6 @@ class ApplicationController < ActionController::API
   include SpatialJobValue
   include Integrations
 
-
   # ============ WEB-APP BEFORE ACTIONS ==============
   before_action :set_notifications, unless: -> { Current.user.nil? }
   before_action :require_user_not_blacklisted!, unless: -> { Current.user.nil? }

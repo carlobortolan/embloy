@@ -65,7 +65,7 @@ module Api
       # It calls the Encoder class of the `QuicklinkService::Client` module to create the token.
       # It then returns the token in the response.
       def create_client
-        token = QuicklinkService::Client::Encoder.call(Current.user.id, check_subscription, parse_expiration_date)
+        token = QuicklinkService::Client::Encoder.call(check_subscription, parse_expiration_date)
         render status: 200, json: { 'client_token' => token }
       end
 
@@ -90,7 +90,6 @@ module Api
       def update_or_create_job(session)
         @client.jobs ||= []
         @job = @client.jobs.find_by(job_slug: session['job_slug'])
-
         case session['mode']
         when 'lever'
           @job = Integrations::LeverController.get_posting(session['job_slug'].sub('lever__', ''), @client, @job)

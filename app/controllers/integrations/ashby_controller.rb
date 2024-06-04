@@ -37,42 +37,72 @@ module Integrations
       puts response.read_body
     end
 
-    # rubocop:disable Metrics/AbcSize
-    def self.get_posting(_posting_id, client, job)
+    # rubocop:disable all
+    def self.get_posting(posting_id, client, job)
       # TODO: https://developers.ashbyhq.com/reference/jobpostinginfo
 
-      # TODO: REMOVE AND MAKE DEPENDANT ONA USERS ASHBY KEY
-      url = URI('https://api.ashbyhq.com/jobPosting.info')
+      # Find API Key for current client
+      current_keys = client.tokens.where(token_type: 'api_key', issuer: 'ashby').where('expires_at > ?', Time.now.utc)
+      raise CustomExceptions::InvalidInput::Quicklink::ApiKey::Missing and return if current_keys.empty?
 
+      api_key = current_keys.detect(&:active?)&.token
+      raise CustomExceptions::InvalidInput::Quicklink::ApiKey::Inactive and return if api_key.nil?
+
+      # Build request
+      url = URI('https://api.ashbyhq.com/jobPosting.info')
       http = Net::HTTP.new(url.host, url.port)
       http.use_ssl = true
-
       request = Net::HTTP::Post.new(url)
       request['accept'] = 'application/json'
       request['content-type'] = 'application/json'
-      request['authorization'] = 'Basic OTRiZWZhM2U0ODRmYmZhMTJhZTY5MjlmODFjOWIyODllYzM3ZTNhNjA3MjQ3M2M2ZGJkZjI5OTJlYjZjNWNjZjo='
-      request.body = '{"jobPostingId":"a6a6b95e-17ae-45f7-a5b0-c46a871b4c7e"}'
+      request['authorization'] = "Basic #{api_key}"
+      request.body = "{\"jobPostingId\":\"#{posting_id}\"}"
 
+      # Make request to Ashby API
       response = http.request(request)
-      case response # TODO: Handle errors
+      case response
       when Net::HTTPSuccess
         job = JobParser.parse(JSON.parse(File.read('app/controllers/integrations/ashby_config.json')), JSON.parse(response.body), AshbyLambdas)
         job['job_slug'] = "ashby__#{job['job_slug']}"
         job['user_id'] = client.id.to_i
         job = job.to_active_record!(job)
+      when Net::HTTPBadRequest
+        raise CustomExceptions::InvalidInput::Quicklink::Request::Malformed and return
+      when Net::HTTPUnauthorized
+        raise CustomExceptions::InvalidInput::Quicklink::ApiKey::Unauthorized and return
       end
 
       if client.jobs.find_by(job_slug: job['job_slug']).nil?
+        # Build new job
         job = Job.new(job)
         job.save!
         job.user = client
         client.jobs << job
       else
-        client.jobs.find_by(job_slug: job['job_slug']).update!(job)
+        # Update existing job
+        # client.jobs.find_by(job_slug: job['job_slug']).update!(job)
+
+        job_record = client.jobs.find_by(job_slug: job['job_slug'])
+        puts "Job = #{job}"
+
+        # Delete application options that are not in the current version of the job
+        ext_ids = job['application_options_attributes'].map { |option| option['ext_id'] }
+        job_record.application_options.where.not(ext_id: ext_ids).destroy_all
+
+        # Update or create application options depending on whether they already exist (aka ext_id is taken)
+        job['application_options_attributes'].each do |option|
+          puts "Starting with !!! = #{option['ext_id']}"
+          # uuid = option['ext_id'][/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/]
+          application_option = job_record.application_options.find_or_initialize_by(ext_id: option['ext_id'])
+          puts "Found Option ??? = #{application_option.ext_id}"
+          # option['ext_id'] = uuid
+          application_option.update!(option)
+        end
+
         return client.jobs.find_by(job_slug: job['job_slug'])
       end
       job
     end
-    # rubocop:enable Metrics/AbcSize
+    # rubocop:enable all
   end
 end

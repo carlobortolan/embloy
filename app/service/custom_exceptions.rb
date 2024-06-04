@@ -111,6 +111,20 @@ class CustomExceptions < StandardError
         class Malformed < StandardError
         end
       end
+
+      class ApiKey < StandardError
+        class Malformed < StandardError
+        end
+
+        class Missing < StandardError
+        end
+
+        class Unauthorized < StandardError
+        end
+
+        class Inactive < StandardError
+        end
+      end
     end
   end
 
