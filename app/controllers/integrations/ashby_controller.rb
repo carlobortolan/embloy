@@ -61,6 +61,7 @@ module Integrations
         job["job_slug"] = "ashby__#{job["job_slug"]}"
         job["user_id"] = client.id.to_i
         job = job.to_active_record!(job)
+        parse_json(JSON.parse(File.read('app/controllers/integrations/ashby_config_new.json')),JSON.parse(response.body))
       else
         nil
       end
@@ -75,6 +76,25 @@ module Integrations
         client.jobs << job
       end
       job
+    end
+
+    def self.parse_json(origin, destination)
+      begin
+
+        url = URI("http://localhost:8080/parse/json/json")
+        http = Net::HTTP.new(url.host, url.port)
+        http.use_ssl = false
+        request = Net::HTTP::Post.new(url)
+        request["accept"] = 'application/json'
+        request["content-type"] = 'application/json'
+        request.basic_auth 'ps', 'pw'
+        request.body = {"origin": origin, "destination": destination}.to_json
+
+        response = http.request(request)
+        puts "RESPONSE: #{response.read_body}"
+      rescue => e
+      end
+
     end
 
 
