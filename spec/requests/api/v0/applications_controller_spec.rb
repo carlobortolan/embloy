@@ -863,7 +863,7 @@ RSpec.describe 'ApplicationsController' do
               },
               '2' => {
                 application_option_id: @jobs[12].application_options[2].id,
-                answer: 'TestOption1|||TestOption2'
+                answer: 'TestOption1||| TestOption2'
               },
               '3' => {
                 application_option_id: @jobs[12].application_options[3].id,
@@ -969,7 +969,7 @@ RSpec.describe 'ApplicationsController' do
               },
               '7' => {
                 application_option_id: @jobs[12].application_options[7].id,
-                answer: "not-a-date"
+                answer: 'not-a-date'
               },
               '8' => {
                 application_option_id: @jobs[12].application_options[8].id,
@@ -983,6 +983,7 @@ RSpec.describe 'ApplicationsController' do
           post("/api/v0/jobs/#{@jobs[12].id}/applications", params: valid_attributes_with_required_answer, headers:)
           expect(response).to have_http_status(201)
         end
+
         it 'returns [201 Created] for successful application with optional application answer' do
           post("/api/v0/jobs/#{@jobs[13].id}/applications", params: valid_attributes_with_optional_answer, headers:)
           expect(response).to have_http_status(201)

@@ -12,14 +12,13 @@ class ApplicationAnswer < ApplicationRecord
   validates :application_option, presence: true
   validates :answer, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
                      length: { minimum: 0, maximum: 1000, error: 'ERR_LENGTH', description: 'Answer must be no more than 1000 characters' }
-  validate :answer_validation # TODO: DEPRECATED
   validate :validate_answer
 
   VALIDATORS = {
     'short_text' => :validate_text_or_link_answer,
     'link' => :validate_text_or_link_answer,
-    'single_choice' => :validate_choice_answer,
-    'multiple_choice' => :validate_choice_answer,
+    'single_choice' => :validate_single_choice_answer,
+    'multiple_choice' => :validate_multiple_choice_answer,
     'yes_no' => :validate_yes_no_answer,
     'long_text' => :validate_long_text_answer,
     'date' => :validate_date_answer,
@@ -67,12 +66,6 @@ class ApplicationAnswer < ApplicationRecord
     errors.add(:answer, 'Invalid yes/no answer')
   end
 
-  def validate_choice_answer
-    return unless answer.blank?
-
-    errors.add(:answer, 'Invalid or missing choice answer')
-  end
-
   def validate_date_answer
     begin
       return if Date.parse(answer)
@@ -83,23 +76,16 @@ class ApplicationAnswer < ApplicationRecord
     errors.add(:answer, 'Invalid date answer')
   end
 
-  # TODO: DEPRECATED
-  def answer_validation
-    return unless application_option.required || answer.present?
-
-    validate_single_choice_answer if application_option.question_type == 'single_choice'
-    validate_multiple_choice_answer if application_option.question_type == 'multiple_choice'
-  end
-
-  # TODO: DEPRECATED
   def validate_single_choice_answer
+    errors.add(:answer, 'Invalid or missing choice answer') and return if answer.blank?
     return if application_option.options.include?(answer)
 
     errors.add(:answer, 'Answer must be one of the provided options for single_choice')
   end
 
-  # TODO: DEPRECATED
   def validate_multiple_choice_answer
+    errors.add(:answer, 'Invalid or missing choice answer') and return if answer.blank?
+
     answer_array = answer.is_a?(String) ? JSON.parse(answer) : answer
     return if answer_array.is_a?(Array) && (answer_array - application_option.options).empty?
 
