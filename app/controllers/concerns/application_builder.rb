@@ -58,10 +58,9 @@ module ApplicationBuilder
         raise ActiveRecord::RecordInvalid, @application
       end
 
-      puts "Answer_params = #{answer_params}"
       if !answer_params&.last&.[](:answer).blank? || (option.question_type == 'file' && !answer_params&.last&.[](:file).blank?)
 
-        if option.question_type != 'multiple_choice' && !answer_params.last[:answer].is_a?(String)
+        if option.question_type != 'multiple_choice' && option.question_type != 'file' && !answer_params.last[:answer].is_a?(String)
           @application.errors.add(:base, 'Invalid answer type')
           raise ActiveRecord::RecordInvalid, @application
         end
@@ -84,8 +83,6 @@ module ApplicationBuilder
   end
 
   def process_answer(option, answer_params)
-    puts "START PROCESS ANSWER #{answer_params}"
-
     answer_array = if option.question_type == 'multiple_choice' && answer_params.last[:answer]
                      answer_params.last[:answer].split('||| ').map(&:strip)
                    else
@@ -94,7 +91,6 @@ module ApplicationBuilder
 
     application_answer = ApplicationAnswer.create!(job_id: @job.id.to_i, user_id: Current.user.id.to_i, application_option: option, answer: answer_array)
     application_answer.attachment.attach(answer_params.last[:file]) if answer_params.last[:file]
-    puts 'END PROCESS ANSWER'
   end
   # rubocop:enable Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
 

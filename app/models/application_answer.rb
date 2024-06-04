@@ -96,23 +96,17 @@ class ApplicationAnswer < ApplicationRecord
   end
 
   def validate_file_answer # rubocop:disable Metrics/AbcSize
-    puts 'validate_file_answer 1'
     return unless attachment.attached?
-
-    puts 'not attachment.attached'
 
     if attachment.blob.byte_size > 2.megabytes
       attachment.purge
-      puts 'attachment.blob.byte_size > 2.megabytes'
       errors.add(:attachment, 'is too large (max is 2 MB)')
       return
     end
 
-    puts 'check file type'
     allowed_file_types = (application_option.options.presence & ApplicationOption::ALLOWED_FILE_TYPES) || ['pdf']
     return if allowed_file_types.include?(attachment.blob.content_type.split('/').last)
 
-    puts 'file type not allowed'
     attachment.purge
     errors.add(:attachment, "File type is not allowed. Allowed types: #{allowed_file_types.join(', ')}")
   end

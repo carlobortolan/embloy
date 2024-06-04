@@ -27,7 +27,7 @@ class ApplicationOption < ApplicationRecord
   validate :options_presence_validation, if: :options_required?
   validates :options, length: { minimum: 0, maximum: 100, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
   validates :ext_id, uniqueness: { scope: :job_id, error: 'ERR_UNIQUE', description: 'Should be unique per job' }, on: %i[create update], if: -> { deleted_at.nil? }
-  validate :file_type_validation, if: :file_option?
+  validate :file_type_validation, if: -> { question_type == 'file' }
 
   validates :ext_id, uniqueness: { scope: :job_id, message: 'Should be unique per job' }, on: %i[create update], if: -> { deleted_at.nil? }
 
@@ -62,10 +62,6 @@ class ApplicationOption < ApplicationRecord
     return if options.is_a?(Array)
 
     job.errors.add(:options, 'Options must be an array')
-  end
-
-  def file_option?
-    question_type == 'file'
   end
 
   def set_default_file_options
