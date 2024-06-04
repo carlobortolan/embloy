@@ -1021,7 +1021,7 @@ RSpec.describe 'ApplicationsController' do
                 file: Rack::Test::UploadedFile.new(Rails.root.join('spec/assets', 'test_image.png'), 'image/png')
               },
               '10' => {
-                application_option_id: @jobs[14].application_options[10].id         
+                application_option_id: @jobs[14].application_options[10].id
               }
             }
           }
@@ -1031,7 +1031,7 @@ RSpec.describe 'ApplicationsController' do
           post("/api/v0/jobs/#{@jobs[12].id}/applications", params: valid_attributes_with_required_answer, headers:)
           expect(response).to have_http_status(201)
         end
-        
+
         it 'returns [201 Created] for successful application with optional application answer' do
           post("/api/v0/jobs/#{@jobs[13].id}/applications", params: valid_attributes_with_optional_answer, headers:)
           puts "Response code: #{response.status}"

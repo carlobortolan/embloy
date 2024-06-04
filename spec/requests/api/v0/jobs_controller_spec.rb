@@ -725,12 +725,12 @@ RSpec.describe 'JobsController' do
                 question: 'What is your highest level of education?',
                 question_type: 'location',
                 required: true
-              },              
+              },
               {
                 question: 'What is your highest level of education?',
                 question_type: 'file',
                 required: true,
-                options: ['pdf', "docx", "txt"]
+                options: %w[pdf docx txt]
               }
             ]
           )
@@ -1021,12 +1021,12 @@ RSpec.describe 'JobsController' do
                 question: 'What is your highest level of education?',
                 question_type: 'location',
                 required: true
-              },              
+              },
               {
                 question: 'What is your highest level of education?',
                 question_type: 'file',
                 required: true,
-                options: ['pdf', "docx", "txt"]
+                options: %w[pdf docx txt]
               }
             ]
           )
@@ -1106,7 +1106,7 @@ RSpec.describe 'JobsController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] if application options options filetype is invalid' do
-          form_data_with_options[:application_options_attributes][8][:option] = ['abc']
+          form_data_with_options[:application_options_attributes][8][:options] = ['abc']
           patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data_with_options, headers:)
           expect(response).to have_http_status(400)
         end
