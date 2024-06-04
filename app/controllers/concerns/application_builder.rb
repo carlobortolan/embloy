@@ -48,7 +48,7 @@ module ApplicationBuilder
     create_application_answers! if @job.application_options.any?
   end
 
-  # rubocop:disable Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/PerceivedComplexity
+  # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity
   def create_application_answers!
     @job.application_options.each do |option|
       answer_params = find_answer_params(option.id)
@@ -93,7 +93,7 @@ module ApplicationBuilder
     end
   end
 
-  # rubocop:enable Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/PerceivedComplexity
+  # rubocop:enable Metrics/AbcSize, Metrics/PerceivedComplexity
   def create_application_attachment!
     application_attachment = ApplicationAttachment.create!(
       user_id: Current.user.id,

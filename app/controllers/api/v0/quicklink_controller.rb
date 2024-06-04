@@ -100,8 +100,6 @@ module Api
           @job = Integrations::SoftgardenController.get_posting(session['job_slug'].sub('softgarden__', ''), @client, @job)
         end
 
-
-
         return handle_existing_job if @job
 
         create_new_job(session)

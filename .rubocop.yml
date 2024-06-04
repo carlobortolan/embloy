@@ -19,6 +19,10 @@ Layout/LineLength:
   Max: 200
 Metrics/MethodLength:
   Max: 40
+Metrics/AbcSize:
+  Max: 20
+Metrics/CyclomaticComplexity:
+  Max: 10
 Metrics/ClassLength:
   Enabled: false
 Lint/SuppressedException:

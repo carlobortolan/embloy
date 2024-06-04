@@ -39,9 +39,9 @@ module Validators
       has_rich_text :description
       has_one_attached :image_url
 
-      validates :job_slug, uniqueness: { scope: :user_id, error: 'ERR_BLANK', description: 'Should be unique per user' }, on: %i[create update]
+      validates :job_slug, uniqueness: { scope: :user_id, error: 'ERR_UNIQUE', description: 'Should be unique per user' }, on: %i[create update]
       validates :title, length: { minimum: 0, maximum: 100, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }, allow_blank: true
-      validates :description, length: { minimum: 10, maximum: 10000, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }, allow_blank: true
+      validates :description, length: { minimum: 10, maximum: 10_000, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }, allow_blank: true
       validates :longitude, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
                             numericality: { error: 'ERR_INVALID', description: 'Attribute is malformed or unknown' }
       validates :latitude, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
