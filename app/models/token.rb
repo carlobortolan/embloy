@@ -3,7 +3,7 @@
 # The Token class represents an token (e.g., API-Key, access_token, client_token, refresh_token or third party secret) of a user.
 class Token < ApplicationRecord
   belongs_to :user
-  attr_encrypted :token, key: 'This is a key that is 256 bits!!'
+  attr_encrypted :token, key: ENV.fetch('TOKEN_ENCRYPTION_KEY', nil)
 
   validates :name, :token, :issued_at, :expires_at, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" }
   validates :token_type, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
