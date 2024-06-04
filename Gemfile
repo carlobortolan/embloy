@@ -127,7 +127,7 @@ gem 'activesupport', '>= 7.0.7.1'
 gem 'nokogiri', '>= 1.16.2'
 
 # Payments and Subscriptions
-gem "stripe", "~> 10.4"
+gem "stripe", "~> 11"
 gem "pay", "~> 7.1"
 
 # Enable Soft Delete
