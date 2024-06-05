@@ -100,14 +100,14 @@ module Api
       private
 
       def build_applications_json(applications)
-        applications.map do |application|
+        applications.includes(:application_answers, application_answers: :attachment_attachment).map do |application|
           application_attachment = ApplicationAttachment.find_by(job_id: application.job_id, user_id: Current.user.id)
           attachment_url = application_attachment ? rails_blob_url(application_attachment.cv) : nil
 
           {
             application:,
             job: Job.get_json_include_user_exclude_image(application.job),
-            application_answers: application.application_answers,
+            application_answers: application.application_answers.as_json(include: { attachment: { methods: :url } }),
             application_attachment: {
               attachment: application_attachment,
               url: attachment_url

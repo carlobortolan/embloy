@@ -703,18 +703,34 @@ RSpec.describe 'JobsController' do
               },
               {
                 question: 'What is your highest level of education?',
-                question_type: 'text',
+                question_type: 'short_text',
                 required: false
               },
               {
                 question: 'What is your highest level of education?',
-                question_type: 'text',
+                question_type: 'long_text',
                 required: true
               },
               {
                 question: 'What is your highest level of education?',
-                question_type: 'link',
+                question_type: 'number',
                 required: true
+              },
+              {
+                question: 'What is your highest level of education?',
+                question_type: 'date',
+                required: true
+              },
+              {
+                question: 'What is your highest level of education?',
+                question_type: 'location',
+                required: true
+              },
+              {
+                question: 'What is your highest level of education?',
+                question_type: 'file',
+                required: true,
+                options: %w[pdf docx txt]
               }
             ]
           )
@@ -730,6 +746,11 @@ RSpec.describe 'JobsController' do
         end
         it 'returns [201 Created] and job JSONs if application options are valid' do
           form_data_with_options[:application_options_attributes][2][:options] = Array.new(50, 'a' * 100)
+          post('/api/v0/jobs', params: form_data_with_options, headers:)
+          expect(response).to have_http_status(201)
+        end
+        it 'returns [200 OK] if application options options field is missing for file' do
+          form_data_with_options[:application_options_attributes][8].delete(:options)
           post('/api/v0/jobs', params: form_data_with_options, headers:)
           expect(response).to have_http_status(201)
         end
@@ -978,23 +999,44 @@ RSpec.describe 'JobsController' do
               },
               {
                 question: 'What is your highest level of education?',
-                question_type: 'text',
+                question_type: 'short_text',
                 required: false
               },
               {
                 question: 'What is your highest level of education?',
-                question_type: 'text',
+                question_type: 'long_text',
                 required: true
               },
               {
                 question: 'What is your highest level of education?',
-                question_type: 'link',
+                question_type: 'number',
                 required: true
+              },
+              {
+                question: 'What is your highest level of education?',
+                question_type: 'date',
+                required: true
+              },
+              {
+                question: 'What is your highest level of education?',
+                question_type: 'location',
+                required: true
+              },
+              {
+                question: 'What is your highest level of education?',
+                question_type: 'file',
+                required: true,
+                options: %w[pdf docx txt]
               }
             ]
           )
         end
         it 'returns [200 OK] and job JSONs if application options are valid' do
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data_with_options, headers:)
+          expect(response).to have_http_status(200)
+        end
+        it 'returns [200 OK] if application options options field is missing for file' do
+          form_data_with_options[:application_options_attributes][8].delete(:options)
           patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data_with_options, headers:)
           expect(response).to have_http_status(200)
         end
@@ -1060,6 +1102,11 @@ RSpec.describe 'JobsController' do
         end
         it 'returns [400 Bad Request] if application options options field is missing for multiple_choice' do
           form_data_with_options[:application_options_attributes][2].delete(:options)
+          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data_with_options, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] if application options options filetype is invalid' do
+          form_data_with_options[:application_options_attributes][8][:options] = ['abc']
           patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data_with_options, headers:)
           expect(response).to have_http_status(400)
         end

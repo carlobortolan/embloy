@@ -25,7 +25,7 @@ ActiveRecord::Schema[7.0].define(version: 20_240_526_133_828) do
   create_enum 'application_status', ['-1', '0', '1']
   create_enum 'job_status', %w[listed unlisted archived]
   create_enum 'notify_type', %w[0 1]
-  create_enum 'question_type', %w[yes_no text link single_choice multiple_choice]
+  create_enum 'question_type', %w[yes_no short_text long_text number link single_choice multiple_choice location file date]
   create_enum 'rating_type', %w[1 2 3 4 5]
   create_enum 'user_role', %w[admin editor developer moderator verified spectator]
   create_enum 'user_type', %w[company private]

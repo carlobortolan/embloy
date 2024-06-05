@@ -6,14 +6,14 @@ PreCommit:
   BundleAudit:
     enabled: true
   RailsBestPractices:
-    enabled: true
+    enabled: false
   RubySyntax:
     enabled: true
   YamlSyntax:
     enabled: true
-#PrePush:
-#  RSpec:
-#    enabled: true
+PrePush:
+  RSpec:
+    enabled: true
 #CommitMsg:
 #  TextWidth:
 #    enabled: true

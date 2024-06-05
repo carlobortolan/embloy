@@ -226,7 +226,7 @@ RSpec.describe 'ApplicationsController' do
       )
       job.application_options.create!(
         question: 'TEST Text',
-        question_type: 'text',
+        question_type: 'short_text',
         required: required[i]
       )
       job.application_options.create!(
@@ -249,6 +249,43 @@ RSpec.describe 'ApplicationsController' do
       job.application_options.create!(
         question: 'TEST Yes/No',
         question_type: 'yes_no',
+        required: required[i]
+      )
+      job.application_options.create!(
+        question: 'TEST Text',
+        question_type: 'long_text',
+        required: required[i]
+      )
+      job.application_options.create!(
+        question: 'TEST Text',
+        question_type: 'number',
+        required: required[i]
+      )
+      job.application_options.create!(
+        question: 'TEST Text',
+        question_type: 'date',
+        required: required[i]
+      )
+      job.application_options.create!(
+        question: 'TEST Text',
+        question_type: 'location',
+        required: required[i]
+      )
+      job.application_options.create!(
+        question: 'TEST Text',
+        question_type: 'file',
+        required: required[i],
+        options: %w[pdf docx txt]
+      )
+      job.application_options.create!(
+        question: 'TEST Text',
+        question_type: 'file',
+        required: required[i],
+        options: []
+      )
+      job.application_options.create!(
+        question: 'TEST Text',
+        question_type: 'file',
         required: required[i]
       )
       @jobs << job
@@ -835,7 +872,7 @@ RSpec.describe 'ApplicationsController' do
             application_answers: {
               '0' => {
                 application_option_id: @jobs[12].application_options[0].id,
-                answer: 'Text'
+                answer: 'a' * 200
               },
               '1' => {
                 application_option_id: @jobs[12].application_options[1].id,
@@ -852,6 +889,34 @@ RSpec.describe 'ApplicationsController' do
               '4' => {
                 application_option_id: @jobs[12].application_options[4].id,
                 answer: 'Yes'
+              },
+              '5' => {
+                application_option_id: @jobs[12].application_options[5].id,
+                answer: 'a' * 1000
+              },
+              '6' => {
+                application_option_id: @jobs[12].application_options[6].id,
+                answer: '1'
+              },
+              '7' => {
+                application_option_id: @jobs[12].application_options[7].id,
+                answer: Time.now
+              },
+              '8' => {
+                application_option_id: @jobs[12].application_options[8].id,
+                answer: 'This is an address'
+              },
+              '9' => {
+                application_option_id: @jobs[12].application_options[9].id,
+                file: Rack::Test::UploadedFile.new(Rails.root.join('spec/assets', 'test_file.pdf'), 'application/pdf')
+              },
+              '10' => {
+                application_option_id: @jobs[12].application_options[10].id,
+                file: Rack::Test::UploadedFile.new(Rails.root.join('spec/assets', 'test_file.pdf'), 'application/pdf')
+              },
+              '11' => {
+                application_option_id: @jobs[12].application_options[11].id,
+                file: Rack::Test::UploadedFile.new(Rails.root.join('spec/assets', 'test_file.pdf'), 'application/pdf')
               }
             }
           }
@@ -862,7 +927,7 @@ RSpec.describe 'ApplicationsController' do
             application_answers: {
               '0' => {
                 application_option_id: @jobs[13].application_options[0].id,
-                answer: 'Text'
+                answer: 'a' * 200
               },
               '1' => {
                 application_option_id: @jobs[13].application_options[1].id,
@@ -879,6 +944,34 @@ RSpec.describe 'ApplicationsController' do
               '4' => {
                 application_option_id: @jobs[13].application_options[4].id,
                 answer: 'Yes'
+              },
+              '5' => {
+                application_option_id: @jobs[13].application_options[5].id,
+                answer: 'a' * 1000
+              },
+              '6' => {
+                application_option_id: @jobs[13].application_options[6].id,
+                answer: '1'
+              },
+              '7' => {
+                application_option_id: @jobs[13].application_options[7].id,
+                answer: Time.now
+              },
+              '8' => {
+                application_option_id: @jobs[13].application_options[8].id,
+                answer: 'a' * 1000
+              },
+              '9' => {
+                application_option_id: @jobs[13].application_options[9].id,
+                file: Rack::Test::UploadedFile.new(Rails.root.join('spec/assets', 'test_file.pdf'), 'application/pdf')
+              },
+              '10' => {
+                application_option_id: @jobs[13].application_options[10].id,
+                file: Rack::Test::UploadedFile.new(Rails.root.join('spec/assets', 'test_file.pdf'), 'application/pdf')
+              },
+              '11' => {
+                application_option_id: @jobs[13].application_options[11].id,
+                file: Rack::Test::UploadedFile.new(Rails.root.join('spec/assets', 'test_file.pdf'), 'application/pdf')
               }
             }
           }
@@ -889,7 +982,7 @@ RSpec.describe 'ApplicationsController' do
             application_answers: {
               '0' => {
                 application_option_id: @jobs[14].application_options[0].id,
-                answer: 'a' * 501
+                answer: 'a' * 201
               },
               '1' => {
                 application_option_id: @jobs[14].application_options[1].id,
@@ -906,6 +999,29 @@ RSpec.describe 'ApplicationsController' do
               '4' => {
                 application_option_id: @jobs[14].application_options[4].id,
                 answer: 'Hello World'
+              },
+              '5' => {
+                application_option_id: @jobs[14].application_options[5].id,
+                answer: 'a' * 1001
+              },
+              '6' => {
+                application_option_id: @jobs[14].application_options[6].id,
+                answer: '1a'
+              },
+              '7' => {
+                application_option_id: @jobs[14].application_options[7].id,
+                answer: 'not-a-date'
+              },
+              '8' => {
+                application_option_id: @jobs[14].application_options[8].id,
+                answer: 'a' * 1001
+              },
+              '9' => {
+                application_option_id: @jobs[14].application_options[9].id,
+                file: Rack::Test::UploadedFile.new(Rails.root.join('spec/assets', 'test_image.png'), 'image/png')
+              },
+              '10' => {
+                application_option_id: @jobs[14].application_options[10].id
               }
             }
           }
@@ -915,12 +1031,15 @@ RSpec.describe 'ApplicationsController' do
           post("/api/v0/jobs/#{@jobs[12].id}/applications", params: valid_attributes_with_required_answer, headers:)
           expect(response).to have_http_status(201)
         end
+
         it 'returns [201 Created] for successful application with optional application answer' do
           post("/api/v0/jobs/#{@jobs[13].id}/applications", params: valid_attributes_with_optional_answer, headers:)
+          puts "Response code: #{response.status}"
+          puts "Response body: #{response.body}"
           expect(response).to have_http_status(201)
         end
 
-        it 'returns [400 Bad Request] for missing required application answer (text)' do
+        it 'returns [400 Bad Request] for missing required application answer (short_text)' do
           valid_attributes = valid_attributes_with_required_answer.dup
           valid_attributes[:application_answers].delete('0')
           post("/api/v0/jobs/#{@jobs[12].id}/applications", params: valid_attributes, headers:)
@@ -950,7 +1069,49 @@ RSpec.describe 'ApplicationsController' do
           post("/api/v0/jobs/#{@jobs[12].id}/applications", params: valid_attributes, headers:)
           expect(response).to have_http_status(400)
         end
-        it 'returns [400 Bad Request] for too long text answer' do
+        it 'returns [400 Bad Request] for missing required application answer (long_text)' do
+          valid_attributes = valid_attributes_with_required_answer.dup
+          valid_attributes[:application_answers].delete('5')
+          post("/api/v0/jobs/#{@jobs[12].id}/applications", params: valid_attributes, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for missing required application answer (number)' do
+          valid_attributes = valid_attributes_with_required_answer.dup
+          valid_attributes[:application_answers].delete('6')
+          post("/api/v0/jobs/#{@jobs[12].id}/applications", params: valid_attributes, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for missing required application answer (date)' do
+          valid_attributes = valid_attributes_with_required_answer.dup
+          valid_attributes[:application_answers].delete('7')
+          post("/api/v0/jobs/#{@jobs[12].id}/applications", params: valid_attributes, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for missing required application answer (location)' do
+          valid_attributes = valid_attributes_with_required_answer.dup
+          valid_attributes[:application_answers].delete('8')
+          post("/api/v0/jobs/#{@jobs[12].id}/applications", params: valid_attributes, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for missing required application answer (file 1)' do
+          valid_attributes = valid_attributes_with_required_answer.dup
+          valid_attributes[:application_answers].delete('9')
+          post("/api/v0/jobs/#{@jobs[12].id}/applications", params: valid_attributes, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for missing required application answer (file 2)' do
+          valid_attributes = valid_attributes_with_required_answer.dup
+          valid_attributes[:application_answers].delete('10')
+          post("/api/v0/jobs/#{@jobs[12].id}/applications", params: valid_attributes, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for missing required application answer (file 3)' do
+          valid_attributes = valid_attributes_with_required_answer.dup
+          valid_attributes[:application_answers].delete('11')
+          post("/api/v0/jobs/#{@jobs[12].id}/applications", params: valid_attributes, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for too long short-text answer' do
           invalid_attributes = invalid_attributes_with_answer.dup
           invalid_attributes[:application_answers] = { '0' => invalid_attributes[:application_answers]['0'] }
           post("/api/v0/jobs/#{@jobs[13].id}/applications", params: invalid_attributes, headers:)
@@ -974,27 +1135,39 @@ RSpec.describe 'ApplicationsController' do
           post("/api/v0/jobs/#{@jobs[13].id}/applications", params: invalid_attributes, headers:)
           expect(response).to have_http_status(400)
         end
-        it 'returns [400 Bad Request] for too long text answer' do
+        it 'returns [400 Bad Request] for too long long-text answer' do
           invalid_attributes = invalid_attributes_with_answer.dup
-          invalid_attributes[:application_answers] = [invalid_attributes[:application_answers][0]]
+          invalid_attributes[:application_answers] = [invalid_attributes[:application_answers]['5']]
           post("/api/v0/jobs/#{@jobs[13].id}/applications", params: invalid_attributes, headers:)
           expect(response).to have_http_status(400)
         end
-        it 'returns [400 Bad Request] for invalid single choice answer' do
+        it 'returns [400 Bad Request] for invalid number answer' do
           invalid_attributes = invalid_attributes_with_answer.dup
-          invalid_attributes[:application_answers] = [invalid_attributes[:application_answers][1]]
+          invalid_attributes[:application_answers] = [invalid_attributes[:application_answers]['6']]
           post("/api/v0/jobs/#{@jobs[13].id}/applications", params: invalid_attributes, headers:)
           expect(response).to have_http_status(400)
         end
-        it 'returns [400 Bad Request] for invalid multiple choice answer' do
+        it 'returns [400 Bad Request] for invalid date answer' do
           invalid_attributes = invalid_attributes_with_answer.dup
-          invalid_attributes[:application_answers] = [invalid_attributes[:application_answers][2]]
+          invalid_attributes[:application_answers] = [invalid_attributes[:application_answers]['7']]
           post("/api/v0/jobs/#{@jobs[13].id}/applications", params: invalid_attributes, headers:)
           expect(response).to have_http_status(400)
         end
-        it 'returns [400 Bad Request] for invalid link answer' do
+        it 'returns [400 Bad Request] for invalid location answer' do
           invalid_attributes = invalid_attributes_with_answer.dup
-          invalid_attributes[:application_answers] = [invalid_attributes[:application_answers][3]]
+          invalid_attributes[:application_answers] = [invalid_attributes[:application_answers]['8']]
+          post("/api/v0/jobs/#{@jobs[13].id}/applications", params: invalid_attributes, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for invalid filetype' do
+          invalid_attributes = invalid_attributes_with_answer.dup
+          invalid_attributes[:application_answers] = [invalid_attributes[:application_answers]['9']]
+          post("/api/v0/jobs/#{@jobs[13].id}/applications", params: invalid_attributes, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for missing file' do
+          invalid_attributes = invalid_attributes_with_answer.dup
+          invalid_attributes[:application_answers] = [invalid_attributes[:application_answers]['10']]
           post("/api/v0/jobs/#{@jobs[13].id}/applications", params: invalid_attributes, headers:)
           expect(response).to have_http_status(400)
         end
