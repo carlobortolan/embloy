@@ -22,6 +22,7 @@ module ApplicationBuilder
           @application.errors.add(:application_attachment, 'Invalid CV format')
           render json: { errors: @application.errors }, status: :unprocessable_entity and return
         end
+
         create_application_attachment!
       end
     end
@@ -46,6 +47,10 @@ module ApplicationBuilder
     @application.save!
 
     create_application_answers! if @job.application_options.any?
+    puts 'Starting Integration submittion'
+    puts "ApplicationAnswers: #{@application.application_answers}"
+    Integrations::IntegrationsController.submit_form(@job.job_slug, @application, @client)
+    puts 'Integration submittion completed'
   end
 
   # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity

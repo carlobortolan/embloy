@@ -1034,8 +1034,6 @@ RSpec.describe 'ApplicationsController' do
 
         it 'returns [201 Created] for successful application with optional application answer' do
           post("/api/v0/jobs/#{@jobs[13].id}/applications", params: valid_attributes_with_optional_answer, headers:)
-          puts "Response code: #{response.status}"
-          puts "Response body: #{response.body}"
           expect(response).to have_http_status(201)
         end
 

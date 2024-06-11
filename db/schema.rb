@@ -98,7 +98,7 @@ ActiveRecord::Schema[7.0].define(version: 20_240_526_133_828) do
     t.datetime 'updated_at', null: false
     t.datetime 'deleted_at'
     t.index ['application_option_id'], name: 'application_answers_on_application_option_id_index'
-    t.index ['deleted_at'], name: 'index_application_anwers_on_deleted_at'
+    t.index ['deleted_at'], name: 'index_application_answers_on_deleted_at'
     t.index ['job_id'], name: 'application_answers_job_id_index'
     t.index ['user_id'], name: 'application_answers_user_id_index'
   end

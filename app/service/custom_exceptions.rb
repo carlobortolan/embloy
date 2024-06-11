@@ -125,6 +125,17 @@ class CustomExceptions < StandardError
         class Inactive < StandardError
         end
       end
+
+      class Application < StandardError
+        class Malformed < StandardError
+        end
+
+        class Unauthorized < StandardError
+        end
+
+        class Duplicate < StandardError
+        end
+      end
     end
   end
 

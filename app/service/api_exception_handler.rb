@@ -138,6 +138,15 @@ module ApiExceptionHandler
     rescue_from CustomExceptions::InvalidInput::Quicklink::ApiKey::Inactive,
                 with: :api_key_inactive_error
 
+    rescue_from CustomExceptions::InvalidInput::Quicklink::Application::Malformed,
+                with: :application_malformed_error
+
+    rescue_from CustomExceptions::InvalidInput::Quicklink::Application::Unauthorized,
+                with: :application_unauthorized_error
+
+    rescue_from CustomExceptions::InvalidInput::Quicklink::Application::Duplicate,
+                with: :application_duplicate_error
+
     rescue_from CustomExceptions::Subscription::ExpiredOrMissing,
                 with: :subscription_expired_or_missing_error
 
@@ -274,6 +283,18 @@ module ApiExceptionHandler
 
   def api_key_inactive_error
     access_denied_error('api_key', 'API key is inactive')
+  end
+
+  def application_malformed_error
+    malformed_error('application')
+  end
+
+  def application_unauthorized_error
+    unauthorized_error('application')
+  end
+
+  def application_duplicate_error
+    unnecessary_error('application')
   end
 
   #--------------------------------------
