@@ -13,6 +13,13 @@ Rails.application.routes.draw do
   get 'auth/google_oauth2/callback', to: 'oauth_callbacks#google', as: :auth_google_callback
   get 'auth/azure_activedirectory_v2/callback', to: 'oauth_callbacks#azure', as: :auth_azure_callback
   get 'auth/linkedin/callback', to: 'oauth_callbacks#linkedin', as: :auth_linkedin_callback
+  get 'auth/callback', to: 'integrations/lever_oauth#callback', as: :auth_lever_callback # <= TODO: Temporary route - move to integrations namespace
+
+  #= <<<<< *INTEGRATIONS* >>>>>>
+  namespace :integrations, defaults: { format: 'json' } do
+    get 'auth/lever', to: 'lever_oauth#authorize', as: :auth_lever
+    get 'auth/lever/callback', to: 'lever_oauth#callback', as: :auth_lever_callback # <= TODO: Update Lever OAuth app callback URI
+  end
 
   #= <<<<< *API* >>>>>>
   namespace :api, defaults: { format: 'json' } do

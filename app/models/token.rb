@@ -10,4 +10,8 @@ class Token < ApplicationRecord
                          inclusion: { in: %w[api_key access_token refresh_token request_token client_token], error: 'ERR_INVALID', description: '%<value>s is not a valid token type' }
   validates :issuer, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
                      inclusion: { in: %w[embloy ashby lever softgarden], error: 'ERR_INVALID', description: '%<value>s is not a valid token issuer' }
+
+  def deactivate!
+    update(active: false)
+  end
 end

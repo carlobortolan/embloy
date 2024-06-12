@@ -5,6 +5,7 @@ module Integrations
   class IntegrationsController < ApplicationController
     include JobParser
     include AshbyLambdas
+    include ApiExceptionHandler
 
     def self.submit_form(job_slug, application, client)
       case job_slug.split('__').first
@@ -45,6 +46,12 @@ module Integrations
       raise CustomExceptions::InvalidInput::Quicklink::ApiKey::Inactive and return if api_key.nil?
 
       api_key
+    end
+
+    def self.save_token(client, name, issuer, token_type, token, expires_at, issued_at) # rubocop:disable Metrics/ParameterLists
+      # Find API Key for current client
+      client.tokens.where(token_type:, issuer:).where('expires_at > ?', Time.now.utc).each(&:deactivate!)
+      client.tokens.create!(token_type:, name:, issuer:, token:, expires_at:, issued_at:)
     end
 
     def self.handle_internal_job(client, parsed_job)

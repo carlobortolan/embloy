@@ -126,6 +126,20 @@ class CustomExceptions < StandardError
         end
       end
 
+      class OAuth < StandardError
+        class Unauthorized < StandardError
+        end
+
+        class Forbidden < StandardError
+        end
+
+        class NotFound < StandardError
+        end
+
+        class NotAcceptable < StandardError
+        end
+      end
+
       class Application < StandardError
         class Malformed < StandardError
         end
