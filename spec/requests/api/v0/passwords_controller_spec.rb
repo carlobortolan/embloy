@@ -32,8 +32,8 @@ RSpec.describe 'PasswordsController' do
     post('/api/v0/auth/token/refresh', headers:)
     @valid_refresh_token = JSON.parse(response.body)['refresh_token']
 
-    headers = { 'HTTP_REFRESH_TOKEN' => @valid_refresh_token }
-    post('/api/v0/auth/token/access', headers:)
+    params = { 'grant_type' => 'refresh_token', 'refresh_token' => @valid_refresh_token }
+    post('/api/v0/auth/token/access', params:)
     @valid_access_token = JSON.parse(response.body)['access_token']
 
     credentials = Base64.strict_encode64("#{@blacklisted_user.email}:password")
@@ -41,8 +41,8 @@ RSpec.describe 'PasswordsController' do
     post('/api/v0/auth/token/refresh', headers:)
     @valid_rt_blacklisted = JSON.parse(response.body)['refresh_token']
 
-    headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt_blacklisted }
-    post('/api/v0/auth/token/access', headers:)
+    params = { 'grant_type' => 'refresh_token', 'refresh_token' => @valid_rt_blacklisted }
+    post('/api/v0/auth/token/access', params:)
     @valid_at_blacklisted = JSON.parse(response.body)['access_token']
 
     UserBlacklist.create!(
@@ -63,7 +63,7 @@ RSpec.describe 'PasswordsController' do
                                password_confirmation: 'password'
                              }
                            })
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token, 'Content-Type' => 'application/json' }
+          headers = { 'Authorization' => 'Bearer ' + @valid_access_token, 'Content-Type' => 'application/json' }
           patch('/api/v0/user/password', params: data, headers:)
           expect(response).to have_http_status(200)
         end
@@ -82,7 +82,7 @@ RSpec.describe 'PasswordsController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for missing request body' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token, 'Content-Type' => 'application/json' }
+          headers = { 'Authorization' => 'Bearer ' + @valid_access_token, 'Content-Type' => 'application/json' }
           patch('/api/v0/user/password', headers:)
           expect(response).to have_http_status(400)
         end
@@ -92,7 +92,7 @@ RSpec.describe 'PasswordsController' do
                                password_confirmation: 'password'
                              }
                            })
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token, 'Content-Type' => 'application/json' }
+          headers = { 'Authorization' => 'Bearer ' + @valid_access_token, 'Content-Type' => 'application/json' }
           patch('/api/v0/user/password', params: data, headers:)
           expect(response).to have_http_status(400)
         end
@@ -102,7 +102,7 @@ RSpec.describe 'PasswordsController' do
                                password: 'password'
                              }
                            })
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token, 'Content-Type' => 'application/json' }
+          headers = { 'Authorization' => 'Bearer ' + @valid_access_token, 'Content-Type' => 'application/json' }
           patch('/api/v0/user/password', params: data, headers:)
           expect(response).to have_http_status(400)
         end
@@ -113,7 +113,7 @@ RSpec.describe 'PasswordsController' do
                                password_confirmation: ''
                              }
                            })
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token, 'Content-Type' => 'application/json' }
+          headers = { 'Authorization' => 'Bearer ' + @valid_access_token, 'Content-Type' => 'application/json' }
           patch('/api/v0/user/password', params: data, headers:)
           expect(response).to have_http_status(400)
         end
@@ -124,7 +124,7 @@ RSpec.describe 'PasswordsController' do
                                password_confirmation: 'password'
                              }
                            })
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_blacklisted, 'Content-Type' => 'application/json' }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted, 'Content-Type' => 'application/json' }
           patch('/api/v0/user/password', params: data, headers:)
           expect(response).to have_http_status(403)
         end
@@ -135,7 +135,7 @@ RSpec.describe 'PasswordsController' do
                                password_confirmation: '1234657'
                              }
                            })
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token, 'Content-Type' => 'application/json' }
+          headers = { 'Authorization' => 'Bearer ' + @valid_access_token, 'Content-Type' => 'application/json' }
           patch('/api/v0/user/password', params: data, headers:)
           expect(response).to have_http_status(422)
         end
@@ -146,7 +146,7 @@ RSpec.describe 'PasswordsController' do
                                password_confirmation: 'passwordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordp'
                              }
                            })
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token, 'Content-Type' => 'application/json' }
+          headers = { 'Authorization' => 'Bearer ' + @valid_access_token, 'Content-Type' => 'application/json' }
           patch('/api/v0/user/password', params: data, headers:)
           expect(response).to have_http_status(422)
         end
@@ -157,7 +157,7 @@ RSpec.describe 'PasswordsController' do
                                password_confirmation: '12345678'
                              }
                            })
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token, 'Content-Type' => 'application/json' }
+          headers = { 'Authorization' => 'Bearer ' + @valid_access_token, 'Content-Type' => 'application/json' }
           patch('/api/v0/user/password', params: data, headers:)
           expect(response).to have_http_status(422)
         end

@@ -47,10 +47,7 @@ module ApplicationBuilder
     @application.save!
 
     create_application_answers! if @job.application_options.any?
-    puts 'Starting Integration submittion'
-    puts "ApplicationAnswers: #{@application.application_answers}"
     Integrations::IntegrationsController.submit_form(@job.job_slug, @application, @client)
-    puts 'Integration submittion completed'
   end
 
   # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity

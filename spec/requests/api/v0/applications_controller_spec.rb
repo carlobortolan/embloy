@@ -108,8 +108,8 @@ RSpec.describe 'ApplicationsController' do
     post('/api/v0/auth/token/refresh', headers:)
     @valid_refresh_token = JSON.parse(response.body)['refresh_token']
 
-    headers = { 'HTTP_REFRESH_TOKEN' => @valid_refresh_token }
-    post('/api/v0/auth/token/access', headers:)
+    params = { 'grant_type' => 'refresh_token', 'refresh_token' => @valid_refresh_token }
+    post('/api/v0/auth/token/access', params:)
     @valid_access_token = JSON.parse(response.body)['access_token']
 
     # Valid user with own jobs refresh/access tokens
@@ -118,8 +118,8 @@ RSpec.describe 'ApplicationsController' do
     post('/api/v0/auth/token/refresh', headers:)
     @valid_rt_has_own_jobs = JSON.parse(response.body)['refresh_token']
 
-    headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt_has_own_jobs }
-    post('/api/v0/auth/token/access', headers:)
+    params = { 'grant_type' => 'refresh_token', 'refresh_token' => @valid_rt_has_own_jobs }
+    post('/api/v0/auth/token/access', params:)
     @valid_at_has_own_jobs = JSON.parse(response.body)['access_token']
 
     # Valid user with no jobs refresh/access tokens
@@ -128,8 +128,8 @@ RSpec.describe 'ApplicationsController' do
     post('/api/v0/auth/token/refresh', headers:)
     @valid_rt_has_no_jobs = JSON.parse(response.body)['refresh_token']
 
-    headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt_has_no_jobs }
-    post('/api/v0/auth/token/access', headers:)
+    params = { 'grant_type' => 'refresh_token', 'refresh_token' => @valid_rt_has_no_jobs }
+    post('/api/v0/auth/token/access', params:)
     @valid_at_has_no_jobs = JSON.parse(response.body)['access_token']
 
     # Not subscribed user with own jobs refresh/access tokens
@@ -138,8 +138,8 @@ RSpec.describe 'ApplicationsController' do
     post('/api/v0/auth/token/refresh', headers:)
     @unsubscribed_rt_has_own_jobs = JSON.parse(response.body)['refresh_token']
 
-    headers = { 'HTTP_REFRESH_TOKEN' => @unsubscribed_rt_has_own_jobs }
-    post('/api/v0/auth/token/access', headers:)
+    params = { 'grant_type' => 'refresh_token', 'refresh_token' => @unsubscribed_rt_has_own_jobs }
+    post('/api/v0/auth/token/access', params:)
     @unsubscribed_at_has_own_jobs = JSON.parse(response.body)['access_token']
 
     # Valid user with upcoming jobs refresh/access tokens
@@ -148,8 +148,8 @@ RSpec.describe 'ApplicationsController' do
     post('/api/v0/auth/token/refresh', headers:)
     @valid_rt_has_applications = JSON.parse(response.body)['refresh_token']
 
-    headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt_has_applications }
-    post('/api/v0/auth/token/access', headers:)
+    params = { 'grant_type' => 'refresh_token', 'refresh_token' => @valid_rt_has_applications }
+    post('/api/v0/auth/token/access', params:)
     @valid_at_has_applications = JSON.parse(response.body)['access_token']
 
     # Valid user who will apply for jobs refresh/access tokens
@@ -158,8 +158,8 @@ RSpec.describe 'ApplicationsController' do
     post('/api/v0/auth/token/refresh', headers:)
     @valid_rt_applicant = JSON.parse(response.body)['refresh_token']
 
-    headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt_applicant }
-    post('/api/v0/auth/token/access', headers:)
+    params = { 'grant_type' => 'refresh_token', 'refresh_token' => @valid_rt_applicant }
+    post('/api/v0/auth/token/access', params:)
     @valid_at_applicant = JSON.parse(response.body)['access_token']
 
     # Blacklisted user refresh/access tokens
@@ -168,8 +168,8 @@ RSpec.describe 'ApplicationsController' do
     post('/api/v0/auth/token/refresh', headers:)
     @valid_rt_blacklisted = JSON.parse(response.body)['refresh_token']
 
-    headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt_blacklisted }
-    post('/api/v0/auth/token/access', headers:)
+    params = { 'grant_type' => 'refresh_token', 'refresh_token' => @valid_rt_blacklisted }
+    post('/api/v0/auth/token/access', params:)
     @valid_at_blacklisted = JSON.parse(response.body)['access_token']
 
     UserBlacklist.create!(
@@ -303,14 +303,14 @@ RSpec.describe 'ApplicationsController' do
     describe '(GET: /api/v0/user/applications)' do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and JSON application JSONs if user has applications' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_applications }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_applications }
           5.times do |_i|
             get('/api/v0/user/applications', headers:)
             expect(response).to have_http_status(200)
           end
         end
         it 'returns [204 No Content] if user does not have any applications' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs }
           get('/api/v0/user/applications', headers:)
           expect(response).to have_http_status(204)
         end
@@ -321,12 +321,12 @@ RSpec.describe 'ApplicationsController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @invalid_access_token }
+          headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
           get('/api/v0/user/applications', headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_blacklisted }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
           get('/api/v0/user/applications', headers:)
           expect(response).to have_http_status(403)
         end
@@ -338,14 +338,14 @@ RSpec.describe 'ApplicationsController' do
           @applications.each do |application|
             application.accept('Accepted')
           end
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_applications }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_applications }
           5.times do |_i|
             get('/api/v0/user/upcoming', headers:)
             expect(response).to have_http_status(200)
           end
         end
         it 'returns [204 No Content] if user does not have any upcoming jobs' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_applications }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_applications }
           get('/api/v0/user/upcoming', headers:)
           expect(response).to have_http_status(204)
         end
@@ -356,12 +356,12 @@ RSpec.describe 'ApplicationsController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @invalid_access_token }
+          headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
           get('/api/v0/user/upcoming', headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_blacklisted }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
           get('/api/v0/user/upcoming', headers:)
           expect(response).to have_http_status(403)
         end
@@ -373,13 +373,13 @@ RSpec.describe 'ApplicationsController' do
     describe '(GET: /api/v0/applications)' do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and JSON application JSONs employer has applications' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
-          get('/api/v0/applications', headers:)
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs }
+          get("/api/v0/applications", headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [204 No Content] if employer does not have any applications' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_applicant }
-          get('/api/v0/applications', headers:)
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_applicant }
+          get("/api/v0/applications", headers:)
           expect(response).to have_http_status(204)
         end
       end
@@ -389,13 +389,13 @@ RSpec.describe 'ApplicationsController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @invalid_access_token }
-          get('/api/v0/jobs/applications', headers:)
+          headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
+          get("/api/v0/jobs/applications", headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_blacklisted }
-          get('/api/v0/jobs/applications', headers:)
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
+          get("/api/v0/jobs/applications", headers:)
           expect(response).to have_http_status(403)
         end
       end
@@ -404,14 +404,14 @@ RSpec.describe 'ApplicationsController' do
     describe '(GET: /api/v0/jobs/{id}/applications)' do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and JSON application JSONs if job has applications' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs }
           5.times do |i|
             get("/api/v0/jobs/#{@jobs[i].id}/applications", headers:)
             expect(response).to have_http_status(200)
           end
         end
         it 'returns [204 No Content] if job does not have any applications' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs }
           get("/api/v0/jobs/#{@jobs[6].id}/applications", headers:)
           expect(response).to have_http_status(204)
         end
@@ -422,27 +422,27 @@ RSpec.describe 'ApplicationsController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @invalid_access_token }
+          headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
           get("/api/v0/jobs/#{@jobs[6].id}/applications", headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] if user is not owner' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token }
+          headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
           get("/api/v0/jobs/#{@jobs[6].id}/applications", headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [403 Forbidden] if user is not owner' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_no_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_no_jobs }
           get("/api/v0/jobs/#{@jobs[6].id}/applications", headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_blacklisted }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
           get("/api/v0/jobs/#{@jobs[6].id}/applications", headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [404 Not Found] if job does not exist' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token }
+          headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
           get('/api/v0/jobs/131231231231231312312/applications', headers:)
           expect(response).to have_http_status(404)
         end
@@ -452,14 +452,14 @@ RSpec.describe 'ApplicationsController' do
     describe '(GET: /api/v0/jobs/{id}/applications/{application_id})' do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and JSON application JSONs if job has application for specific user' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs }
           5.times do |i|
             get("/api/v0/jobs/#{@jobs[i].id}/applications/#{@valid_user_has_applications.id}", headers:)
             expect(response).to have_http_status(200)
           end
         end
         it 'returns [404 Not Found] if job does not have any applications' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs }
           get("/api/v0/jobs/#{@jobs[6].id}/applications/#{@valid_user_has_applications.id}", headers:)
           expect(response).to have_http_status(204)
         end
@@ -470,27 +470,27 @@ RSpec.describe 'ApplicationsController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @invalid_access_token }
+          headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
           get("/api/v0/jobs/#{@jobs[1].id}/applications/#{@valid_user_has_applications.id}", headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] if user is not owner' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token }
+          headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
           get("/api/v0/jobs/#{@jobs[1].id}/applications/#{@valid_user_has_applications.id}", headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [403 Forbidden] if user is not owner' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_no_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_no_jobs }
           get("/api/v0/jobs/#{@jobs[1].id}/applications/#{@valid_user_has_applications.id}", headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_blacklisted }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
           get("/api/v0/jobs/#{@jobs[1].id}/applications/#{@valid_user_has_applications.id}", headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [404 Not Found] if job does not exist' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token }
+          headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
           get('/api/v0/jobs/131231231231231312312/applications/12320831', headers:)
           expect(response).to have_http_status(404)
         end
@@ -500,22 +500,22 @@ RSpec.describe 'ApplicationsController' do
     describe '(GET: /api/v0/jobs/{id}/application)' do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and JSON application JSONs if job has applications' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_applications }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_applications }
           5.times do |i|
             get("/api/v0/jobs/#{@jobs[i].id}/application", headers:)
             expect(response).to have_http_status(200)
           end
         end
         it 'returns [204 No Content] if job does not have any applications' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_applications }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_applications }
           get("/api/v0/jobs/#{@jobs[6].id}/application", headers:)
           expect(response).to have_http_status(204)
         end
         it 'returns [204 No Content] if user is has not submitted an application' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token }
+          headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
           get("/api/v0/jobs/#{@jobs[6].id}/application", headers:)
           expect(response).to have_http_status(204)
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs }
           get("/api/v0/jobs/#{@jobs[6].id}/application", headers:)
           expect(response).to have_http_status(204)
         end
@@ -526,17 +526,17 @@ RSpec.describe 'ApplicationsController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @invalid_access_token }
+          headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
           get("/api/v0/jobs/#{@jobs[6].id}/application", headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_blacklisted }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
           get("/api/v0/jobs/#{@jobs[6].id}/application", headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [404 Not Found] if job does not exist' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_applications }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_applications }
           get('/api/v0/jobs/131231231231231312312/application', headers:)
           expect(response).to have_http_status(404)
         end
@@ -546,25 +546,25 @@ RSpec.describe 'ApplicationsController' do
     describe '(PATCH: /api/v0/jobs/{id}/applications/{id}/accept)' do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and accepts application' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs }
           5.times do |i|
             patch("/api/v0/jobs/#{@jobs[i].id}/applications/#{@valid_user_has_applications.id}/accept", headers:)
             expect(response).to have_http_status(200)
           end
         end
         it 'returns [200 Ok] and accepts application with response' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs }
           message = 'Good job!'
           patch("/api/v0/jobs/#{@jobs[5].id}/applications/#{@valid_user_has_applications.id}/accept?response=#{message}", headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [200 OK] for unlisted job and accepts application' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs }
           patch("/api/v0/jobs/#{@jobs[9].id}/applications/#{@valid_user_has_applications.id}/accept", headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [404 Not found] if job does not have any applications' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs }
           patch("/api/v0/jobs/#{@jobs[6].id}/applications/#{@valid_user_has_applications.id}/accept", headers:)
           expect(response).to have_http_status(404)
         end
@@ -575,55 +575,55 @@ RSpec.describe 'ApplicationsController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] if application already accepted' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs }
           @applications[0].accept('Accepted')
           patch("/api/v0/jobs/#{@jobs[0].id}/applications/#{@valid_user_has_applications.id}/accept", headers:)
           @applications[0].reject('Rejected')
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] and if response message is too long' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs }
           message = 'Lorem ipsum venenatis quis sollicitudin elit eros aliquam scelerisque ornare tortor volutpat, quisque ultricies tortor euismod venenatis inceptos quis feugiat condimentum. Bibendum etiam hendrerit pretium odio sit lectus dui congue hendrerit dolor sit, consectetur ante dapibus vitae mi dictumst velit lacus fermentum fames dictum laoreet, nibh tristique quisque aenean mi sociosqu justo rutrum dictum odio. Porttitor turpis hendrerit consequat habitant enim ante urna dictumst convallis ligula massa pharetra'
           patch("/api/v0/jobs/#{@jobs[5].id}/applications/#{@valid_user_has_applications.id}/accept?response=#{message}", headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @invalid_access_token }
+          headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
           patch("/api/v0/jobs/#{@jobs[0].id}/applications/#{@valid_user_has_applications.id}/accept", headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for unsubscribed user' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @unsubscribed_at_has_own_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @unsubscribed_at_has_own_jobs }
           patch("/api/v0/jobs/#{@jobs[18].id}/applications/#{@valid_user_has_applications.id}/accept", headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [403 Forbidden] if user is not owner' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_no_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_no_jobs }
           patch("/api/v0/jobs/#{@jobs[0].id}/applications/#{@valid_user_has_applications.id}/accept", headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_blacklisted }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
           patch("/api/v0/jobs/#{@jobs[0].id}/applications/#{@valid_user_has_applications.id}/accept", headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [404 Not Found] if job does not exist' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token }
+          headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
           patch("/api/v0/jobs/123123123/applications/#{@valid_user_has_applications.id}/accept", headers:)
           expect(response).to have_http_status(404)
         end
         it 'returns [404 Not Found] if application does not exist' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs }
           patch("/api/v0/jobs/#{@jobs[0].id}/applications/123123123123123123132/accept", headers:)
           expect(response).to have_http_status(404)
         end
         it 'returns [409 Conflict] for archived job' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs }
           patch("/api/v0/jobs/#{@jobs[10].id}/applications/#{@valid_user_has_applications.id}/accept", headers:)
           expect(response).to have_http_status(409)
         end
         it 'returns [409 Conflict] for deactivated job' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs }
           patch("/api/v0/jobs/#{@jobs[11].id}/applications/#{@valid_user_has_applications.id}/accept", headers:)
           expect(response).to have_http_status(409)
         end
@@ -633,25 +633,25 @@ RSpec.describe 'ApplicationsController' do
     describe '(PATCH: /api/v0/jobs/{id}/applications/{id}/reject)' do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and rejects application' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs }
           5.times do |i|
             patch("/api/v0/jobs/#{@jobs[i].id}/applications/#{@valid_user_has_applications.id}/reject", headers:)
             expect(response).to have_http_status(200)
           end
         end
         it 'returns [200 Ok] and rejects application with response' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs }
           message = 'Not good enough!'
           patch("/api/v0/jobs/#{@jobs[5].id}/applications/#{@valid_user_has_applications.id}/reject?response=#{message}", headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [200 OK] for unlisted job and rejects application' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs }
           patch("/api/v0/jobs/#{@jobs[9].id}/applications/#{@valid_user_has_applications.id}/reject", headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [404 Not found] if job does not have any applications' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs }
           patch("/api/v0/jobs/#{@jobs[6].id}/applications/#{@valid_user_has_applications.id}/reject", headers:)
           expect(response).to have_http_status(404)
         end
@@ -662,55 +662,55 @@ RSpec.describe 'ApplicationsController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] if application already rejected' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs }
           @applications[0].reject('Accepted')
           patch("/api/v0/jobs/#{@jobs[0].id}/applications/#{@valid_user_has_applications.id}/reject", headers:)
           @applications[0].accept('Rejected')
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] and if response message is too long' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs }
           message = 'Lorem ipsum venenatis quis sollicitudin elit eros aliquam scelerisque ornare tortor volutpat, quisque ultricies tortor euismod venenatis inceptos quis feugiat condimentum. Bibendum etiam hendrerit pretium odio sit lectus dui congue hendrerit dolor sit, consectetur ante dapibus vitae mi dictumst velit lacus fermentum fames dictum laoreet, nibh tristique quisque aenean mi sociosqu justo rutrum dictum odio. Porttitor turpis hendrerit consequat habitant enim ante urna dictumst convallis ligula massa pharetra'
           patch("/api/v0/jobs/#{@jobs[5].id}/applications/#{@valid_user_has_applications.id}/reject?response=#{message}", headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @invalid_access_token }
+          headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
           patch("/api/v0/jobs/#{@jobs[0].id}/applications/#{@valid_user_has_applications.id}/reject", headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for unsubscribed user' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @unsubscribed_at_has_own_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @unsubscribed_at_has_own_jobs }
           patch("/api/v0/jobs/#{@jobs[18].id}/applications/#{@valid_user_has_applications.id}/reject", headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [403 Forbidden] if user is not owner' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_no_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_no_jobs }
           patch("/api/v0/jobs/#{@jobs[0].id}/applications/#{@valid_user_has_applications.id}/reject", headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_blacklisted }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
           patch("/api/v0/jobs/#{@jobs[0].id}/applications/#{@valid_user_has_applications.id}/reject", headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [404 Not Found] if job does not exist' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token }
+          headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
           patch("/api/v0/jobs/123123123/applications/#{@valid_user_has_applications.id}/reject", headers:)
           expect(response).to have_http_status(404)
         end
         it 'returns [404 Not Found] if application does not exist' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs }
           patch("/api/v0/jobs/#{@jobs[0].id}/applications/123123123123123123132/reject", headers:)
           expect(response).to have_http_status(404)
         end
         it 'returns [409 Conflict] for archived job' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs }
           patch("/api/v0/jobs/#{@jobs[10].id}/applications/#{@valid_user_has_applications.id}/reject", headers:)
           expect(response).to have_http_status(409)
         end
         it 'returns [409 Conflict] for deactivated job' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs }
           patch("/api/v0/jobs/#{@jobs[11].id}/applications/#{@valid_user_has_applications.id}/reject", headers:)
           expect(response).to have_http_status(409)
         end
@@ -757,7 +757,7 @@ RSpec.describe 'ApplicationsController' do
           application_attachment: Rack::Test::UploadedFile.new(Rails.root.join('spec/assets', 'test_file.txt'), 'text/plain')
         }
       end
-      let(:headers) { { 'HTTP_ACCESS_TOKEN' => @valid_at_applicant } }
+      let(:headers) { { 'Authorization' => 'Bearer ' + @valid_at_applicant } }
 
       context 'valid inputs' do
         it 'returns [201 Created] for successfull application not requiring cv' do
@@ -800,17 +800,17 @@ RSpec.describe 'ApplicationsController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @invalid_access_token }
+          headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
           post("/api/v0/jobs/#{@jobs[0].id}/applications", params: valid_attributes_docx, headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_blacklisted }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
           post("/api/v0/jobs/#{@jobs[0].id}/applications", params: valid_attributes_docx, headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [404 Not Found] if job does not exist' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token }
+          headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
           post('/api/v0/jobs/123123123/applications', params: valid_attributes_docx, headers:)
           expect(response).to have_http_status(404)
         end
@@ -859,7 +859,7 @@ RSpec.describe 'ApplicationsController' do
           expect(response).to have_http_status(422)
         end
         it 'returns [422 Unprocessable Content] if application already submitted' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_applications }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_applications }
           post("/api/v0/jobs/#{@jobs[0].id}/applications", params: valid_attributes_docx, headers:)
           expect(response).to have_http_status(422)
         end

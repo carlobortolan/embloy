@@ -176,8 +176,8 @@ class AuthenticationTokenService
     ALGORITHM_TYPE = 'HS256'
     ISSUER = 'api.embloy.com'
 
-    def self.encode(sub, exp, typ, _scope = nil)
-      payload = { sub:, exp:, typ: }
+    def self.encode(sub, exp, typ, scope)
+      payload = { sub:, exp:, typ:, scope: }
       AuthenticationTokenService.call(
         HMAC_SECRET, ALGORITHM_TYPE, ISSUER, payload
       )
@@ -192,34 +192,24 @@ class AuthenticationTokenService
 
     # The Encoder class is responsible for generating access tokens.
     class Encoder
-      def self.call(refresh_token)
+      def self.call(refresh_token, scope)
+        # refresh_token is a refresh token, which is used to generate an access token
+        raise CustomExceptions::InvalidInput::Token::Malformed if refresh_token.class != String
+        raise CustomExceptions::InvalidInput::Token::Blank if refresh_token[0] == ':' || refresh_token.blank?
+
         AuthenticationTokenService::Refresh::Decoder.call(refresh_token)[0]
         sub = Current.user.id # who "owns" the token
-        # AuthenticationTokenService::Refresh.must_be_verified_id!(sub)
-        # ApplicationController.must_be_verified!(sub)
         typ = Current.user.user_role
-        exp = Time.now.to_i + 20.minutes.to_i # standard validity interval;: 1200 sec == 20 min
-        access_token = AuthenticationTokenService::Access.encode(
-          sub, exp, typ
-        )
-        Token.create!(
-          user: Current.user,
-          name: 'Automatically generated access token',
-          issuer: 'embloy',
-          token: access_token,
-          issued_at: Time.now,
-          expires_at: Time.at(exp),
-          token_type: 'access_token'
-        )
-        access_token
+        exp = Time.now.to_i + 20.minutes.to_i # standard validity interval: 1200 sec == 20 min
+        AuthenticationTokenService::Access.encode(sub, exp, typ, scope)
       end
     end
 
     # The Decoder class is responsible for decoding access tokens.
     class Decoder
       def self.call(token)
-        raise CustomExceptions::InvalidInput::Access::Malformed if token.class != String
-        raise CustomExceptions::InvalidInput::Access::Blank if token[0] == ':' || token.blank?
+        raise CustomExceptions::InvalidInput::Token::Malformed if token.class != String
+        raise CustomExceptions::InvalidInput::Token::Blank if token[0] == ':' || token.blank?
 
         AuthenticationTokenService::Access.decode(token)
       end
