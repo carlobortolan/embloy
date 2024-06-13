@@ -213,7 +213,7 @@ module JobParser
       data.each { |key, value| self[key] = value }
     end
 
-    def to_active_record!(data = self, ignore = [], rec: false)
+    def to_active_record!(data = self, ignore = [], rec = false)
       new_job = {}
       data = to_active_record(data) unless rec
       rec ||= true

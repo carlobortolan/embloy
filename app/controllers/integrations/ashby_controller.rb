@@ -59,8 +59,8 @@ module Integrations
         job = JobParser.parse(JSON.parse(File.read('app/controllers/integrations/ashby_config.json')), JSON.parse(response.body), AshbyLambdas)
         job['job_slug'] = "ashby__#{job['job_slug']}"
         job['user_id'] = client.id.to_i
-        job = job.to_active_record!(job)
         parse_json(JSON.parse(File.read('app/controllers/integrations/ashby_config_new.json')),JSON.parse(response.body))
+        job = job.to_active_record!(job)
       end
 
       if client.jobs.find_by(job_slug: job['job_slug']).nil?
@@ -76,8 +76,8 @@ module Integrations
     end
 
     def self.parse_json(origin, destination)
+      puts "BEGINNN"
       begin
-
         url = URI("http://localhost:8080/parse/json/json")
         http = Net::HTTP.new(url.host, url.port)
         http.use_ssl = false
