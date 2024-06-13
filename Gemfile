@@ -1,39 +1,39 @@
-source "https://rubygems.org"
+source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby "3.2.2"
+ruby '3.2.2'
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 7.0.4", ">= 7.0.4.1"
+gem 'rails', '~> 7.0.4', '>= 7.0.4.1'
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
-gem "sprockets-rails"
+gem 'sprockets-rails'
 # gem "tzinfo-data"
 gem 'rack-cors'
 # Use mysql as the database for Active Record
 # gem "mysql2", "~> 0.5.4"
 
 # Use postgresql as the database for Active Record
-gem "pg", "~> 1.1"
+gem 'pg', '~> 1.1'
 
 # Use PG's postgis extension
-gem 'rgeo'
 gem 'activerecord-postgis-adapter'
+gem 'rgeo'
 
 # Use the Puma web server [https://github.com/puma/puma]
-gem "puma", "~> 6.4.2"
+gem 'puma', '~> 6.4.2'
 
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
-gem "importmap-rails"
+gem 'importmap-rails'
 
 # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
-gem "turbo-rails"
+gem 'turbo-rails'
 
 # Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
-gem "stimulus-rails"
+gem 'stimulus-rails'
 
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
-gem "jbuilder"
+gem 'jbuilder'
 
 # Use Redis adapter to run Action Cable in production
 # gem "redis", "~> 4.0"
@@ -42,38 +42,39 @@ gem "jbuilder"
 # gem "kredis"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
-gem "bcrypt", "~> 3.1.7"
+gem 'bcrypt', '~> 3.1.7'
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem "tzinfo-data", platforms: %i[ mingw mswin x64_mingw jruby ]
+gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 # Reduces boot times through caching; required in config/boot.rb
-gem "bootsnap", require: false
+gem 'bootsnap', require: false
 
 # Enable .env file
 gem 'dotenv-rails'
 
 # Use Sass to process CSS
-gem "sassc-rails"
+gem 'sassc-rails'
 # gem 'faker', :git => 'https://github.com/faker-ruby/faker.git', :branch => 'main'
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-gem "image_processing", "~> 1.2"
+gem 'image_processing', '~> 1.2'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem "debug", platforms: %i[ mri mingw x64_mingw ]
-  gem 'rspec-rails', '~> 6.0.0'
-  gem 'httparty'
-  gem 'faker'
   gem 'database_cleaner'
+  gem 'debug', platforms: %i[mri mingw x64_mingw]
+  gem 'faker'
+  gem 'httparty'
+  gem 'rspec-rails', '~> 6.0.0'
   gem 'rubocop', require: false
 end
 
 group :development do
   gem 'activestorage-backblaze'
   # Use console on exceptions pages [https://github.com/rails/web-console]
-  gem "web-console"
+  gem 'overcommit', '~> 0.63.0'
+  gem 'web-console'
 
   # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
   # gem "rack-mini-profiler"
@@ -82,44 +83,44 @@ group :development do
   # gem "spring"
 end
 
-group :production do 
-  gem "azure-storage-blob", "~> 2.0", require: false
+group :production do
+  gem 'azure-storage-blob', '~> 2.0', require: false
 end
 
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
-  gem "capybara"
-  gem "selenium-webdriver"
-  gem "webdrivers"
+  gem 'capybara'
+  gem 'selenium-webdriver'
   gem 'simplecov', require: false
+  gem 'webdrivers'
 end
 
 # O-Auth
 gem 'omniauth'
-gem "omniauth-rails_csrf_protection"
-gem "omniauth-github", "~> 2.0"
-gem "omniauth-google-oauth2", "~> 1.1"
-gem "omniauth-azure-activedirectory-v2", "~> 2.1"
+gem 'omniauth-azure-activedirectory-v2', '~> 2.1'
+gem 'omniauth-github', '~> 2.0'
+gem 'omniauth-google-oauth2', '~> 1.1'
 gem 'omniauth-linkedin-openid'
+gem 'omniauth-rails_csrf_protection'
 
 # Notifications
-gem "noticed", "~> 1.6"
+gem 'noticed', '~> 1.6'
 
-# DB Performance 
-gem "bullet", "~> 7.0"
-gem "benchmark", "~> 0.2.1"
+# DB Performance
+gem 'benchmark', '~> 0.2.1'
+gem 'bullet', '~> 7.0'
 
-gem "activerecord-import", "~> 1.4"
+gem 'activerecord-import', '~> 1.4'
 
 # Pagination & Querying
-gem "pg_search"
-gem 'kaminari'
-gem 'geocoder'
 gem 'actiontext'
-gem 'trix'
-gem 'dalli'
-gem 'iso_country_codes'
 gem 'composite_primary_keys'
+gem 'dalli'
+gem 'geocoder'
+gem 'iso_country_codes'
+gem 'kaminari'
+gem 'pg_search'
+gem 'trix'
 
 # Rich-Text Support
 gem 'actionpack', '>= 7.0.5.1'
@@ -127,25 +128,25 @@ gem 'activesupport', '>= 7.0.7.1'
 gem 'nokogiri', '>= 1.16.2'
 
 # Payments and Subscriptions
-gem "stripe", "~> 11"
-gem "pay", "~> 7.1"
+gem 'pay', '~> 7.1'
+gem 'stripe', '~> 11'
 
 # Enable Soft Delete
-gem "paranoia", "~> 2.6"
+gem 'paranoia', '~> 2.6'
 
-gem "faraday", "~> 1.0"
+gem 'faraday', '~> 1.0'
 
-gem "tempfile", "~> 0.2.1"
+gem 'tempfile', '~> 0.2.1'
 
 # Security and monitoring
+gem 'devise'
+gem 'newrelic_rpm'
+gem 'notable', '~> 0.5.2'
 gem 'rack-attack'
 gem 'rack-protection'
-gem 'newrelic_rpm'
-gem "notable", "~> 0.5.2"
 gem 'rails_admin', '~> 3.0'
-gem 'devise'
-gem "rails-controller-testing", "~> 1.0"
-  
-gem "attr_encrypted", "~> 4.0"
+gem 'rails-controller-testing', '~> 1.0'
 
-gem "rails-healthcheck", "~> 1.4"
+gem 'attr_encrypted', '~> 4.0'
+
+gem 'rails-healthcheck', '~> 1.4'

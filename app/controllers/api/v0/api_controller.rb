@@ -18,10 +18,15 @@ module Api
       # Set current user of the API to the user found in the access_token
       # Set current user to nil if no token is provided
       def set_current_user
-        if token_blank?
+        if bearer_token_blank?
           blank_error('token')
         else
           set_user_from_token
+          begin
+            check_scope(@decoded_bearer_token['scope'], request.path, request.method_symbol.to_s.upcase)
+          rescue StandardError => e
+            access_denied_error('token', e.message)
+          end
         end
       end
 
@@ -34,11 +39,6 @@ module Api
       # end
 
       # ============== API TOKEN VERIFICATIOn ================
-      # Deprecated method - replaced by set_current_user
-      def verify_access_token
-        token_blank? ? blank_error('token') : decode_access_token
-      end
-
       def verify_client_token
         client_token_blank? ? blank_error('client token') : decode_client_token
       end
@@ -98,8 +98,8 @@ module Api
 
       private
 
-      def token_blank?
-        request.headers['HTTP_ACCESS_TOKEN'].nil? || request.headers['HTTP_ACCESS_TOKEN'].empty?
+      def bearer_token_blank?
+        bearer_token.nil? || bearer_token.empty?
       end
 
       def client_token_blank?
@@ -115,12 +115,39 @@ module Api
       end
 
       def set_user_from_token
-        @decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers['HTTP_ACCESS_TOKEN'])[0]
+        @decoded_bearer_token = AuthenticationTokenService::Access::Decoder.call(bearer_token)[0]
         begin
-          Current.user = (@decoded_token['sub'].to_i.zero? ? nil : User.find(@decoded_token['sub'].to_i))
+          Current.user = (@decoded_bearer_token['sub'].to_i.zero? ? nil : User.find(@decoded_bearer_token['sub'].to_i))
         rescue ActiveRecord::RecordNotFound
           not_found_error('user')
         end
+      end
+
+      def check_scope(scope, path, method) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+        # Extract the base URL, the resource, and the permission from the scope
+        # resource = scope.split('.').second_to_last.split('/').drop(2).join('/').prepend('/')
+        resource = scope&.split('//')&.last&.split('/')&.drop(2)&.join('/')&.split('.')&.first&.prepend('/')
+
+        permission = scope&.split('.')&.last
+
+        raise "The scope '#{scope}' is not allowed because it does not match the application's base URL." unless URI.parse(scope).host == URI.parse(root_url).host
+
+        # Check if the resource matches the requested path
+        raise "The requested path '#{path}' for resource #{resource} and scope #{scope} is not allowed for scope '#{scope}'." unless path.match?(%r{/api/v\d+#{resource}.*})
+
+        # Check if the permission matches the requested HTTP method
+        allowed_methods = case permission
+                          when 'read'
+                            ['GET']
+                          when 'write'
+                            %w[GET POST PATCH PUT DELETE]
+                          else
+                            []
+                          end
+
+        return if allowed_methods.include?(method)
+
+        raise "The scope '#{scope}' is not allowed to perform the '#{method}' method. #{permission}"
       end
 
       def set_token
@@ -135,8 +162,8 @@ module Api
         not_found_error('subscription')
       end
 
-      def decode_access_token
-        @decoded_token = AuthenticationTokenService::Access::Decoder.call(request.headers['HTTP_ACCESS_TOKEN'])[0]
+      def decode_bearer_token
+        @decoded_bearer_token = AuthenticationTokenService::Access::Decoder.call(bearer_token)[0]
       end
 
       def decode_client_token
@@ -178,6 +205,12 @@ module Api
         raise CustomExceptions::Unauthorized::Blocked if @notification.recipient.id.to_i != Current.user.id.to_i
       rescue ActiveRecord::RecordNotFound
         not_found_error('notification')
+      end
+
+      def bearer_token
+        pattern = /^Bearer /
+        header  = request.headers['Authorization'] # <= access and client tokens are stored in the Authorization header
+        header.gsub(pattern, '') if header&.match(pattern)
       end
     end
   end

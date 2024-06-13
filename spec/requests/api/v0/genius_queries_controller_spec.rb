@@ -170,11 +170,11 @@ RSpec.describe 'GeniusQueriesController' do
     post('/api/v0/auth/token/refresh', headers:)
     @valid_refresh_token = JSON.parse(response.body)['refresh_token']
 
-    headers = { 'HTTP_REFRESH_TOKEN' => @valid_refresh_token }
-    post('/api/v0/auth/token/access', headers:)
+    params = { 'grant_type' => 'refresh_token', 'refresh_token' => @valid_refresh_token }
+    post('/api/v0/auth/token/access', params:)
     @valid_access_token = JSON.parse(response.body)['access_token']
 
-    headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token }
+    headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
     post('/api/v0/auth/token/client', headers:)
     @valid_client_token = JSON.parse(response.body)['client_token']
 
@@ -184,8 +184,8 @@ RSpec.describe 'GeniusQueriesController' do
     post('/api/v0/auth/token/refresh', headers:)
     @basic_rt = JSON.parse(response.body)['refresh_token']
 
-    headers = { 'HTTP_REFRESH_TOKEN' => @basic_rt }
-    post('/api/v0/auth/token/access', headers:)
+    params = { 'grant_type' => 'refresh_token', 'refresh_token' => @basic_rt }
+    post('/api/v0/auth/token/access', params:)
     @basic_at = JSON.parse(response.body)['access_token']
 
     # User with embloy-premium subscription refresh/access tokens
@@ -194,8 +194,8 @@ RSpec.describe 'GeniusQueriesController' do
     post('/api/v0/auth/token/refresh', headers:)
     @premium_rt = JSON.parse(response.body)['refresh_token']
 
-    headers = { 'HTTP_REFRESH_TOKEN' => @premium_rt }
-    post('/api/v0/auth/token/access', headers:)
+    params = { 'grant_type' => 'refresh_token', 'refresh_token' => @premium_rt }
+    post('/api/v0/auth/token/access', params:)
     @premium_at = JSON.parse(response.body)['access_token']
 
     # Valid user with own jobs refresh/access/client tokens
@@ -204,8 +204,8 @@ RSpec.describe 'GeniusQueriesController' do
     post('/api/v0/auth/token/refresh', headers:)
     @valid_rt_has_own_jobs = JSON.parse(response.body)['refresh_token']
 
-    headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt_has_own_jobs }
-    post('/api/v0/auth/token/access', headers:)
+    params = { 'grant_type' => 'refresh_token', 'refresh_token' => @valid_rt_has_own_jobs }
+    post('/api/v0/auth/token/access', params:)
     @valid_at_has_own_jobs = JSON.parse(response.body)['access_token']
 
     # Unsubscribed refresh/access/client tokens
@@ -214,8 +214,8 @@ RSpec.describe 'GeniusQueriesController' do
     post('/api/v0/auth/token/refresh', headers:)
     @valid_rt_unsubscribed = JSON.parse(response.body)['refresh_token']
 
-    headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt_unsubscribed }
-    post('/api/v0/auth/token/access', headers:)
+    params = { 'grant_type' => 'refresh_token', 'refresh_token' => @valid_rt_unsubscribed }
+    post('/api/v0/auth/token/access', params:)
     @valid_at_unsubscribed = JSON.parse(response.body)['access_token']
 
     # Blacklisted user refresh/access/client tokens
@@ -224,8 +224,8 @@ RSpec.describe 'GeniusQueriesController' do
     post('/api/v0/auth/token/refresh', headers:)
     @valid_rt_blacklisted = JSON.parse(response.body)['refresh_token']
 
-    headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt_blacklisted }
-    post('/api/v0/auth/token/access', headers:)
+    params = { 'grant_type' => 'refresh_token', 'refresh_token' => @valid_rt_blacklisted }
+    post('/api/v0/auth/token/access', params:)
     @valid_at_blacklisted = JSON.parse(response.body)['access_token']
 
     # 200
@@ -259,15 +259,15 @@ RSpec.describe 'GeniusQueriesController' do
   describe '(POST: /api/v0/resource)' do
     context 'valid normal inputs' do
       it 'returns [200 OK] and creates genius query' do
-        post("/api/v0/resource?job_id=#{@job.id.to_i}", headers: { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs })
+        post("/api/v0/resource?job_id=#{@job.id.to_i}", headers: { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs })
         expect(response).to have_http_status(200)
       end
       it 'returns [200 OK] and creates genius query with custom expiration date' do
-        post("/api/v0/resource?job_id=#{@job.id.to_i}&exp=#{Time.now.to_i + 1.day.to_i}", headers: { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs })
+        post("/api/v0/resource?job_id=#{@job.id.to_i}&exp=#{Time.now.to_i + 1.day.to_i}", headers: { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs })
         expect(response).to have_http_status(200)
       end
       it 'returns [200 OK] for archived posting' do
-        post("/api/v0/resource?job_id=#{@archived_job.id.to_i}", headers: { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs })
+        post("/api/v0/resource?job_id=#{@archived_job.id.to_i}", headers: { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs })
         expect(response).to have_http_status(200)
       end
     end
@@ -277,49 +277,49 @@ RSpec.describe 'GeniusQueriesController' do
         expect(response).to have_http_status(400)
       end
       it 'returns [400 Bad Request] for missing resource id' do
-        post('/api/v0/resource', headers: { 'HTTP_ACCESS_TOKEN' => @valid_access_token })
+        post('/api/v0/resource', headers: { 'Authorization' => 'Bearer ' + @valid_access_token })
         expect(response).to have_http_status(400)
       end
       it 'returns [400 Bad Request] and creates genius query with invalid custom expiration date' do
-        post("/api/v0/resource?job_id=#{@job.id.to_i}&exp=#{Time.now.to_i + 10.years.to_i}", headers: { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs })
+        post("/api/v0/resource?job_id=#{@job.id.to_i}&exp=#{Time.now.to_i + 10.years.to_i}", headers: { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs })
         expect(response).to have_http_status(400)
       end
       it 'returns [400 Bad Request] and creates genius query with invalid custom expiration date' do
-        post("/api/v0/resource?job_id=#{@job.id.to_i}&exp=-10", headers: { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs })
+        post("/api/v0/resource?job_id=#{@job.id.to_i}&exp=-10", headers: { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs })
         expect(response).to have_http_status(400)
       end
       it 'returns [401 Unauthorized] for expired/invalid access token' do
-        post("/api/v0/resource?job_id=#{@job.id.to_i}", headers: { 'HTTP_ACCESS_TOKEN' => @invalid_token })
+        post("/api/v0/resource?job_id=#{@job.id.to_i}", headers: { 'Authorization' => 'Bearer ' + @invalid_token })
         expect(response).to have_http_status(401)
       end
       it 'returns [403 Forbidden] for deactivated posting' do
-        post("/api/v0/resource?job_id=#{@inactive_job.id.to_i}", headers: { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs })
+        post("/api/v0/resource?job_id=#{@inactive_job.id.to_i}", headers: { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs })
         expect(response).to have_http_status(403)
       end
       it 'returns [403 Forbidden] for blacklisted user' do
-        post("/api/v0/resource?job_id=#{@not_owned_job.id.to_i}", headers: { 'HTTP_ACCESS_TOKEN' => @valid_at_blacklisted })
+        post("/api/v0/resource?job_id=#{@not_owned_job.id.to_i}", headers: { 'Authorization' => 'Bearer ' + @valid_at_blacklisted })
         expect(response).to have_http_status(403)
       end
       it 'returns [403 Forbidden] for user with invalid subscription' do
-        post("/api/v0/resource?job_id=#{@job.id.to_i}", headers: { 'HTTP_ACCESS_TOKEN' => @valid_at_unsubscribed })
+        post("/api/v0/resource?job_id=#{@job.id.to_i}", headers: { 'Authorization' => 'Bearer ' + @valid_at_unsubscribed })
         expect(response).to have_http_status(403)
       end
       it 'returns [403 Forbidden] if user creates genius query for not owned job' do
-        post("/api/v0/resource?job_id=#{@not_owned_job.id.to_i}", headers: { 'HTTP_ACCESS_TOKEN' => @basic_at })
+        post("/api/v0/resource?job_id=#{@not_owned_job.id.to_i}", headers: { 'Authorization' => 'Bearer ' + @basic_at })
         expect(response).to have_http_status(403)
       end
       it 'returns [403 Forbidden] if user creates genius query with cancelled subscription' do
         @user_basic.payment_processor.subscription.cancel_now!
-        post("/api/v0/resource?job_id=#{@basic_job.id.to_i}", headers: { 'HTTP_ACCESS_TOKEN' => @basic_at })
+        post("/api/v0/resource?job_id=#{@basic_job.id.to_i}", headers: { 'Authorization' => 'Bearer ' + @basic_at })
         expect(response).to have_http_status(403)
       end
       it 'returns [403 Forbidden] if user creates genius query with cancelled subscription' do
         @user_premium.payment_processor.subscription.cancel_now!
-        post("/api/v0/resource?job_id=#{@premium_job.id.to_i}", headers: { 'HTTP_ACCESS_TOKEN' => @premium_at })
+        post("/api/v0/resource?job_id=#{@premium_job.id.to_i}", headers: { 'Authorization' => 'Bearer ' + @premium_at })
         expect(response).to have_http_status(403)
       end
       it 'returns [404 Not Found] if job does not exist' do
-        post('/api/v0/resource?job_id=0', headers: { 'HTTP_ACCESS_TOKEN' => @premium_at })
+        post('/api/v0/resource?job_id=0', headers: { 'Authorization' => 'Bearer ' + @premium_at })
         expect(response).to have_http_status(404)
       end
     end

@@ -37,20 +37,21 @@ module Api
         blank_error('refresh_token')
         # ======== Overwrite APIExceptionHandler =======
       end
-
+    
       def create_access
-        # ============ Token gets claimed ==============
-        if request.headers['HTTP_REFRESH_TOKEN'].nil? || request.headers['HTTP_REFRESH_TOKEN'].empty?
-          render status: 400, json: { token: [
-            {
-              error: 'ERR_BLANK',
-              description: "Attribute can't be blank"
-            }
-          ] }
-        else
-          token = AuthenticationTokenService::Access::Encoder.call(request.headers['HTTP_REFRESH_TOKEN'])
-          render status: 200, json: { 'access_token' => token }
+        grant_type = access_token_params[:grant_type]
+        refresh_token = access_token_params[:refresh_token]
+        scope = "#{root_url}api.write"
 
+        if grant_type != 'refresh_token' || refresh_token.nil?
+          render status: 400, json: { error: 'Invalid request' }
+        else
+          render status: 200, json: {
+            'access_token' => AuthenticationTokenService::Access::Encoder.call(refresh_token, scope),
+            'token_type' => 'Bearer',
+            'scope' => scope,
+            'expires_in' => 20.minutes.to_i
+          }
         end
       end
 
@@ -63,6 +64,10 @@ module Api
         else
           {}
         end
+      end
+
+      def access_token_params
+        params.permit(:grant_type, :refresh_token)
       end
     end
   end

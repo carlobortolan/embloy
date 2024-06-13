@@ -106,8 +106,8 @@ RSpec.describe 'AuthenticationController' do
     describe '(POST: /api/v0/auth/token/access)' do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and new access token' do
-          headers = { 'HTTP_REFRESH_TOKEN' => @valid_refresh_token }
-          post('/api/v0/auth/token/access', headers:)
+          params = { 'grant_type' => 'refresh_token', 'refresh_token' => @valid_refresh_token }
+          post('/api/v0/auth/token/access', params:)
           expect(response).to have_http_status(200)
         end
       end
@@ -118,13 +118,13 @@ RSpec.describe 'AuthenticationController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid refresh token' do
-          headers = { 'HTTP_REFRESH_TOKEN' => @invalid_refresh_token }
-          post('/api/v0/auth/token/access', headers:)
+          params = { 'grant_type' => 'refresh_token', 'refresh_token' => @invalid_refresh_token }
+          post('/api/v0/auth/token/access', params:)
           expect(response).to have_http_status(401)
         end
         it 'returns [200 OK] for blacklisted user' do # TODO: Should this return 200 OK or 403 Forbidden?
-          headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt_blacklisted }
-          post('/api/v0/auth/token/access', headers:)
+          params = { 'grant_type' => 'refresh_token', 'refresh_token' => @valid_rt_blacklisted }
+          post('/api/v0/auth/token/access', params:)
           expect(response).to have_http_status(200)
         end
       end
