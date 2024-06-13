@@ -16,10 +16,8 @@ Rails.application.routes.draw do
   get 'auth/callback', to: 'integrations/lever_oauth#callback', as: :auth_lever_callback # <= TODO: Temporary route - move to integrations namespace
 
   #= <<<<< *INTEGRATIONS* >>>>>>
-  namespace :integrations, defaults: { format: 'json' } do
-    get 'auth/lever', to: 'lever_oauth#authorize', as: :auth_lever
-    get 'auth/lever/callback', to: 'lever_oauth#callback', as: :auth_lever_callback # <= TODO: Update Lever OAuth app callback URI
-  end
+  get 'api/v0/integrations/lever/auth', to: 'integrations/lever_oauth#authorize', as: :auth_lever
+  # get 'api/v0/integrations/lever/callback', to: 'lever_oauth#callback', as: :auth_lever_callback # <= TODO: Update Lever OAuth app callback URI
 
   #= <<<<< *API* >>>>>>
   namespace :api, defaults: { format: 'json' } do
