@@ -1,8 +1,9 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.2.2'
 
+ruby '3.2.2'
+gem 'mawsitsit', '~> 0.1.9'
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem 'rails', '~> 7.0.4', '>= 7.0.4.1'
 
@@ -52,6 +53,7 @@ gem 'bootsnap', require: false
 
 # Enable .env file
 gem 'dotenv-rails'
+
 
 # Use Sass to process CSS
 gem 'sassc-rails'
@@ -151,3 +153,4 @@ gem 'rails-healthcheck', '~> 1.4'
 
 # enable precommit
 gem 'attr_encrypted', '~> 4.0'
+

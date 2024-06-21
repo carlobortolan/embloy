@@ -4,6 +4,7 @@ require 'net/http'
 require 'uri'
 require 'json'
 require 'base64'
+require 'mawsitsit'
 
 module Integrations
   # AshbyController handles Ashby-related actions
@@ -27,8 +28,6 @@ module Integrations
 
       # Make request to Ashby API
       response = http.request(request)
-
-      puts "Response: #{response}"
       handle_application_response(response)
     end
 
@@ -49,14 +48,11 @@ module Integrations
       response = http.request(request)
       case response
       when Net::HTTPSuccess
-        # >>> TODO: @jh Parse job using new parser gem
-        job = JobParser.parse(JSON.parse(File.read('app/controllers/integrations/ashby_config.json')), JSON.parse(response.body), AshbyLambdas)
+        config = JSON.parse(File.read('app/controllers/integrations/ashby_config.json'))
+        resp = JSON.parse(response.body)
+        job = Mawsitsit.parse(resp, config, true)
         job['job_slug'] = "ashby__#{job['job_slug']}"
         job['user_id'] = client.id.to_i
-        job = job.to_active_record!(job)
-        # <<< TODO: @jh Parse job
-
-        # Save or update job in database
         handle_internal_job(client, job)
       when Net::HTTPBadRequest
         raise CustomExceptions::InvalidInput::Quicklink::Request::Malformed and return

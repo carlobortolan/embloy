@@ -3,7 +3,6 @@
 module Integrations
   # IntegrationsController handles Integration-related actions and verifications
   class IntegrationsController < ApplicationController
-    include JobParser
     include AshbyLambdas
     include ApiExceptionHandler
 
