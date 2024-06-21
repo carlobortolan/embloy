@@ -6,8 +6,8 @@ module Api
     class ApplicationsController < ApiController
       include ApplicationBuilder
       before_action :verify_path_job_id, except: %i[show_all create accept reject]
-      before_action :verify_path_active_job_id, only: %i[accept reject create]
-      # before_action :verify_path_listed_job_id, only: %i[create]
+      before_action :verify_path_active_job_id, only: %i[accept reject]
+      before_action :verify_path_listed_job_id, only: %i[create]
       before_action :must_be_verified!
       before_action :must_be_subscribed!, only: %i[accept reject]
 
@@ -80,7 +80,7 @@ module Api
           render status: 200, json: {
             application:,
             application_attachment: { attachment: application_attachment, url: attachment_url },
-            application_answers: application.application_answers
+            application_answers: application.application_answers.as_json(include: { attachment: { methods: :url } })
           }
         end
       end
@@ -116,7 +116,7 @@ module Api
       end
 
       def application_params
-        params.except(:format).permit(:id, :application_text, :application_attachment, application_answers: %i[application_option_id answer])
+        params.except(:format).permit(:id, :application_text, :application_attachment, application_answers: %i[application_option_id answer file])
       end
 
       def application_modify_params

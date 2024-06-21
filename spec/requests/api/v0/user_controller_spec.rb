@@ -76,8 +76,8 @@ RSpec.describe 'UserController' do
     post('/api/v0/auth/token/refresh', headers:)
     @valid_refresh_token = JSON.parse(response.body)['refresh_token']
 
-    headers = { 'HTTP_REFRESH_TOKEN' => @valid_refresh_token }
-    post('/api/v0/auth/token/access', headers:)
+    params = { 'grant_type' => 'refresh_token', 'refresh_token' => @valid_refresh_token }
+    post('/api/v0/auth/token/access', params:)
     @valid_access_token = JSON.parse(response.body)['access_token']
 
     # Valid user with own jobs refresh/access tokens
@@ -86,8 +86,8 @@ RSpec.describe 'UserController' do
     post('/api/v0/auth/token/refresh', headers:)
     @valid_rt_has_own_jobs = JSON.parse(response.body)['refresh_token']
 
-    headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt_has_own_jobs }
-    post('/api/v0/auth/token/access', headers:)
+    params = { 'grant_type' => 'refresh_token', 'refresh_token' => @valid_rt_has_own_jobs }
+    post('/api/v0/auth/token/access', params:)
     @valid_at_has_own_jobs = JSON.parse(response.body)['access_token']
 
     # Valid user with upcoming jobs refresh/access tokens
@@ -96,8 +96,8 @@ RSpec.describe 'UserController' do
     post('/api/v0/auth/token/refresh', headers:)
     @valid_rt_has_upcoming_jobs = JSON.parse(response.body)['refresh_token']
 
-    headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt_has_upcoming_jobs }
-    post('/api/v0/auth/token/access', headers:)
+    params = { 'grant_type' => 'refresh_token', 'refresh_token' => @valid_rt_has_upcoming_jobs }
+    post('/api/v0/auth/token/access', params:)
     @valid_at_has_upcoming_jobs = JSON.parse(response.body)['access_token']
 
     # Blacklisted user refresh/access/client tokens
@@ -106,8 +106,8 @@ RSpec.describe 'UserController' do
     post('/api/v0/auth/token/refresh', headers:)
     @valid_rt_blacklisted = JSON.parse(response.body)['refresh_token']
 
-    headers = { 'HTTP_REFRESH_TOKEN' => @valid_rt_blacklisted }
-    post('/api/v0/auth/token/access', headers:)
+    params = { 'grant_type' => 'refresh_token', 'refresh_token' => @valid_rt_blacklisted }
+    post('/api/v0/auth/token/access', params:)
     @valid_at_blacklisted = JSON.parse(response.body)['access_token']
 
     UserBlacklist.create!(
@@ -140,7 +140,7 @@ RSpec.describe 'UserController' do
     describe '(GET: /api/v0/user)' do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and user JSON' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token }
+          headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
           get('/api/v0/user', headers:)
           expect(response).to have_http_status(200)
         end
@@ -151,12 +151,12 @@ RSpec.describe 'UserController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @invalid_access_token }
+          headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
           get('/api/v0/user', headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_blacklisted }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
           get('/api/v0/user', headers:)
           expect(response).to have_http_status(403)
         end
@@ -213,12 +213,12 @@ RSpec.describe 'UserController' do
     describe '(GET: /api/v0/user/jobs)' do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and job JSONs if user has own jobs' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_own_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs }
           get('/api/v0/user/jobs', headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [204 No Content] if user does not have any jobs' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token }
+          headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
           get('/api/v0/user/jobs', headers:)
           expect(response).to have_http_status(204)
         end
@@ -229,12 +229,12 @@ RSpec.describe 'UserController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @invalid_access_token }
+          headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
           get('/api/v0/user/jobs', headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_blacklisted }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
           get('/api/v0/user/jobs', headers:)
           expect(response).to have_http_status(403)
         end
@@ -244,12 +244,12 @@ RSpec.describe 'UserController' do
     describe '(GET: /api/v0/user/upcoming)' do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and JSON job JSONs if user has upcoming jobs' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_has_upcoming_jobs }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_upcoming_jobs }
           get('/api/v0/user/upcoming', headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [204 No Content] if user does not have any jobs' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token }
+          headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
           get('/api/v0/user/upcoming', headers:)
           expect(response).to have_http_status(204)
         end
@@ -260,12 +260,12 @@ RSpec.describe 'UserController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @invalid_access_token }
+          headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
           get('/api/v0/user/upcoming', headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_blacklisted }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
           get('/api/v0/user/upcoming', headers:)
           expect(response).to have_http_status(403)
         end
@@ -275,7 +275,7 @@ RSpec.describe 'UserController' do
     describe '(GET: /api/v0/user/preferences)' do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and the preferences JSON' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token }
+          headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
           get('/api/v0/user/preferences', headers:)
           expect(response).to have_http_status(200)
         end
@@ -286,12 +286,12 @@ RSpec.describe 'UserController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @invalid_access_token }
+          headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
           get('/api/v0/user/preferences', headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_blacklisted }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
           get('/api/v0/user/preferences', headers:)
           expect(response).to have_http_status(403)
         end
@@ -416,7 +416,7 @@ RSpec.describe 'UserController' do
         it 'returns [400 Bad Request] for too long email' do
           user_data = {
             user: {
-              email: 'a'*140 + '@embloy.com',
+              email: "#{'a' * 140}@embloy.com",
               first_name: 'Max',
               last_name: 'Mustermann',
               password: '123456789',
@@ -430,7 +430,7 @@ RSpec.describe 'UserController' do
           user_data = {
             user: {
               email: 'tooLongFirstName@embloy.com',
-              first_name: 'a'*129,
+              first_name: 'a' * 129,
               last_name: 'Mustermann',
               password: '123456789',
               password_confirmation: '123456789'
@@ -444,7 +444,7 @@ RSpec.describe 'UserController' do
             user: {
               email: 'TooLongLastName@embloy.com',
               first_name: 'Max',
-              last_name: 'a'*129,
+              last_name: 'a' * 129,
               password: '123456789',
               password_confirmation: '123456789'
             }
@@ -458,7 +458,7 @@ RSpec.describe 'UserController' do
               email: 'TooLongPassword@embloy.com',
               first_name: 'Max',
               last_name: 'Mustermann',
-              password: 'a'*73,
+              password: 'a' * 73,
               password_confirmation: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
             }
           }
@@ -521,12 +521,12 @@ RSpec.describe 'UserController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @invalid_access_token }
+          headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
           post('/api/v0/user/image', headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_blacklisted }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
           post('/api/v0/user/image', headers:)
           expect(response).to have_http_status(403)
         end
@@ -547,12 +547,12 @@ RSpec.describe 'UserController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @invalid_access_token }
+          headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
           patch('/api/v0/user', headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_blacklisted }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
           patch('/api/v0/user', headers:)
           expect(response).to have_http_status(403)
         end
@@ -562,7 +562,7 @@ RSpec.describe 'UserController' do
     describe '(DELETE: /api/v0/user)' do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and deletes the user' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_access_token }
+          headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
           delete('/api/v0/user', headers:)
           expect(response).to have_http_status(200)
         end
@@ -573,12 +573,12 @@ RSpec.describe 'UserController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @invalid_access_token }
+          headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
           delete('/api/v0/user', headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-          headers = { 'HTTP_ACCESS_TOKEN' => @valid_at_blacklisted }
+          headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
           delete('/api/v0/user', headers:)
           expect(response).to have_http_status(403)
         end

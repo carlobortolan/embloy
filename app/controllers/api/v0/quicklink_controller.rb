@@ -65,7 +65,7 @@ module Api
       # It calls the Encoder class of the `QuicklinkService::Client` module to create the token.
       # It then returns the token in the response.
       def create_client
-        token = QuicklinkService::Client::Encoder.call(Current.user.id, check_subscription, parse_expiration_date)
+        token = QuicklinkService::Client::Encoder.call(check_subscription, parse_expiration_date)
         render status: 200, json: { 'client_token' => token }
       end
 
@@ -88,20 +88,15 @@ module Api
       # If the job does not exist, it is created with the `job_slug` and `client.id`.
       # The job is then added to the client's jobs.
       def update_or_create_job(session)
+        # Retrieve existing job if it exists
         @client.jobs ||= []
         @job = @client.jobs.find_by(job_slug: session['job_slug'])
 
-        case session['mode']
-        when 'lever'
-          @job = Integrations::LeverController.get_posting(session['job_slug'].sub('lever__', ''), @client, @job)
-        when 'ashby'
-          @job = Integrations::AshbyController.get_posting(session['job_slug'].sub('ashby__', ''), @client, @job)
-        when 'softgarden'
-          @job = Integrations::SoftgardenController.get_posting(session['job_slug'].sub('softgarden__', ''), @client, @job)
-        end
-
+        # Return job from external API if integration mode enabled
+        @job = Integrations::IntegrationsController.get_posting(session['mode'], session['job_slug'], @client, @job) if session['mode'] != 'job'
         return handle_existing_job if @job
 
+        # Create new job if it does not exist
         create_new_job(session)
       end
 
@@ -159,7 +154,7 @@ module Api
       end
 
       def application_params
-        params.except(:format).permit(:id, :application_text, :application_attachment, application_answers: %i[application_option_id answer])
+        params.except(:format).permit(:id, :application_text, :application_attachment, application_answers: %i[application_option_id answer file])
       end
 
       def portal_params

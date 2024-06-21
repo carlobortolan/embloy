@@ -7,9 +7,12 @@
 class ApplicationOption < ApplicationRecord
   belongs_to :job
   acts_as_paranoid
-  VALID_QUESTION_TYPES = %w[yes_no text link single_choice multiple_choice].freeze
-
+  VALID_QUESTION_TYPES = %w[yes_no short_text long_text number link single_choice multiple_choice date location file].freeze
+  ALLOWED_FILE_TYPES = %w[pdf doc docx txt rtf odt jpg jpeg png gif bmp tiff tif svg mp4 avi mov wmv flv mkv webm ogg mp3 wav wma aac m4a zip rar tar 7z gz bz2 xls xlsx ods ppt pptx].freeze
   serialize :options, Array
+  before_validation :set_default_ext_id, on: %i[create update], if: -> { ext_id.blank? && deleted_at.nil? }
+  before_validation :set_default_file_options
+
   validates :question, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
                        length: { minimum: 0, maximum: 500, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
   validates :question_type,
@@ -23,9 +26,13 @@ class ApplicationOption < ApplicationRecord
   validate :options_type_validation
   validate :options_presence_validation, if: :options_required?
   validates :options, length: { minimum: 0, maximum: 100, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
-  validates :ext_id, uniqueness: { scope: :job_id, error: 'ERR_UNIQUE', description: 'Should be unique per job' }, on: %i[create update]
+  validates :ext_id, uniqueness: { scope: :job_id, error: 'ERR_UNIQUE', description: 'Should be unique per job' }, on: %i[create update], if: -> { deleted_at.nil? }
+  validate :file_type_validation, if: -> { question_type == 'file' }
 
-  enum question_type: { yes_no: 'yes_no', text: 'text', link: 'link', single_choice: 'single_choice', multiple_choice: 'multiple_choice' }
+  validates :ext_id, uniqueness: { scope: :job_id, message: 'Should be unique per job' }, on: %i[create update], if: -> { deleted_at.nil? }
+
+  enum question_type: { yes_no: 'yes_no', short_text: 'short_text', long_text: 'long_text', number: 'number', date: 'date', location: 'location', link: 'link', single_choice: 'single_choice',
+                        multiple_choice: 'multiple_choice', file: 'file' }
 
   def options_required?
     %w[single_choice multiple_choice].include?(question_type)
@@ -55,5 +62,19 @@ class ApplicationOption < ApplicationRecord
     return if options.is_a?(Array)
 
     job.errors.add(:options, 'Options must be an array')
+  end
+
+  def set_default_file_options
+    self.options = ['pdf'] if options.blank? && question_type == 'file'
+  end
+
+  def file_type_validation
+    return if options.all? { |option| ALLOWED_FILE_TYPES.include?(option) }
+
+    errors.add(:options, "File types must be one of: #{ALLOWED_FILE_TYPES.join(', ')}")
+  end
+
+  def set_default_ext_id
+    self.ext_id = "embloy__#{SecureRandom.uuid}"
   end
 end
