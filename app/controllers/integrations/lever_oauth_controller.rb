@@ -23,7 +23,7 @@ module Integrations
       client_id = ENV.fetch('LEVER_CLIENT_ID', nil)
       state = Current.user.signed_id(purpose: 'lever_oauth_state', expires_in: 1.hour)
       audience = 'https://api.sandbox.lever.co/v1/'
-      scope = 'offline_access'
+      scope = 'offline_access postings:write:admin'
 
       redirect_to "#{LEVER_OAUTH_URL}?client_id=#{client_id}&redirect_uri=#{auth_lever_callback_url}&state=#{state}&response_type=code&scope=#{scope}&prompt=consent&audience=#{audience}",
                   allow_other_host: true
@@ -65,6 +65,7 @@ module Integrations
                                            'client_secret' => ENV.fetch('LEVER_CLIENT_SECRET', nil),
                                            'grant_type' => 'authorization_code',
                                            'code' => code,
+                                           'scope' => 'postings:write:admin',
                                            'redirect_uri' => auth_lever_callback_url
                                          })
 
@@ -73,6 +74,7 @@ module Integrations
 
     # Handle HTTP response from Lever authorization request and save new tokens
     def handle_http_response(response, user) # rubocop:disable Metrics/AbcSize
+      puts "Response: #{response.inspect}"
       case response
       when Net::HTTPSuccess
         response_body = JSON.parse(response.body)
