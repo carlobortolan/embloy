@@ -21,7 +21,6 @@ ActiveRecord::Schema[7.0].define(version: 20_240_526_133_828) do
 
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
-  create_enum 'allowed_cv_format', ['.pdf', '.docx', '.txt', '.xml']
   create_enum 'application_status', ['-1', '0', '1']
   create_enum 'job_status', %w[listed unlisted archived]
   create_enum 'notify_type', %w[0 1]
@@ -103,16 +102,6 @@ ActiveRecord::Schema[7.0].define(version: 20_240_526_133_828) do
     t.index ['user_id'], name: 'application_answers_user_id_index'
   end
 
-  create_table 'application_attachments', id: :serial, force: :cascade do |t|
-    t.integer 'user_id', null: false
-    t.integer 'job_id', null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.index %w[job_id user_id], name: 'application_attachment_job_id_user_id_index', unique: true
-    t.index ['job_id'], name: 'application_attachment_job_id_index'
-    t.index ['user_id'], name: 'application_attachment_user_id_index'
-  end
-
   create_table 'application_options', force: :cascade do |t|
     t.bigint 'job_id', null: false
     t.string 'ext_id', limit: 100
@@ -133,8 +122,6 @@ ActiveRecord::Schema[7.0].define(version: 20_240_526_133_828) do
     t.datetime 'updated_at', null: false
     t.datetime 'created_at', null: false
     t.enum 'status', default: '0', null: false, enum_type: 'application_status'
-    t.string 'application_text', limit: 1000
-    t.string 'application_documents', limit: 150
     t.string 'response', limit: 500
     t.datetime 'deleted_at'
     t.index ['deleted_at'], name: 'index_applications_on_deleted_at'
@@ -195,8 +182,6 @@ ActiveRecord::Schema[7.0].define(version: 20_240_526_133_828) do
     t.integer 'employer_rating', default: 0, null: false
     t.text 'job_notifications', default: '1', null: false
     t.integer 'boost', default: 0, null: false
-    t.boolean 'cv_required', default: false, null: false
-    t.string 'allowed_cv_formats', default: ['.pdf', '.docx', '.txt', '.xml'], null: false, array: true
     t.datetime 'deleted_at'
     t.geography 'job_value', limit: { srid: 4326, type: 'st_point', has_z: true, geographic: true }
     t.index "to_tsvector('simple'::regconfig, (((((((((((((((((COALESCE(title, ''::character varying))::text || ' '::text) || (COALESCE(job_type, ''::character varying))::text) || ' '::text) || (COALESCE(\"position\", ''::character varying))::text) || ' '::text) || (COALESCE(key_skills, ''::character varying))::text) || ' '::text) || COALESCE(description, ''::text)) || ' '::text) || (COALESCE(country_code, ''::character varying))::text) || ' '::text) || (COALESCE(city, ''::character varying))::text) || ' '::text) || (COALESCE(postal_code, ''::character varying))::text) || ' '::text) || (COALESCE(address, ''::character varying))::text))",
@@ -366,7 +351,6 @@ ActiveRecord::Schema[7.0].define(version: 20_240_526_133_828) do
     t.jsonb 'job_types', default: { '1' => 0, '2' => 0, '3' => 0 }
     t.jsonb 'key_skills'
     t.float 'salary_range', default: [0.0, 0.0], array: true
-    t.string 'cv_url', limit: 500
     t.datetime 'deleted_at'
     t.index ['deleted_at'], name: 'index_preferences_on_deleted_at'
   end

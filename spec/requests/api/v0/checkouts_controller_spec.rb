@@ -91,7 +91,7 @@ RSpec.describe 'CheckoutsController' do
     describe '(GET: /api/v0/checkout/portal)' do
       context 'valid normal inputs' do
         it 'returns [400 Bad Request] if user has subscriptions' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_subscriptions }
+          headers = { 'Authorization' => "Bearer #{@valid_at_has_subscriptions}" }
           get('/api/v0/checkout/portal', headers:)
           expect(response).to have_http_status(400) # Stripe error due to fake processor
         end
@@ -102,17 +102,17 @@ RSpec.describe 'CheckoutsController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
-          headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
+          headers = { 'Authorization' => "Bearer #{@invalid_access_token}" }
           get('/api/v0/checkout/portal', headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] if user does not have any subscriptions' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
+          headers = { 'Authorization' => "Bearer #{@valid_access_token}" }
           get('/api/v0/checkout/portal', headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
+          headers = { 'Authorization' => "Bearer #{@valid_at_blacklisted}" }
           get('/api/v0/checkout/portal', headers:)
           expect(response).to have_http_status(403)
         end
@@ -121,12 +121,12 @@ RSpec.describe 'CheckoutsController' do
       describe '(POST: /api/v0/checkout)' do
         context 'valid normal inputs' do
           it 'returns [400 Bad Request] if user has subscriptions' do
-            headers = { 'Authorization' => 'Bearer ' + @valid_at_has_subscriptions }
+            headers = { 'Authorization' => "Bearer #{@valid_at_has_subscriptions}" }
             post('/api/v0/checkout', headers:)
             expect(response).to have_http_status(400) # Stripe error due to fake processor
           end
           it 'returns [400 Bad Request] if user does not have any subscriptions' do
-            headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
+            headers = { 'Authorization' => "Bearer #{@valid_access_token}" }
             post('/api/v0/checkout', headers:)
             expect(response).to have_http_status(400) # Stripe error due to fake processor
           end
@@ -137,12 +137,12 @@ RSpec.describe 'CheckoutsController' do
             expect(response).to have_http_status(400)
           end
           it 'returns [401 Unauthorized] for expired/invalid access token' do
-            headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
+            headers = { 'Authorization' => "Bearer #{@invalid_access_token}" }
             post('/api/v0/checkout', headers:)
             expect(response).to have_http_status(401)
           end
           it 'returns [403 Forbidden] for blacklisted user' do
-            headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
+            headers = { 'Authorization' => "Bearer #{@valid_at_blacklisted}" }
             post('/api/v0/checkout', headers:)
             expect(response).to have_http_status(403)
           end
@@ -158,22 +158,22 @@ RSpec.describe 'CheckoutsController' do
             expect(response).to have_http_status(400)
           end
           it 'returns [400 Bad Request] for missing \'session_id\'' do
-            headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
+            headers = { 'Authorization' => "Bearer #{@valid_access_token}" }
             get('/api/v0/checkout/subscription/success', headers:)
             expect(response).to have_http_status(400)
           end
           it 'returns [400 Bad Request] for invalid session id' do
-            headers = { 'Authorization' => 'Bearer ' + @valid_at_has_subscriptions }
+            headers = { 'Authorization' => "Bearer #{@valid_at_has_subscriptions}" }
             get('/api/v0/checkout/subscription/success?session_id=123', headers:)
             expect(response).to have_http_status(400) # Stripe error due to fake processor
           end
           it 'returns [401 Unauthorized] for expired/invalid access token' do
-            headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
+            headers = { 'Authorization' => "Bearer #{@invalid_access_token}" }
             get('/api/v0/checkout/subscription/success?session_id=123', headers:)
             expect(response).to have_http_status(401)
           end
           it 'returns [403 Forbidden] for blacklisted user' do
-            headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
+            headers = { 'Authorization' => "Bearer #{@valid_at_blacklisted}" }
             get('/api/v0/checkout/subscription/success?session_id=123', headers:)
             expect(response).to have_http_status(403)
           end
@@ -183,7 +183,7 @@ RSpec.describe 'CheckoutsController' do
       describe '(GET: /api/v0/checkout/failure)' do
         context 'valid normal inputs' do
           it 'returns [204 No Content]' do
-            headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
+            headers = { 'Authorization' => "Bearer #{@valid_access_token}" }
             get('/api/v0/checkout/failure', headers:)
             expect(response).to have_http_status(204)
           end
@@ -194,12 +194,12 @@ RSpec.describe 'CheckoutsController' do
             expect(response).to have_http_status(400)
           end
           it 'returns [401 Unauthorized] for expired/invalid access token' do
-            headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
+            headers = { 'Authorization' => "Bearer #{@invalid_access_token}" }
             get('/api/v0/checkout/failure?session_id=123', headers:)
             expect(response).to have_http_status(401)
           end
           it 'returns [403 Forbidden] for blacklisted user' do
-            headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
+            headers = { 'Authorization' => "Bearer #{@valid_at_blacklisted}" }
             get('/api/v0/checkout/failure?session_id=123', headers:)
             expect(response).to have_http_status(403)
           end
@@ -215,22 +215,22 @@ RSpec.describe 'CheckoutsController' do
             expect(response).to have_http_status(400)
           end
           it 'returns [400 Bad Request] for missing \'session_id\'' do
-            headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
+            headers = { 'Authorization' => "Bearer #{@valid_access_token}" }
             get('/api/v0/checkout/payment/success', headers:)
             expect(response).to have_http_status(400)
           end
           it 'returns [400 Bad Request] for invalid session id' do
-            headers = { 'Authorization' => 'Bearer ' + @valid_at_has_subscriptions }
+            headers = { 'Authorization' => "Bearer #{@valid_at_has_subscriptions}" }
             get('/api/v0/checkout/payment/success?session_id=123', headers:)
             expect(response).to have_http_status(400) # Stripe error due to fake processor
           end
           it 'returns [401 Unauthorized] for expired/invalid access token' do
-            headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
+            headers = { 'Authorization' => "Bearer #{@invalid_access_token}" }
             get('/api/v0/checkout/payment/success?session_id=123', headers:)
             expect(response).to have_http_status(401)
           end
           it 'returns [403 Forbidden] for blacklisted user' do
-            headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
+            headers = { 'Authorization' => "Bearer #{@valid_at_blacklisted}" }
             get('/api/v0/checkout/payment/success?session_id=123', headers:)
             expect(response).to have_http_status(403)
           end

@@ -111,7 +111,7 @@ module Api
 
       def create_new_job(session)
         allowed_params = %w[user_id job_type job_slug referrer_url duration code_lang title position description key_skills salary currency start_slot longitude latitude country_code postal_code
-                            city address job_notifications cv_required allowed_cv_formats]
+                            city address job_notifications]
         @job = Job.new(session.slice(*allowed_params).merge(job_status: 'unlisted'))
 
         if @job.save
@@ -154,12 +154,12 @@ module Api
       end
 
       def application_params
-        params.except(:format).permit(:id, :application_text, :application_attachment, application_answers: %i[application_option_id answer file])
+        params.except(:format).permit(:id, application_answers: %i[application_option_id answer file])
       end
 
       def portal_params
         params.except(:format).permit(:mode, :success_url, :cancel_url, :job_slug, :title, :description, :start_slot, :longitude, :latitude, :job_type, :job_status, :image_url, :position, :currency,
-                                      :salary, :key_skills, :duration, :job_notifications, :cv_required, allowed_cv_formats: [])
+                                      :salary, :key_skills, :duration, :job_notifications)
       end
     end
   end

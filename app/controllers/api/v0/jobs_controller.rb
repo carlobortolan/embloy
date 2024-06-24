@@ -271,8 +271,7 @@ module Api
         permitted_params = params.except(:format, :_json, :job).permit(
           :id, :job_slug, :title, :description, :start_slot, :referrer_url, :longitude, :latitude, :job_type,
           :job_status, :image_url, :position, :currency, :salary, :key_skills, :duration, :job_notifications,
-          :cv_required, allowed_cv_formats: [], application_options_attributes: [:id, :question, :question_type,
-                                                                                 :required, { options: [] }]
+          application_options_attributes: [:id, :question, :question_type, :required, { options: [] }]
         )
         check_question_types(permitted_params)
         raise ActionController::BadRequest, 'Invalid job_status' if permitted_params[:job_status].present? && !Job::VALID_JOB_TYPES.include?(permitted_params[:job_status])

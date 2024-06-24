@@ -31,11 +31,8 @@
   "employer_rating": null,
   "job_notifications": null,
   "boost": null,
-  "cv_required": null,
-  "allowed_cv_formats": null,
   "deleted_at": null,
   "job_value": null,
-  "allowed_cv_format": null,
   "application_options_attributes": "results.applicationFormDefinition.sections-<ashby>",
   "image_url": null
 }

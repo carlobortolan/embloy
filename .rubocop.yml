@@ -5,17 +5,6 @@ AllCops:
   Include:
     - '**/*.rb'
   Exclude:
-    - 'lib/**/*'
-    - 'spec/**/*'
-    - 'db/**/*'
-    - 'bin/**/*'
-    - 'app/controllers/application_controller.rb'
-    - 'app/controllers/api/v0/job_assignment_controller.rb' # TODO: remove this line after refactoring
-    - 'app/controllers/oauth_callbacks_controller.rb' # TODO: remove this line after refactoring
-    - 'app/controllers/api/v0/registrations_controller.rb' # TODO: remove this line after refactoring
-    - 'app/controllers/api/v0/authentications_controller.rb' # TODO: remove this line after refactoring
-    - 'app/controllers/concerns/job_parser.rb' # TODO: remove this line after refactoring
-    - 'vendor/**/*'
 Layout/LineLength:
   Max: 200
 Metrics/MethodLength:

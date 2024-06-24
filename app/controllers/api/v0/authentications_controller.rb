@@ -37,7 +37,7 @@ module Api
         blank_error('refresh_token')
         # ======== Overwrite APIExceptionHandler =======
       end
-    
+
       def create_access
         grant_type = access_token_params[:grant_type]
         refresh_token = access_token_params[:refresh_token]

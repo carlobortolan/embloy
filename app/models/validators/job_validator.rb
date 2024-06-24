@@ -31,8 +31,6 @@ module Validators
       }
       belongs_to :user, counter_cache: true
       has_many :applications, dependent: :delete_all
-      has_many :application_attachments,
-               dependent: :delete_all
       has_many :application_options, dependent: :destroy
       accepts_nested_attributes_for :application_options, allow_destroy: true
       has_noticed_notifications model_name: 'Notification'
@@ -62,7 +60,6 @@ module Validators
       # validates :country_code, length: { minimum: 0, maximum: 45, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
       # validates :city, length: { minimum: 0, maximum: 45, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
       # validates :address, length: { minimum: 0, maximum: 150, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
-      validate :cv_formats_validation
       validate :employer_rating
       validate :boost
       validate :start_slot_validation
@@ -105,14 +102,6 @@ module Validators
       else
         0
       end
-    end
-
-    def cv_formats_validation
-      self.allowed_cv_formats = ['.pdf', '.docx', '.txt', '.xml'] if allowed_cv_formats.nil?
-      valid_formats = ['.pdf', '.docx', '.txt', '.xml']
-      return if !allowed_cv_formats.nil? && allowed_cv_formats.all? { |format| valid_formats.include?(format) }
-
-      errors.add(:allowed_cv_formats, 'Invalid file format. Only PDF, DOCX, TXT, and XML files are allowed.')
     end
 
     def job_type_validation
