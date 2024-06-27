@@ -87,8 +87,12 @@ module Integrations
 
       # Make request to Ashby API
       response = http.request(request)
+      body = JSON.parse(response.body)
+
       case response
       when Net::HTTPSuccess
+        raise CustomExceptions::InvalidInput::Quicklink::Request::Malformed unless body['success'] == true
+
         config = JSON.parse(File.read('app/controllers/integrations/ashby_config.json'))
         resp = JSON.parse(response.body)
         job = Mawsitsit.parse(resp, config, true)

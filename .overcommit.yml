@@ -1,8 +1,8 @@
 PreCommit:
   Brakeman:
     enabled: true
-#  RuboCop:
-#    enabled: true
+  RuboCop:
+    enabled: true
   BundleAudit:
     enabled: true
   RailsBestPractices:
