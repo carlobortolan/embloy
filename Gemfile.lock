@@ -257,7 +257,7 @@ GEM
       net-smtp
     marcel (1.0.4)
     matrix (0.4.2)
-    mawsitsit (0.1.12)
+    mawsitsit (0.1.13)
     method_source (1.1.0)
     mime-types (3.5.2)
       mime-types-data (~> 3.2015)
@@ -530,7 +530,7 @@ PLATFORMS
   arm-linux
   arm-linux-gnu
   arm-linux-musl
-  arm64-darwin
+  arm64-darwin-23
   x86-linux
   x86-linux-gnu
   x86-linux-musl
@@ -567,7 +567,7 @@ DEPENDENCIES
   iso_country_codes
   jbuilder
   kaminari
-  mawsitsit (~> 0.1.9)
+  mawsitsit (~> 0.1.13)
   newrelic_rpm
   nokogiri (>= 1.16.2)
   notable (~> 0.5.2)
