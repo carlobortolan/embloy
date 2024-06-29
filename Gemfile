@@ -3,7 +3,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 
 ruby '3.2.2'
-gem 'mawsitsit', '~> 0.1.13'
+gem 'mawsitsit', '~> 0.1.14'
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem 'rails', '~> 7.0.4', '>= 7.0.4.1'
 

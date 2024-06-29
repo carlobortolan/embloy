@@ -22,7 +22,7 @@
   "latitude": null,
   "country_code": null,
   "postal_code": null,
-  "city": "results.locationIds.primaryLocationId-<fetch|https://api.ashbyhq.com/location.info,POST,JSON,94befa3e484fbfa12ae6929f81c9b289ec37e3a6072473c6dbdf2992eb6c5ccf:,locationId,results.name>",
+  "city": "results.locationIds.primaryLocationId-<fetch|https://api.ashbyhq.com/location.info,POST,JSON,ASHBY_SECRET,locationId,results.name>",
   "address": null,
   "view_count": null,
   "created_at": "results.publishedDate",
