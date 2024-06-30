@@ -54,6 +54,8 @@ module Integrations
     end
 
     def self.handle_internal_job(client, parsed_job)
+      return if parsed_job['job_slug'].nil?
+
       if client.jobs.find_by(job_slug: parsed_job['job_slug']).nil?
         # Create new job if not already in the database
         create_internal_job(client, parsed_job)

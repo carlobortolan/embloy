@@ -65,7 +65,7 @@ module Integrations
                                            'client_secret' => ENV.fetch('LEVER_CLIENT_SECRET', nil),
                                            'grant_type' => 'authorization_code',
                                            'code' => code,
-                                           'scope' => 'postings:write:admin',
+                                           'scope' => 'offline_access postings:write:admin',
                                            'redirect_uri' => auth_lever_callback_url
                                          })
 

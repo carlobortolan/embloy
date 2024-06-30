@@ -92,8 +92,9 @@ module Integrations
       case response
       when Net::HTTPSuccess
         raise CustomExceptions::InvalidInput::Quicklink::Request::Malformed unless body['success'] == true
+
         config = JSON.parse(File.read('app/controllers/integrations/ashby_config.json'))
-        config["city"].gsub!("ASHBY_SECRET", "#{fetch_token(client, 'ashby', 'api_key')}")
+        config['city'].gsub!('ASHBY_SECRET', fetch_token(client, 'ashby', 'api_key').to_s)
         resp = JSON.parse(response.body)
         job = Mawsitsit.parse(resp, config, true)
         job['job_slug'] = "ashby__#{job['job_slug']}"

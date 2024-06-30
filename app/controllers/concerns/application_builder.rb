@@ -69,7 +69,7 @@ module ApplicationBuilder
 
   def process_answer(option, answer_params)
     answer_array = if option.question_type == 'multiple_choice' && answer_params.last[:answer]
-                     answer_params.last[:answer].split('||| ').map(&:strip)
+                     answer_params.last[:answer].strip.split('||| ').reject(&:empty?).map(&:strip)
                    else
                      answer_params.last[:answer]
                    end
