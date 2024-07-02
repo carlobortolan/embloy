@@ -119,7 +119,7 @@ module Integrations
     end
 
     # Processes the response based on type (posting or questions)
-    def self.handle_response(response, type, client, job)
+    def self.handle_response(response, type, client, job) # rubocop:disable Metrics/AbcSize
       case response
       when Net::HTTPSuccess
         config_file = type == 'posting' ? 'lever_posting_config.json' : 'lever_application_options_config.json'
@@ -136,8 +136,12 @@ module Integrations
         end
       when Net::HTTPBadRequest
         raise CustomExceptions::InvalidInput::Quicklink::Request::Malformed
-      when Net::HTTPUnauthorized, Net::HTTPForbidden
-        raise CustomExceptions::InvalidInput::Quicklink::ApiKey::Unauthorized
+      when Net::HTTPUnauthorized
+        raise CustomExceptions::InvalidInput::Quicklink::OAuth::Unauthorized
+      when Net::HTTPForbidden
+        raise CustomExceptions::InvalidInput::Quicklink::OAuth::Forbidden
+      when Net::HTTPNotFound
+        raise CustomExceptions::InvalidInput::Quicklink::Request::NotFound
       end
     end
 
@@ -147,16 +151,17 @@ module Integrations
       return access_token unless access_token.nil?
 
       response_body = JSON.parse(lever_access_token(fetch_token!(client, 'lever', 'refresh_token')))
-      IntegrationsController.save_token(user, 'OAuth Access Token', 'lever', 'access_token', response_body['access_token'], Time.now.utc + response_body['expires_in'], Time.now.utc)
-      IntegrationsController.save_token(user, 'OAuth Refresh Token', 'lever', 'refresh_token', response_body['refresh_token'], Time.now.utc + 1.year, Time.now.utc)
+      IntegrationsController.save_token(client, 'OAuth Access Token', 'lever', 'access_token', response_body['access_token'], Time.now.utc + response_body['expires_in'].to_i, Time.now.utc)
+      IntegrationsController.save_token(client, 'OAuth Refresh Token', 'lever', 'refresh_token', response_body['refresh_token'], Time.now.utc + 1.year, Time.now.utc)
       response_body['access_token']
     end
 
     # Retrieve a new access token using the refresh token (step 5)
     def self.lever_access_token(refresh_token)
       uri = URI.parse(LeverOauthController::LEVER_ACCESS_TOKEN_URL)
-      http = Net::HTTP::Post.new(uri)
+      http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true
+      request = Net::HTTP::Post.new(uri)
       request.content_type = 'application/x-www-form-urlencoded'
       request.body = URI.encode_www_form({
                                            'client_id' => ENV.fetch('LEVER_CLIENT_ID', nil),
@@ -164,7 +169,18 @@ module Integrations
                                            'grant_type' => 'refresh_token',
                                            'refresh_token' => refresh_token
                                          })
-      http.request(request)
+      response = http.request(request)
+
+      case response
+      when Net::HTTPSuccess
+        response.body
+      when Net::HTTPBadRequest
+        raise CustomExceptions::InvalidInput::Quicklink::Request::Malformed
+      when Net::HTTPUnauthorized
+        raise CustomExceptions::InvalidInput::Quicklink::OAuth::Unauthorized
+      when Net::HTTPForbidden
+        raise CustomExceptions::InvalidInput::Quicklink::OAuth::Forbidden
+      end
     end
   end
 end

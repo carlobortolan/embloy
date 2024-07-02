@@ -56,8 +56,9 @@ module Integrations
     # Make initial authorization request to Lever API (returns access token and refresh token)
     def make_http_request(code)
       url = URI.parse(LEVER_ACCESS_TOKEN_URL)
-      http = Net::HTTP.new(url)
+      http = Net::HTTP.new(url.host, url.port)
       http.use_ssl = true
+      request = Net::HTTP::Post.new(url)
       request.content_type = 'application/x-www-form-urlencoded'
       request.body = URI.encode_www_form({
                                            'client_id' => ENV.fetch('LEVER_CLIENT_ID', nil),
