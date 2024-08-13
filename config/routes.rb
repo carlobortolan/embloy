@@ -83,6 +83,7 @@ Rails.application.routes.draw do
 
       # -----> QUICKLINK <-----
       post 'sdk/request/auth/token', to: 'quicklink#create_request'
+      post 'sdk/request/auth/proxy', to: 'quicklink#create_request_proxy'
       post 'sdk/request/handle', to: 'quicklink#handle_request'
       post 'sdk/apply', to: 'quicklink#apply'
 

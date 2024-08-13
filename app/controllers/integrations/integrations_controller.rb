@@ -3,18 +3,17 @@
 module Integrations
   # IntegrationsController handles Integration-related actions and verifications
   class IntegrationsController < ApplicationController
-    include JobParser
     include AshbyLambdas
     include ApiExceptionHandler
 
-    def self.submit_form(job_slug, application, client)
+    def self.submit_form(job_slug, application, application_params, client)
       case job_slug.split('__').first
       when 'lever'
-        Integrations::LeverController.post_form(job_slug.sub('lever__', ''), application, client)
+        Integrations::LeverController.post_form(job_slug.sub('lever__', ''), application, application_params, client)
       when 'ashby'
-        Integrations::AshbyController.post_form(job_slug.sub('ashby__', ''), application, client)
+        Integrations::AshbyController.post_form(job_slug.sub('ashby__', ''), application, application_params, client)
       when 'softgarden'
-        Integrations::SoftgardenController.post_form(job_slug.sub('softgarden__', ''), application, client)
+        Integrations::SoftgardenController.post_form(job_slug.sub('softgarden__', ''), application, application_params, client)
       end
     end
 
@@ -55,6 +54,11 @@ module Integrations
     end
 
     def self.handle_internal_job(client, parsed_job)
+      return unless parsed_job.is_a?(Hash)
+
+      job_slug = parsed_job['job_slug']
+      return if job_slug.nil?
+
       if client.jobs.find_by(job_slug: parsed_job['job_slug']).nil?
         # Create new job if not already in the database
         create_internal_job(client, parsed_job)
@@ -66,6 +70,8 @@ module Integrations
 
     def self.handle_application_response(response)
       case response
+      when Net::HTTPSuccess
+        puts "Application submitted successfully: #{response.body}"
       when Net::HTTPBadRequest
         raise CustomExceptions::InvalidInput::Quicklink::Application::Malformed and return
       when Net::HTTPUnauthorized

@@ -3,33 +3,23 @@
 # The Application class represents a job application in the application.
 class Application < ApplicationRecord
   acts_as_paranoid
-  after_create_commit :notify_recipient
+  # after_create_commit :notify_recipient
   # after_update_commit :notify_applicant
   before_destroy :cleanup_notifications
 
   self.primary_keys = :user_id, :job_id
 
-  # has_rich_text :application_text
-  # has_one_attached :cv
-
   belongs_to :job, counter_cache: true
   belongs_to :user, counter_cache: true
   has_noticed_notifications model_name: 'Notification'
   has_many :application_answers, foreign_key: %i[user_id job_id], primary_key: %i[user_id job_id], dependent: :destroy
-  has_one :application_attachment,
-          dependent: :destroy
-  delegate :cv, to: :application_attachment,
-                allow_nil: true
 
   accepts_nested_attributes_for :application_answers
-  accepts_nested_attributes_for :application_attachment
 
   enum :status, { rejected: '-1', pending: '0', accepted: '1' }, default: '0'
   # validates :user_id, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
   #                   uniqueness: { scope: :job_id, error: 'ERR_TAKEN', description: 'You already submitted an application for this job' }
   validates :job_id, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" }
-  validates :application_text, length: { minimum: 0, maximum: 1000, error: 'ERR_LENGTH', description: 'Attribute length is invalid' },
-                               presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" }
   # validates :response, length: { minimum: 0, maximum: 500, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }, presence: false
   #  validates :status, inclusion: { in: %w[-1 0 1], error: 'ERR_INVALID', description: 'Attribute is invalid' }, presence: false
 

@@ -174,7 +174,7 @@ RSpec.describe 'GeniusQueriesController' do
     post('/api/v0/auth/token/access', params:)
     @valid_access_token = JSON.parse(response.body)['access_token']
 
-    headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
+    headers = { 'Authorization' => "Bearer #{@valid_access_token}" }
     post('/api/v0/auth/token/client', headers:)
     @valid_client_token = JSON.parse(response.body)['client_token']
 
@@ -259,15 +259,15 @@ RSpec.describe 'GeniusQueriesController' do
   describe '(POST: /api/v0/resource)' do
     context 'valid normal inputs' do
       it 'returns [200 OK] and creates genius query' do
-        post("/api/v0/resource?job_id=#{@job.id.to_i}", headers: { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs })
+        post("/api/v0/resource?job_id=#{@job.id.to_i}", headers: { 'Authorization' => "Bearer #{@valid_at_has_own_jobs}" })
         expect(response).to have_http_status(200)
       end
       it 'returns [200 OK] and creates genius query with custom expiration date' do
-        post("/api/v0/resource?job_id=#{@job.id.to_i}&exp=#{Time.now.to_i + 1.day.to_i}", headers: { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs })
+        post("/api/v0/resource?job_id=#{@job.id.to_i}&exp=#{Time.now.to_i + 1.day.to_i}", headers: { 'Authorization' => "Bearer #{@valid_at_has_own_jobs}" })
         expect(response).to have_http_status(200)
       end
       it 'returns [200 OK] for archived posting' do
-        post("/api/v0/resource?job_id=#{@archived_job.id.to_i}", headers: { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs })
+        post("/api/v0/resource?job_id=#{@archived_job.id.to_i}", headers: { 'Authorization' => "Bearer #{@valid_at_has_own_jobs}" })
         expect(response).to have_http_status(200)
       end
     end
@@ -277,49 +277,49 @@ RSpec.describe 'GeniusQueriesController' do
         expect(response).to have_http_status(400)
       end
       it 'returns [400 Bad Request] for missing resource id' do
-        post('/api/v0/resource', headers: { 'Authorization' => 'Bearer ' + @valid_access_token })
+        post('/api/v0/resource', headers: { 'Authorization' => "Bearer #{@valid_access_token}" })
         expect(response).to have_http_status(400)
       end
       it 'returns [400 Bad Request] and creates genius query with invalid custom expiration date' do
-        post("/api/v0/resource?job_id=#{@job.id.to_i}&exp=#{Time.now + 10.years}", headers: { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs })
+        post("/api/v0/resource?job_id=#{@job.id.to_i}&exp=#{Time.now + 10.years}", headers: { 'Authorization' => "Bearer #{@valid_at_has_own_jobs}" })
         expect(response).to have_http_status(400)
       end
       it 'returns [400 Bad Request] and creates genius query with invalid custom expiration date' do
-        post("/api/v0/resource?job_id=#{@job.id.to_i}&exp=#{Time.now - 1.second}", headers: { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs })
+        post("/api/v0/resource?job_id=#{@job.id.to_i}&exp=#{Time.now - 1.second}", headers: { 'Authorization' => "Bearer #{@valid_at_has_own_jobs}" })
         expect(response).to have_http_status(400)
       end
       it 'returns [401 Unauthorized] for expired/invalid access token' do
-        post("/api/v0/resource?job_id=#{@job.id.to_i}", headers: { 'Authorization' => 'Bearer ' + @invalid_token })
+        post("/api/v0/resource?job_id=#{@job.id.to_i}", headers: { 'Authorization' => "Bearer #{@invalid_token}" })
         expect(response).to have_http_status(401)
       end
       it 'returns [403 Forbidden] for deactivated posting' do
-        post("/api/v0/resource?job_id=#{@inactive_job.id.to_i}", headers: { 'Authorization' => 'Bearer ' + @valid_at_has_own_jobs })
+        post("/api/v0/resource?job_id=#{@inactive_job.id.to_i}", headers: { 'Authorization' => "Bearer #{@valid_at_has_own_jobs}" })
         expect(response).to have_http_status(403)
       end
       it 'returns [403 Forbidden] for blacklisted user' do
-        post("/api/v0/resource?job_id=#{@not_owned_job.id.to_i}", headers: { 'Authorization' => 'Bearer ' + @valid_at_blacklisted })
+        post("/api/v0/resource?job_id=#{@not_owned_job.id.to_i}", headers: { 'Authorization' => "Bearer #{@valid_at_blacklisted}" })
         expect(response).to have_http_status(403)
       end
       it 'returns [403 Forbidden] for user with invalid subscription' do
-        post("/api/v0/resource?job_id=#{@job.id.to_i}", headers: { 'Authorization' => 'Bearer ' + @valid_at_unsubscribed })
+        post("/api/v0/resource?job_id=#{@job.id.to_i}", headers: { 'Authorization' => "Bearer #{@valid_at_unsubscribed}" })
         expect(response).to have_http_status(403)
       end
       it 'returns [403 Forbidden] if user creates genius query for not owned job' do
-        post("/api/v0/resource?job_id=#{@not_owned_job.id.to_i}", headers: { 'Authorization' => 'Bearer ' + @basic_at })
+        post("/api/v0/resource?job_id=#{@not_owned_job.id.to_i}", headers: { 'Authorization' => "Bearer #{@basic_at}" })
         expect(response).to have_http_status(403)
       end
       it 'returns [403 Forbidden] if user creates genius query with cancelled subscription' do
         @user_basic.payment_processor.subscription.cancel_now!
-        post("/api/v0/resource?job_id=#{@basic_job.id.to_i}", headers: { 'Authorization' => 'Bearer ' + @basic_at })
+        post("/api/v0/resource?job_id=#{@basic_job.id.to_i}", headers: { 'Authorization' => "Bearer #{@basic_at}" })
         expect(response).to have_http_status(403)
       end
       it 'returns [403 Forbidden] if user creates genius query with cancelled subscription' do
         @user_premium.payment_processor.subscription.cancel_now!
-        post("/api/v0/resource?job_id=#{@premium_job.id.to_i}", headers: { 'Authorization' => 'Bearer ' + @premium_at })
+        post("/api/v0/resource?job_id=#{@premium_job.id.to_i}", headers: { 'Authorization' => "Bearer #{@premium_at}" })
         expect(response).to have_http_status(403)
       end
       it 'returns [404 Not Found] if job does not exist' do
-        post('/api/v0/resource?job_id=0', headers: { 'Authorization' => 'Bearer ' + @premium_at })
+        post('/api/v0/resource?job_id=0', headers: { 'Authorization' => "Bearer #{@premium_at}" })
         expect(response).to have_http_status(404)
       end
     end

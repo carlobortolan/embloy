@@ -87,12 +87,12 @@ RSpec.describe 'NotificationsController' do
     describe '(GET: /api/v0/user/notifications)' do
       context 'valid inputs' do
         it 'returns [204 No Content] for empty notifications' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
+          headers = { 'Authorization' => "Bearer #{@valid_access_token}" }
           get('/api/v0/user/notifications', headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [200 OK]' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
+          headers = { 'Authorization' => "Bearer #{@valid_access_token}" }
           get('/api/v0/user/notifications', headers:)
           expect(response).to have_http_status(200)
         end
@@ -105,12 +105,12 @@ RSpec.describe 'NotificationsController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
-          headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
+          headers = { 'Authorization' => "Bearer #{@invalid_access_token}" }
           get('/api/v0/user/notifications', headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
+          headers = { 'Authorization' => "Bearer #{@valid_at_blacklisted}" }
           get('/api/v0/user/notifications', headers:)
           expect(response).to have_http_status(403)
         end
@@ -122,12 +122,12 @@ RSpec.describe 'NotificationsController' do
     describe '(GET: /api/v0/user/notifications/unread)' do
       context 'valid inputs' do
         it 'returns [204 No Content] for empty notifications' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
+          headers = { 'Authorization' => "Bearer #{@valid_access_token}" }
           get('/api/v0/user/notifications', headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [200 OK]' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
+          headers = { 'Authorization' => "Bearer #{@valid_access_token}" }
           get('/api/v0/user/notifications/unread', headers:)
           expect(response).to have_http_status(200)
         end
@@ -140,12 +140,12 @@ RSpec.describe 'NotificationsController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
-          headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
+          headers = { 'Authorization' => "Bearer #{@invalid_access_token}" }
           get('/api/v0/user/notifications/unread', headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
+          headers = { 'Authorization' => "Bearer #{@valid_at_blacklisted}" }
           get('/api/v0/user/notifications/unread', headers:)
           expect(response).to have_http_status(403)
         end
@@ -156,12 +156,12 @@ RSpec.describe 'NotificationsController' do
   describe '(PATCH: /api/v0/user/notifications)' do
     context 'valid normal inputs' do
       it 'returns [200 Ok]' do
-        headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
+        headers = { 'Authorization' => "Bearer #{@valid_access_token}" }
         patch("/api/v0/user/notifications/#{@notification.id.to_i}?read=1", headers:)
         expect(response).to have_http_status(200)
       end
       it 'returns [200 Ok]' do
-        headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
+        headers = { 'Authorization' => "Bearer #{@valid_access_token}" }
         patch("/api/v0/user/notifications/#{@notification.id.to_i}?read=1", headers:)
         expect(response).to have_http_status(200)
       end
@@ -172,22 +172,22 @@ RSpec.describe 'NotificationsController' do
         expect(response).to have_http_status(400)
       end
       it 'returns [401 Unauthorized] for missing notification ID' do
-        headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
+        headers = { 'Authorization' => "Bearer #{@valid_access_token}" }
         patch('/api/v0/user/notifications', headers:)
         expect(response).to have_http_status(400)
       end
       it 'returns [401 Unauthorized] for expired/invalid access token' do
-        headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
+        headers = { 'Authorization' => "Bearer #{@invalid_access_token}" }
         patch("/api/v0/user/notifications/#{@notification.id.to_i}?read=1", headers:)
         expect(response).to have_http_status(401)
       end
       it 'returns [403 Forbidden] for not own notification' do
-        headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
+        headers = { 'Authorization' => "Bearer #{@valid_access_token}" }
         patch("/api/v0/user/notifications/#{@not_owned_notification.id.to_i}?read=1", headers:)
         expect(response).to have_http_status(403)
       end
       it 'returns [403 Forbidden] for blacklisted user' do
-        headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
+        headers = { 'Authorization' => "Bearer #{@valid_at_blacklisted}" }
         patch("/api/v0/user/notifications/#{@blacklisted_notification.id.to_i}?read=1", headers:)
         expect(response).to have_http_status(403)
       end

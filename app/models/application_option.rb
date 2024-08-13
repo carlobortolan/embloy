@@ -8,7 +8,7 @@ class ApplicationOption < ApplicationRecord
   belongs_to :job
   acts_as_paranoid
   VALID_QUESTION_TYPES = %w[yes_no short_text long_text number link single_choice multiple_choice date location file].freeze
-  ALLOWED_FILE_TYPES = %w[pdf doc docx txt rtf odt jpg jpeg png gif bmp tiff tif svg mp4 avi mov wmv flv mkv webm ogg mp3 wav wma aac m4a zip rar tar 7z gz bz2 xls xlsx ods ppt pptx].freeze
+  ALLOWED_FILE_TYPES = %w[pdf doc docx txt rtf odt jpg jpeg png gif bmp tiff tif svg mp4 avi mov wmv flv mkv webm ogg mp3 wav wma aac m4a zip rar tar 7z gz bz2 xls xlsx ods ppt pptx xml].freeze
   serialize :options, Array
   before_validation :set_default_ext_id, on: %i[create update], if: -> { ext_id.blank? && deleted_at.nil? }
   before_validation :set_default_file_options

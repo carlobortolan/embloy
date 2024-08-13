@@ -123,6 +123,8 @@ module ApiExceptionHandler
                 with: :request_token_malformed_error
     rescue_from CustomExceptions::InvalidInput::Quicklink::Request::Blank,
                 with: :request_token_blank_error
+    rescue_from CustomExceptions::InvalidInput::Quicklink::Request::NotFound,
+                with: :request_token_not_found_error
 
     rescue_from CustomExceptions::InvalidInput::Quicklink::Mode::Malformed,
                 with: :request_mode_malformed_error
@@ -258,6 +260,10 @@ module ApiExceptionHandler
 
   def request_token_blank_error
     malformed_error('request_token')
+  end
+
+  def request_token_not_found_error
+    not_found_error('request_token', 'The job included in the request token was not found')
   end
 
   def request_token_malformed_error

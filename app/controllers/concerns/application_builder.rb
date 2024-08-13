@@ -6,25 +6,9 @@ module ApplicationBuilder
 
   # The apply_for_job method is responsible for creating a new application for a job.
   # Requires @job and application_params
-  # rubocop:disable Metrics/AbcSize
   def apply_for_job
     ActiveRecord::Base.transaction do
       create_application!
-      if @job.cv_required
-        if application_params[:application_attachment].nil?
-          @application.errors.add(:application_attachment, 'CV is required')
-          render json: { errors: @application.errors }, status: :unprocessable_entity and return
-        end
-        attachment_format = application_params[:application_attachment].content_type
-        allowed_formats = ApplicationHelper.allowed_cv_formats_for_form(@job.allowed_cv_formats)
-
-        unless allowed_formats.include?(attachment_format)
-          @application.errors.add(:application_attachment, 'Invalid CV format')
-          render json: { errors: @application.errors }, status: :unprocessable_entity and return
-        end
-
-        create_application_attachment!
-      end
     end
     render status: 201, json: { message: 'Application submitted!' }
   rescue ActiveRecord::RecordInvalid => e
@@ -34,20 +18,19 @@ module ApplicationBuilder
   rescue ActiveRecord::RecordNotUnique
     unnecessary_error('application')
   end
-  # rubocop:enable Metrics/AbcSize
 
   private
 
   # Creates @application
   def create_application!
-    tmp = application_params.except(:id, :application_attachment, :application_answers)
+    tmp = application_params.except(:id, :application_answers)
     tmp[:job_id] =  @job.id
     tmp[:user_id] = Current.user.id
     @application = Application.new(tmp)
     @application.save!
 
     create_application_answers! if @job.application_options.any?
-    Integrations::IntegrationsController.submit_form(@job.job_slug, @application, @client)
+    Integrations::IntegrationsController.submit_form(@job.job_slug, @application, application_params, @client)
   end
 
   # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
@@ -86,7 +69,7 @@ module ApplicationBuilder
 
   def process_answer(option, answer_params)
     answer_array = if option.question_type == 'multiple_choice' && answer_params.last[:answer]
-                     answer_params.last[:answer].split('||| ').map(&:strip)
+                     answer_params.last[:answer].strip.split('||| ').reject(&:empty?).map(&:strip)
                    else
                      answer_params.last[:answer]
                    end
@@ -95,13 +78,4 @@ module ApplicationBuilder
     application_answer.attachment.attach(answer_params.last[:file]) if answer_params.last[:file]
   end
   # rubocop:enable Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
-
-  def create_application_attachment!
-    application_attachment = ApplicationAttachment.create!(
-      user_id: Current.user.id,
-      job_id: @job.id
-    )
-    application_attachment.save!
-    application_attachment.cv.attach(application_params[:application_attachment])
-  end
 end

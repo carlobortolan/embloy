@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# The UserController is responsible for handling user-related actions.
 module Api
   module V0
     # UserController handles user-related actions
@@ -101,17 +102,10 @@ module Api
 
       def build_applications_json(applications)
         applications.includes(:application_answers, application_answers: :attachment_attachment).map do |application|
-          application_attachment = ApplicationAttachment.find_by(job_id: application.job_id, user_id: Current.user.id)
-          attachment_url = application_attachment ? rails_blob_url(application_attachment.cv) : nil
-
           {
             application:,
             job: Job.get_json_include_user_exclude_image(application.job),
-            application_answers: application.application_answers.as_json(include: { attachment: { methods: :url } }),
-            application_attachment: {
-              attachment: application_attachment,
-              url: attachment_url
-            }
+            application_answers: application.application_answers.as_json(include: { attachment: { methods: :url } })
           }
         end
       end
@@ -123,18 +117,24 @@ module Api
         applications.map { |i| Job.find(i.job_id) }
       end
 
-      def attach_image
-        Current.user.image_url.attach(params[:image_url])
+      def attach_image # rubocop:disable Metrics/AbcSize
+        image = params[:image_url]
+        if image.is_a?(ActionDispatch::Http::UploadedFile)
+          Current.user.image_url.attach(io: image.open, filename: image.original_filename, content_type: image.content_type)
+        else
+          default_image = Rails.root.join('app/assets/images/logo-light.svg')
+          Current.user.image_url.attach(io: File.open(default_image), filename: 'default.svg', content_type: 'image/svg')
+        end
       rescue ActiveStorage::IntegrityError
-        default_image = Rails.root.join('app/assets/images/logo-light.png')
-        Current.user.image_url.attach(io: File.open(default_image), filename: 'default.png', content_type: 'image/png')
+        default_image = Rails.root.join('app/assets/images/logo-light.svg')
+        Current.user.image_url.attach(io: File.open(default_image), filename: 'default.svg', content_type: 'image/svg')
+      end
+
+      def user_params
+        params.require(:user).permit(:first_name, :last_name, :email, :phone, :degree, :date_of_birth, :country_code, :city,
+                                     :postal_code, :address, :twitter_url, :facebook_url, :linkedin_url, :instagram_url,
+                                     :application_notifications, :communication_notifications, :marketing_notifications, :security_notifications)
       end
     end
   end
-end
-
-def user_params
-  params.require(:user).permit(:first_name, :last_name, :email, :phone, :degree, :date_of_birth, :country_code, :city,
-                               :postal_code, :address, :twitter_url, :facebook_url, :linkedin_url, :instagram_url,
-                               :application_notifications, :communication_notifications, :marketing_notifications, :security_notifications)
 end

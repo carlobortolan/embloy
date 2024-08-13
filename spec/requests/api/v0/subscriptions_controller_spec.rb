@@ -91,7 +91,7 @@ RSpec.describe 'SubscriptionsController' do
     describe '(GET: /api/v0/client/subscriptions)' do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and JSON subscription JSONs if user has subscriptions' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_subscriptions }
+          headers = { 'Authorization' => "Bearer #{@valid_at_has_subscriptions}" }
           get('/api/v0/client/subscriptions', headers:)
           expect(response).to have_http_status(404) # TODO: Change to 200 when fake_processor is fixed
         end
@@ -102,17 +102,17 @@ RSpec.describe 'SubscriptionsController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
-          headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
+          headers = { 'Authorization' => "Bearer #{@invalid_access_token}" }
           get('/api/v0/client/subscriptions', headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
+          headers = { 'Authorization' => "Bearer #{@valid_at_blacklisted}" }
           get('/api/v0/client/subscriptions', headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [404 Not Found] if user has no payment processor set and does not have any subscriptions' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
+          headers = { 'Authorization' => "Bearer #{@valid_access_token}" }
           get('/api/v0/client/subscriptions', headers:)
           expect(response).to have_http_status(404)
         end
@@ -122,17 +122,17 @@ RSpec.describe 'SubscriptionsController' do
     describe '(GET: /api/v0/client/subscriptions/active)' do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and JSON subscription JSONs if user has subscriptions' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_subscriptions }
+          headers = { 'Authorization' => "Bearer #{@valid_at_has_subscriptions}" }
           get('/api/v0/client/subscriptions/active', headers:)
           expect(response).to have_http_status(404) # Should be 200, but is 404 due to missing stripe payment processor in specs
         end
         it 'returns [200 Ok] and JSON subscription JSONs if user has subscriptions' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_subscriptions }
+          headers = { 'Authorization' => "Bearer #{@valid_at_has_subscriptions}" }
           get('/api/v0/client/subscriptions/active?info=1', headers:)
           expect(response).to have_http_status(404) # Should be 200, but is 404 due to missing stripe payment processor in specs
         end
         it 'returns [200 Ok] and JSON subscription JSONs if user has subscriptions and invalid info parameter is set (ignored)' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at_has_subscriptions }
+          headers = { 'Authorization' => "Bearer #{@valid_at_has_subscriptions}" }
           get('/api/v0/client/subscriptions/active?info=123', headers:)
           expect(response).to have_http_status(404) # Should be 200, but is 404 due to missing stripe payment processor in specs
         end
@@ -143,22 +143,22 @@ RSpec.describe 'SubscriptionsController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
-          headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
+          headers = { 'Authorization' => "Bearer #{@invalid_access_token}" }
           get('/api/v0/client/subscriptions/active', headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
+          headers = { 'Authorization' => "Bearer #{@valid_at_blacklisted}" }
           get('/api/v0/client/subscriptions/active', headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [404 Not Found] if user does not have any subscriptions' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
+          headers = { 'Authorization' => "Bearer #{@valid_access_token}" }
           get('/api/v0/client/subscriptions/active', headers:)
           expect(response).to have_http_status(404)
         end
         it 'returns [404 Not Found] if user does not have any subscriptions' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
+          headers = { 'Authorization' => "Bearer #{@valid_access_token}" }
           get('/api/v0/client/subscriptions/active?info=1', headers:)
           expect(response).to have_http_status(404)
         end

@@ -15,7 +15,6 @@ class User < ApplicationRecord
   has_many :notifications, as: :recipient,
                            dependent: :destroy
   has_many :applications
-  has_many :application_attachments
 
   pay_customer default_payment_processor: :stripe
   pay_customer stripe_attributes: :stripe_attributes

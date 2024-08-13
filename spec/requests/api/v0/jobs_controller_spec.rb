@@ -228,27 +228,27 @@ RSpec.describe 'JobsController' do
     describe '(GET: /api/v0/jobs/{id})' do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and job JSONs if job is listed' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at }
+          headers = { 'Authorization' => "Bearer #{@valid_at}" }
           get("/api/v0/jobs/#{@job.id}", headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [200 Ok] and job JSONs if job is listed' do
-          headers = { 'Authorization' => 'Bearer ' + @unsubscribed_at }
+          headers = { 'Authorization' => "Bearer #{@unsubscribed_at}" }
           get("/api/v0/jobs/#{@job.id}", headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [200 Ok] and job JSONs if job is unlisted and user is owner' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at }
+          headers = { 'Authorization' => "Bearer #{@valid_at}" }
           get("/api/v0/jobs/#{@unlisted_job.id}", headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [200 Ok] and job JSONs if job is archived and user is owner' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at }
+          headers = { 'Authorization' => "Bearer #{@valid_at}" }
           get("/api/v0/jobs/#{@archived_job.id}", headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [204 No Content] if job does not exist' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at }
+          headers = { 'Authorization' => "Bearer #{@valid_at}" }
           get('/api/v0/jobs/123123123123123123123123', headers:)
           expect(response).to have_http_status(404)
         end
@@ -259,27 +259,27 @@ RSpec.describe 'JobsController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
-          headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
+          headers = { 'Authorization' => "Bearer #{@invalid_access_token}" }
           get("/api/v0/jobs/#{@job.id}", headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
+          headers = { 'Authorization' => "Bearer #{@valid_at_blacklisted}" }
           get("/api/v0/jobs/#{@job.id}", headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [403 Forbidden] for unlisted job' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at }
+          headers = { 'Authorization' => "Bearer #{@valid_at}" }
           get("/api/v0/jobs/#{@not_owned_unlisted_job.id}", headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [403 Forbidden] for archived job' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at }
+          headers = { 'Authorization' => "Bearer #{@valid_at}" }
           get("/api/v0/jobs/#{@not_owned_archived_job.id}", headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [404 Not Found] if job does not exist' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at }
+          headers = { 'Authorization' => "Bearer #{@valid_at}" }
           get('/api/v0/jobs/12312312312312312', headers:)
           expect(response).to have_http_status(404)
           get('/api/v0/jobs/-1', headers:)
@@ -293,59 +293,58 @@ RSpec.describe 'JobsController' do
     describe '(GET: /api/v0/find)' do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and job JSONs if job exists' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at }
+          headers = { 'Authorization' => "Bearer #{@valid_at}" }
           get('/api/v0/find?query=TestJob&job_type=Retail&sort_by=date_desc', headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [200 Ok] and job JSONs if query blank' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at }
+          headers = { 'Authorization' => "Bearer #{@valid_at}" }
           get('/api/v0/find?job_type=Retail&sort_by=date_desc', headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [200 Ok] and job JSONs if job_type blank' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at }
+          headers = { 'Authorization' => "Bearer #{@valid_at}" }
           get('/api/v0/find?query=TestJob&sort_by=date_desc', headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [200 Ok] and job JSONs if sort_by blank' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at }
+          headers = { 'Authorization' => "Bearer #{@valid_at}" }
           get('/api/v0/find?query=TestJob&job_type=Retail', headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [200 Ok] and job JSONs if params blank' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at }
+          headers = { 'Authorization' => "Bearer #{@valid_at}" }
           get('/api/v0/find', headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [204 No Content] if no matching jobs exist' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at }
+          headers = { 'Authorization' => "Bearer #{@valid_at}" }
           get('/api/v0/find?query=123&job_type=Food&sort_by=date_desc', headers:)
           expect(response).to have_http_status(204)
         end
         it 'returns [204 No Content] for wrong job_type in params' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at }
+          headers = { 'Authorization' => "Bearer #{@valid_at}" }
           get('/api/v0/find?job_type=test', headers:)
           expect(response).to have_http_status(204)
         end
         it 'returns [204 No Content] for wrong sort_by in params' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at }
+          headers = { 'Authorization' => "Bearer #{@valid_at}" }
           get('/api/v0/find?sort_by=test', headers:)
           expect(response).to have_http_status(204)
         end
       end
       context 'invalid inputs' do
         it 'returns [400 Bad Request] for missing access token in header' do
-          { 'Authorization' => 'Bearer ' + @valid_at }
           get '/api/v0/find?query=123&job_type=Food&sort_by=date_desc'
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
-          headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
+          headers = { 'Authorization' => "Bearer #{@invalid_access_token}" }
           get('/api/v0/find?query=123&job_type=Food&sort_by=date_desc', headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
+          headers = { 'Authorization' => "Bearer #{@valid_at_blacklisted}" }
           get('/api/v0/find?query=123&job_type=Food&sort_by=date_desc', headers:)
           expect(response).to have_http_status(403)
         end
@@ -355,13 +354,13 @@ RSpec.describe 'JobsController' do
     describe '(POST: /api/v0/maps)' do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and job JSONs if job exists' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at }
+          headers = { 'Authorization' => "Bearer #{@valid_at}" }
           get('/api/v0/maps?longitude=0&latitude=0', headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [204 No Content] if job does not exist' do
           Job.delete_all
-          headers = { 'Authorization' => 'Bearer ' + @valid_at }
+          headers = { 'Authorization' => "Bearer #{@valid_at}" }
           get('/api/v0/maps?longitude=0&latitude=0', headers:)
           expect(response).to have_http_status(204)
         end
@@ -372,7 +371,7 @@ RSpec.describe 'JobsController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for malformed query params' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at }
+          headers = { 'Authorization' => "Bearer #{@valid_at}" }
           get('/api/v0/maps?longitude=180.1&latitude=0', headers:)
           expect(response).to have_http_status(400)
           get('/api/v0/maps?longitude=0&latitude=90.1', headers:)
@@ -389,12 +388,12 @@ RSpec.describe 'JobsController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
-          headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
+          headers = { 'Authorization' => "Bearer #{@invalid_access_token}" }
           get('/api/v0/maps?longitude=0&latitude=0', headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
+          headers = { 'Authorization' => "Bearer #{@valid_at_blacklisted}" }
           get('/api/v0/maps?longitude=0&latitude=0', headers:)
           expect(response).to have_http_status(403)
         end
@@ -404,13 +403,13 @@ RSpec.describe 'JobsController' do
     describe '(GET: /api/v0/jobs)' do
       context 'valid normal inputs' do
         it 'returns [500 Internal Server Error] and job JSONs if feed is created' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at }
+          headers = { 'Authorization' => "Bearer #{@valid_at}" }
           get('/api/v0/jobs?longitude=0.0&latitude=0.0', headers:)
           expect(response).to have_http_status(500)
         end
         it 'returns [204 No Content] if no jobs exist' do
           Job.delete_all
-          headers = { 'Authorization' => 'Bearer ' + @valid_at }
+          headers = { 'Authorization' => "Bearer #{@valid_at}" }
           get('/api/v0/jobs?longitude=0.0&latitude=0.0', headers:)
           expect(response).to have_http_status(204)
         end
@@ -421,7 +420,7 @@ RSpec.describe 'JobsController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for malformed query params' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at }
+          headers = { 'Authorization' => "Bearer #{@valid_at}" }
           get('/api/v0/jobs?longitude=180.1&latitude=0', headers:)
           expect(response).to have_http_status(400)
           get('/api/v0/jobs?longitude=0.0&latitude=90.1', headers:)
@@ -438,12 +437,12 @@ RSpec.describe 'JobsController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
-          headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
+          headers = { 'Authorization' => "Bearer #{@invalid_access_token}" }
           get('/api/v0/jobs?longitude=0.0&latitude=0.0', headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
+          headers = { 'Authorization' => "Bearer #{@valid_at_blacklisted}" }
           get('/api/v0/jobs?longitude=0.0&latitude=0.0', headers:)
           expect(response).to have_http_status(403)
         end
@@ -466,20 +465,18 @@ RSpec.describe 'JobsController' do
           latitude: '48.1951076',
           job_notifications: '1',
           currency: 'EUR',
-          cv_required: false,
-          allowed_cv_formats: ['.pdf', '.docx', '.txt', '.xml'],
           image_url: Rack::Test::UploadedFile.new(Rails.root.join('spec/assets', 'test_image.png'), 'image/png')
         }
       end
-      let(:headers) { { 'Authorization' => 'Bearer ' + @valid_at } }
+      let(:headers) { { 'Authorization' => "Bearer #{@valid_at}" } }
 
       context 'subscription limits reached' do
         it 'returns [429 Too Many Requests] if user creates more jobs than what his subscription (basic) allows' do
-          post('/api/v0/jobs', params: form_data, headers: { 'Authorization' => 'Bearer ' + @basic_at })
+          post('/api/v0/jobs', params: form_data, headers: { 'Authorization' => "Bearer #{@basic_at}" })
           expect(response).to have_http_status(429)
         end
         it 'returns [429 Too Many Requests] if user creates more jobs than what his subscription (premium) allows' do
-          post('/api/v0/jobs', params: form_data, headers: { 'Authorization' => 'Bearer ' + @premium_at })
+          post('/api/v0/jobs', params: form_data, headers: { 'Authorization' => "Bearer #{@premium_at}" })
           expect(response).to have_http_status(429)
         end
       end
@@ -498,14 +495,6 @@ RSpec.describe 'JobsController' do
         end
         it 'returns [201 Created] even if missing image_url' do
           post('/api/v0/jobs', params: form_data.except(:image_url), headers:)
-          expect(response).to have_http_status(201)
-        end
-        it 'returns [201 Created] even if missing allowed_cv_format and cv_required false' do
-          post('/api/v0/jobs', params: form_data.except(:allowed_cv_format).merge(cv_required: false), headers:)
-          expect(response).to have_http_status(201)
-        end
-        it 'returns [201 Created] even if missing allowed_cv_format and cv_required true' do
-          post('/api/v0/jobs', params: form_data.except(:allowed_cv_format), headers:)
           expect(response).to have_http_status(201)
         end
       end
@@ -556,10 +545,6 @@ RSpec.describe 'JobsController' do
         end
         it 'returns [201 Created] for missing currency' do
           post('/api/v0/jobs', params: form_data.except(:currency), headers:)
-          expect(response).to have_http_status(201)
-        end
-        it 'returns [201 Created] if missing cv_required' do
-          post('/api/v0/jobs', params: form_data.except(:cv_required), headers:)
           expect(response).to have_http_status(201)
         end
       end
@@ -645,18 +630,6 @@ RSpec.describe 'JobsController' do
           post('/api/v0/jobs', params: form_data.merge(currency: 'invalid'), headers:)
           expect(response).to have_http_status(400)
         end
-        it 'returns [400 Bad Request] for invalid allowed_cv_formats' do
-          post('/api/v0/jobs', params: form_data.merge(allowed_cv_formats: [1, 2, 3, 4]), headers:)
-          expect(response).to have_http_status(400)
-        end
-        it 'returns [400 Bad Request] for invalid allowed_cv_formats' do
-          post('/api/v0/jobs', params: form_data.merge(allowed_cv_formats: ['invalid']), headers:)
-          expect(response).to have_http_status(400)
-        end
-        it 'returns [400 Bad Request] for invalid allowed_cv_formats' do
-          post('/api/v0/jobs', params: form_data.merge(allowed_cv_formats: ['.pdf', '.invalid']), headers:)
-          expect(response).to have_http_status(400)
-        end
         it 'returns [400 Bad Request] for invalid image_url' do
           post('/api/v0/jobs', params: form_data.merge(image_url: 'invalid'), headers:)
           expect(response).to have_http_status(400)
@@ -664,17 +637,17 @@ RSpec.describe 'JobsController' do
       end
       context 'invalid user' do
         it 'returns [403 Forbidden] for expired/invalid access token' do
-          headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
+          headers = { 'Authorization' => "Bearer #{@invalid_access_token}" }
           post('/api/v0/jobs', headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for expired/missing subscription' do
-          headers = { 'Authorization' => 'Bearer ' + @unsubscribed_at }
+          headers = { 'Authorization' => "Bearer #{@unsubscribed_at}" }
           post('/api/v0/jobs', headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
+          headers = { 'Authorization' => "Bearer #{@valid_at_blacklisted}" }
           post('/api/v0/jobs', headers:)
           expect(response).to have_http_status(403)
         end
@@ -838,12 +811,10 @@ RSpec.describe 'JobsController' do
           latitude: '48.1951076',
           job_notifications: '1',
           currency: 'EUR',
-          cv_required: true,
-          allowed_cv_formats: ['.pdf', '.docx', '.txt', '.xml'],
           image_url: Rack::Test::UploadedFile.new(Rails.root.join('spec/assets', 'test_image.png'), 'image/png')
         }
       end
-      let(:headers) { { 'Authorization' => 'Bearer ' + @valid_at } }
+      let(:headers) { { 'Authorization' => "Bearer #{@valid_at}" } }
       context 'valid normal inputs' do
         it 'returns [200 OK] and job JSONs if job exists' do
           patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data, headers:)
@@ -859,18 +830,6 @@ RSpec.describe 'JobsController' do
         end
         it 'returns [200 OK] even if missing image_url' do
           patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.except(:image_url), headers:)
-          expect(response).to have_http_status(200)
-        end
-        it 'returns [200 OK] even if missing allowed_cv_format and cv_required false' do
-          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.except(:allowed_cv_format).merge(cv_required: false), headers:)
-          expect(response).to have_http_status(200)
-        end
-        it 'returns [200 OK] even if missing allowed_cv_format and cv_required true' do
-          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.except(:allowed_cv_format), headers:)
-          expect(response).to have_http_status(200)
-        end
-        it 'returns [200 OK] even if missing cv_required' do
-          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.except(:cv_required), headers:)
           expect(response).to have_http_status(200)
         end
       end
@@ -956,18 +915,6 @@ RSpec.describe 'JobsController' do
         end
         it 'returns [400 Bad Request] for invalid currency' do
           patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(currency: 'invalid'), headers:)
-          expect(response).to have_http_status(400)
-        end
-        it 'returns [400 Bad Request] for invalid allowed_cv_formats' do
-          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(allowed_cv_formats: [1, 2, 3, 4]), headers:)
-          expect(response).to have_http_status(400)
-        end
-        it 'returns [400 Bad Request] for invalid allowed_cv_formats' do
-          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(allowed_cv_formats: ['invalid']), headers:)
-          expect(response).to have_http_status(400)
-        end
-        it 'returns [400 Bad Request] for invalid allowed_cv_formats' do
-          patch("/api/v0/jobs?id=#{@job.id.to_i}", params: form_data.merge(allowed_cv_formats: ['.pdf', '.invalid']), headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for invalid image_url' do
@@ -1113,47 +1060,47 @@ RSpec.describe 'JobsController' do
       end
       context 'invalid access' do
         it 'returns [401 Unauthorized] for expired/invalid access token' do
-          headers = { 'Authorization' => 'Bearer ' + @invalid_access_token }
+          headers = { 'Authorization' => "Bearer #{@invalid_access_token}" }
           patch("/api/v0/jobs?id=#{@job.id.to_i}", headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [401 Unauthorized] for expired/missing subscription' do
-          headers = { 'Authorization' => 'Bearer ' + @unsubscribed_at }
+          headers = { 'Authorization' => "Bearer #{@unsubscribed_at}" }
           patch("/api/v0/jobs?id=#{@job.id.to_i}", headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
+          headers = { 'Authorization' => "Bearer #{@valid_at_blacklisted}" }
           patch("/api/v0/jobs?id=#{@job.id.to_i}", headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
+          headers = { 'Authorization' => "Bearer #{@valid_at_blacklisted}" }
           patch("/api/v0/jobs?id=#{@job.id.to_i}", headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [403 Forbidden] for user who does not own job' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at }
+          headers = { 'Authorization' => "Bearer #{@valid_at}" }
           patch("/api/v0/jobs?id=#{@not_owned_job.id.to_i}", headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [403 Forbidden] for unlisted not owned job' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at }
+          headers = { 'Authorization' => "Bearer #{@valid_at}" }
           patch("/api/v0/jobs?id=#{@not_owned_unlisted_job.id.to_i}", headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [403 Forbidden] if user updates jobs with cancelled subscription' do
           @user_basic.payment_processor.subscription.cancel_now!
-          patch("/api/v0/jobs?id=#{@user_basic_job.id.to_i}", params: form_data, headers: { 'Authorization' => 'Bearer ' + @basic_at })
+          patch("/api/v0/jobs?id=#{@user_basic_job.id.to_i}", params: form_data, headers: { 'Authorization' => "Bearer #{@basic_at}" })
           expect(response).to have_http_status(403)
         end
         it 'returns [403 Forbidden] if user updates jobs with cancelled subscription' do
           @user_premium.payment_processor.subscription.cancel_now!
-          patch("/api/v0/jobs?id=#{@user_premium_job.id.to_i}", params: form_data, headers: { 'Authorization' => 'Bearer ' + @premium_at })
+          patch("/api/v0/jobs?id=#{@user_premium_job.id.to_i}", params: form_data, headers: { 'Authorization' => "Bearer #{@premium_at}" })
           expect(response).to have_http_status(403)
         end
         it 'returns [404 Not Found] if job does not exist' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at }
+          headers = { 'Authorization' => "Bearer #{@valid_at}" }
           get('/api/v0/jobs/12312312312312312', headers:)
           expect(response).to have_http_status(404)
           get('/api/v0/jobs/-1', headers:)
@@ -1162,12 +1109,12 @@ RSpec.describe 'JobsController' do
           expect(response).to have_http_status(404)
         end
         it 'returns [409 Conflict] for archived job' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at }
+          headers = { 'Authorization' => "Bearer #{@valid_at}" }
           patch("/api/v0/jobs?id=#{@archived_job.id.to_i}", headers:)
           expect(response).to have_http_status(409)
         end
         it 'returns [409 Conflict] for archived not owned job' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at }
+          headers = { 'Authorization' => "Bearer #{@valid_at}" }
           patch("/api/v0/jobs?id=#{@not_owned_archived_job.id.to_i}", headers:)
           expect(response).to have_http_status(409)
         end
@@ -1178,7 +1125,7 @@ RSpec.describe 'JobsController' do
         it 'returns [429 Too Many Requests] if user updates jobs while having more jobs than what his subscription (premium) allows' do
           @user_premium.payment_processor.subscription.cancel_now!
           @user_premium.payment_processor.subscribe(plan: 'price_1On8ItKMiBrigNb6eZ9PKFG0')
-          patch("/api/v0/jobs?id=#{@user_premium_job.id.to_i}", params: form_data, headers: { 'Authorization' => 'Bearer ' + @premium_at })
+          patch("/api/v0/jobs?id=#{@user_premium_job.id.to_i}", params: form_data, headers: { 'Authorization' => "Bearer #{@premium_at}" })
           expect(response).to have_http_status(429)
         end
       end

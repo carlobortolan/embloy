@@ -105,6 +105,9 @@ class CustomExceptions < StandardError
 
         class Malformed < StandardError
         end
+
+        class NotFound < StandardError
+        end
       end
 
       class Mode < StandardError
