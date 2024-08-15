@@ -58,11 +58,33 @@ func main() {
 		}
 
 		var mode string
+		var jobSlug string
 		switch refURL.Host {
 		case "jobs.sandbox.lever.co", "hire.sandbox.lever.co":
 			mode = "lever"
+			pathSegments := strings.Split(refURL.Path, "/")
+			if len(pathSegments) < 2 {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid job posting URL"})
+				return
+			}
+			jobSlug = pathSegments[len(pathSegments)-1]
+		case "app.ashbyhq.com":
+			mode = "ashby"
+			pathSegments := strings.Split(refURL.Path, "/")
+			if len(pathSegments) < 5 {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Ashby job posting URL"})
+				return
+			}
+			jobSlug = pathSegments[4]
 		default:
 			mode = "job"
+			// Extract the jobSlug from the path
+			pathSegments := strings.Split(refURL.Path, "/")
+			if len(pathSegments) < 2 {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid job posting URL"})
+				return
+			}
+			jobSlug = pathSegments[len(pathSegments)-1]
 		}
 
 		proxy := map[string]string{
@@ -70,14 +92,6 @@ func main() {
 			"admin_token": adminToken,
 			"user_id":     uID,
 		}
-
-		// Extract the jobSlug from the path
-		pathSegments := strings.Split(refURL.Path, "/")
-		if len(pathSegments) < 2 {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid job posting URL"})
-			return
-		}
-		jobSlug := pathSegments[len(pathSegments)-1]
 
 		sessionData := embloy.SessionData{
 			Mode:       mode,
