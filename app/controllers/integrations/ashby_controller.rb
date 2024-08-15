@@ -80,28 +80,27 @@ module Integrations
       http = Net::HTTP.new(url.host, url.port)
       http.use_ssl = true
       request = Net::HTTP::Post.new(url)
-      request['accept'] = 'application/json'
-      request['content-type'] = 'application/json'
-      request['authorization'] = "Basic #{fetch_token(client, 'ashby', 'api_key')}"
+      request['Content-Type'] = 'application/json'
+      api_key = fetch_token(client, 'ashby', 'api_key')
+      request['Authorization'] = "Basic #{Base64.strict_encode64("#{api_key}:")}"
       request.body = "{\"jobPostingId\":\"#{posting_id}\"}"
 
-      # Make request to Ashby API
       response = http.request(request)
-      body = JSON.parse(response.body)
-
       case response
       when Net::HTTPSuccess
+        body = JSON.parse(response.body)
         raise CustomExceptions::InvalidInput::Quicklink::Request::Malformed unless body['success'] == true
 
         config = JSON.parse(File.read('app/controllers/integrations/ashby_config.json'))
         config['city'].gsub!('ASHBY_SECRET', fetch_token(client, 'ashby', 'api_key').to_s)
-        resp = JSON.parse(response.body)
-        job = Mawsitsit.parse(resp, config, true)
+        job = Mawsitsit.parse(body, config, true)
         job['job_slug'] = "ashby__#{job['job_slug']}"
         job['user_id'] = client.id.to_i
         handle_internal_job(client, job)
       when Net::HTTPBadRequest
         raise CustomExceptions::InvalidInput::Quicklink::Request::Malformed and return
+      when Net::HTTPForbidden
+        raise CustomExceptions::InvalidInput::Quicklink::Request::Forbidden and return
       when Net::HTTPUnauthorized
         raise CustomExceptions::InvalidInput::Quicklink::ApiKey::Unauthorized and return
       end

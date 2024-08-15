@@ -123,6 +123,8 @@ module ApiExceptionHandler
                 with: :request_token_malformed_error
     rescue_from CustomExceptions::InvalidInput::Quicklink::Request::Blank,
                 with: :request_token_blank_error
+    rescue_from CustomExceptions::InvalidInput::Quicklink::Request::Forbidden,
+                with: :request_token_forbidden_error
     rescue_from CustomExceptions::InvalidInput::Quicklink::Request::NotFound,
                 with: :request_token_not_found_error
 
@@ -260,6 +262,10 @@ module ApiExceptionHandler
 
   def request_token_blank_error
     malformed_error('request_token')
+  end
+
+  def request_token_forbidden_error
+    access_denied_error('request_token')
   end
 
   def request_token_not_found_error

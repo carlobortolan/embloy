@@ -35,12 +35,10 @@ class OauthCallbacksController < ApplicationController
   private
 
   def authenticate
-    if auth.info.email.nil?
-      redirect_to("#{ENV.fetch('CORE_CLIENT_URL')}/oauth/redirect?error=Invalid email or password", allow_other_host: true) and return
-    else
-      user = User.find_by(email: auth.info.email)
-      user.present? ? handle_existing_user(user) : handle_new_user
-    end
+    redirect_to("#{ENV.fetch('CORE_CLIENT_URL')}/oauth/redirect?error=Invalid email or password", allow_other_host: true) and return if auth.info.email.nil?
+
+    user = User.find_by(email: auth.info.email)
+    user.present? ? handle_existing_user(user) : handle_new_user
   end
 
   def handle_existing_user(user)
@@ -72,7 +70,7 @@ class OauthCallbacksController < ApplicationController
     )
   end
 
-  def attach_user_image(user)
+  def attach_user_image(user) # rubocop:disable Metrics/AbcSize
     return unless auth.info.image
 
     response = Faraday.get(auth.info.image)
@@ -85,6 +83,9 @@ class OauthCallbacksController < ApplicationController
 
       user.image_url.attach(io: tempfile, filename: 'image.jpg', content_type: response.headers['content-type'])
     end
+  rescue ActiveStorage::IntegrityError
+    default_image = Rails.root.join('app/assets/images/logo-light.svg')
+    user.image_url.attach(io: File.open(default_image), filename: 'default.svg', content_type: 'image/svg')
   rescue StandardError => e
     redirect_to("#{ENV.fetch('CORE_CLIENT_URL')}/oauth/redirect?error=#{e.message}", allow_other_host: true) and return
   end

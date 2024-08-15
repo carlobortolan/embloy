@@ -387,6 +387,7 @@ ActiveRecord::Schema[7.0].define(version: 20_240_526_133_828) do
     t.bigint 'user_id', null: false
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
+    t.string 'encrypted_token'
     t.string 'encrypted_token_iv'
     t.index ['user_id'], name: 'index_tokens_on_user_id'
   end
