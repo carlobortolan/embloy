@@ -63,7 +63,7 @@ module Integrations
       request = Net::HTTP::Post::Multipart.new(url.path, form_data)
 
       request['Accept'] = 'application/json'
-      request['Authorization'] = "Basic #{api_key}"
+      request['Authorization'] = "Basic #{Base64.strict_encode64("#{api_key}:")}"
 
       response = http.request(request)
 
