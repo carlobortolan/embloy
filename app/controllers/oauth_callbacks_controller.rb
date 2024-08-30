@@ -70,7 +70,7 @@ class OauthCallbacksController < ApplicationController
     )
   end
 
-  def attach_user_image(user) # rubocop:disable Metrics/AbcSize
+  def attach_user_image(user)
     return unless auth.info.image
 
     response = Faraday.get(auth.info.image)

@@ -119,7 +119,7 @@ module Integrations
     end
 
     # Processes the response based on type (posting or questions)
-    def self.handle_response(response, type, client, job) # rubocop:disable Metrics/AbcSize
+    def self.handle_response(response, type, client, job)
       case response
       when Net::HTTPSuccess
         config_file = type == 'posting' ? 'lever_posting_config.json' : 'lever_application_options_config.json'
@@ -146,7 +146,7 @@ module Integrations
     end
 
     # Check if the Lever access token is valid, otherwise use Lever refresh token to get a new one
-    def self.validate_token(client) # rubocop:disable Metrics/AbcSize
+    def self.validate_token(client)
       access_token = fetch_token(client, 'lever', 'access_token')
       return access_token unless access_token.nil?
 

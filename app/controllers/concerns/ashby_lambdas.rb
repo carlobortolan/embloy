@@ -2,7 +2,6 @@
 
 # The AshbyLambdas module contains custom lambda functions the parser.
 module AshbyLambdas
-  # rubocop:disable Metrics/AbcSize
   def self.parse_application(data)
     new_data = []
     data.each do |field|
@@ -17,7 +16,6 @@ module AshbyLambdas
     end
     new_data
   end
-  # rubocop:enable Metrics/AbcSize
 
   def self.type_map(type)
     return 'text' if %w[String Date Number LongText Phone Score].include?(type)

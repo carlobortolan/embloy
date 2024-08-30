@@ -73,7 +73,7 @@ module Integrations
     end
 
     # Handle HTTP response from Lever authorization request and save new tokens
-    def handle_http_response(response, user) # rubocop:disable Metrics/AbcSize
+    def handle_http_response(response, user)
       puts "Response: #{response.inspect}"
       case response
       when Net::HTTPSuccess

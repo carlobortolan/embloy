@@ -117,7 +117,7 @@ module Api
         applications.map { |i| Job.find(i.job_id) }
       end
 
-      def attach_image # rubocop:disable Metrics/AbcSize
+      def attach_image
         image = params[:image_url]
         if image.is_a?(ActionDispatch::Http::UploadedFile)
           Current.user.image_url.attach(io: image.open, filename: image.original_filename, content_type: image.content_type)

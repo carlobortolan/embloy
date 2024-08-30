@@ -95,7 +95,7 @@ class ApplicationAnswer < ApplicationRecord
     errors.add(:answer, 'All answers must be in the provided options for multiple_choice')
   end
 
-  def validate_file_answer # rubocop:disable Metrics/AbcSize
+  def validate_file_answer
     return unless attachment.attached?
 
     if attachment.blob.byte_size > 2.megabytes
