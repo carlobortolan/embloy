@@ -409,8 +409,8 @@ module ApiExceptionHandler
 
   #--------------------------------------
 
-  def unauthorized_error(attribute)
-    render_error(attribute, 'ERR_INVALID', 'Attribute is invalid or expired', 401)
+  def unauthorized_error(attribute, description = 'Attribute is invalid or expired')
+    render_error(attribute, 'ERR_INVALID', description, 401)
   end
 
   #--------------------------------------

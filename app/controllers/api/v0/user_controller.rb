@@ -96,6 +96,9 @@ module Api
       def upload_image
         attach_image if params[:image_url].present?
         render status: 200, json: { image_url: Current.user.image_url.url.to_s }
+      rescue Excon::Error::Socket, ActiveStorage::IntegrityError => e
+        Rails.logger.error("Failed to upload image: #{e.message}")
+        render status: 500, json: { error: 'Failed to upload image:' }
       end
 
       private
@@ -125,9 +128,6 @@ module Api
           default_image = Rails.root.join('app/assets/images/logo-light.svg')
           Current.user.image_url.attach(io: File.open(default_image), filename: 'default.svg', content_type: 'image/svg')
         end
-      rescue ActiveStorage::IntegrityError
-        default_image = Rails.root.join('app/assets/images/logo-light.svg')
-        Current.user.image_url.attach(io: File.open(default_image), filename: 'default.svg', content_type: 'image/svg')
       end
 
       def user_params
