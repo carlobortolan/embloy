@@ -344,7 +344,6 @@ module ApiExceptionHandler
 
   def token_expired_error
     unauthorized_error('token')
-    # render_error('token', 'ERR_INVALID', 'Attribute is expired', 401)
   end
 
   #--------------------------------------

@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 20_240_526_133_828) do
+ActiveRecord::Schema[7.0].define(version: 20_240_904_144_926) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_trgm'
   enable_extension 'plpgsql'
@@ -102,6 +102,20 @@ ActiveRecord::Schema[7.0].define(version: 20_240_526_133_828) do
     t.index ['user_id'], name: 'application_answers_user_id_index'
   end
 
+  create_table 'application_events', force: :cascade do |t|
+    t.string 'ext_id', limit: 100
+    t.bigint 'job_id', null: false
+    t.bigint 'user_id', null: false
+    t.string 'event_type', limit: 50
+    t.text 'event_details', limit: 500
+    t.bigint 'previous_event_id'
+    t.bigint 'next_event_id'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['next_event_id'], name: 'index_application_events_on_next_event_id'
+    t.index ['previous_event_id'], name: 'index_application_events_on_previous_event_id'
+  end
+
   create_table 'application_options', force: :cascade do |t|
     t.bigint 'job_id', null: false
     t.string 'ext_id', limit: 100
@@ -119,6 +133,7 @@ ActiveRecord::Schema[7.0].define(version: 20_240_526_133_828) do
   create_table 'applications', primary_key: %w[job_id user_id], force: :cascade do |t|
     t.integer 'job_id', null: false
     t.integer 'user_id', null: false
+    t.string 'ext_id', limit: 100
     t.datetime 'updated_at', null: false
     t.datetime 'created_at', null: false
     t.enum 'status', default: '0', null: false, enum_type: 'application_status'
@@ -387,8 +402,8 @@ ActiveRecord::Schema[7.0].define(version: 20_240_526_133_828) do
     t.bigint 'user_id', null: false
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
-    t.string 'encrypted_token'
     t.string 'encrypted_token_iv'
+    t.string 'encrypted_token'
     t.index ['user_id'], name: 'index_tokens_on_user_id'
   end
 
@@ -436,8 +451,24 @@ ActiveRecord::Schema[7.0].define(version: 20_240_526_133_828) do
     t.index ['user_type'], name: 'user_user_type_index'
   end
 
+  create_table 'webhooks', force: :cascade do |t|
+    t.bigint 'user_id', null: false
+    t.string 'url', null: false
+    t.string 'event', null: false
+    t.string 'source', null: false
+    t.string 'ext_id', limit: 100
+    t.string 'signatureToken'
+    t.boolean 'active', default: true
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['ext_id'], name: 'index_webhooks_on_ext_id', unique: true
+    t.index ['user_id'], name: 'index_webhooks_on_user_id', unique: true
+  end
+
   add_foreign_key 'active_storage_attachments', 'active_storage_blobs', column: 'blob_id'
   add_foreign_key 'active_storage_variant_records', 'active_storage_blobs', column: 'blob_id'
+  add_foreign_key 'application_events', 'application_events', column: 'next_event_id'
+  add_foreign_key 'application_events', 'application_events', column: 'previous_event_id'
   add_foreign_key 'application_options', 'jobs', primary_key: 'job_id', on_delete: :cascade
   add_foreign_key 'applications', 'jobs', primary_key: 'job_id', on_delete: :cascade
   add_foreign_key 'applications', 'users', on_delete: :cascade
@@ -454,4 +485,5 @@ ActiveRecord::Schema[7.0].define(version: 20_240_526_133_828) do
   add_foreign_key 'reviews', 'users', column: 'created_by'
   add_foreign_key 'tokens', 'users'
   add_foreign_key 'user_blacklists', 'users', on_delete: :cascade
+  add_foreign_key 'webhooks', 'users'
 end

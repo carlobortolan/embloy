@@ -71,11 +71,9 @@ module Integrations
 
     # Handle HTTP response from Lever authorization request and save new tokens
     def handle_http_response(response, user)
-      puts "Response: #{response.inspect}"
       case response
       when Net::HTTPSuccess
         response_body = JSON.parse(response.body)
-        puts "Auth Response body: #{response_body.inspect}"
         IntegrationsController.save_token(user, 'OAuth Access Token', 'lever', 'access_token', response_body['access_token'], Time.now.utc + response_body['expires_in'], Time.now.utc)
         IntegrationsController.save_token(user, 'OAuth Refresh Token', 'lever', 'refresh_token', response_body['refresh_token'], Time.now.utc + 1.year, Time.now.utc)
         Integrations::LeverWebhooksController.refresh_webhooks(user)

@@ -57,6 +57,15 @@ module Api
         render status: 404, json: { message: 'Not found.' }
       end
 
+      def pipeline
+        set_at_job(application_show_params[:id])
+        must_be_owner!(application_show_params[:id], Current.user.id) if application_show_params[:application_id]
+
+        pipeline = ApplicationEvent.all.where(job_id: @job.job_id, user_id: application_show_params[:application_id] || Current.user.id).order('created_at DESC')
+
+        pipeline.empty? ? render(status: 204, json: { pipeline: [] }) : render(status: 200, json: { pipeline: })
+      end
+
       private
 
       def render_applications(applications)

@@ -33,6 +33,13 @@ module Integrations
 
       response = http.request(request)
 
+      # Set external ID to save the application ID for webhook events
+      if response.is_a?(Net::HTTPSuccess)
+        response_data = JSON.parse(response.body)
+        application_id = response_data['data']['applicationId']
+        application.update!(ext_id: "lever__#{application_id}")
+      end
+
       # Handle response
       handle_application_response(response)
     end
@@ -158,7 +165,6 @@ module Integrations
         data = JSON.parse(response.body)['data']
 
         data.each do |job|
-          puts "Job: #{job}"
           parsed_job = Mawsitsit.parse({ data: job }, config, true)
 
           parsed_job['job_slug'] = "lever__#{parsed_job['job_slug']}"
