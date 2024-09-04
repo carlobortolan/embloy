@@ -28,6 +28,17 @@ module Integrations
       end
     end
 
+    def self.sync_postings(client, jobs)
+      case mode
+      when 'lever'
+        Integrations::LeverController.synchronize(client, jobs)
+      when 'ashby'
+        Integrations::AshbyController.synchronize(client, jobs)
+      when 'softgarden'
+        Integrations::SoftgardenController.synchronize(client, jobs)
+      end
+    end
+
     def self.fetch_token(client, issuer, token_type)
       # Find API Key for current client
       current_keys = client.tokens.where(token_type:, issuer:).where('expires_at > ?', Time.now.utc)

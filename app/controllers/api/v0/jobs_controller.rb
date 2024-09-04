@@ -107,6 +107,19 @@ module Api
         render_jobs('jobs', jobs)
       end
 
+      def synchronize
+        case synchronize_params[:source]
+        when 'lever'
+          Integrations::LeverController.synchronize(Current.user)
+        when 'ashby'
+          Integrations::AshbyController.synchronize(Current.user)
+        else
+          render status: 400, json: { message: 'Invalid source' }
+        end
+
+        render status: 200, json: { message: 'Synchronization successful!' }
+      end
+
       private
 
       def build_job
@@ -288,6 +301,10 @@ module Api
                   "Invalid question_type: #{option_params[:question_type]}"
           end
         end
+      end
+
+      def synchronize_params
+        params.except(:format).permit(:source)
       end
 
       def find_job_params

@@ -14,6 +14,8 @@ module Integrations
     LEVER_FETCH_POSTING_URL = 'https://api.sandbox.lever.co/v1/postings/postingId'
     LEVER_FETCH_QUESTIONS_URL = 'https://api.sandbox.lever.co/v1/postings/postingId/apply'
 
+    ### APPLICATION SUBMISSION ###
+
     # Posts application form to Lever API
     # Reference: https://hire.sandbox.lever.co/developer/documentation#apply-to-a-posting
     def self.post_form(posting_id, application, application_params, client)
@@ -70,8 +72,6 @@ module Integrations
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true
       request = Net::HTTP::Get.new(uri)
-      request['accept'] = 'application/json'
-      request['content-type'] = 'application/json'
       request['authorization'] = "Bearer #{validate_token(client)}"
       http.request(request)
     end
@@ -144,6 +144,39 @@ module Integrations
         raise CustomExceptions::InvalidInput::Quicklink::Request::NotFound
       end
     end
+
+    ### JOB HANDLING ###
+
+    # Fetches all jobs from Lever and saves, updates, or deletes them in the database
+    def self.synchronize(client)
+      response = fetch_from_lever(LEVER_FETCH_POSTING_URL.gsub('/postingId', ''), client)
+
+      case response
+      when Net::HTTPSuccess
+        config = JSON.parse(File.read('app/controllers/integrations/lever_posting_config.json'))
+        # TODO: Update MawSitSit to handle arrays of objects
+        data = JSON.parse(response.body)['data']
+
+        data.each do |job|
+          puts "Job: #{job}"
+          parsed_job = Mawsitsit.parse({ data: job }, config, true)
+
+          parsed_job['job_slug'] = "lever__#{parsed_job['job_slug']}"
+          parsed_job['user_id'] = client.id.to_i
+          parsed_job['application_options_attributes'] = []
+
+          handle_internal_job(client, parsed_job)
+        end
+      when Net::HTTPBadRequest
+        raise CustomExceptions::InvalidInput::Quicklink::Request::Malformed
+      when Net::HTTPUnauthorized
+        raise CustomExceptions::InvalidInput::Quicklink::OAuth::Unauthorized
+      when Net::HTTPForbidden
+        raise CustomExceptions::InvalidInput::Quicklink::OAuth::Forbidden
+      end
+    end
+
+    ### AUTHENTICATION ###
 
     # Check if the Lever access token is valid, otherwise use Lever refresh token to get a new one
     def self.validate_token(client)
