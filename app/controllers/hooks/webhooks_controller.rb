@@ -35,43 +35,45 @@ module Hooks
         render json: { error: 'Invalid signature' }, status: :unauthorized and return
       end
 
+      ext_id = "lever__#{lever_event['data']['opportunityId']}"
+
       case lever_event['event']
       when 'applicationCreated'
-        application_id = lever_event['data']['applicationId']
-        opportunity_id = lever_event['data']['opportunityId']
+        application_id = "lever__#{lever_event['data']['applicationId']}"
+        application = Application.find_by(ext_id: application_id)
+        render json: { error: 'Application not found' }, status: :not_found and return unless application
 
-        application = Application.find_by(ext_id: "lever__#{application_id}")
-        render json: { error: 'Application not found' }, status: :not_found and return if application.nil?
-
-        application.update!(ext_id: "lever__#{opportunity_id}")
-        ApplicationEvent.create!(
-          ext_id: "lever__#{application_id}__#{opportunity_id}",
-          job_id: application.job_id,
-          user_id: application.user_id,
-          event_type: 'applicationCreated',
-          event_details: lever_event['data'].to_json
-        )
-        render json: { message: 'Application status updated and event created' }, status: :ok and return
-
-      when 'candidateHired', 'candidateStageChange', 'candidateArchiveChange', 'candidateDeleted', 'interviewCreated', 'interviewUpdated', 'interviewDeleted'
-        ext_id = "lever__#{lever_event['data']['opportunityId']}"
+        application.update!(ext_id:)
+      when 'candidateHired'
         application = Application.find_by(ext_id:)
+        render json: { error: 'Application not found' }, status: :not_found and return unless application
 
+        puts 'Hired'
+        application.accept 'Accepted'
+      when 'candidateDeleted'
+        application = Application.find_by(ext_id:)
+        render json: { error: 'Application not found' }, status: :not_found and return unless application
+
+        application.reject 'Rejected'
+      when 'candidateStageChange', 'candidateArchiveChange', 'interviewCreated', 'interviewUpdated', 'interviewDeleted'
+        application = Application.find_by(ext_id:)
         render json: { error: 'Application not found' }, status: :not_found and return if application.nil?
-
-        ApplicationEvent.create!(
-          ext_id:,
-          job_id: application.job_id,
-          user_id: application.user_id,
-          event_type: lever_event['event'],
-          event_details: lever_event['data'].to_json,
-          previous_event_id: application.application_events.last&.id
-        )
-        render json: { message: 'Application event created' }, status: :ok and return
       else
         render json: { error: 'Unknown event type' }, status: :unprocessable_entity and return
       end
 
+      application = Application.find_by(ext_id:)
+
+      render json: { error: 'Application not found' }, status: :not_found and return if application.nil?
+
+      ApplicationEvent.create!(
+        ext_id:,
+        job_id: application.job_id,
+        user_id: application.user_id,
+        event_type: lever_event['event'],
+        event_details: lever_event['data'].to_json,
+        previous_event_id: application.application_events.last&.id
+      )
       render json: { message: 'Event processed' }, status: :ok
     end
   end
