@@ -420,8 +420,8 @@ module ApiExceptionHandler
 
   #--------------------------------------
 
-  def not_found_error(attribute)
-    render_error(attribute, 'ERR_INVALID', 'Attribute can not be retrieved', 404)
+  def not_found_error(attribute, description = 'Attribute can not be retrieved')
+    render_error(attribute, 'ERR_INVALID', description, 404)
   end
 
   #--------------------------------------

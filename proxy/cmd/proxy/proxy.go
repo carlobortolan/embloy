@@ -33,7 +33,7 @@ func handleRedirect(c *gin.Context) {
 	origin := c.Request.Header.Get("Origin")
 	referrer := c.Request.Header.Get("Referer")
 
-	supportedModes := []string{"ashby", "lever"}
+	supportedModes := []string{"ashby", "lever", "job", "default"}
 	if contains(supportedModes, mode) {
 		c.Redirect(http.StatusFound, cfg.MainInstance+"?origin="+origin+"&referrer="+referrer+"&mode="+mode+"&eType=external")
 	} else {
@@ -52,8 +52,17 @@ func contains(slice []string, item string) bool {
 
 func handleAutoRequest(c *gin.Context) {
 	uID, referrer, jobSlug, mode := extractParams(c)
-	if referrer == "" || jobSlug == "" {
-		c.Redirect(http.StatusFound, cfg.MainInstance+"?eType=auto&id="+uID+"&url="+referrer+"&mode="+mode+"&error=invalid_request&error_description=Invalid request. Missing parameters or invalid URL.")
+	var errorDescription string
+	if referrer == "" {
+		errorDescription = "Invalid request. Please provide a valid referrer URL."
+	} else if jobSlug == "" {
+		errorDescription = "Invalid request. Please provide a valid job slug."
+	} else if mode == "" {
+		errorDescription = "Invalid request. Please provide a valid mode."
+	}
+
+	if errorDescription != "" {
+		c.Redirect(http.StatusFound, cfg.MainInstance+"?eType=auto&id="+uID+"&url="+url.QueryEscape(referrer)+"&mode="+mode+"&error=invalid_request&error_description="+url.QueryEscape(errorDescription))
 		return
 	}
 
@@ -85,7 +94,8 @@ func handleAutoRequest(c *gin.Context) {
 
 	response, err := client.MakeRequest()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		errorDescription := "An error occurred while processing your request. This may be due to the job being unavailable or a misconfiguration in the application form by the job owner. If the problem persists, please contact the job owner directly or try again later."
+		c.Redirect(http.StatusFound, cfg.MainInstance+"?eType=auto&id="+uID+"&url="+url.QueryEscape(referrer)+"&mode="+mode+"&error=internal_error&error_description="+url.QueryEscape(errorDescription))
 		return
 	}
 
@@ -116,7 +126,7 @@ func extractParams(c *gin.Context) (string, string, string, string) {
 	}
 
 	// If no mode is provided, try to infer it from the referrer URL
-	if mode == "" || mode == "null" {
+	if mode == "" || mode == "null" || mode == "job" || mode == "default" {
 		switch refURL.Host {
 		case "jobs.sandbox.lever.co", "hire.sandbox.lever.co":
 			mode = "lever"
