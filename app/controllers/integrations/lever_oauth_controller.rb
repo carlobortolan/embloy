@@ -25,8 +25,8 @@ module Integrations
       audience = 'https://api.sandbox.lever.co/v1/'
       scope = 'offline_access postings:write:admin uploads:write:admin webhooks:write:admin' # TODO: Add scopes required by webhooks
 
-      redirect_to "#{LEVER_OAUTH_URL}?client_id=#{client_id}&redirect_uri=#{auth_lever_callback_url}&state=#{state}&response_type=code&scope=#{scope}&prompt=consent&audience=#{audience}",
-                  allow_other_host: true
+      url = "#{LEVER_OAUTH_URL}?client_id=#{client_id}&redirect_uri=#{auth_lever_callback_url}&state=#{state}&response_type=code&scope=#{scope}&prompt=consent&audience=#{audience}"
+      render json: { url: }, status: :ok
     end
 
     # Callback method for Lever OAuth app (step 2) to request access and refresh token (step 3)
