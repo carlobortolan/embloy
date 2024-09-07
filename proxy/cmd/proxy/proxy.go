@@ -19,9 +19,9 @@ func main() {
 
 	r := gin.Default()
 	r.GET("/health", healthCheck)
-	r.GET("/:mode", handleRedirect)       // e.g., https://apply.embloy.com/lever
-	r.GET("/:mode/*path", handleRedirect) // e.g., https://apply.embloy.com/lever
-	r.GET("/", handleAutoRequest)         // e.g., https://apply.embloy.com/?eType=auto&id=123&url=https://jobs.sandbox.lever.co/embloy&mode=lever
+	r.GET("/:mode", handleRedirect)       // e.g., https://apply.embloy.com/<ats>
+	r.GET("/:mode/*path", handleRedirect) // e.g., https://apply.embloy.com/<job-ppsting-url>
+	r.GET("/", handleAutoRequest)         // e.g., https://apply.embloy.com/?eType=auto&id=123&url=<job-posting-url>&mode=lever
 	r.Run(":8081")
 }
 
