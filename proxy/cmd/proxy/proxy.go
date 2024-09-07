@@ -19,8 +19,9 @@ func main() {
 
 	r := gin.Default()
 	r.GET("/health", healthCheck)
-	r.GET("/:mode", handleRedirect) // e.g., https://apply.embloy.com/lever
-	r.GET("/", handleAutoRequest)   // e.g., https://apply.embloy.com/?eType=auto&id=123&url=https://jobs.sandbox.lever.co/embloy&mode=lever
+	r.GET("/:mode", handleRedirect)       // e.g., https://apply.embloy.com/lever
+	r.GET("/:mode/*path", handleRedirect) // e.g., https://apply.embloy.com/lever
+	r.GET("/", handleAutoRequest)         // e.g., https://apply.embloy.com/?eType=auto&id=123&url=https://jobs.sandbox.lever.co/embloy&mode=lever
 	r.Run(":8081")
 }
 
@@ -32,12 +33,22 @@ func handleRedirect(c *gin.Context) {
 	mode := c.Param("mode")
 	origin := c.Request.Header.Get("Origin")
 	referrer := c.Request.Header.Get("Referer")
+	path := c.Param("path")
 
 	supportedModes := []string{"ashby", "lever", "job", "default"}
 	if contains(supportedModes, mode) {
-		c.Redirect(http.StatusFound, cfg.MainInstance+"?origin="+origin+"&referrer="+referrer+"&mode="+mode+"&eType=external")
+		// Incoming request looks like: apply.embloy.com/lever
+		c.Redirect(http.StatusFound, cfg.MainInstance+"?origin="+url.QueryEscape(origin)+"&referrer="+url.QueryEscape(referrer)+"&mode="+url.QueryEscape(mode)+"&eType=external")
 	} else {
-		c.Redirect(http.StatusFound, cfg.MainInstance+"?origin="+origin+"&referrer="+referrer+"&mode="+mode+"&eType=external&error=invalid_request&error_description=Invalid mode. Supported modes are 'ashby' and 'lever'.")
+		// Incoming request looks like: apply.embloy.com/jobs.sandbox.lever.co/de/bab6e549-d980-4911-a84c-668951c0e65e
+		fullURL := mode + path
+		log.Info("Full URL: ", fullURL)
+
+		c.Request.URL.Path = "/"
+		c.Request.URL.RawQuery = "url=" + url.QueryEscape(fullURL) + "&origin=" + url.QueryEscape(origin) + "&eType=auto&mode=default"
+
+		log.Info("Redirected original request to auto request with parameters: ", c.Request.URL.RawQuery)
+		handleAutoRequest(c)
 	}
 }
 
@@ -118,6 +129,11 @@ func extractParams(c *gin.Context) (string, string, string, string) {
 		}
 	}
 	log.Println("Referrer URL:", referrer)
+
+	// Ensure the referrer URL includes a scheme
+	if !strings.HasPrefix(referrer, "http://") && !strings.HasPrefix(referrer, "https://") {
+		referrer = "https://" + referrer
+	}
 
 	refURL, err := url.Parse(referrer)
 	if err != nil {
