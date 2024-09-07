@@ -123,6 +123,8 @@ module ApiExceptionHandler
                 with: :request_token_malformed_error
     rescue_from CustomExceptions::InvalidInput::Quicklink::Request::Blank,
                 with: :request_token_blank_error
+    rescue_from CustomExceptions::InvalidInput::Quicklink::Request::Forbidden,
+                with: :request_token_forbidden_error
     rescue_from CustomExceptions::InvalidInput::Quicklink::Request::NotFound,
                 with: :request_token_not_found_error
 
@@ -262,6 +264,10 @@ module ApiExceptionHandler
     malformed_error('request_token')
   end
 
+  def request_token_forbidden_error
+    access_denied_error('request_token')
+  end
+
   def request_token_not_found_error
     not_found_error('request_token', 'The job included in the request token was not found')
   end
@@ -338,7 +344,6 @@ module ApiExceptionHandler
 
   def token_expired_error
     unauthorized_error('token')
-    # render_error('token', 'ERR_INVALID', 'Attribute is expired', 401)
   end
 
   #--------------------------------------
@@ -403,8 +408,8 @@ module ApiExceptionHandler
 
   #--------------------------------------
 
-  def unauthorized_error(attribute)
-    render_error(attribute, 'ERR_INVALID', 'Attribute is invalid or expired', 401)
+  def unauthorized_error(attribute, description = 'Attribute is invalid or expired')
+    render_error(attribute, 'ERR_INVALID', description, 401)
   end
 
   #--------------------------------------
@@ -415,8 +420,8 @@ module ApiExceptionHandler
 
   #--------------------------------------
 
-  def not_found_error(attribute)
-    render_error(attribute, 'ERR_INVALID', 'Attribute can not be retrieved', 404)
+  def not_found_error(attribute, description = 'Attribute can not be retrieved')
+    render_error(attribute, 'ERR_INVALID', description, 404)
   end
 
   #--------------------------------------

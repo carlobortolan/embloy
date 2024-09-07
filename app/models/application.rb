@@ -13,6 +13,7 @@ class Application < ApplicationRecord
   belongs_to :user, counter_cache: true
   has_noticed_notifications model_name: 'Notification'
   has_many :application_answers, foreign_key: %i[user_id job_id], primary_key: %i[user_id job_id], dependent: :destroy
+  has_many :application_events, foreign_key: %i[user_id job_id], primary_key: %i[user_id job_id], dependent: :destroy
 
   accepts_nested_attributes_for :application_answers
 

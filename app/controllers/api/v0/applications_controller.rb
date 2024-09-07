@@ -25,7 +25,6 @@ module Api
         render_applications(applications || [])
       end
 
-      # rubocop:disable Metrics/AbcSize
       # Returns a single application including details
       def show_single
         set_at_job(application_show_params[:id])
@@ -35,7 +34,6 @@ module Api
 
         render_application(application)
       end
-      # rubocop:enable Metrics/AbcSize
 
       def create
         apply_for_job
@@ -57,6 +55,15 @@ module Api
         handle_reject(application)
       rescue ActiveRecord::RecordNotFound
         render status: 404, json: { message: 'Not found.' }
+      end
+
+      def pipeline
+        set_at_job(application_show_params[:id])
+        must_be_owner!(application_show_params[:id], Current.user.id) if application_show_params[:application_id]
+
+        pipeline = ApplicationEvent.all.where(job_id: @job.job_id, user_id: application_show_params[:application_id] || Current.user.id).order('created_at DESC')
+
+        pipeline.empty? ? render(status: 204, json: { pipeline: [] }) : render(status: 200, json: { pipeline: })
       end
 
       private

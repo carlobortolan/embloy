@@ -23,7 +23,7 @@ module Integrations
       client_id = ENV.fetch('LEVER_CLIENT_ID', nil)
       state = Current.user.signed_id(purpose: 'lever_oauth_state', expires_in: 1.hour)
       audience = 'https://api.sandbox.lever.co/v1/'
-      scope = 'offline_access postings:write:admin uploads:write:admin'
+      scope = 'offline_access postings:write:admin uploads:write:admin webhooks:write:admin' # TODO: Add scopes required by webhooks
 
       redirect_to "#{LEVER_OAUTH_URL}?client_id=#{client_id}&redirect_uri=#{auth_lever_callback_url}&state=#{state}&response_type=code&scope=#{scope}&prompt=consent&audience=#{audience}",
                   allow_other_host: true
@@ -37,9 +37,6 @@ module Integrations
       state = params['state']
       user = User.find_signed!(state, purpose: 'lever_oauth_state')
       redirect_to_error('invalid_state') and return unless user
-
-      # user = User.find(user_id)
-      # redirect_to_error('invalid_user') and return unless user
 
       response = make_http_request(params['code'])
       handle_http_response(response, user)
@@ -65,7 +62,7 @@ module Integrations
                                            'client_secret' => ENV.fetch('LEVER_CLIENT_SECRET', nil),
                                            'grant_type' => 'authorization_code',
                                            'code' => code,
-                                           'scope' => 'offline_access postings:write:admin uploads:write:admin',
+                                           'scope' => 'offline_access postings:write:admin uploads:write:admin webhooks:read:admin webhooks:write:admin stages:read:admin interviews:read:admin offers:read:admin opportunities:read:admin', # rubocop:disable Layout/LineLength
                                            'redirect_uri' => auth_lever_callback_url
                                          })
 
@@ -73,14 +70,13 @@ module Integrations
     end
 
     # Handle HTTP response from Lever authorization request and save new tokens
-    def handle_http_response(response, user) # rubocop:disable Metrics/AbcSize
-      puts "Response: #{response.inspect}"
+    def handle_http_response(response, user)
       case response
       when Net::HTTPSuccess
         response_body = JSON.parse(response.body)
-        puts "Auth Response body: #{response_body.inspect}"
         IntegrationsController.save_token(user, 'OAuth Access Token', 'lever', 'access_token', response_body['access_token'], Time.now.utc + response_body['expires_in'], Time.now.utc)
         IntegrationsController.save_token(user, 'OAuth Refresh Token', 'lever', 'refresh_token', response_body['refresh_token'], Time.now.utc + 1.year, Time.now.utc)
+        Integrations::LeverWebhooksController.refresh_webhooks(user)
         redirect_to("#{ENV.fetch('GENIUS_CLIENT_URL')}/settings?tab=integrations?success=Successfully connected to Lever", allow_other_host: true)
       else
         exception_class = {

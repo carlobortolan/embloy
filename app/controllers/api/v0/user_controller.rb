@@ -96,6 +96,9 @@ module Api
       def upload_image
         attach_image if params[:image_url].present?
         render status: 200, json: { image_url: Current.user.image_url.url.to_s }
+      rescue Excon::Error::Socket, ActiveStorage::IntegrityError => e
+        Rails.logger.error("Failed to upload image: #{e.message}")
+        render status: 500, json: { error: 'Failed to upload image:' }
       end
 
       private
@@ -117,7 +120,7 @@ module Api
         applications.map { |i| Job.find(i.job_id) }
       end
 
-      def attach_image # rubocop:disable Metrics/AbcSize
+      def attach_image
         image = params[:image_url]
         if image.is_a?(ActionDispatch::Http::UploadedFile)
           Current.user.image_url.attach(io: image.open, filename: image.original_filename, content_type: image.content_type)
@@ -125,9 +128,6 @@ module Api
           default_image = Rails.root.join('app/assets/images/logo-light.svg')
           Current.user.image_url.attach(io: File.open(default_image), filename: 'default.svg', content_type: 'image/svg')
         end
-      rescue ActiveStorage::IntegrityError
-        default_image = Rails.root.join('app/assets/images/logo-light.svg')
-        Current.user.image_url.attach(io: File.open(default_image), filename: 'default.svg', content_type: 'image/svg')
       end
 
       def user_params

@@ -115,7 +115,7 @@ module Api
         end
       end
 
-      def check_scope(scope, path, method) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+      def check_scope(scope, path, method) # rubocop:disable Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
         # Extract the base URL, the resource, and the permission from the scope
         # resource = scope.split('.').second_to_last.split('/').drop(2).join('/').prepend('/')
         resource = scope&.split('//')&.last&.split('/')&.drop(2)&.join('/')&.split('.')&.first&.prepend('/')

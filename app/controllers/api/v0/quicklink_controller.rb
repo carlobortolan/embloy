@@ -66,14 +66,14 @@ module Api
       # It then returns the token in the response.
       def create_request_proxy
         return malformed_error('proxy') unless proxy_params[:admin_token] == ENV.fetch('PROXY_ADMIN_TOKEN', nil)
+        return malformed_error('job_slug') if proxy_params[:job_slug].nil?
+        return malformed_error('mode') if proxy_params[:mode].nil?
 
-        user_id = proxy_params[:user_id]
+        user_id = proxy_params[:user_id] || Job.find_by(job_slug: "#{proxy_params[:mode]}__#{proxy_params[:job_slug]}")&.user_id
+
         return malformed_error('proxy') if user_id.nil?
-
         return user_role_to_low_error unless must_be_verified(user_id)
         return user_blocked_error unless user_not_blacklisted(user_id)
-
-        return malformed_error('job_slug') if proxy_params[:job_slug].nil?
 
         render status: 200, json: { 'request_token' => QuicklinkService::Request::Encoder.call(create_proxy_session(user_id)) }
       end
