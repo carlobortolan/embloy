@@ -8,7 +8,7 @@ module Integrations
 
     def self.refresh_webhooks(client)
       response = Integrations::LeverController.fetch_from_lever(LEVER_WEBHOOK_URL, client)
-      Rails.logger.info("Response from Lever API: #{response.body}")
+      Rails.logger.debug("Response from Lever API: #{response.body}")
       case response
       when Net::HTTPSuccess || Net::HTTPNoContent
         existing_webhooks = JSON.parse(response.body)['data']
@@ -27,7 +27,7 @@ module Integrations
     def self.manage_webhooks(existing_webhooks, client) # rubocop:disable Metrics/PerceivedComplexity,Metrics/AbcSize
       message = "Found #{existing_webhooks.length} existing webhooks...\n"
       if existing_webhooks.nil? || existing_webhooks.empty?
-        Rails.logger.info('No existing webhooks found.')
+        Rails.logger.debug('No existing webhooks found.')
         existing_webhooks = []
       end
 
@@ -72,7 +72,7 @@ module Integrations
       if response.code.to_i == 201
         client.webhooks.create!(ext_id: "lever__#{data['data']['id']}", url: data['data']['url'], event: data['data']['event'], source: 'lever',
                                 signatureToken: data['data']['configuration']['signatureToken'])
-        Rails.logger.info("Webhook for event '#{webhook[:event]}' created successfully.")
+        Rails.logger.debug("Webhook for event '#{webhook[:event]}' created successfully.")
         message += "webhook created successfully 🚀\n"
       else
         message += "failed to create webhook for event '#{webhook[:event]}' 💥\n"
@@ -102,7 +102,7 @@ module Integrations
 
       if response.code.to_i == 204
         client.webhooks.find_by(ext_id: "lever__#{webhook_id}")&.destroy
-        Rails.logger.info("Webhook with ID '#{webhook_id}' deleted successfully.")
+        Rails.logger.debug("Webhook with ID '#{webhook_id}' deleted successfully.")
         message += "webhook deleted successfully 🚀\n"
       else
         Rails.logger.error("Failed to delete webhook with ID '#{webhook_id}': #{response.body}")
@@ -113,7 +113,7 @@ module Integrations
     end
 
     def self.verify_signature(token, triggered_at, signature, signature_token)
-      puts "Starting verification with token: #{token}, triggered_at: #{triggered_at}, signature: #{signature}, signature_token: #{signature_token}"
+      Rails.logger.debug("Starting verification with token: #{token}, triggered_at: #{triggered_at}, signature: #{signature}, signature_token: #{signature_token}")
 
       # Concatenate token and triggered_at values
       plain_text = token + triggered_at.to_s
@@ -121,16 +121,16 @@ module Integrations
       # Encode the resulting string with the HMAC algorithm
       computed_signature = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha256'), signature_token, plain_text)
 
-      puts "Computed signature: #{computed_signature}"
-      puts "Signature: #{signature}"
+      Rails.logger.debug("Computed signature: #{computed_signature}")
+      Rails.logger.debug("Signature: #{signature}")
 
       # Compare the resulting hexdigest to the signature
       if ActiveSupport::SecurityUtils.secure_compare(computed_signature, signature)
         # Cache the token to prevent replay attacks
-        puts 'Signature verified successfully.'
+        Rails.logger.debug('Signature verified successfully.')
         true
       else
-        puts 'Signature verification failed.'
+        Rails.logger.error('Signature verification failed.')
         false
       end
     end

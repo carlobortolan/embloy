@@ -24,7 +24,6 @@ module SimpleCrypt
   end
 
   def self.decrypt(encrypted_text, key = ENV.fetch('WEBHOOK_SECRET', nil))
-    puts "Encrypted text: #{encrypted_text}"
     return unless ensure_key_length(key) && encrypted_text && encrypted_text != ':id'
 
     decipher = OpenSSL::Cipher.new('aes-256-ecb')

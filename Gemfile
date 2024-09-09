@@ -84,6 +84,7 @@ group :development do
 end
 
 group :production do
+  gem 'aws-sdk-s3', '~> 1.159'
   gem 'azure-storage-blob', '~> 2.0', require: false
 end
 
@@ -152,4 +153,6 @@ gem 'rails-healthcheck', '~> 1.4'
 # enable precommit
 gem 'attr_encrypted', '~> 4.0'
 
-gem "aws-sdk-s3", "~> 1.159"
+gem 'sentry-rails'
+gem 'sentry-ruby'
+gem 'stackprof'

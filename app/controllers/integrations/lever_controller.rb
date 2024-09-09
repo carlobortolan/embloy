@@ -67,7 +67,7 @@ module Integrations
             answer = application.application_answers.find { |a| a.application_option_id == param[:application_option_id].to_i }
             answer.update!(answer: uri)
           else
-            puts "Error uploading file: #{response.body}"
+            Rails.logger.error("Error uploading file: #{response.body}")
           end
         end
       end

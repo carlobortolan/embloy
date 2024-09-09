@@ -28,7 +28,7 @@ class OauthCallbacksController < ApplicationController
   end
 
   def auth
-    puts "auth=#{request.env['omniauth.auth']}"
+    Rails.logger.debug("auth=#{request.env['omniauth.auth']}")
     request.env['omniauth.auth']
   end
 

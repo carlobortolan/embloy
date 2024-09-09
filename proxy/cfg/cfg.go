@@ -1,8 +1,10 @@
 package cfg
 
 import (
+	"fmt"
 	"os"
 
+	"github.com/getsentry/sentry-go"
 	"github.com/joho/godotenv"
 	log "github.com/sirupsen/logrus"
 )
@@ -66,5 +68,17 @@ func SetConfig() {
 	// err = os.MkdirAll(LogDir, 0o755)
 	if err != nil {
 		log.Warn("Could not create log directory: ", err)
+	}
+
+	// To initialize Sentry's handler, you need to initialize Sentry itself beforehand
+	if err := sentry.Init(sentry.ClientOptions{
+		Dsn:           "https://dac8c6b65c790d10bbf81fc1b31a127d@o4507920163209216.ingest.de.sentry.io/4507920291463248",
+		EnableTracing: true,
+		// Set TracesSampleRate to 1.0 to capture 100%
+		// of transactions for tracing.
+		// We recommend adjusting this value in production,
+		TracesSampleRate: 1.0,
+	}); err != nil {
+		fmt.Printf("Sentry initialization failed: %v\n", err)
 	}
 }

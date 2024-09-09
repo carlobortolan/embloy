@@ -49,7 +49,6 @@ module Hooks
         application = Application.find_by(ext_id:)
         render json: { error: 'Application not found' }, status: :not_found and return unless application
 
-        puts 'Hired'
         application.accept 'Accepted'
       when 'candidateDeleted'
         application = Application.find_by(ext_id:)
@@ -87,9 +86,9 @@ module Hooks
 
       webhook = Webhook.find_by(source: 'ashby', event: ashby_event['action'], user_id: SimpleCrypt.decrypt(params[:id] || ''))
 
-      puts "Webhook: #{webhook}"
-      puts "user_id: #{SimpleCrypt.decrypt(params[:id] || '')}"
-      puts "event: #{ashby_event['action']}"
+      Rails.logger.debug("Webhook: #{webhook}")
+      Rails.logger.debug("user_id: #{SimpleCrypt.decrypt(params[:id] || '')}")
+      Rails.logger.debug("event: #{ashby_event['action']}")
 
       render json: { error: 'Webhook not found' }, status: :not_found and return if webhook.nil?
 

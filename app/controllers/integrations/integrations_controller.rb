@@ -82,7 +82,7 @@ module Integrations
     def self.handle_application_response(response)
       case response
       when Net::HTTPSuccess
-        puts "Application submitted successfully: #{response.body}"
+        Rails.logger.debug("Application submitted successfully: #{response.body}")
       when Net::HTTPBadRequest
         raise CustomExceptions::InvalidInput::Quicklink::Application::Malformed and return
       when Net::HTTPUnauthorized

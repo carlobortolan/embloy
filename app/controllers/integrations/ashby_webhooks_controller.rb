@@ -8,7 +8,7 @@ module Integrations
 
     # def self.refresh_webhooks(client)
     #   response = Integrations::AshbyController.make_request("#{ASHBY_WEBHOOK_URL}.get", client)
-    #   Rails.logger.info("Response from Ashby API: #{response.body}")
+    #   Rails.logger.debug("Response from Ashby API: #{response.body}")
     #   case response
     #   when Net::HTTPSuccess
     #     if JSON.parse(response.body)['success'] == true
@@ -65,7 +65,7 @@ module Integrations
       if response.code.to_i == 200 && data['success'] == true
         client.webhooks.create!(ext_id: "ashby__#{data['results']['id']}", url: data['results']['requestUrl'], event: data['results']['webhookType'], source: 'ashby',
                                 signatureToken: data['results']['secretToken'])
-        Rails.logger.info("Webhook for event '#{webhook[:webhookType]}' created successfully.")
+        Rails.logger.debug("Webhook for event '#{webhook[:webhookType]}' created successfully.")
         message += "webhook created successfully 🚀\n"
       else
         Rails.logger.error("Failed to create webhook for event '#{webhook[:webhookType]}': #{response.body}")
@@ -90,7 +90,7 @@ module Integrations
 
       if (response.code.to_i == 200 && JSON.parse(response.body)['success'] == true) || JSON.parse(response.body)['errors'] == ['webhook_not_found']
         client.webhooks.find_by(ext_id: "ashby__#{webhook_id}")&.destroy
-        Rails.logger.info("Webhook with ID '#{webhook_id}' deleted successfully.")
+        Rails.logger.debug("Webhook with ID '#{webhook_id}' deleted successfully.")
         message += "webhook deleted successfully 🚀\n"
       else
         Rails.logger.error("Failed to delete webhook with ID '#{webhook_id}': #{response.body}")
@@ -102,21 +102,21 @@ module Integrations
 
     # Reference: https://developers.ashbyhq.com/docs/authenticating-webhooks
     def self.verify_signature(raw_payload, signature_from_header, secret)
-      puts "Starting verification with raw_payload: #{raw_payload}, signature_from_header: #{signature_from_header}, secret: #{secret}"
+      Rails.logger.debug("Starting verification with raw_payload: #{raw_payload}, signature_from_header: #{signature_from_header}, secret: #{secret}")
 
       # Compute the HMAC digest
       digest = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha256'), secret, raw_payload)
       computed_signature = "sha256=#{digest}"
 
-      puts "Computed signature: #{computed_signature}"
-      puts "Signature from header: #{signature_from_header}"
+      Rails.logger.debug("Computed signature: #{computed_signature}")
+      Rails.logger.debug("Signature from header: #{signature_from_header}")
 
       # Compare the resulting hexdigest to the signature
       if computed_signature && signature_from_header && ActiveSupport::SecurityUtils.secure_compare(computed_signature, signature_from_header)
-        puts 'Signature verified successfully.'
+        Rails.logger.debug('Signature verified successfully.')
         true
       else
-        puts 'Signature verification failed.'
+        Rails.logger.error('Signature verification failed.')
         false
       end
     end

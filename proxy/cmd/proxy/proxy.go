@@ -5,32 +5,39 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/embloy/embloy-go/embloy"
-	"github.com/gin-gonic/gin"
-
 	"github.com/Embloy/proxy/cfg"
+	"github.com/embloy/embloy-go/embloy"
+	sentrygin "github.com/getsentry/sentry-go/gin"
+	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
 
 func main() {
 	cfg.SetConfig()
-
 	gin.SetMode(cfg.GinMode)
 
-	r := gin.Default()
-	r.GET("/health", healthCheck)
-	r.GET("/:mode", handleRedirect)       // e.g., https://apply.embloy.com/<ats>
-	r.GET("/:mode/*path", handleRedirect) // e.g., https://apply.embloy.com/<job-ppsting-url>
-	r.GET("/", handleAutoRequest)         // e.g., https://apply.embloy.com/?eType=auto&id=123&url=<job-posting-url>&mode=lever
-	r.Run(":8081")
+	app := gin.Default()
+
+	// Attach sentry handler to middleware
+	app.Use(sentrygin.New(sentrygin.Options{}))
+
+	app.GET("/health", healthCheck)
+	app.GET("/:mode", handleRedirect)       // e.g., https://apply.embloy.com/<ats>
+	app.GET("/:mode/*path", handleRedirect) // e.g., https://apply.embloy.com/<job-ppsting-url>
+	app.GET("/", handleAutoRequest)         // e.g., https://apply.embloy.com/?eType=auto&id=123&url=<job-posting-url>&mode=lever
+	app.Run(":8081")
 }
 
 func healthCheck(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "ok"})
 }
-
 func handleRedirect(c *gin.Context) {
 	mode := c.Param("mode")
+	if mode == "health" {
+		c.JSON(http.StatusOK, gin.H{"status": "ok"})
+		return
+	}
+
 	origin := c.Request.Header.Get("Origin")
 	referrer := c.Request.Header.Get("Referer")
 	path := c.Param("path")
