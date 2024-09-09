@@ -12,6 +12,7 @@ module Integrations
   class AshbyController < IntegrationsController
     ASHBY_POST_FORM_URL = 'https://api.ashbyhq.com/applicationForm.submit'
     ASHBY_FETCH_POSTING_URL = 'https://api.ashbyhq.com/jobPosting.info'
+    ASHBY_FETCH_POSTINGS_URL = 'https://api.ashbyhq.com/jobPosting.list'
 
     # Reference: https://developers.ashbyhq.com/reference/applicationformsubmit
     def self.post_form(posting_id, application, application_params, client) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity,Metrics/MethodLength
@@ -69,23 +70,15 @@ module Integrations
 
       body = JSON.parse(response.body)
       response = Net::HTTPBadRequest.new('1.1', '400', 'Bad Request', body['errors']) if response == Net::HTTPSuccess && body['success'] == false
+
+      application.update!(ext_id: "ashby__#{body['results']['submittedFormInstance']['id']}") if response.is_a?(Net::HTTPSuccess) && body['success'] == true
+
       handle_application_response(response)
     end
 
-    # rubocop:disable Metrics/AbcSize
     # Reference: https://developers.ashbyhq.com/reference/jobpostinginfo
     def self.fetch_posting(posting_id, client, job)
-      # Build request
-      url = URI(ASHBY_FETCH_POSTING_URL)
-      http = Net::HTTP.new(url.host, url.port)
-      http.use_ssl = true
-      request = Net::HTTP::Post.new(url)
-      request['Content-Type'] = 'application/json'
-      api_key = fetch_token(client, 'ashby', 'api_key')
-      request['Authorization'] = "Basic #{Base64.strict_encode64("#{api_key}:")}"
-      request.body = "{\"jobPostingId\":\"#{posting_id}\"}"
-
-      response = http.request(request)
+      response = make_request(ASHBY_FETCH_POSTING_URL, client, 'post', { jobPostingId: posting_id })
       case response
       when Net::HTTPSuccess
         body = JSON.parse(response.body)
@@ -105,6 +98,45 @@ module Integrations
         raise CustomExceptions::InvalidInput::Quicklink::ApiKey::Unauthorized and return
       end
     end
-    # rubocop:enable Metrics/AbcSize
+
+    # Reference: https://developers.ashbyhq.com/reference/jobpostinglist
+    def self.synchronize(client)
+      response = make_request(ASHBY_FETCH_POSTINGS_URL, client)
+      case response
+      when Net::HTTPSuccess
+        body = JSON.parse(response.body)
+        raise CustomExceptions::InvalidInput::Quicklink::Request::Malformed unless body['success'] == true
+
+        data = JSON.parse(response.body)['results']
+        data.each do |job|
+          config = JSON.parse(File.read('app/controllers/integrations/ashby_config.json'))
+          config['city'].gsub!('ASHBY_SECRET', fetch_token(client, 'ashby', 'api_key').to_s)
+          parsed_job = Mawsitsit.parse({ results: job }, config, true)
+          parsed_job['job_slug'] = "ashby__#{parsed_job['job_slug']}"
+          parsed_job['user_id'] = client.id.to_i
+          parsed_job['application_options_attributes'] = []
+          handle_internal_job(client, parsed_job)
+        end
+      when Net::HTTPBadRequest
+        raise CustomExceptions::InvalidInput::Quicklink::Request::Malformed and return
+      when Net::HTTPForbidden
+        raise CustomExceptions::InvalidInput::Quicklink::Request::Forbidden and return
+      when Net::HTTPUnauthorized
+        raise CustomExceptions::InvalidInput::Quicklink::ApiKey::Unauthorized and return
+      end
+    end
+
+    def self.make_request(url, client, method = 'post', body = nil)
+      uri = URI.parse(url)
+      request = Net::HTTP.const_get(method.capitalize).new(uri)
+      api_key = fetch_token(client, 'ashby', 'api_key')
+      request['Authorization'] = "Basic #{Base64.strict_encode64("#{api_key}:")}"
+      request['Content-Type'] = 'application/json'
+      request.body = body.to_json if body
+
+      Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
+        http.request(request)
+      end
+    end
   end
 end
