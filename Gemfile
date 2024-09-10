@@ -68,6 +68,7 @@ group :development, :test do
   gem 'httparty'
   gem 'rspec-rails', '~> 6.0.0'
   gem 'rubocop', require: false
+  gem 'rubocop-rake', require: false
 end
 
 group :development do

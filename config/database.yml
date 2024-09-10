@@ -10,25 +10,37 @@
 #   https://dev.mysql.com/doc/refman/5.7/en/password-hashing.html
 #
 default: &default
-  database: embloy_dev_beta
+  database: embloy
   adapter: postgis
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
-  username: <%= ENV["DATABASE_USER"] %>
-  password: <%= ENV["DATABASE_PASSWORD"] %>
-  host: <%= ENV["DATABASE_HOST"] %>
-
+  username: <%= ENV["DEV_DATABASE_USER"] %>
+  password: <%= ENV["DEV_DATABASE_PASSWORD"] %>
+  host: <%= ENV["DEV_DATABASE_HOST"] %>
 
 development:
-  <<: *default
-  database: dev1_core_db
+  primary:
+    <<: *default
+    database: dev_core
+  primary_replica:
+    <<: *default
+    database: dev_core
+    replica: true
+
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: test_core_db
+  database: test_core
+  adapter: postgis
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+  username: <%= ENV["DEV_DATABASE_USER"] %>
+  password: <%= ENV["DEV_DATABASE_PASSWORD"] %>
+  host: <%= ENV["DEV_DATABASE_HOST"] %>
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -51,10 +63,25 @@ test:
 # for a full overview on how database connection configuration can be specified.
 #
 production:
-  <<: *default
-  database: prod_core_db
-
-  connect_timeout: 2
-  checkout_timeout: 5
-  variables:
-    statement_timeout: 5000 # ms
+  primary:
+    <<: *default
+    database: prod_core_primary
+    username: <%= ENV["PRIMARY_DATABASE_USER"] %>
+    password: <%= ENV["PRIMARY_DATABASE_PASSWORD"] %>
+    host: <%= ENV["PRIMARY_DATABASE_HOST"] %>
+    connect_timeout: 2
+    checkout_timeout: 5
+    variables:
+      statement_timeout: 5000 # ms
+#  TODO: Enable this when we have a replica
+#  primary_replica:
+#    <<: *default
+#    database: prod_core_replica
+#    username: <%= ENV["PRIMARY_REPL_DATABASE_USER"] %>
+#    password: <%= ENV["PRIMARY_REPL_DATABASE_PASSWORD"] %>
+#    host: <%= ENV["PRIMARY_REPL_DATABASE_HOST"] %>
+#    replica: true
+#    connect_timeout: 2
+#    checkout_timeout: 5
+#    variables:
+#      statement_timeout: 5000 # ms

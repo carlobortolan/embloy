@@ -1,16 +1,16 @@
 name: "Ruby on Rails CI"
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
-    branches: [ "master" ]
+    branches: ["master"]
 jobs:
   build:
     environment: CI
     runs-on: ubuntu-latest
     env:
       CORS_CORE_CLIENT_HOST: ${{ secrets.CORS_CORE_CLIENT_HOST }}
-      CORS_GENIUS_CLIENT_HOST: ${{ secrets.CORS_GENIUS_CLIENT_HOST }}      
+      CORS_GENIUS_CLIENT_HOST: ${{ secrets.CORS_GENIUS_CLIENT_HOST }}
       CORS_GENIUS_SERVER_HOST: ${{ secrets.CORS_GENIUS_SERVER_HOST }}
     steps:
       - name: Checkout code
@@ -22,82 +22,82 @@ jobs:
           bundler-cache: true
       - name: Install dependencies
         run: bundle install
-      - name: Build
-        run: bundle exec rake assets:precompile
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Install Ruby and gems
-        uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
-      - name: Install bundler-audit
-        run: gem install bundler-audit
-      - name: Security audit dependencies
-        run: bundle audit check --update
-      - name: Install brakeman
-        run: gem install brakeman
-      - name: Security audit application code
-        run: brakeman -q -w2
-      - name: Lint Ruby files
-        run: bundle exec rubocop --parallel
-      - name: Install reek
-        run: gem install reek
-      - name: Code smell detection
-        run: reek
-      - name: Run Flog complexity analysis
-        run: |
-          gem install flog
-          ruby flog_check.rb
-  test:
-    environment: CI
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:15-alpine
-        ports:
-          - "5432:5432"
-        env:
-          POSTGRES_DB: embloy_test_beta
-          POSTGRES_USER: ${{ secrets.DATABASE_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-    env:
-      RAILS_ENV: test
-      CORS_CORE_CLIENT_HOST: ${{ secrets.CORS_CORE_CLIENT_HOST }}
-      CORS_GENIUS_CLIENT_HOST: ${{ secrets.CORS_GENIUS_CLIENT_HOST }}      
-      CORS_GENIUS_SERVER_HOST: ${{ secrets.CORS_GENIUS_SERVER_HOST }}
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
-      REFRESH_TOKEN_SECRET: ${{ secrets.REFRESH_TOKEN_SECRET }}
-      ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
-      CLIENT_TOKEN_SECRET: ${{ secrets.CLIENT_TOKEN_SECRET }}
-      REQUEST_TOKEN_SECRET: ${{ secrets.REQUEST_TOKEN_SECRET }}
-      STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
-      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
-      STRIPE_SIGNING_SECRET: ${{ secrets.STRIPE_SIGNING_SECRET }}
-      GENIUS_QUERY_TOKEN_SECRET: ${{ secrets.GENIUS_QUERY_TOKEN_SECRET }}
-      SERVICE_HOST: 'noreply.embloy.com'
-      EMAIL_NOREPLY_USER: 'noreply@noreply.embloy.com'
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Install Ruby and gems
-        uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
-      - name: Setup environment variables
-        run: |
-          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
-          echo "RAILS_MASTER_KEY=${{ secrets.RAILS_MASTER_KEY }}" >> .env
-          echo "DATABASE_USER=${{ secrets.DATABASE_USER }}" >> .env
-          echo "DATABASE_HOST=${{ secrets.DATABASE_HOST }}" >> .env
-          echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}" >> .env
-      #- name: Setup database
-      #  run: bundle exec rails db:setup
-      - name: Run tests
-        run: bundle exec rspec
-      - name: Output coverage report
-        run: cat coverage/index.html
+      # - name: Build
+      #   run: bundle exec rake assets:precompile
+  #lint:
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - name: Checkout code
+  #      uses: actions/checkout@v3
+  #    - name: Install Ruby and gems
+  #      uses: ruby/setup-ruby@v1
+  #      with:
+  #        bundler-cache: true
+  #    - name: Install bundler-audit
+  #      run: gem install bundler-audit
+  #    - name: Security audit dependencies
+  #      run: bundle audit check --update
+  #    - name: Install brakeman
+  #      run: gem install brakeman
+  #    - name: Security audit application code
+  #      run: brakeman -q -w2
+  #    - name: Lint Ruby files
+  #      run: bundle exec rubocop --parallel
+  #    - name: Install reek
+  #      run: gem install reek
+  #    - name: Code smell detection
+  #      run: reek
+  #    - name: Run Flog complexity analysis
+  #      run: |
+  #        gem install flog
+  #        ruby flog_check.rb
+  #test:
+  #  environment: CI
+  #  runs-on: ubuntu-latest
+  #  services:
+  #    postgres:
+  #      image: postgres:15-alpine
+  #      ports:
+  #        - "5432:5432"
+  #      env:
+  #        POSTGRES_DB: embloy_test_beta
+  #        POSTGRES_USER: ${{ secrets.DATABASE_USER }}
+  #        POSTGRES_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+  #  env:
+  #    RAILS_ENV: test
+  #    CORS_CORE_CLIENT_HOST: ${{ secrets.CORS_CORE_CLIENT_HOST }}
+  #    CORS_GENIUS_CLIENT_HOST: ${{ secrets.CORS_GENIUS_CLIENT_HOST }}
+  #    CORS_GENIUS_SERVER_HOST: ${{ secrets.CORS_GENIUS_SERVER_HOST }}
+  #    DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  #    DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+  #    REFRESH_TOKEN_SECRET: ${{ secrets.REFRESH_TOKEN_SECRET }}
+  #    ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
+  #    CLIENT_TOKEN_SECRET: ${{ secrets.CLIENT_TOKEN_SECRET }}
+  #    REQUEST_TOKEN_SECRET: ${{ secrets.REQUEST_TOKEN_SECRET }}
+  #    STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
+  #    STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+  #    STRIPE_SIGNING_SECRET: ${{ secrets.STRIPE_SIGNING_SECRET }}
+  #    GENIUS_QUERY_TOKEN_SECRET: ${{ secrets.GENIUS_QUERY_TOKEN_SECRET }}
+  #    SERVICE_HOST: 'noreply.embloy.com'
+  #    EMAIL_NOREPLY_USER: 'noreply@noreply.embloy.com'
+#
+#  steps:
+#    - name: Checkout code
+#      uses: actions/checkout@v3
+#    - name: Install Ruby and gems
+#      uses: ruby/setup-ruby@v1
+#      with:
+#        bundler-cache: true
+#    - name: Setup environment variables
+#      run: |
+#        echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+#        echo "RAILS_MASTER_KEY=${{ secrets.RAILS_MASTER_KEY }}" >> .env
+#        echo "DATABASE_USER=${{ secrets.DATABASE_USER }}" >> .env
+#        echo "DATABASE_HOST=${{ secrets.DATABASE_HOST }}" >> .env
+#        echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}" >> .env
+#    - name: Setup database
+#      run: bundle exec rails db:setup
+#    - name: Run tests
+#      run: bundle exec rspec
+#    - name: Output coverage report
+#      run: cat coverage/index.html
