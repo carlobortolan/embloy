@@ -27,7 +27,7 @@ ActiveRecord::Schema[7.0].define(version: 20_240_904_144_926) do
   create_enum 'question_type', %w[yes_no short_text long_text number link single_choice multiple_choice location file date]
   create_enum 'rating_type', %w[1 2 3 4 5]
   create_enum 'user_role', %w[admin editor developer moderator verified spectator]
-  create_enum 'user_type', %w[company private]
+  create_enum 'user_type', %w[company private sandbox]
 
   create_table 'action_text_rich_texts', force: :cascade do |t|
     t.string 'name', null: false

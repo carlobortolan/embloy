@@ -19,6 +19,8 @@ module SubscriptionStatus
     end
 
     def active_subscription?
+      return true if user_type == 'sandbox'
+
       sync_subscriptions
       payment_processor.present? && payment_processor.subscribed?
     end

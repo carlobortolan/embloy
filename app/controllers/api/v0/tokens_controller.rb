@@ -5,6 +5,7 @@ module Api
     # TokensController handles token-related actions
     class TokensController < ApiController
       before_action :set_token, only: %i[update destroy]
+      before_action :must_be_subscribed!, only: %i[create update]
 
       def index
         tokens = Current.user.tokens.all

@@ -57,6 +57,7 @@ Rails.application.routes.draw do
       get 'user/upcoming', to: 'user#upcoming'
       delete 'user/image', to: 'user#remove_image'
       post 'user/image', to: 'user#upload_image'
+      get 'user/events', to: 'user#events'
       get 'user/preferences', to: 'user#preferences'
       patch 'user/preferences', to: 'user#update_preferences'
       get 'user/notifications', to: 'notifications#show'

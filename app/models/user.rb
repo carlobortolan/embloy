@@ -5,7 +5,7 @@ class User < ApplicationRecord
   include SubscriptionStatus
 
   has_secure_password
-  enum :user_type, { company: 'company', user_private: 'private' }, default: 'private'
+  enum :user_type, { company: 'company', user_private: 'private', sandbox: 'sandbox' }, default: 'private'
   enum :user_role, { admin: 'admin', editor: 'editor', developer: 'developer', moderator: 'moderator', verified: 'verified', spectator: 'spectator' }, default: :spectator
   has_one :preferences, dependent: :delete
   has_one_attached :image_url
@@ -51,7 +51,7 @@ class User < ApplicationRecord
   validates :twitter_url, presence: false, length: { maximum: 150, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
   validates :facebook_url, presence: false, length: { maximum: 150, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
   validates :phone, presence: false, length: { maximum: 100, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
-  # validates :user_type, inclusion: { in: %w[company private], message: 'ERR_INVALID', description: 'Attribute is invalid' }, presence: false
+  # validates :user_type, inclusion: { in: %w[company private sandbox], message: 'ERR_INVALID', description: 'Attribute is invalid' }, presence: false
   validates :user_role, inclusion: { in: %w[admin editor developer moderator verified spectator], error: 'ERR_INVALID', description: 'Attribute is invalid' }, presence: false
   validates :image_url, presence: false
   validate :validate_image_size
@@ -89,6 +89,10 @@ class User < ApplicationRecord
     'https://avatars.githubusercontent.com/u/132399266' if !image_url.url.nil? && image_url.attached?
   rescue Fog::Errors::Error
     'https://avatars.githubusercontent.com/u/132399266'
+  end
+
+  def sandboxd?
+    user_type == 'sandbox'
   end
 
   private
