@@ -22,7 +22,7 @@ module Integrations
       when 'lever'
         Integrations::LeverController.fetch_posting(job_slug.sub('lever__', ''), client, job)
       when 'ashby'
-        Integrations::AshbyController.fetch_posting(job_slug.sub('ashby__', ''), client, job)
+        job # jobs are already fetched by webhooks
       when 'softgarden'
         Integrations::SoftgardenController.fetch_posting(job_slug.sub('softgarden__', ''), client, job)
       end
