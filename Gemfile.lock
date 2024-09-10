@@ -667,10 +667,8 @@ DEPENDENCIES
   rspec-rails (~> 6.0.0)
   rubocop
   rubocop-performance
-  rubocop-rails
   rubocop-rails_config
   rubocop-rake
-  rubocop-rspec
   sassc-rails
   selenium-webdriver
   sentry-rails
