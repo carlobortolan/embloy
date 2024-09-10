@@ -15,7 +15,7 @@ module Integrations
     ASHBY_FETCH_POSTINGS_URL = 'https://api.ashbyhq.com/jobPosting.list'
 
     # Reference: https://developers.ashbyhq.com/reference/applicationformsubmit
-    def self.post_form(posting_id, application, application_params, client) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity,Metrics/MethodLength
+    def self.post_form(posting_id, application, application_params, client) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
       url = URI(ASHBY_POST_FORM_URL)
       http = Net::HTTP.new(url.host, url.port)
       http.use_ssl = true
@@ -25,20 +25,7 @@ module Integrations
           file_key = "file_#{answer.application_option_id}"
           { path: answer.application_option.ext_id.split('__').last, value: file_key }
         else
-          formatted_answer = case answer.application_option.question_type
-                             when 'yes_no'
-                               answer.answer == 'Yes'
-                             when 'number', 'score'
-                               answer.answer.to_i
-                             when 'multiple_choice'
-                               begin
-                                 JSON.parse(answer.answer)
-                               rescue JSON::ParserError
-                                 []
-                               end
-                             else
-                               answer.answer
-                             end
+          formatted_answer = format_answer(answer)
 
           { path: answer.application_option.ext_id.split('__').last, value: formatted_answer }
         end
@@ -136,6 +123,23 @@ module Integrations
 
       Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
         http.request(request)
+      end
+    end
+
+    def self.format_answer(answer)
+      case answer.application_option.question_type
+      when 'yes_no'
+        answer.answer == 'Yes'
+      when 'number', 'score'
+        answer.answer.to_i
+      when 'multiple_choice'
+        begin
+          JSON.parse(answer.answer)
+        rescue JSON::ParserError
+          []
+        end
+      else
+        answer.answer
       end
     end
   end

@@ -173,15 +173,21 @@ module Hooks
 
       render json: { error: 'Application not found' }, status: :not_found and return if application.nil?
 
+      process_ashby_event(application, ashby_event)
+      render json: { message: 'Event processed' }, status: :ok
+    end
+
+    private
+
+    def process_ashby_event(application, ashby_event)
       ApplicationEvent.create!(
-        ext_id: app_ext_id,
+        ext_id: application.ext_id,
         job_id: application.job_id,
         user_id: application.user_id,
         event_type: ashby_event['action'],
         event_details: ashby_event['data'].to_json,
         previous_event_id: application.application_events.last&.id
       )
-      render json: { message: 'Event processed' }, status: :ok
     end
   end
 end
