@@ -56,6 +56,10 @@ class CustomExceptions < StandardError
     # User is blacklisted
     class Blocked < StandardError
     end
+
+    # Current.user is sandboxed
+    class SandBox < StandardError
+    end
   end
 
   # ============== JWT-Token - Exceptions =============

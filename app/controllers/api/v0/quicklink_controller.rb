@@ -172,10 +172,12 @@ module Api
       end
 
       def check_subscription
+        return SubscriptionHelper.subscription_type('enterprise_3') if Current.user.sandboxd?
+
         subscription = Current.user.current_subscription # Check for active subscription
         raise CustomExceptions::Subscription::ExpiredOrMissing if subscription.nil?
 
-        subscription
+        subscription.processor_plan
       end
 
       def create_client_params

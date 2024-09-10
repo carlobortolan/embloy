@@ -101,6 +101,12 @@ module Api
         render status: 500, json: { error: 'Failed to upload image:' }
       end
 
+      def events
+        pipeline = ApplicationEvent.all.where(user_id: Current.user.id).order('created_at DESC').group_by(&:job_id)
+
+        pipeline.empty? ? render(status: 204, json: { pipeline: [] }) : render(status: 200, json: { pipeline: })
+      end
+
       private
 
       def build_applications_json(applications)

@@ -91,6 +91,9 @@ module ApiExceptionHandler
     rescue_from CustomExceptions::Unauthorized::Blocked,
                 with: :user_blocked_error
 
+    rescue_from CustomExceptions::Unauthorized::SandBox,
+                with: :user_blocked_error
+
     #--------------------------------------
 
     rescue_from CustomExceptions::InvalidInput::BlankCredentials,

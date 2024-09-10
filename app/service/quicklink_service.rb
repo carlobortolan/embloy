@@ -29,9 +29,9 @@ class QuicklinkService < AuthenticationTokenService
     class Encoder
       include SubscriptionHelper
       # Encodes a client token for a given user ID and subscription and expiration date.
-      def self.call(subscription, custom_exp)
-        exp = calculate_expiration(custom_exp, subscription)
-        typ = SubscriptionHelper.subscription_type(subscription.processor_plan) # Needed for quick authorization when token is used
+      def self.call(stripe_price_id, custom_exp)
+        exp = calculate_expiration(custom_exp)
+        typ = SubscriptionHelper.subscription_type(stripe_price_id) # Needed for quick authorization when token is used
         iat = Time.now.to_i
         client_token = QuicklinkService::Client.encode(Current.user.id.to_i, exp.to_i, typ, iat)
         Token.create!(
@@ -46,7 +46,7 @@ class QuicklinkService < AuthenticationTokenService
         client_token
       end
 
-      def self.calculate_expiration(custom_exp, _subscription)
+      def self.calculate_expiration(custom_exp)
         if custom_exp.nil? || custom_exp < Time.now
           Time.now.to_i + 3.months # standard validity interval: 3 months
         else

@@ -88,6 +88,11 @@ module Api
         end
       end
 
+      # ============== API SANDBOX BLACKLIST ================
+      def block_sandbox_user
+        raise CustomExceptions::Unauthorized::Sandbox if Current.user.user_type == 'sandbox'
+      end
+
       private
 
       def bearer_token_blank?
