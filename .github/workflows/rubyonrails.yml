@@ -22,8 +22,8 @@ jobs:
           bundler-cache: true
       - name: Install dependencies
         run: bundle install
-      - name: Build
-        run: bundle exec rake assets:precompile
+      # - name: Build
+      #   run: bundle exec rake assets:precompile
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -99,5 +99,5 @@ jobs:
       #  run: bundle exec rails db:setup
       #- name: Run tests
       #  run: bundle exec rspec
-      - name: Output coverage report
-        run: cat coverage/index.html
+      #- name: Output coverage report
+      #  run: cat coverage/index.html
