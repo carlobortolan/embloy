@@ -95,7 +95,7 @@ func handleAutoRequest(c *gin.Context) {
 
 	sessionData := embloy.SessionData{
 		Mode:       mode,
-		SuccessURL: "your-success-url",
+		SuccessURL: referrer,
 		CancelURL:  "your-cancel-url",
 		JobSlug:    jobSlug,
 		Proxy:      proxy,
