@@ -115,6 +115,7 @@ module ApiExceptionHandler
     #--------------------------------------
     rescue_from CustomExceptions::InvalidInput::Quicklink::Client::Malformed,
                 with: :client_token_malformed_error
+
     rescue_from CustomExceptions::InvalidInput::Quicklink::Client::Blank,
                 with: :client_token_blank_error
 
@@ -122,9 +123,46 @@ module ApiExceptionHandler
                 with: :request_token_malformed_error
     rescue_from CustomExceptions::InvalidInput::Quicklink::Request::Blank,
                 with: :request_token_blank_error
+    rescue_from CustomExceptions::InvalidInput::Quicklink::Request::Forbidden,
+                with: :request_token_forbidden_error
+    rescue_from CustomExceptions::InvalidInput::Quicklink::Request::NotFound,
+                with: :request_token_not_found_error
 
     rescue_from CustomExceptions::InvalidInput::Quicklink::Mode::Malformed,
                 with: :request_mode_malformed_error
+
+    rescue_from CustomExceptions::InvalidInput::Quicklink::ApiKey::Unauthorized,
+                with: :api_key_unauthorized_error
+
+    rescue_from CustomExceptions::InvalidInput::Quicklink::ApiKey::Missing,
+                with: :api_key_missing_error
+
+    rescue_from CustomExceptions::InvalidInput::Quicklink::ApiKey::Malformed,
+                with: :api_key_malformed_error
+
+    rescue_from CustomExceptions::InvalidInput::Quicklink::ApiKey::Inactive,
+                with: :api_key_inactive_error
+
+    rescue_from CustomExceptions::InvalidInput::Quicklink::OAuth::Forbidden,
+                with: :oauth_forbidden_error
+
+    rescue_from CustomExceptions::InvalidInput::Quicklink::OAuth::NotFound,
+                with: :oauth_not_found_error
+
+    rescue_from CustomExceptions::InvalidInput::Quicklink::OAuth::Unauthorized,
+                with: :oauth_unauthorized_error
+
+    rescue_from CustomExceptions::InvalidInput::Quicklink::OAuth::NotAcceptable,
+                with: :oauth_not_acceptable_error
+
+    rescue_from CustomExceptions::InvalidInput::Quicklink::Application::Malformed,
+                with: :application_malformed_error
+
+    rescue_from CustomExceptions::InvalidInput::Quicklink::Application::Unauthorized,
+                with: :application_unauthorized_error
+
+    rescue_from CustomExceptions::InvalidInput::Quicklink::Application::Duplicate,
+                with: :application_duplicate_error
 
     rescue_from CustomExceptions::Subscription::ExpiredOrMissing,
                 with: :subscription_expired_or_missing_error
@@ -136,8 +174,10 @@ module ApiExceptionHandler
 
     rescue_from CustomExceptions::InvalidInput::GeniusQuery::Malformed,
                 with: :genius_query_malformed_error
+
     rescue_from CustomExceptions::InvalidInput::GeniusQuery::Blank,
                 with: :genius_query_blank_error
+
     rescue_from CustomExceptions::InvalidInput::GeniusQuery::Removed,
                 with: :genius_query_removed_error
   end
@@ -224,6 +264,14 @@ module ApiExceptionHandler
     malformed_error('request_token')
   end
 
+  def request_token_forbidden_error
+    access_denied_error('request_token')
+  end
+
+  def request_token_not_found_error
+    not_found_error('request_token', 'The job included in the request token was not found')
+  end
+
   def request_token_malformed_error
     malformed_error('request_token')
   end
@@ -248,11 +296,54 @@ module ApiExceptionHandler
     malformed_error('validity')
   end
 
+  def api_key_unauthorized_error
+    unauthorized_error('api_key')
+  end
+
+  def api_key_missing_error
+    blank_error('api_key')
+  end
+
+  def api_key_malformed_error
+    malformed_error('api_key')
+  end
+
+  def api_key_inactive_error
+    access_denied_error('api_key', 'API key is inactive')
+  end
+
+  def oauth_unauthorized_error
+    unauthorized_error('oauth', 'OAUth flow not authorized')
+  end
+
+  def oauth_forbidden_error
+    access_denied_error('oauth', 'Either unable to find a signing key that matches, clientID not found or he key you provided does not have access to this endpoint')
+  end
+
+  def oauth_not_found_error
+    not_found_error('oauth')
+  end
+
+  def oauth_not_acceptable_error
+    not_acceptable_error('oauth', 'OAUth flow not acceptable')
+  end
+
+  def application_malformed_error
+    malformed_error('application')
+  end
+
+  def application_unauthorized_error
+    unauthorized_error('application')
+  end
+
+  def application_duplicate_error
+    unnecessary_error('application')
+  end
+
   #--------------------------------------
 
   def token_expired_error
     unauthorized_error('token')
-    # render_error('token', 'ERR_INVALID', 'Attribute is expired', 401)
   end
 
   #--------------------------------------
@@ -317,20 +408,20 @@ module ApiExceptionHandler
 
   #--------------------------------------
 
-  def unauthorized_error(attribute)
-    render_error(attribute, 'ERR_INVALID', 'Attribute is invalid or expired', 401)
+  def unauthorized_error(attribute, description = 'Attribute is invalid or expired')
+    render_error(attribute, 'ERR_INVALID', description, 401)
   end
 
   #--------------------------------------
 
-  def access_denied_error(attribute)
-    render_error(attribute, 'ERR_RAC', 'Proceeding is inhibited by an access restriction', 403)
+  def access_denied_error(attribute, message = nil)
+    render_error(attribute, 'ERR_RAC', message || 'Proceeding is inhibited by an access restriction', 403)
   end
 
   #--------------------------------------
 
-  def not_found_error(attribute)
-    render_error(attribute, 'ERR_INVALID', 'Attribute can not be retrieved', 404)
+  def not_found_error(attribute, description = 'Attribute can not be retrieved')
+    render_error(attribute, 'ERR_INVALID', description, 404)
   end
 
   #--------------------------------------

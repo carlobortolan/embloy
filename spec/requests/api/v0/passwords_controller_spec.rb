@@ -63,7 +63,7 @@ RSpec.describe 'PasswordsController' do
                                password_confirmation: 'password'
                              }
                            })
-          headers = { 'Authorization' => 'Bearer ' + @valid_access_token, 'Content-Type' => 'application/json' }
+          headers = { 'Authorization' => "Bearer #{@valid_access_token}", 'Content-Type' => 'application/json' }
           patch('/api/v0/user/password', params: data, headers:)
           expect(response).to have_http_status(200)
         end
@@ -82,7 +82,7 @@ RSpec.describe 'PasswordsController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for missing request body' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_access_token, 'Content-Type' => 'application/json' }
+          headers = { 'Authorization' => "Bearer #{@valid_access_token}", 'Content-Type' => 'application/json' }
           patch('/api/v0/user/password', headers:)
           expect(response).to have_http_status(400)
         end
@@ -92,7 +92,7 @@ RSpec.describe 'PasswordsController' do
                                password_confirmation: 'password'
                              }
                            })
-          headers = { 'Authorization' => 'Bearer ' + @valid_access_token, 'Content-Type' => 'application/json' }
+          headers = { 'Authorization' => "Bearer #{@valid_access_token}", 'Content-Type' => 'application/json' }
           patch('/api/v0/user/password', params: data, headers:)
           expect(response).to have_http_status(400)
         end
@@ -102,7 +102,7 @@ RSpec.describe 'PasswordsController' do
                                password: 'password'
                              }
                            })
-          headers = { 'Authorization' => 'Bearer ' + @valid_access_token, 'Content-Type' => 'application/json' }
+          headers = { 'Authorization' => "Bearer #{@valid_access_token}", 'Content-Type' => 'application/json' }
           patch('/api/v0/user/password', params: data, headers:)
           expect(response).to have_http_status(400)
         end
@@ -113,7 +113,7 @@ RSpec.describe 'PasswordsController' do
                                password_confirmation: ''
                              }
                            })
-          headers = { 'Authorization' => 'Bearer ' + @valid_access_token, 'Content-Type' => 'application/json' }
+          headers = { 'Authorization' => "Bearer #{@valid_access_token}", 'Content-Type' => 'application/json' }
           patch('/api/v0/user/password', params: data, headers:)
           expect(response).to have_http_status(400)
         end
@@ -124,7 +124,7 @@ RSpec.describe 'PasswordsController' do
                                password_confirmation: 'password'
                              }
                            })
-          headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted, 'Content-Type' => 'application/json' }
+          headers = { 'Authorization' => "Bearer #{@valid_at_blacklisted}", 'Content-Type' => 'application/json' }
           patch('/api/v0/user/password', params: data, headers:)
           expect(response).to have_http_status(403)
         end
@@ -135,7 +135,7 @@ RSpec.describe 'PasswordsController' do
                                password_confirmation: '1234657'
                              }
                            })
-          headers = { 'Authorization' => 'Bearer ' + @valid_access_token, 'Content-Type' => 'application/json' }
+          headers = { 'Authorization' => "Bearer #{@valid_access_token}", 'Content-Type' => 'application/json' }
           patch('/api/v0/user/password', params: data, headers:)
           expect(response).to have_http_status(422)
         end
@@ -146,7 +146,7 @@ RSpec.describe 'PasswordsController' do
                                password_confirmation: 'passwordpasswordpasswordpasswordpasswordpasswordpasswordpasswordpasswordp'
                              }
                            })
-          headers = { 'Authorization' => 'Bearer ' + @valid_access_token, 'Content-Type' => 'application/json' }
+          headers = { 'Authorization' => "Bearer #{@valid_access_token}", 'Content-Type' => 'application/json' }
           patch('/api/v0/user/password', params: data, headers:)
           expect(response).to have_http_status(422)
         end
@@ -157,7 +157,7 @@ RSpec.describe 'PasswordsController' do
                                password_confirmation: '12345678'
                              }
                            })
-          headers = { 'Authorization' => 'Bearer ' + @valid_access_token, 'Content-Type' => 'application/json' }
+          headers = { 'Authorization' => "Bearer #{@valid_access_token}", 'Content-Type' => 'application/json' }
           patch('/api/v0/user/password', params: data, headers:)
           expect(response).to have_http_status(422)
         end

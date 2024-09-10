@@ -10,7 +10,7 @@ module Api
     class QuicklinkController < ApiController
       include ApplicationBuilder
 
-      skip_before_action :set_current_user, only: %i[create_request]
+      skip_before_action :set_current_user, only: %i[create_request create_request_proxy]
 
       before_action :verify_client_token, only: [:create_request]
       before_action :verify_request_token, only: %i[handle_request apply]
@@ -41,7 +41,8 @@ module Api
           return not_found_error('client')
         end
 
-        if update_or_create_job(validate_session)
+        session = validate_session
+        if update_or_create_job(session)
           render status: 200, json: { session:, job: Job.json_for(@job) }
         else
           render status: 400, json: @job.errors.details
@@ -60,6 +61,23 @@ module Api
         render status: 200, json: { 'request_token' => token }
       end
 
+      # The create_request_proxy method is responsible for creating a `request_token` for a proxy request.
+      # It calls the Encoder class of the `QuicklinkService::Request` module to create the token.
+      # It then returns the token in the response.
+      def create_request_proxy
+        return malformed_error('proxy') unless proxy_params[:admin_token] == ENV.fetch('PROXY_ADMIN_TOKEN', nil)
+        return malformed_error('job_slug') if proxy_params[:job_slug].nil?
+        return malformed_error('mode') if proxy_params[:mode].nil?
+
+        user_id = proxy_params[:user_id] || Job.find_by(job_slug: "#{proxy_params[:mode]}__#{proxy_params[:job_slug]}")&.user_id
+
+        return malformed_error('proxy') if user_id.nil?
+        return user_role_to_low_error unless must_be_verified(user_id)
+        return user_blocked_error unless user_not_blacklisted(user_id)
+
+        render status: 200, json: { 'request_token' => QuicklinkService::Request::Encoder.call(create_proxy_session(user_id)) }
+      end
+
       # The create_client endpoint is responsible for creating a `client_token`.
       # It calls the Encoder class of the `QuicklinkService::Client` module to create the token.
       # It then returns the token in the response.
@@ -74,7 +92,9 @@ module Api
         raise CustomExceptions::Subscription::ExpiredOrMissing unless @client&.active_subscription?
 
         session = @decoded_request_token['session']
-        raise CustomExceptions::InvalidInput::Quicklink::Request::Malformed if session.nil? || session['job_slug'].nil? || session['user_id'].nil? || session['subscription_type'].nil?
+        if session.nil? || session['job_slug'].nil? || session['user_id'].nil? || session['subscription_type'].nil? || session['mode'].nil?
+          raise CustomExceptions::InvalidInput::Quicklink::Request::Malformed
+        end
 
         session['referrer_url'] = request.referrer
         session
@@ -85,11 +105,15 @@ module Api
       # If the job does not exist, it is created with the `job_slug` and `client.id`.
       # The job is then added to the client's jobs.
       def update_or_create_job(session)
+        # Retrieve existing job if it exists
         @client.jobs ||= []
         @job = @client.jobs.find_by(job_slug: session['job_slug'])
 
+        # Return job from external API if integration mode enabled
+        @job = Integrations::IntegrationsController.get_posting(session['mode'], session['job_slug'], @client, @job) if session['mode'] != 'job'
         return handle_existing_job if @job
 
+        # Create new job if it does not exist
         create_new_job(session)
       end
 
@@ -104,7 +128,7 @@ module Api
 
       def create_new_job(session)
         allowed_params = %w[user_id job_type job_slug referrer_url duration code_lang title position description key_skills salary currency start_slot longitude latitude country_code postal_code
-                            city address job_notifications cv_required allowed_cv_formats]
+                            city address job_notifications]
         @job = Job.new(session.slice(*allowed_params).merge(job_status: 'unlisted'))
 
         if @job.save
@@ -131,6 +155,19 @@ module Api
         session = portal_params.to_unsafe_h.transform_keys(&:to_s)
         session['user_id'] = @decoded_client_token['sub'].to_i
         session['subscription_type'] = @decoded_client_token['typ']
+        session['job_slug'] = "#{portal_params[:mode]}__#{portal_params[:job_slug]}"
+        session
+      end
+
+      def create_proxy_session(user_id)
+        user = User.find(user_id)
+        subscription = user.current_subscription
+        raise CustomExceptions::Subscription::ExpiredOrMissing if subscription.nil?
+
+        session = portal_params.to_unsafe_h.transform_keys(&:to_s)
+        session['user_id'] = user_id
+        session['subscription_type'] = SubscriptionHelper.subscription_type(subscription.processor_plan)
+        session['job_slug'] = "#{proxy_params[:mode]}__#{proxy_params[:job_slug]}"
         session
       end
 
@@ -146,12 +183,16 @@ module Api
       end
 
       def application_params
-        params.except(:format).permit(:id, :application_text, :application_attachment, application_answers: %i[application_option_id answer])
+        params.except(:format).permit(:id, application_answers: %i[application_option_id answer file])
       end
 
       def portal_params
         params.except(:format).permit(:mode, :success_url, :cancel_url, :job_slug, :title, :description, :start_slot, :longitude, :latitude, :job_type, :job_status, :image_url, :position, :currency,
-                                      :salary, :key_skills, :duration, :job_notifications, :cv_required, allowed_cv_formats: [])
+                                      :salary, :key_skills, :duration, :job_notifications)
+      end
+
+      def proxy_params
+        params.permit(:mode, :success_url, :cancel_url, :job_slug, :origin, :admin_token, :user_id)
       end
     end
   end

@@ -30,14 +30,6 @@ module Api
         end
       end
 
-      # Set queried subscription to @subscription to avoid code duplication
-      # def set_subscription
-      #  return if Current.user.nil?#
-      #
-      #  must_be_verified!
-      #  set_user_subscription
-      # end
-
       # ============== API TOKEN VERIFICATIOn ================
       def verify_client_token
         client_token_blank? ? blank_error('client token') : decode_client_token
@@ -123,7 +115,7 @@ module Api
         end
       end
 
-      def check_scope(scope, path, method) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+      def check_scope(scope, path, method) # rubocop:disable Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
         # Extract the base URL, the resource, and the permission from the scope
         # resource = scope.split('.').second_to_last.split('/').drop(2).join('/').prepend('/')
         resource = scope&.split('//')&.last&.split('/')&.drop(2)&.join('/')&.split('.')&.first&.prepend('/')
@@ -154,12 +146,6 @@ module Api
         @token = Current.user.tokens.find(params[:id])
       rescue ActiveRecord::RecordNotFound
         not_found_error('token')
-      end
-
-      def set_user_subscription
-        @subscription = Current.user.subscriptions.find(params[:id])
-      rescue ActiveRecord::RecordNotFound
-        not_found_error('subscription')
       end
 
       def decode_bearer_token

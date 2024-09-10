@@ -105,10 +105,55 @@ class CustomExceptions < StandardError
 
         class Malformed < StandardError
         end
+
+        class Forbidden < StandardError
+        end
+
+        class NotFound < StandardError
+        end
       end
 
       class Mode < StandardError
         class Malformed < StandardError
+        end
+      end
+
+      class ApiKey < StandardError
+        class Malformed < StandardError
+        end
+
+        class Missing < StandardError
+        end
+
+        class Unauthorized < StandardError
+        end
+
+        class Inactive < StandardError
+        end
+      end
+
+      class OAuth < StandardError
+        class Unauthorized < StandardError
+        end
+
+        class Forbidden < StandardError
+        end
+
+        class NotFound < StandardError
+        end
+
+        class NotAcceptable < StandardError
+        end
+      end
+
+      class Application < StandardError
+        class Malformed < StandardError
+        end
+
+        class Unauthorized < StandardError
+        end
+
+        class Duplicate < StandardError
         end
       end
     end

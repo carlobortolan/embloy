@@ -189,7 +189,7 @@ RSpec.describe 'QuicklinkController' do
     post('/api/v0/auth/token/access', params:)
     @valid_access_token = JSON.parse(response.body)['access_token']
 
-    headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
+    headers = { 'Authorization' => "Bearer #{@valid_access_token}" }
     post('/api/v0/auth/token/client', headers:)
     @valid_client_token = JSON.parse(response.body)['client_token']
 
@@ -245,7 +245,7 @@ RSpec.describe 'QuicklinkController' do
     post('/api/v0/auth/token/access', params:)
     @valid_at_has_applied = JSON.parse(response.body)['access_token']
 
-    headers = { 'Authorization' => 'Bearer ' + @valid_at_has_applied }
+    headers = { 'Authorization' => "Bearer #{@valid_at_has_applied}" }
     post('/api/v0/auth/token/client', headers:)
     @valid_ct_has_applied = JSON.parse(response.body)['client_token']
 
@@ -302,7 +302,6 @@ RSpec.describe 'QuicklinkController' do
       application = Application.create!(
         user_id: @valid_user_has_applied.id,
         job_id: job.id,
-        application_text: 'TestUpcomingApplicationText',
         response: 'No response yet ...'
       )
       application.accept('ACCEPTED')
@@ -327,12 +326,12 @@ RSpec.describe 'QuicklinkController' do
     describe '(POST: /api/v0/auth/token/client)' do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and new client token' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_access_token }
+          headers = { 'Authorization' => "Bearer #{@valid_access_token}" }
           post('/api/v0/auth/token/client', headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [200 OK] for user with soon expiring subscription' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at_exp }
+          headers = { 'Authorization' => "Bearer #{@valid_at_exp}" }
           post('/api/v0/auth/token/client', headers:)
           expect(response).to have_http_status(200)
         end
@@ -343,17 +342,17 @@ RSpec.describe 'QuicklinkController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
-          headers = { 'Authorization' => 'Bearer ' + @invalid_token }
+          headers = { 'Authorization' => "Bearer #{@invalid_token}" }
           post('/api/v0/auth/token/client', headers:)
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for user without active subscription' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at_unsubscribed }
+          headers = { 'Authorization' => "Bearer #{@valid_at_unsubscribed}" }
           post('/api/v0/auth/token/client', headers:)
           expect(response).to have_http_status(403)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-          headers = { 'Authorization' => 'Bearer ' + @valid_at_blacklisted }
+          headers = { 'Authorization' => "Bearer #{@valid_at_blacklisted}" }
           post('/api/v0/auth/token/client', headers:)
           expect(response).to have_http_status(403)
         end
@@ -418,7 +417,7 @@ RSpec.describe 'QuicklinkController' do
     describe '(POST: /api/v0/sdk/request/handle)' do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and creates session' do
-          post('/api/v0/sdk/request/handle', headers: { 'Authorization' => 'Bearer ' + @valid_access_token, 'HTTP_REQUEST_TOKEN' => @valid_request_token })
+          post('/api/v0/sdk/request/handle', headers: { 'Authorization' => "Bearer #{@valid_access_token}", 'HTTP_REQUEST_TOKEN' => @valid_request_token })
           expect(response).to have_http_status(200)
         end
       end
@@ -428,7 +427,7 @@ RSpec.describe 'QuicklinkController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for missing request token in header' do
-          post('/api/v0/sdk/request/handle', headers: { 'Authorization' => 'Bearer ' + @valid_access_token })
+          post('/api/v0/sdk/request/handle', headers: { 'Authorization' => "Bearer #{@valid_access_token}" })
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for missing both access and request token in header' do
@@ -436,65 +435,65 @@ RSpec.describe 'QuicklinkController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for deactivated posting' do
-          post('/api/v0/sdk/request/handle', headers: { 'Authorization' => 'Bearer ' + @valid_access_token, 'HTTP_REQUEST_TOKEN' => @deactivated_request_token })
+          post('/api/v0/sdk/request/handle', headers: { 'Authorization' => "Bearer #{@valid_access_token}", 'HTTP_REQUEST_TOKEN' => @deactivated_request_token })
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for archived posting' do
-          post('/api/v0/sdk/request/handle', headers: { 'Authorization' => 'Bearer ' + @valid_access_token, 'HTTP_REQUEST_TOKEN' => @archived_request_token })
+          post('/api/v0/sdk/request/handle', headers: { 'Authorization' => "Bearer #{@valid_access_token}", 'HTTP_REQUEST_TOKEN' => @archived_request_token })
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for deactivated posting' do
-          post('/api/v0/sdk/request/handle', headers: { 'Authorization' => 'Bearer ' + @valid_access_token, 'HTTP_REQUEST_TOKEN' => @deactivated_request_token })
+          post('/api/v0/sdk/request/handle', headers: { 'Authorization' => "Bearer #{@valid_access_token}", 'HTTP_REQUEST_TOKEN' => @deactivated_request_token })
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
-          post('/api/v0/sdk/request/handle', headers: { 'Authorization' => 'Bearer ' + @invalid_token, 'HTTP_REQUEST_TOKEN' => @valid_request_token })
+          post('/api/v0/sdk/request/handle', headers: { 'Authorization' => "Bearer #{@invalid_token}", 'HTTP_REQUEST_TOKEN' => @valid_request_token })
           expect(response).to have_http_status(401)
         end
         it 'returns [401 Unauthorized] for expired/invalid request token' do
-          post('/api/v0/sdk/request/handle', headers: { 'Authorization' => 'Bearer ' + @valid_access_token, 'HTTP_REQUEST_TOKEN' => @invalid_token })
+          post('/api/v0/sdk/request/handle', headers: { 'Authorization' => "Bearer #{@valid_access_token}", 'HTTP_REQUEST_TOKEN' => @invalid_token })
           expect(response).to have_http_status(401)
         end
         it 'returns [401 Unauthorized] for request token with expired subscription' do
-          post('/api/v0/sdk/request/handle', headers: { 'Authorization' => 'Bearer ' + @valid_access_token, 'HTTP_REQUEST_TOKEN' => @expired_request_token })
+          post('/api/v0/sdk/request/handle', headers: { 'Authorization' => "Bearer #{@valid_access_token}", 'HTTP_REQUEST_TOKEN' => @expired_request_token })
           expect(response).to have_http_status(401)
         end
         it 'returns [401 Unauthorized] for not existing client' do
-          post('/api/v0/sdk/request/handle', headers: { 'Authorization' => 'Bearer ' + @not_found_request_token })
+          post('/api/v0/sdk/request/handle', headers: { 'Authorization' => "Bearer #{@not_found_request_token}" })
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-          post('/api/v0/sdk/request/handle', headers: { 'Authorization' => 'Bearer ' + @valid_at_blacklisted })
+          post('/api/v0/sdk/request/handle', headers: { 'Authorization' => "Bearer #{@valid_at_blacklisted}" })
           expect(response).to have_http_status(403)
         end
         it 'returns [403 Forbidden] for request token with invalid subscription' do
-          post('/api/v0/sdk/request/handle', headers: { 'Authorization' => 'Bearer ' + @valid_access_token, 'HTTP_REQUEST_TOKEN' => @unsubscribed_request_token })
+          post('/api/v0/sdk/request/handle', headers: { 'Authorization' => "Bearer #{@valid_access_token}", 'HTTP_REQUEST_TOKEN' => @unsubscribed_request_token })
           expect(response).to have_http_status(403)
         end
         it 'returns [403 Forbidden] if user creates job with cancelled subscription' do
           @user_basic.payment_processor.subscription.cancel_now!
-          post('/api/v0/sdk/request/handle', headers: { 'Authorization' => 'Bearer ' + @valid_access_token, 'HTTP_REQUEST_TOKEN' => @basic_request_token })
+          post('/api/v0/sdk/request/handle', headers: { 'Authorization' => "Bearer #{@valid_access_token}", 'HTTP_REQUEST_TOKEN' => @basic_request_token })
           expect(response).to have_http_status(403)
         end
         it 'returns [403 Forbidden] if user creates job with cancelled subscription' do
           @user_premium.payment_processor.subscription.cancel_now!
-          post('/api/v0/sdk/request/handle', headers: { 'Authorization' => 'Bearer ' + @valid_access_token, 'HTTP_REQUEST_TOKEN' => @premium_request_token })
+          post('/api/v0/sdk/request/handle', headers: { 'Authorization' => "Bearer #{@valid_access_token}", 'HTTP_REQUEST_TOKEN' => @premium_request_token })
           expect(response).to have_http_status(403)
         end
         it 'returns [429 Too Many Requests] if user creates job while having more jobs than what his subscription (basic) allows' do
           3.times do
-            post('/api/v0/jobs', headers: { 'Authorization' => 'Bearer ' + @basic_at })
+            post('/api/v0/jobs', headers: { 'Authorization' => "Bearer #{@basic_at}" })
             expect(response).to have_http_status(201)
           end
-          post('/api/v0/sdk/request/handle', headers: { 'Authorization' => 'Bearer ' + @valid_access_token, 'HTTP_REQUEST_TOKEN' => @basic_request_token })
+          post('/api/v0/sdk/request/handle', headers: { 'Authorization' => "Bearer #{@valid_access_token}", 'HTTP_REQUEST_TOKEN' => @basic_request_token })
           expect(response).to have_http_status(429)
         end
         it 'returns [429 Too Many Requests] if user creates job while having more jobs than what his subscription (premium) allows' do
           50.times do
-            post('/api/v0/jobs', headers: { 'Authorization' => 'Bearer ' + @premium_at })
+            post('/api/v0/jobs', headers: { 'Authorization' => "Bearer #{@premium_at}" })
             expect(response).to have_http_status(201)
           end
-          post('/api/v0/sdk/request/handle', headers: { 'Authorization' => 'Bearer ' + @valid_access_token, 'HTTP_REQUEST_TOKEN' => @premium_request_token })
+          post('/api/v0/sdk/request/handle', headers: { 'Authorization' => "Bearer #{@valid_access_token}", 'HTTP_REQUEST_TOKEN' => @premium_request_token })
           expect(response).to have_http_status(429)
         end
       end
@@ -502,25 +501,13 @@ RSpec.describe 'QuicklinkController' do
 
     describe '(POST: /api/v0/sdk/apply)' do
       let(:valid_attributes_basic) do
-        {
-          application_text: 'Hello World'
-        }
+        {}
       end
-      let(:invalid_attributes_basic) do
-        {
-          application_text: 'Lorem ipsum venenatis quis sollicitudin elit eros aliquam scelerisque ornare tortor volutpat, quisque ultricies tortor euismod venenatis inceptos quis feugiat condimentum. Bibendum etiam hendrerit pretium odio sit lectus dui congue hendrerit dolor sit, consectetur ante dapibus vitae mi dictumst velit lacus fermentum fames dictum laoreet, nibh tristique quisque aenean mi sociosqu justo rutrum dictum odio. Porttitor turpis hendrerit consequat habitant enim ante urna dictumst convallis ligula massa pharetra Lorem ipsum venenatis quis sollicitudin elit eros aliquam scelerisque ornare tortor volutpat, quisque ultricies tortor euismod venenatis inceptos quis feugiat condimentum. Bibendum etiam hendrerit pretium odio sit lectus dui congue hendrerit dolor sit, consectetur ante dapibus vitae mi dictumst velit lacus fermentum fames dictum laoreet, nibh tristique quisque aenean mi sociosqu justo rutrum dictum odio. Porttitor turpis hendrerit consequat habitant enim ante urna dictumst convallis ligula massa pharetra'
-        }
-      end
-      let(:blank_attributes_basic) do
-        {
-          application_text: ''
-        }
-      end
-      let(:headers) { { 'Authorization' => 'Bearer ' + @valid_access_token } }
+      let(:headers) { { 'Authorization' => "Bearer #{@valid_access_token}" } }
 
       context 'valid normal inputs' do
         it 'returns [201 Created] and creates application' do
-          post('/api/v0/sdk/apply', params: valid_attributes_basic, headers: { 'Authorization' => 'Bearer ' + @valid_access_token, 'HTTP_REQUEST_TOKEN' => @valid_request_token })
+          post('/api/v0/sdk/apply', params: valid_attributes_basic, headers: { 'Authorization' => "Bearer #{@valid_access_token}", 'HTTP_REQUEST_TOKEN' => @valid_request_token })
           expect(response).to have_http_status(201)
         end
       end
@@ -530,7 +517,7 @@ RSpec.describe 'QuicklinkController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for missing request token in header' do
-          post('/api/v0/sdk/apply', params: valid_attributes_basic, headers: { 'Authorization' => 'Bearer ' + @valid_access_token })
+          post('/api/v0/sdk/apply', params: valid_attributes_basic, headers: { 'Authorization' => "Bearer #{@valid_access_token}" })
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for missing both access and request token in header' do
@@ -538,73 +525,65 @@ RSpec.describe 'QuicklinkController' do
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for deactivated posting' do
-          post('/api/v0/sdk/apply', params: valid_attributes_basic, headers: { 'Authorization' => 'Bearer ' + @valid_access_token, 'HTTP_REQUEST_TOKEN' => @deactivated_request_token })
+          post('/api/v0/sdk/apply', params: valid_attributes_basic, headers: { 'Authorization' => "Bearer #{@valid_access_token}", 'HTTP_REQUEST_TOKEN' => @deactivated_request_token })
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for archived posting' do
-          post('/api/v0/sdk/apply', params: valid_attributes_basic, headers: { 'Authorization' => 'Bearer ' + @valid_access_token, 'HTTP_REQUEST_TOKEN' => @archived_request_token })
+          post('/api/v0/sdk/apply', params: valid_attributes_basic, headers: { 'Authorization' => "Bearer #{@valid_access_token}", 'HTTP_REQUEST_TOKEN' => @archived_request_token })
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for deactivated posting' do
-          post('/api/v0/sdk/apply', params: valid_attributes_basic, headers: { 'Authorization' => 'Bearer ' + @valid_access_token, 'HTTP_REQUEST_TOKEN' => @deactivated_request_token })
-          expect(response).to have_http_status(400)
-        end
-        it 'returns [400 Bad Request] for invalid application' do
-          post('/api/v0/sdk/apply', params: invalid_attributes_basic, headers: { 'Authorization' => 'Bearer ' + @valid_access_token, 'HTTP_REQUEST_TOKEN' => @valid_request_token })
-          expect(response).to have_http_status(400)
-        end
-        it 'returns [400 Bad Request] for blank application' do
-          post('/api/v0/sdk/apply', params: blank_attributes_basic, headers: { 'Authorization' => 'Bearer ' + @valid_access_token, 'HTTP_REQUEST_TOKEN' => @valid_request_token })
+          post('/api/v0/sdk/apply', params: valid_attributes_basic, headers: { 'Authorization' => "Bearer #{@valid_access_token}", 'HTTP_REQUEST_TOKEN' => @deactivated_request_token })
           expect(response).to have_http_status(400)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
-          post('/api/v0/sdk/apply', params: valid_attributes_basic, headers: { 'Authorization' => 'Bearer ' + @invalid_token, 'HTTP_REQUEST_TOKEN' => @valid_request_token })
+          post('/api/v0/sdk/apply', params: valid_attributes_basic, headers: { 'Authorization' => "Bearer #{@invalid_token}", 'HTTP_REQUEST_TOKEN' => @valid_request_token })
           expect(response).to have_http_status(401)
         end
         it 'returns [401 Unauthorized] for expired/invalid request token' do
-          post('/api/v0/sdk/apply', params: valid_attributes_basic, headers: { 'Authorization' => 'Bearer ' + @valid_access_token, 'HTTP_REQUEST_TOKEN' => @invalid_token })
+          post('/api/v0/sdk/apply', params: valid_attributes_basic, headers: { 'Authorization' => "Bearer #{@valid_access_token}", 'HTTP_REQUEST_TOKEN' => @invalid_token })
           expect(response).to have_http_status(401)
         end
         it 'returns [401 Unauthorized] for request token with expired subscription' do
-          post('/api/v0/sdk/apply', params: valid_attributes_basic, headers: { 'Authorization' => 'Bearer ' + @valid_access_token, 'HTTP_REQUEST_TOKEN' => @expired_request_token })
+          post('/api/v0/sdk/apply', params: valid_attributes_basic, headers: { 'Authorization' => "Bearer #{@valid_access_token}", 'HTTP_REQUEST_TOKEN' => @expired_request_token })
           expect(response).to have_http_status(401)
         end
         it 'returns [401 Unauthorized] for not existing client' do
-          post('/api/v0/sdk/apply', params: valid_attributes_basic, headers: { 'Authorization' => 'Bearer ' + @not_found_request_token })
+          post('/api/v0/sdk/apply', params: valid_attributes_basic, headers: { 'Authorization' => "Bearer #{@not_found_request_token}" })
           expect(response).to have_http_status(401)
         end
         it 'returns [403 Forbidden] for blacklisted user' do
-          post('/api/v0/sdk/apply', params: valid_attributes_basic, headers: { 'Authorization' => 'Bearer ' + @valid_at_blacklisted })
+          post('/api/v0/sdk/apply', params: valid_attributes_basic, headers: { 'Authorization' => "Bearer #{@valid_at_blacklisted}" })
           expect(response).to have_http_status(403)
         end
         it 'returns [403 Forbidden] for request token with invalid subscription' do
-          post('/api/v0/sdk/apply', params: valid_attributes_basic, headers: { 'Authorization' => 'Bearer ' + @valid_access_token, 'HTTP_REQUEST_TOKEN' => @unsubscribed_request_token })
+          post('/api/v0/sdk/apply', params: valid_attributes_basic, headers: { 'Authorization' => "Bearer #{@valid_access_token}", 'HTTP_REQUEST_TOKEN' => @unsubscribed_request_token })
           expect(response).to have_http_status(403)
         end
         it 'returns [403 Forbidden] if user creates job with cancelled subscription' do
           @user_basic.payment_processor.subscription.cancel_now!
-          post('/api/v0/sdk/apply', params: valid_attributes_basic, headers: { 'Authorization' => 'Bearer ' + @valid_access_token, 'HTTP_REQUEST_TOKEN' => @basic_request_token })
+          post('/api/v0/sdk/apply', params: valid_attributes_basic, headers: { 'Authorization' => "Bearer #{@valid_access_token}", 'HTTP_REQUEST_TOKEN' => @basic_request_token })
           expect(response).to have_http_status(403)
         end
         it 'returns [403 Forbidden] if user creates job with cancelled subscription' do
           @user_premium.payment_processor.subscription.cancel_now!
-          post('/api/v0/sdk/apply', params: valid_attributes_basic, headers: { 'Authorization' => 'Bearer ' + @valid_access_token, 'HTTP_REQUEST_TOKEN' => @premium_request_token })
+          post('/api/v0/sdk/apply', params: valid_attributes_basic, headers: { 'Authorization' => "Bearer #{@valid_access_token}", 'HTTP_REQUEST_TOKEN' => @premium_request_token })
           expect(response).to have_http_status(403)
         end
         it 'returns [429 Too Many Requests] if user creates job while having more jobs than what his subscription (basic) allows' do
           3.times do
-            post('/api/v0/jobs', headers: { 'Authorization' => 'Bearer ' + @basic_at })
+            post('/api/v0/jobs', headers: { 'Authorization' => "Bearer #{@basic_at}" })
             expect(response).to have_http_status(201)
           end
-          post('/api/v0/sdk/apply', params: valid_attributes_basic, headers: { 'Authorization' => 'Bearer ' + @valid_access_token, 'HTTP_REQUEST_TOKEN' => @basic_request_token })
+          post('/api/v0/sdk/apply', params: valid_attributes_basic, headers: { 'Authorization' => "Bearer #{@valid_access_token}", 'HTTP_REQUEST_TOKEN' => @basic_request_token })
           expect(response).to have_http_status(429)
         end
         it 'returns [429 Too Many Requests] if user creates job while having more jobs than what his subscription (premium) allows' do
           50.times do
-            post('/api/v0/jobs', headers: { 'Authorization' => 'Bearer ' + @premium_at })
+            post('/api/v0/jobs', headers: { 'Authorization' => "Bearer #{@premium_at}" })
             expect(response).to have_http_status(201)
           end
-          post('/api/v0/sdk/apply', params: valid_attributes_basic, headers: { 'Authorization' => 'Bearer ' + @valid_access_token, 'HTTP_REQUEST_TOKEN' => @premium_request_token })
+          post('/api/v0/sdk/apply', params: valid_attributes_basic, headers: { 'Authorization' => "Bearer #{@valid_access_token}", 'HTTP_REQUEST_TOKEN' => @premium_request_token })
           expect(response).to have_http_status(429)
         end
       end

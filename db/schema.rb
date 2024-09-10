@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 20_240_526_133_828) do
+ActiveRecord::Schema[7.0].define(version: 20_240_904_144_926) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_trgm'
   enable_extension 'plpgsql'
@@ -21,11 +21,10 @@ ActiveRecord::Schema[7.0].define(version: 20_240_526_133_828) do
 
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
-  create_enum 'allowed_cv_format', ['.pdf', '.docx', '.txt', '.xml']
   create_enum 'application_status', ['-1', '0', '1']
   create_enum 'job_status', %w[listed unlisted archived]
   create_enum 'notify_type', %w[0 1]
-  create_enum 'question_type', %w[yes_no text link single_choice multiple_choice]
+  create_enum 'question_type', %w[yes_no short_text long_text number link single_choice multiple_choice location file date]
   create_enum 'rating_type', %w[1 2 3 4 5]
   create_enum 'user_role', %w[admin editor developer moderator verified spectator]
   create_enum 'user_type', %w[company private]
@@ -98,19 +97,23 @@ ActiveRecord::Schema[7.0].define(version: 20_240_526_133_828) do
     t.datetime 'updated_at', null: false
     t.datetime 'deleted_at'
     t.index ['application_option_id'], name: 'application_answers_on_application_option_id_index'
-    t.index ['deleted_at'], name: 'index_application_anwers_on_deleted_at'
+    t.index ['deleted_at'], name: 'index_application_answers_on_deleted_at'
     t.index ['job_id'], name: 'application_answers_job_id_index'
     t.index ['user_id'], name: 'application_answers_user_id_index'
   end
 
-  create_table 'application_attachments', id: :serial, force: :cascade do |t|
-    t.integer 'user_id', null: false
-    t.integer 'job_id', null: false
+  create_table 'application_events', force: :cascade do |t|
+    t.string 'ext_id', limit: 100
+    t.bigint 'job_id', null: false
+    t.bigint 'user_id', null: false
+    t.string 'event_type', limit: 50
+    t.text 'event_details', limit: 500
+    t.bigint 'previous_event_id'
+    t.bigint 'next_event_id'
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
-    t.index %w[job_id user_id], name: 'application_attachment_job_id_user_id_index', unique: true
-    t.index ['job_id'], name: 'application_attachment_job_id_index'
-    t.index ['user_id'], name: 'application_attachment_user_id_index'
+    t.index ['next_event_id'], name: 'index_application_events_on_next_event_id'
+    t.index ['previous_event_id'], name: 'index_application_events_on_previous_event_id'
   end
 
   create_table 'application_options', force: :cascade do |t|
@@ -130,11 +133,10 @@ ActiveRecord::Schema[7.0].define(version: 20_240_526_133_828) do
   create_table 'applications', primary_key: %w[job_id user_id], force: :cascade do |t|
     t.integer 'job_id', null: false
     t.integer 'user_id', null: false
+    t.string 'ext_id', limit: 100
     t.datetime 'updated_at', null: false
     t.datetime 'created_at', null: false
     t.enum 'status', default: '0', null: false, enum_type: 'application_status'
-    t.string 'application_text', limit: 1000
-    t.string 'application_documents', limit: 150
     t.string 'response', limit: 500
     t.datetime 'deleted_at'
     t.index ['deleted_at'], name: 'index_applications_on_deleted_at'
@@ -195,8 +197,6 @@ ActiveRecord::Schema[7.0].define(version: 20_240_526_133_828) do
     t.integer 'employer_rating', default: 0, null: false
     t.text 'job_notifications', default: '1', null: false
     t.integer 'boost', default: 0, null: false
-    t.boolean 'cv_required', default: false, null: false
-    t.string 'allowed_cv_formats', default: ['.pdf', '.docx', '.txt', '.xml'], null: false, array: true
     t.datetime 'deleted_at'
     t.geography 'job_value', limit: { srid: 4326, type: 'st_point', has_z: true, geographic: true }
     t.index "to_tsvector('simple'::regconfig, (((((((((((((((((COALESCE(title, ''::character varying))::text || ' '::text) || (COALESCE(job_type, ''::character varying))::text) || ' '::text) || (COALESCE(\"position\", ''::character varying))::text) || ' '::text) || (COALESCE(key_skills, ''::character varying))::text) || ' '::text) || COALESCE(description, ''::text)) || ' '::text) || (COALESCE(country_code, ''::character varying))::text) || ' '::text) || (COALESCE(city, ''::character varying))::text) || ' '::text) || (COALESCE(postal_code, ''::character varying))::text) || ' '::text) || (COALESCE(address, ''::character varying))::text))",
@@ -366,7 +366,6 @@ ActiveRecord::Schema[7.0].define(version: 20_240_526_133_828) do
     t.jsonb 'job_types', default: { '1' => 0, '2' => 0, '3' => 0 }
     t.jsonb 'key_skills'
     t.float 'salary_range', default: [0.0, 0.0], array: true
-    t.string 'cv_url', limit: 500
     t.datetime 'deleted_at'
     t.index ['deleted_at'], name: 'index_preferences_on_deleted_at'
   end
@@ -404,6 +403,7 @@ ActiveRecord::Schema[7.0].define(version: 20_240_526_133_828) do
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
     t.string 'encrypted_token_iv'
+    t.string 'encrypted_token'
     t.index ['user_id'], name: 'index_tokens_on_user_id'
   end
 
@@ -451,8 +451,24 @@ ActiveRecord::Schema[7.0].define(version: 20_240_526_133_828) do
     t.index ['user_type'], name: 'user_user_type_index'
   end
 
+  create_table 'webhooks', force: :cascade do |t|
+    t.bigint 'user_id', null: false
+    t.string 'url', null: false
+    t.string 'event', null: false
+    t.string 'source', null: false
+    t.string 'ext_id', limit: 100
+    t.string 'signatureToken'
+    t.boolean 'active', default: true
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['ext_id'], name: 'index_webhooks_on_ext_id', unique: true
+    t.index ['user_id'], name: 'index_webhooks_on_user_id', unique: true
+  end
+
   add_foreign_key 'active_storage_attachments', 'active_storage_blobs', column: 'blob_id'
   add_foreign_key 'active_storage_variant_records', 'active_storage_blobs', column: 'blob_id'
+  add_foreign_key 'application_events', 'application_events', column: 'next_event_id'
+  add_foreign_key 'application_events', 'application_events', column: 'previous_event_id'
   add_foreign_key 'application_options', 'jobs', primary_key: 'job_id', on_delete: :cascade
   add_foreign_key 'applications', 'jobs', primary_key: 'job_id', on_delete: :cascade
   add_foreign_key 'applications', 'users', on_delete: :cascade
@@ -469,4 +485,5 @@ ActiveRecord::Schema[7.0].define(version: 20_240_526_133_828) do
   add_foreign_key 'reviews', 'users', column: 'created_by'
   add_foreign_key 'tokens', 'users'
   add_foreign_key 'user_blacklists', 'users', on_delete: :cascade
+  add_foreign_key 'webhooks', 'users'
 end

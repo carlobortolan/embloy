@@ -17,4 +17,11 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
              headers: :any,
              methods: %i[get post put delete options head]
   end
+
+  allow do
+    origins ENV.fetch('CORS_PROXY_SERVER_HOST', nil), 'localhost:8081'
+    resource '/api/v0/sdk/request/auth/proxy',
+             headers: :any,
+             methods: %i[post options]
+  end
 end

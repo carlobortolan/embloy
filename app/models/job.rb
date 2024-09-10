@@ -10,7 +10,6 @@ class Job < ApplicationRecord
   before_save :set_default_job_slug, if: -> { job_slug.nil? }
   before_validation :set_default_values
   acts_as_paranoid
-  enum :allowed_cv_format, { pdf: '.pdf', docx: '.docx', txt: '.txt', xml: '.xml' }
   enum :job_status, { listed: 'listed', unlisted: 'unlisted', archived: 'archived' }, default: 'listed' # include ActiveModel::Serialization
 
   TIME_UNITS = {
@@ -111,6 +110,7 @@ class Job < ApplicationRecord
   def set_default_values
     self.longitude ||= 0.0
     self.latitude ||= 0.0
+    self.duration = 0 if duration.nil?
     self.duration = duration.zero? ? 1 : duration
   end
 end

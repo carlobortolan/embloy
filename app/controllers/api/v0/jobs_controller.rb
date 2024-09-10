@@ -107,6 +107,19 @@ module Api
         render_jobs('jobs', jobs)
       end
 
+      def synchronize
+        case synchronize_params[:source]
+        when 'lever'
+          Integrations::LeverController.synchronize(Current.user)
+        when 'ashby'
+          Integrations::AshbyController.synchronize(Current.user)
+        else
+          render status: 400, json: { message: 'Invalid source' }
+        end
+
+        render status: 200, json: { message: 'Synchronization successful!' }
+      end
+
       private
 
       def build_job
@@ -271,8 +284,7 @@ module Api
         permitted_params = params.except(:format, :_json, :job).permit(
           :id, :job_slug, :title, :description, :start_slot, :referrer_url, :longitude, :latitude, :job_type,
           :job_status, :image_url, :position, :currency, :salary, :key_skills, :duration, :job_notifications,
-          :cv_required, allowed_cv_formats: [], application_options_attributes: [:id, :question, :question_type,
-                                                                                 :required, { options: [] }]
+          application_options_attributes: [:id, :question, :question_type, :required, { options: [] }]
         )
         check_question_types(permitted_params)
         raise ActionController::BadRequest, 'Invalid job_status' if permitted_params[:job_status].present? && !Job::VALID_JOB_TYPES.include?(permitted_params[:job_status])
@@ -286,9 +298,13 @@ module Api
         permitted_params[:application_options_attributes].each do |option_params|
           if option_params[:question_type].nil? || (option_params[:question_type].present? && !ApplicationOption::VALID_QUESTION_TYPES.include?(option_params[:question_type]))
             raise ActionController::BadRequest,
-                  'Invalid question_type'
+                  "Invalid question_type: #{option_params[:question_type]}"
           end
         end
+      end
+
+      def synchronize_params
+        params.except(:format).permit(:source)
       end
 
       def find_job_params

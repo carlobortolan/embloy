@@ -13,6 +13,13 @@ Rails.application.routes.draw do
   get 'auth/google_oauth2/callback', to: 'oauth_callbacks#google', as: :auth_google_callback
   get 'auth/azure_activedirectory_v2/callback', to: 'oauth_callbacks#azure', as: :auth_azure_callback
   get 'auth/linkedin/callback', to: 'oauth_callbacks#linkedin', as: :auth_linkedin_callback
+  # get 'auth/callback', to: 'integrations/lever_oauth#callback', as: :auth_lever_callback # <= TODO: Temporary route - move to integrations namespace
+  get 'auth/lever/callback', to: 'integrations/lever_oauth#callback', as: :auth_lever_callback
+
+  #= <<<<< *INTEGRATIONS* >>>>>>
+  get 'api/v0/integrations/lever/auth', to: 'integrations/lever_oauth#authorize', as: :auth_lever
+  # get 'api/v0/integrations/lever/callback', to: 'lever_oauth#callback', as: :auth_lever_callback # <= TODO: Update Lever OAuth app callback URI
+  post 'api/v0/webhooks/:source/:id', to: 'hooks/webhooks#handle_event', as: :webhook_handler
 
   #= <<<<< *API* >>>>>>
   namespace :api, defaults: { format: 'json' } do
@@ -55,6 +62,8 @@ Rails.application.routes.draw do
       get 'user/notifications', to: 'notifications#show'
       get 'user/notifications/unread', to: 'notifications#unread_applications'
       patch 'user/notifications/(/:id)', to: 'notifications#mark_as_read'
+      get 'user/webhooks', to: 'webhooks#index'
+      post 'user/webhooks/:source', to: 'webhooks#refresh'
 
       post 'user/(/:id)/reviews', to: 'reviews#create'
       delete 'user/(/:id)/reviews', to: 'reviews#destroy'
@@ -72,12 +81,16 @@ Rails.application.routes.draw do
       get 'jobs/(/:id)/applications', to: 'applications#show'
       get 'jobs/(/:id)/application', to: 'applications#show_single'
       get 'jobs/(/:id)/applications/(/:application_id)', to: 'applications#show_single'
+      get 'jobs/(/:id)/application/pipeline', to: 'applications#pipeline'
+      get 'jobs/(/:id)/applications/(/:application_id)/pipeline', to: 'applications#pipeline'
       post 'jobs/(/:id)/applications', to: 'applications#create'
       patch 'jobs/(/:id)/applications/(/:application_id)/accept', to: 'applications#accept'
       patch 'jobs/(/:id)/applications/(/:application_id)/reject', to: 'applications#reject'
+      post 'jobs/sync/:source', to: 'jobs#synchronize'
 
       # -----> QUICKLINK <-----
       post 'sdk/request/auth/token', to: 'quicklink#create_request'
+      post 'sdk/request/auth/proxy', to: 'quicklink#create_request_proxy'
       post 'sdk/request/handle', to: 'quicklink#handle_request'
       post 'sdk/apply', to: 'quicklink#apply'
 

@@ -116,7 +116,6 @@ RSpec.describe 'PasswordResetsController' do
           expect(response).to have_http_status(200)
         end
       end
-
       context 'invalid inputs' do
         it 'returns [400 Bad Request] for missing authentication' do
           data = JSON.dump({
@@ -126,7 +125,7 @@ RSpec.describe 'PasswordResetsController' do
                              }
                            })
           headers = { 'Content-Type' => 'application/json' }
-          patch('/api/v0/user/password', params: data, headers:)
+          patch('/api/v0/user/password/reset', params: data, headers:)
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for expired token' do
