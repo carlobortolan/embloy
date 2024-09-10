@@ -4,7 +4,7 @@ require 'json'
 
 # This module provides helper methods related to subscriptions.
 module SubscriptionHelper
-  STRIPE_PRICE_ID_TO_SUBSCRIPTION_TYPE = JSON.parse(File.read('app/helpers/subscription_types.json')).freeze
+  STRIPE_PRICE_ID_TO_SUBSCRIPTION_TYPE = JSON.parse(File.read('app/helpers/live_subscription_types.json')).freeze
   SUBSCRIPTION_TYPE_TO_STRIPE_PRICE_ID = STRIPE_PRICE_ID_TO_SUBSCRIPTION_TYPE.invert.freeze
 
   def self.subscription_type(stripe_price_id)

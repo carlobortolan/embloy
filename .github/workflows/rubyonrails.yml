@@ -24,33 +24,35 @@ jobs:
         run: bundle install
       # - name: Build
       #   run: bundle exec rake assets:precompile
-  #lint:
-  #  runs-on: ubuntu-latest
-  #  steps:
-  #    - name: Checkout code
-  #      uses: actions/checkout@v3
-  #    - name: Install Ruby and gems
-  #      uses: ruby/setup-ruby@v1
-  #      with:
-  #        bundler-cache: true
-  #    - name: Install bundler-audit
-  #      run: gem install bundler-audit
-  #    - name: Security audit dependencies
-  #      run: bundle audit check --update
-  #    - name: Install brakeman
-  #      run: gem install brakeman
-  #    - name: Security audit application code
-  #      run: brakeman -q -w2
-  #    - name: Lint Ruby files
-  #      run: bundle exec rubocop --parallel
-  #    - name: Install reek
-  #      run: gem install reek
-  #    - name: Code smell detection
-  #      run: reek
-  #    - name: Run Flog complexity analysis
-  #      run: |
-  #        gem install flog
-  #        ruby flog_check.rb
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Install Ruby and gems
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Install bundler-audit
+        run: gem install bundler-audit
+      - name: Security audit dependencies
+        run: bundle audit check --update
+      - name: Install brakeman
+        run: gem install brakeman
+      - name: Security audit application code
+        run: brakeman -q -w2
+      - name: Install rubocop
+        run: gem install rubocop
+      - name: Lint Ruby files
+        run: bundle exec rubocop --parallel
+      - name: Install reek
+        run: gem install reek
+      # - name: Code smell detection
+      #   run: reek
+      - name: Run Flog complexity analysis
+        run: |
+          gem install flog
+          ruby flog_check.rb
   #test:
   #  environment: CI
   #  runs-on: ubuntu-latest
@@ -80,24 +82,24 @@ jobs:
   #    GENIUS_QUERY_TOKEN_SECRET: ${{ secrets.GENIUS_QUERY_TOKEN_SECRET }}
   #    SERVICE_HOST: 'noreply.embloy.com'
   #    EMAIL_NOREPLY_USER: 'noreply@noreply.embloy.com'
-#
-#  steps:
-#    - name: Checkout code
-#      uses: actions/checkout@v3
-#    - name: Install Ruby and gems
-#      uses: ruby/setup-ruby@v1
-#      with:
-#        bundler-cache: true
-#    - name: Setup environment variables
-#      run: |
-#        echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
-#        echo "RAILS_MASTER_KEY=${{ secrets.RAILS_MASTER_KEY }}" >> .env
-#        echo "DATABASE_USER=${{ secrets.DATABASE_USER }}" >> .env
-#        echo "DATABASE_HOST=${{ secrets.DATABASE_HOST }}" >> .env
-#        echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}" >> .env
-#    - name: Setup database
-#      run: bundle exec rails db:setup
-#    - name: Run tests
-#      run: bundle exec rspec
-#    - name: Output coverage report
-#      run: cat coverage/index.html
+  #
+  #  steps:
+  #    - name: Checkout code
+  #      uses: actions/checkout@v3
+  #    - name: Install Ruby and gems
+  #      uses: ruby/setup-ruby@v1
+  #      with:
+  #        bundler-cache: true
+  #    - name: Setup environment variables
+  #      run: |
+  #        echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+  #        echo "RAILS_MASTER_KEY=${{ secrets.RAILS_MASTER_KEY }}" >> .env
+  #        echo "DATABASE_USER=${{ secrets.DATABASE_USER }}" >> .env
+  #        echo "DATABASE_HOST=${{ secrets.DATABASE_HOST }}" >> .env
+  #        echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}" >> .env
+  #    - name: Setup database
+  #      run: bundle exec rails db:setup
+  #    - name: Run tests
+  #      run: bundle exec rspec
+  #    - name: Output coverage report
+  #      run: cat coverage/index.html
