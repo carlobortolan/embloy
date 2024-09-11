@@ -58,8 +58,8 @@ jobs:
           az containerapp update \
             --name ${{ env.AZURE_CONTAINER_APP_NAME }} \
             --resource-group ${{ env.ACR_RESOURCE_GROUP }} \
-            --environment ${{ env.AZURE_APP_ENVIRONMENT }} \
             --image ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}:${{ github.sha }}
+  
   #deploy:
   #    permissions:
   #        actions: read
