@@ -77,6 +77,7 @@ module Integrations
         IntegrationsController.save_token(user, 'OAuth Access Token', 'lever', 'access_token', response_body['access_token'], Time.now.utc + response_body['expires_in'], Time.now.utc)
         IntegrationsController.save_token(user, 'OAuth Refresh Token', 'lever', 'refresh_token', response_body['refresh_token'], Time.now.utc + 1.year, Time.now.utc)
         Integrations::LeverWebhooksController.refresh_webhooks(user)
+        Integrations::LeverController.synchronize(user)
         redirect_to("#{ENV.fetch('GENIUS_CLIENT_URL')}/settings?tab=integrations?success=Successfully connected to Lever", allow_other_host: true)
       else
         exception_class = {

@@ -110,7 +110,8 @@ module Api
         @job = @client.jobs.find_by(job_slug: session['job_slug'])
 
         # Return job from external API if integration mode enabled
-        @job = Integrations::IntegrationsController.get_posting(session['mode'], session['job_slug'], @client, @job) if session['mode'] != 'job'
+        # TODO: Uncomment in case of ATS that need sync on every application
+        # @job = Integrations::IntegrationsController.get_posting(session['mode'], session['job_slug'], @client, @job) if session['mode'] != 'job'
         return handle_existing_job if @job
 
         # Create new job if it does not exist
