@@ -139,6 +139,7 @@ module Integrations
           job['user_id'] = client.id.to_i
           job
         else
+          Rails.logger.debug("Received questions for job: #{job}")
           job['application_options_attributes'] = parsed_data['application_options_attributes']
         end
       when Net::HTTPBadRequest
@@ -166,10 +167,14 @@ module Integrations
 
         data.each do |job|
           parsed_job = Mawsitsit.parse({ data: job }, config, true)
-
           parsed_job['job_slug'] = "lever__#{parsed_job['job_slug']}"
           parsed_job['user_id'] = client.id.to_i
           parsed_job['application_options_attributes'] = []
+
+          # Fetch job questions
+          questions = fetch_from_lever(LEVER_FETCH_QUESTIONS_URL.gsub('postingId', job['id']), client)
+          Rails.logger.debug("Received questions for job: #{job['id']}: #{questions.body}")
+          handle_response(questions, 'questions', client, parsed_job)
 
           handle_internal_job(client, parsed_job)
         end
