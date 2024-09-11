@@ -462,7 +462,7 @@ ActiveRecord::Schema[7.0].define(version: 20_240_904_144_926) do
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
     t.index ['ext_id'], name: 'index_webhooks_on_ext_id', unique: true
-    t.index ['user_id'], name: 'index_webhooks_on_user_id', unique: true
+    t.index ['user_id'], name: 'index_webhooks_on_user_id', unique: false
   end
 
   add_foreign_key 'active_storage_attachments', 'active_storage_blobs', column: 'blob_id'

@@ -76,6 +76,7 @@ module Validators
 
     def check_subscription_limit_create
       return unless user
+      return unless user.user_type == 'sandbox'
       return unless user.jobs.where(job_status: %w[listed unlisted], activity_status: 1).count >= max_jobs_allowed
 
       raise CustomExceptions::Subscription::LimitReached
@@ -83,6 +84,7 @@ module Validators
 
     def check_subscription_limit_update
       return unless user
+      return unless user.user_type == 'sandbox'
       return unless user.jobs.where(job_status: %w[listed unlisted], activity_status: 1).count > max_jobs_allowed
 
       raise CustomExceptions::Subscription::LimitReached
