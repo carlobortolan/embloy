@@ -405,8 +405,8 @@ module ApiExceptionHandler
 
   #--------------------------------------
 
-  def malformed_error(attribute)
-    render_error(attribute, 'ERR_INVALID', 'Attribute is malformed or unknown', 400)
+  def malformed_error(attribute, description = 'Attribute is malformed or unknown')
+    render_error(attribute, 'ERR_INVALID', description, 400)
   end
 
   #--------------------------------------

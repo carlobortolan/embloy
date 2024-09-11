@@ -65,13 +65,13 @@ module Api
       # It calls the Encoder class of the `QuicklinkService::Request` module to create the token.
       # It then returns the token in the response.
       def create_request_proxy
-        return malformed_error('proxy') unless proxy_params[:admin_token] == ENV.fetch('PROXY_ADMIN_TOKEN', nil)
+        return malformed_error('proxy', 'Invalid or missing admin token') unless proxy_params[:admin_token] == ENV.fetch('PROXY_ADMIN_TOKEN', nil)
         return malformed_error('job_slug') if proxy_params[:job_slug].nil?
         return malformed_error('mode') if proxy_params[:mode].nil?
 
         user_id = proxy_params[:user_id] || Job.find_by(job_slug: "#{proxy_params[:mode]}__#{proxy_params[:job_slug]}")&.user_id
 
-        return malformed_error('proxy') if user_id.nil?
+        return malformed_error('proxy', 'Could not find user for this job') if user_id.nil?
         return user_role_to_low_error unless must_be_verified(user_id)
         return user_blocked_error unless user_not_blacklisted(user_id)
 
@@ -82,7 +82,7 @@ module Api
       # It calls the Encoder class of the `QuicklinkService::Client` module to create the token.
       # It then returns the token in the response.
       def create_client
-        token = QuicklinkService::Client::Encoder.call(check_subscription, parse_expiration_date)
+        token = QuicklinkService::Client::Encoder.call(check_subscription(Current.user), parse_expiration_date)
         render status: 200, json: { 'client_token' => token }
       end
 
@@ -161,20 +161,18 @@ module Api
 
       def create_proxy_session(user_id)
         user = User.find(user_id)
-        subscription = user.current_subscription
-        raise CustomExceptions::Subscription::ExpiredOrMissing if subscription.nil?
 
         session = portal_params.to_unsafe_h.transform_keys(&:to_s)
         session['user_id'] = user_id
-        session['subscription_type'] = SubscriptionHelper.subscription_type(subscription.processor_plan)
+        session['subscription_type'] = SubscriptionHelper.subscription_type(check_subscription(user))
         session['job_slug'] = "#{proxy_params[:mode]}__#{proxy_params[:job_slug]}"
         session
       end
 
-      def check_subscription
-        return SubscriptionHelper.subscription_type('enterprise_3') if Current.user.sandboxd?
+      def check_subscription(user = nil)
+        return SubscriptionHelper.stripe_price_id('enterprise_3') if user.sandboxd?
 
-        subscription = Current.user.current_subscription # Check for active subscription
+        subscription = user.current_subscription # Check for active subscription
         raise CustomExceptions::Subscription::ExpiredOrMissing if subscription.nil?
 
         subscription.processor_plan
