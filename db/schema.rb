@@ -444,6 +444,8 @@ ActiveRecord::Schema[7.0].define(version: 20_240_904_144_926) do
     t.string 'facebook_url', limit: 150
     t.string 'instagram_url', limit: 150
     t.string 'linkedin_url', limit: 150
+    t.string 'github_url', limit: 150
+    t.string 'portfolio_url', limit: 150
     t.decimal 'phone'
     t.string 'degree', limit: 50
     t.index ['email'], name: 'user_email_index', unique: true

@@ -138,7 +138,7 @@ module Api
 
       def user_params
         params.require(:user).permit(:first_name, :last_name, :email, :phone, :degree, :date_of_birth, :country_code, :city,
-                                     :postal_code, :address, :twitter_url, :facebook_url, :linkedin_url, :instagram_url,
+                                     :postal_code, :address, :twitter_url, :facebook_url, :linkedin_url, :instagram_url, :github_url, :portfolio_url,
                                      :application_notifications, :communication_notifications, :marketing_notifications, :security_notifications)
       end
     end
