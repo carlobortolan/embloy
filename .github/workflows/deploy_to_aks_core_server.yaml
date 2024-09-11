@@ -10,6 +10,7 @@ env:
   CLUSTER_NAME: K8s
   CLUSTER_RESOURCE_GROUP: K8s
   CONTAINER_NAME: embloy-core
+  AZURE_APP_ENVIRONMENT: managedEnvironment-embloycore-995b
   DEPLOYMENT_MANIFEST_PATH: |
     ./k8s-specifications/aks/core/AKS_core_service.yaml
 jobs:
@@ -41,6 +42,23 @@ jobs:
                          -t ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}:latest
           docker push ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}:${{ github.sha }}
           docker push ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}:latest
+  deployToAzureContainerApp:
+    runs-on: ubuntu-latest
+    needs: buildImage
+    steps:
+      - name: "Login via Azure CLI"
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: "Deploy to Azure Container App"
+        run: |
+          # Update the Container App with the new image from ACR
+          az containerapp update \
+            --name ${{ env.AZURE_CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.ACR_RESOURCE_GROUP }} \
+            --environment ${{ env.AZURE_APP_ENVIRONMENT }} \
+            --image ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}:${{ github.sha }}
   #deploy:
   #    permissions:
   #        actions: read
