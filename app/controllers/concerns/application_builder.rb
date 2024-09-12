@@ -7,6 +7,9 @@ module ApplicationBuilder
   # The apply_for_job method is responsible for creating a new application for a job.
   # Requires @job and application_params
   def apply_for_job
+    retry_count = 0
+    max_retries = 1
+
     ActiveRecord::Base.transaction do
       create_application!
     end
@@ -16,10 +19,14 @@ module ApplicationBuilder
   rescue ActiveSupport::MessageVerifier::InvalidSignature
     malformed_error('image_url')
   rescue ActiveRecord::RecordNotUnique => e
-    unnecessary_error('application', 'You have already applied for this job. Please note that you can only apply once.') unless Current.user.admin?
-    existing_application = Application.find_by(job_id: @job.id, user_id: Current.user.id)
-    existing_application&.destroy!
-    retry
+    if Current.user.admin? && retry_count < max_retries
+      retry_count += 1
+      existing_application = Application.find_by(job_id: @job.id, user_id: Current.user.id)
+      existing_application&.destroy!
+      retry
+    else
+      unnecessary_error('application', 'You have already applied for this job. Please note that you can only apply once.')
+    end
   rescue StandardError => e
     render status: 500, json: { errors: e.message }
   end

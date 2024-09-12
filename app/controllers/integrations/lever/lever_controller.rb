@@ -125,9 +125,9 @@ module Integrations
         # Fetch job posting
         response = fetch_from_lever(FETCH_POSTING_PATH.gsub('postingId', posting_id), client)
         job = handle_response(response, 'posting', client, job)
-
+        Rails.logger.debug("Received job: #{job}")
         # Fetch job questions
-        response = fetch_from_lever(FETCH_POSTING_PATH.gsub('postingId', posting_id), client)
+        response = fetch_from_lever(FETCH_QUESTIONS_PATH.gsub('postingId', posting_id), client)
         handle_response(response, 'questions', client, job)
 
         handle_internal_job(client, job)
@@ -180,7 +180,7 @@ module Integrations
             parsed_job['application_options_attributes'] = []
 
             # Fetch job questions
-            questions = fetch_from_lever(FETCH_POSTING_PATH.gsub('postingId', job['id']), client)
+            questions = fetch_from_lever(FETCH_QUESTIONS_PATH.gsub('postingId', job['id']), client)
             Rails.logger.debug("Received questions for job: #{job['id']}: #{questions.body}")
             handle_response(questions, 'questions', client, parsed_job)
 
