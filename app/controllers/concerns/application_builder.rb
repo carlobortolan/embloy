@@ -34,7 +34,7 @@ module ApplicationBuilder
     rescue ActiveRecord::RecordNotUnique
       raise ActiveRecord::RecordNotUnique unless Current.user.admin?
 
-      Application.find_by(job_id: @job.id, user_id: Current.user.id)&.destroy
+      Application.find_by(job_id: @job.id, user_id: Current.user.id)&.destroy!
       @application.save!
     end
 
