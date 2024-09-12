@@ -110,9 +110,9 @@ module Api
       def synchronize
         case synchronize_params[:source]
         when 'lever'
-          Integrations::LeverController.synchronize(Current.user)
+          Integrations::Lever::LeverController.synchronize(Current.user)
         when 'ashby'
-          Integrations::AshbyController.synchronize(Current.user)
+          Integrations::Ashby::AshbyController.synchronize(Current.user)
         else
           render status: 400, json: { message: 'Invalid source' }
         end

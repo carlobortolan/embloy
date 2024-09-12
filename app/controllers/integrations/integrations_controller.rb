@@ -9,33 +9,33 @@ module Integrations
     def self.submit_form(job_slug, application, application_params, client)
       case job_slug.split('__').first
       when 'lever'
-        Integrations::LeverController.post_form(job_slug.sub('lever__', ''), application, application_params, client)
+        Integrations::Lever::LeverController.post_form(job_slug.sub('lever__', ''), application, application_params, client)
       when 'ashby'
-        Integrations::AshbyController.post_form(job_slug.sub('ashby__', ''), application, application_params, client)
+        Integrations::Ashby::AshbyController.post_form(job_slug.sub('ashby__', ''), application, application_params, client)
       when 'softgarden'
-        Integrations::SoftgardenController.post_form(job_slug.sub('softgarden__', ''), application, application_params, client)
+        Integrations::Softgarden::SoftgardenController.post_form(job_slug.sub('softgarden__', ''), application, application_params, client)
       end
     end
 
     def self.get_posting(mode, job_slug, client, job)
       case mode
       when 'lever'
-        Integrations::LeverController.fetch_posting(job_slug.sub('lever__', ''), client, job)
+        Integrations::Lever::LeverController.fetch_posting(job_slug.sub('lever__', ''), client, job)
       when 'ashby'
-        Integrations::AshbyController.fetch_posting(job_slug.sub('ashby__', ''), client, job)
+        Integrations::Ashby::AshbyController.fetch_posting(job_slug.sub('ashby__', ''), client, job)
       when 'softgarden'
-        Integrations::SoftgardenController.fetch_posting(job_slug.sub('softgarden__', ''), client, job)
+        Integrations::Softgarden::SoftgardenController.fetch_posting(job_slug.sub('softgarden__', ''), client, job)
       end
     end
 
     def self.sync_postings(client, jobs)
       case mode
       when 'lever'
-        Integrations::LeverController.synchronize(client, jobs)
+        Integrations::Lever::LeverController.synchronize(client, jobs)
       when 'ashby'
-        Integrations::AshbyController.synchronize(client, jobs)
+        Integrations::Ashby::AshbyController.synchronize(client, jobs)
       when 'softgarden'
-        Integrations::SoftgardenController.synchronize(client, jobs)
+        Integrations::Softgarden::SoftgardenController.synchronize(client, jobs)
       end
     end
 

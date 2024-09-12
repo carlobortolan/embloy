@@ -27,7 +27,7 @@ module Hooks
       render json: { error: 'Webhook not found' }, status: :not_found and return if webhook.nil?
 
       # Verify the webhook signature
-      unless Integrations::LeverWebhooksController.verify_signature(
+      unless Integrations::Lever::WebhooksController.verify_signature(
         lever_event['token'],
         lever_event['triggeredAt'],
         lever_event['signature'],
@@ -97,7 +97,7 @@ module Hooks
       render json: { error: 'Webhook not found' }, status: :not_found and return if webhook.nil?
 
       # Verify the webhook signature
-      unless Integrations::AshbyWebhooksController.verify_signature(
+      unless Integrations::Ashby::WebhooksController.verify_signature(
         request.body.read,
         request.headers['Ashby-Signature'],
         webhook.signatureToken
@@ -138,7 +138,7 @@ module Hooks
       when 'jobPostingUpdate'
         render json: { error: 'Job not found' }, status: :not_found and return if job.nil?
 
-        Integrations::AshbyController.fetch_posting(job_ext_id.split('__').last, webhook.user, job)
+        Integrations::Ashby::AshbyController.fetch_posting(job_ext_id.split('__').last, webhook.user, job)
         return
       when 'jobPostingPublish'
         render json: { error: 'Job not found' }, status: :not_found and return if job.nil?

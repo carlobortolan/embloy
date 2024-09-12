@@ -13,11 +13,11 @@ Rails.application.routes.draw do
   get 'auth/google_oauth2/callback', to: 'oauth_callbacks#google', as: :auth_google_callback
   get 'auth/azure_activedirectory_v2/callback', to: 'oauth_callbacks#azure', as: :auth_azure_callback
   get 'auth/linkedin/callback', to: 'oauth_callbacks#linkedin', as: :auth_linkedin_callback
-  # get 'auth/callback', to: 'integrations/lever_oauth#callback', as: :auth_lever_callback # <= TODO: Temporary route - move to integrations namespace
-  get 'auth/lever/callback', to: 'integrations/lever_oauth#callback', as: :auth_lever_callback
+  # get 'auth/callback', to: 'integrations/lever/oauth#callback', as: :auth_lever_callback # <= TODO: Temporary route - move to integrations namespace
+  get 'auth/lever/callback', to: 'integrations/lever/oauth#callback', as: :auth_lever_callback
 
   #= <<<<< *INTEGRATIONS* >>>>>>
-  get 'api/v0/integrations/lever/auth', to: 'integrations/lever_oauth#authorize', as: :auth_lever
+  get 'api/v0/integrations/lever/auth', to: 'integrations/lever/oauth#authorize', as: :auth_lever
   # get 'api/v0/integrations/lever/callback', to: 'lever_oauth#callback', as: :auth_lever_callback # <= TODO: Update Lever OAuth app callback URI
   post 'api/v0/webhooks/:source/:id', to: 'hooks/webhooks#handle_event', as: :webhook_handler
 

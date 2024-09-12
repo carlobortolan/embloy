@@ -14,9 +14,9 @@ module Api
 
         case refresh_params[:source]
         when 'lever'
-          message = Integrations::LeverWebhooksController.refresh_webhooks(Current.user)
+          message = Integrations::Lever::WebhooksController.refresh_webhooks(Current.user)
         when 'ashby'
-          message = Integrations::AshbyWebhooksController.refresh_webhooks(Current.user)
+          message = Integrations::Ashby::WebhooksController.refresh_webhooks(Current.user)
         else
           render(status: 422, json: { error: 'Unknown source' }) and return
         end
