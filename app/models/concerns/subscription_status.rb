@@ -19,7 +19,7 @@ module SubscriptionStatus
     end
 
     def active_subscription?
-      return true if sandboxd?
+      return true if sandboxd? || admin?
 
       sync_subscriptions
       payment_processor.present? && payment_processor.subscribed?

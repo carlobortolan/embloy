@@ -435,8 +435,8 @@ module ApiExceptionHandler
 
   #--------------------------------------
 
-  def unnecessary_error(attribute)
-    render_error(attribute, 'ERR_UNNECESSARY', 'Attribute is already submitted', 422)
+  def unnecessary_error(attribute, description = 'Attribute is already submitted')
+    render_error(attribute, 'ERR_UNNECESSARY', description, 422)
   end
 
   #--------------------------------------
@@ -454,7 +454,7 @@ module ApiExceptionHandler
   #--------------------------------------
 
   def too_many_requests_error(attribute, message = nil)
-    render_error(attribute, 'ERR_LIMIT', message || 'Too many request', 429)
+    render_error(attribute, 'ERR_LIMIT', message || 'Too many requests', 429)
   end
 
   #--------------------------------------

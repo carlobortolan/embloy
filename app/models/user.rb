@@ -97,6 +97,10 @@ class User < ApplicationRecord
     user_type == 'sandbox'
   end
 
+  def admin?
+    user_role == 'admin'
+  end
+
   private
 
   def stripe_attributes(pay_customer)

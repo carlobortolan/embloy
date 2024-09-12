@@ -16,7 +16,9 @@ module ApplicationBuilder
   rescue ActiveSupport::MessageVerifier::InvalidSignature
     malformed_error('image_url')
   rescue ActiveRecord::RecordNotUnique
-    unnecessary_error('application')
+    unnecessary_error('application', 'You have already applied for this job. Please note that you can only apply once.')
+  rescue StandardError => e
+    render status: 500, json: { errors: e.message }
   end
 
   private
@@ -27,7 +29,14 @@ module ApplicationBuilder
     tmp[:job_id] =  @job.id
     tmp[:user_id] = Current.user.id
     @application = Application.new(tmp)
-    @application.save!
+    begin
+      @application.save!
+    rescue ActiveRecord::RecordNotUnique
+      raise ActiveRecord::RecordNotUnique unless Current.user.admin?
+
+      Application.find_by(job_id: @job.id, user_id: Current.user.id)&.destroy
+      @application.save!
+    end
 
     create_application_answers! if @job.application_options.any?
     Integrations::IntegrationsController.submit_form(@job.job_slug, @application, application_params, @client)

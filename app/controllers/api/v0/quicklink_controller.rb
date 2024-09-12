@@ -171,7 +171,7 @@ module Api
       end
 
       def check_subscription(user = nil)
-        return SubscriptionHelper.stripe_price_id('enterprise_3') if user.sandboxd?
+        return SubscriptionHelper.stripe_price_id('enterprise_3') if user.sandboxd? || user.admin?
 
         subscription = user.current_subscription # Check for active subscription
         raise CustomExceptions::Subscription::ExpiredOrMissing if subscription.nil?

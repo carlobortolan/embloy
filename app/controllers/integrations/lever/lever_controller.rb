@@ -112,7 +112,8 @@ module Integrations
           'eeoResponses' => {},
           'diversitySurvey' => { 'surveyId' => '', 'candidateSelectedLocation' => '', 'responses' => [] },
           'personalInformation' => [],
-          'urls' => []
+          'urls' => [],
+          'source' => 'embloy'
         }
 
         Parser.parse(body, output)
