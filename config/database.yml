@@ -23,10 +23,10 @@ development:
   primary:
     <<: *default
     database: dev_core
-  primary_replica:
-    <<: *default
-    database: dev_core
-    replica: true
+  # primary_replica:
+  #   <<: *default
+  #   database: dev_core
+  #   replica: true
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -34,13 +34,9 @@ development:
 test:
   <<: *default
   database: test_core
-  adapter: postgis
-  encoding: unicode
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-
-  username: <%= ENV["DEV_DATABASE_USER"] %>
-  password: <%= ENV["DEV_DATABASE_PASSWORD"] %>
-  host: <%= ENV["DEV_DATABASE_HOST"] %>
+  username: <%= ENV["TEST_DATABASE_USER"] %>
+  password: <%= ENV["TEST_DATABASE_PASSWORD"] %>
+  host: <%= ENV["TEST_DATABASE_HOST"] %>
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is

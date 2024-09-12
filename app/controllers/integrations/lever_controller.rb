@@ -9,10 +9,12 @@ require 'jwt'
 module Integrations
   # LeverController handles internal actions used by an Embloy SDK or API controller
   class LeverController < IntegrationsController
-    LEVER_POST_FORM_URL = 'https://api.sandbox.lever.co/v1/postings/postingId/apply?send_confirmation_email=true'
-    LEVER_POST_FILE_URL = 'https://api.sandbox.lever.co/v1/uploads'
-    LEVER_FETCH_POSTING_URL = 'https://api.sandbox.lever.co/v1/postings/postingId'
-    LEVER_FETCH_QUESTIONS_URL = 'https://api.sandbox.lever.co/v1/postings/postingId/apply'
+    API_URL = 'https://api.lever.co/v1'
+    SANDBOX_API_URL = 'https://api.sandbox.lever.co/v1'
+    POST_FORM_PATH = '/postings/postingId/apply?send_confirmation_email=true'
+    POST_FILE_PATH = '/uploads'
+    FETCH_POSTING_PATH = '/postings/postingId'
+    FETCH_QUESTIONS_PATH = '/postings/postingId/apply'
 
     ### APPLICATION SUBMISSION ###
 
@@ -22,7 +24,7 @@ module Integrations
       handle_lever_file_uploads(application, application_params, client)
 
       # Build and send request
-      url = URI(LEVER_POST_FORM_URL.gsub('postingId', posting_id))
+      url = api_url(client, POST_FORM_PATH.gsub('postingId', posting_id))
       http = Net::HTTP.new(url.host, url.port)
       http.use_ssl = true
       request = Net::HTTP::Post.new(url)
@@ -49,7 +51,7 @@ module Integrations
       application_params[:application_answers].each_value do |param|
         next unless param[:file].present?
 
-        url = URI(LEVER_POST_FILE_URL)
+        url = api_url(client, POST_FILE_PATH)
         File.open(param[:file].tempfile.path) do |file|
           request = Net::HTTP::Post::Multipart.new(
             url.path,
@@ -74,13 +76,17 @@ module Integrations
     end
 
     # Simplifies HTTP requests to the Lever API
-    def self.fetch_from_lever(url, client)
-      uri = URI(url)
-      http = Net::HTTP.new(uri.host, uri.port)
+    def self.fetch_from_lever(path, client)
+      url = api_url(client, path)
+      http = Net::HTTP.new(url.host, url.port)
       http.use_ssl = true
-      request = Net::HTTP::Get.new(uri)
+      request = Net::HTTP::Get.new(url)
       request['authorization'] = "Bearer #{validate_token(client)}"
       http.request(request)
+    end
+
+    def self.api_url(client, path = '')
+      URI((client.sandboxd? ? SANDBOX_API_URL : API_URL) + path)
     end
 
     # Builds the request body from the application answers and additional data
@@ -111,15 +117,15 @@ module Integrations
       LeverParser.parse(body, output)
     end
 
-    # NOTE: LEVER_FETCH_POSTING_URL only returns the job; for the job options, use LEVER_GET_QUESTIONS_URL (see get_questions)
+    # NOTE: FETCH_POSTING_PATH only returns the job; for the job options, use GET_QUESTIONS_PATH (see get_questions)
     # Reference: https://hire.sandbox.lever.co/developer/documentation#retrieve-a-single-posting
     def self.fetch_posting(posting_id, client, job)
       # Fetch job posting
-      response = fetch_from_lever(LEVER_FETCH_POSTING_URL.gsub('postingId', posting_id), client)
+      response = fetch_from_lever(FETCH_POSTING_PATH.gsub('postingId', posting_id), client)
       job = handle_response(response, 'posting', client, job)
 
       # Fetch job questions
-      response = fetch_from_lever(LEVER_FETCH_QUESTIONS_URL.gsub('postingId', posting_id), client)
+      response = fetch_from_lever(FETCH_POSTING_PATH.gsub('postingId', posting_id), client)
       handle_response(response, 'questions', client, job)
 
       handle_internal_job(client, job)
@@ -157,7 +163,7 @@ module Integrations
 
     # Fetches all jobs from Lever and saves, updates, or deletes them in the database
     def self.synchronize(client)
-      response = fetch_from_lever(LEVER_FETCH_POSTING_URL.gsub('/postingId', ''), client)
+      response = fetch_from_lever(FETCH_POSTING_PATH.gsub('/postingId', ''), client)
 
       case response
       when Net::HTTPSuccess
@@ -172,7 +178,7 @@ module Integrations
           parsed_job['application_options_attributes'] = []
 
           # Fetch job questions
-          questions = fetch_from_lever(LEVER_FETCH_QUESTIONS_URL.gsub('postingId', job['id']), client)
+          questions = fetch_from_lever(FETCH_POSTING_PATH.gsub('postingId', job['id']), client)
           Rails.logger.debug("Received questions for job: #{job['id']}: #{questions.body}")
           handle_response(questions, 'questions', client, parsed_job)
 
@@ -202,7 +208,7 @@ module Integrations
 
     # Retrieve a new access token using the refresh token (step 5)
     def self.lever_access_token(refresh_token)
-      uri = URI.parse(LeverOauthController::LEVER_ACCESS_TOKEN_URL)
+      uri = LeverOauthController.oauth_url(client, LeverOauthController::ACCESS_TOKEN_PATH)
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true
       request = Net::HTTP::Post.new(uri)

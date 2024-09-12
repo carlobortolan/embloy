@@ -4,10 +4,10 @@
 module Integrations
   # LeverWebhooksController handles all webhook-related actions for Lever
   class LeverWebhooksController < IntegrationsController
-    LEVER_WEBHOOK_URL = 'https://api.sandbox.lever.co/v1/webhooks'
+    WEBHOOK_PATH = '/webhooks'
 
     def self.refresh_webhooks(client)
-      response = Integrations::LeverController.fetch_from_lever(LEVER_WEBHOOK_URL, client)
+      response = Integrations::LeverController.fetch_from_lever(WEBHOOK_PATH, client)
       Rails.logger.debug("Response from Lever API: #{response.body}")
       case response
       when Net::HTTPSuccess || Net::HTTPNoContent
@@ -42,12 +42,15 @@ module Integrations
 
       # Create or update webhooks
       LEVER_WEBHOOKS.each do |desired_webhook|
-        desired_webhook[:url] += "/#{SimpleCrypt.encrypt(client.id.to_i)}"
-        if existing_webhook_events.include?(desired_webhook[:event])
-          message += update_webhook(desired_webhook, client)
+        # Create a deep copy of the desired_webhook
+        webhook_copy = desired_webhook.dup
+        webhook_copy[:url] += "/#{SimpleCrypt.encrypt(client.id.to_i)}"
+
+        if existing_webhook_events.include?(webhook_copy[:event])
+          message += update_webhook(webhook_copy, client)
         else
-          message += "Missing webhook for event '#{desired_webhook[:event]}':\n"
-          message += create_webhook(desired_webhook, client)
+          message += "Missing webhook for event '#{webhook_copy[:event]}':\n"
+          message += create_webhook(webhook_copy, client)
         end
       end
 
@@ -57,7 +60,7 @@ module Integrations
     def self.create_webhook(webhook, client) # rubocop:disable Metrics/AbcSize
       message = "\tCreating webhook for event '#{webhook[:event]}'..."
 
-      uri = URI.parse(LEVER_WEBHOOK_URL)
+      uri = LeverController.api_url(client, WEBHOOK_PATH)
       request = Net::HTTP::Post.new(uri)
       request['Authorization'] = "Bearer #{LeverController.validate_token(client)}"
       request['Content-Type'] = 'application/json'
@@ -92,7 +95,7 @@ module Integrations
 
     def self.delete_webhook(webhook_id, event, client)
       message = "\tDeleting webhook for event '#{event}'... "
-      uri = URI.parse("#{LEVER_WEBHOOK_URL}/#{webhook_id}")
+      uri = LeverController.api_url(client, "#{WEBHOOK_PATH}/#{webhook_id}")
       request = Net::HTTP::Delete.new(uri)
       request['Authorization'] = "Bearer #{LeverController.validate_token(client)}"
 

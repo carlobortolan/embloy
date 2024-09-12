@@ -8,24 +8,37 @@ require 'jwt'
 module Integrations
   # LeverOauthController handles all OAuth-related actions for Lever
   class LeverOauthController < Api::V0::ApiController
-    LEVER_OAUTH_URL = 'https://sandbox-lever.auth0.com/authorize'
-    LEVER_ACCESS_TOKEN_URL = 'https://sandbox-lever.auth0.com/oauth/token'
-    LEVER_REDIRECT_URL = 'https://genius.embloy.com/settings?tab=secrets'
+    OAUTH_URL = 'https://lever.auth0.com/authorize'
+    SANDBOX_OAUTH_URL = 'https://sandbox-lever.auth0.com'
+    OAUTH_PATH = '/authorize'
+    ACCESS_TOKEN_PATH = '/oauth/token'
+    REDIRECT_URL = 'https://genius.embloy.com/settings?tab=secrets'
 
     before_action :must_be_verified!, only: %i[authorize]
     before_action :must_be_subscribed!, only: %i[authorize]
     skip_before_action :require_user_not_blacklisted!, only: %i[callback]
     skip_before_action :set_current_user, only: %i[callback]
 
+    def oauth_url(client, path = '')
+      Rails.logger.debug("Starting Lever OAuth process for #{client.sandboxd? ? 'sandbox' : 'production'} environment")
+      URI((client.sandboxd? ? SANDBOX_OAUTH_URL : OAUTH_URL) + path)
+    end
+
+    def self.oauth_url(client, path = '')
+      Rails.logger.debug("Starting Lever OAuth process for #{client.sandboxd? ? 'sandbox' : 'production'} environment")
+      URI((client.sandboxd? ? SANDBOX_OAUTH_URL : OAUTH_URL) + path)
+    end
+
     # Called via 'localhost:3000/integrations/auth/lever' and redirects to Lever OAuth app (step 1)
     # Reference: https://hire.sandbox.lever.co/developer/documentation#scopes
     def authorize
       client_id = ENV.fetch('LEVER_CLIENT_ID', nil)
       state = Current.user.signed_id(purpose: 'lever_oauth_state', expires_in: 1.hour)
-      audience = 'https://api.sandbox.lever.co/v1/'
-      scope = 'offline_access postings:write:admin uploads:write:admin webhooks:write:admin' # TODO: Add scopes required by webhooks
+      audience = Current.user.sandboxd? ? 'https://api.sandbox.lever.co/v1/' : 'https://api.lever.co/v1/'
+      scope = 'offline_access postings:write:admin uploads:write:admin webhooks:write:admin stages:read:admin archive_reasons:read:admin opportunities:read:admin' # TODO: Add scopes required by webhooks # rubocop:disable Layout/LineLength
 
-      url = "#{LEVER_OAUTH_URL}?client_id=#{client_id}&redirect_uri=#{auth_lever_callback_url}&state=#{state}&response_type=code&scope=#{scope}&prompt=consent&audience=#{audience}"
+      url = "#{oauth_url(Current.user,
+                         OAUTH_PATH)}?client_id=#{client_id}&redirect_uri=#{auth_lever_callback_url}&state=#{state}&response_type=code&scope=#{scope}&prompt=consent&audience=#{audience}"
       render json: { url: }, status: :ok
     end
 
@@ -38,7 +51,7 @@ module Integrations
       user = User.find_signed!(state, purpose: 'lever_oauth_state')
       redirect_to_error('invalid_state') and return unless user
 
-      response = make_http_request(params['code'])
+      response = make_http_request(user, params['code'])
       handle_http_response(response, user)
     end
 
@@ -51,8 +64,8 @@ module Integrations
     end
 
     # Make initial authorization request to Lever API (returns access token and refresh token)
-    def make_http_request(code)
-      url = URI.parse(LEVER_ACCESS_TOKEN_URL)
+    def make_http_request(client, code)
+      url = oauth_url(client, ACCESS_TOKEN_PATH)
       http = Net::HTTP.new(url.host, url.port)
       http.use_ssl = true
       request = Net::HTTP::Post.new(url)
@@ -62,7 +75,7 @@ module Integrations
                                            'client_secret' => ENV.fetch('LEVER_CLIENT_SECRET', nil),
                                            'grant_type' => 'authorization_code',
                                            'code' => code,
-                                           'scope' => 'offline_access postings:write:admin uploads:write:admin webhooks:read:admin webhooks:write:admin stages:read:admin interviews:read:admin offers:read:admin opportunities:read:admin', # rubocop:disable Layout/LineLength
+                                           'scope' => 'offline_access postings:write:admin uploads:write:admin webhooks:read:admin webhooks:write:admin stages:read:admin interviews:read:admin offers:read:admin opportunities:read:admin archive_reasons:read:admin', # rubocop:disable Layout/LineLength
                                            'redirect_uri' => auth_lever_callback_url
                                          })
 
