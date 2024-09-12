@@ -17,7 +17,9 @@ module ApplicationBuilder
     malformed_error('image_url')
   rescue ActiveRecord::RecordNotUnique => e
     unnecessary_error('application', 'You have already applied for this job. Please note that you can only apply once.') unless Current.user.admin?
-    retry if Current.user.admin?
+    existing_application = Application.find_by(job_id: @job.id, user_id: Current.user.id)
+    existing_application&.destroy!
+    retry
   rescue StandardError => e
     render status: 500, json: { errors: e.message }
   end
@@ -30,17 +32,7 @@ module ApplicationBuilder
     tmp[:job_id] = @job.id
     tmp[:user_id] = Current.user.id
     @application = Application.new(tmp)
-
-    begin
-      @application.save!
-    rescue ActiveRecord::RecordNotUnique
-      raise ActiveRecord::RecordNotUnique, 'You have already applied for this job. Please note that you can only apply once.' unless Current.user.admin?
-
-      # If the user is an admin, find and destroy the existing application, then save the new one
-      existing_application = Application.find_by(job_id: @job.id, user_id: Current.user.id)
-      existing_application&.destroy!
-      @application.save!
-    end
+    @application.save!
 
     create_application_answers! if @job.application_options.any?
     Integrations::IntegrationsController.submit_form(@job.job_slug, @application, application_params, @client)
