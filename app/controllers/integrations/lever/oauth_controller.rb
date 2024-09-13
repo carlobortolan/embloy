@@ -9,7 +9,7 @@ module Integrations
   module Lever
     # OauthController handles all OAuth-related actions for Lever
     class OauthController < Api::V0::ApiController
-      OAUTH_URL = 'https://lever.auth0.com'
+      OAUTH_URL = 'https://auth.lever.co'
       SANDBOX_OAUTH_URL = 'https://sandbox-lever.auth0.com'
       OAUTH_PATH = '/authorize'
       ACCESS_TOKEN_PATH = '/oauth/token'
