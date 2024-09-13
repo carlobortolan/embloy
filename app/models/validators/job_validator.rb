@@ -76,7 +76,7 @@ module Validators
 
     def check_subscription_limit_create
       return unless user
-      return if user.sandboxd? || user.admin? || Rails.env.test?
+      return if user.sandboxd? || user.admin?
       return unless user.jobs.where(job_status: %w[listed unlisted], activity_status: 1).count >= max_jobs_allowed
 
       raise CustomExceptions::Subscription::LimitReached
@@ -84,7 +84,7 @@ module Validators
 
     def check_subscription_limit_update
       return unless user
-      return if user.sandboxd? || user.admin? || Rails.env.test?
+      return if user.sandboxd? || user.admin?
       return unless user.jobs.where(job_status: %w[listed unlisted], activity_status: 1).count > max_jobs_allowed
 
       raise CustomExceptions::Subscription::LimitReached
