@@ -9,7 +9,7 @@ module Integrations
   module Lever
     # OauthController handles all OAuth-related actions for Lever
     class OauthController < Api::V0::ApiController
-      OAUTH_URL = 'https://lever.auth0.com/authorize'
+      OAUTH_URL = 'https://lever.auth0.com'
       SANDBOX_OAUTH_URL = 'https://sandbox-lever.auth0.com'
       OAUTH_PATH = '/authorize'
       ACCESS_TOKEN_PATH = '/oauth/token'
@@ -36,7 +36,7 @@ module Integrations
         client_id = ENV.fetch(Current.user.sandboxd? ? 'LEVER_SANDBOX_CLIENT_ID' : 'LEVER_CLIENT_ID', nil)
         state = Current.user.signed_id(purpose: 'lever_oauth_state', expires_in: 1.hour)
         audience = Current.user.sandboxd? ? 'https://api.sandbox.lever.co/v1/' : 'https://api.lever.co/v1/'
-        scope = 'offline_access postings:write:admin uploads:write:admin webhooks:write:admin stages:read:admin archive_reasons:read:admin opportunities:read:admin' # TODO: Add scopes required by webhooks # rubocop:disable Layout/LineLength
+        scope = Current.user.sandboxd? ? 'offline_access postings:write:admin uploads:write:admin webhooks:write:admin stages:read:admin archive_reasons:read:admin opportunities:read:admin' : 'offline_access postings:write:admin uploads:write:admin webhooks:write:admin' # TODO: Add scopes required by webhooks # rubocop:disable Layout/LineLength
 
         url = "#{oauth_url(Current.user,
                            OAUTH_PATH)}?client_id=#{client_id}&redirect_uri=#{auth_lever_callback_url}&state=#{state}&response_type=code&scope=#{scope}&prompt=consent&audience=#{audience}"
@@ -76,7 +76,7 @@ module Integrations
                                              'client_secret' => ENV.fetch(client.sandboxd? ? 'LEVER_SANDBOX_CLIENT_SECRET' : 'LEVER_CLIENT_SECRET', nil),
                                              'grant_type' => 'authorization_code',
                                              'code' => code,
-                                             'scope' => 'offline_access postings:write:admin uploads:write:admin webhooks:read:admin webhooks:write:admin stages:read:admin interviews:read:admin offers:read:admin opportunities:read:admin archive_reasons:read:admin', # rubocop:disable Layout/LineLength
+                                             'scope' => client.sandboxd? ? 'offline_access postings:write:admin uploads:write:admin webhooks:write:admin stages:read:admin archive_reasons:read:admin opportunities:read:admin' : 'offline_access postings:write:admin uploads:write:admin webhooks:write:admin', # rubocop:disable Layout/LineLength
                                              'redirect_uri' => auth_lever_callback_url
                                            })
 
