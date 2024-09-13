@@ -80,6 +80,7 @@ module Integrations
     end
 
     def self.handle_application_response(response)
+      Rails.logger.debug("Response: #{response.inspect}")
       case response
       when Net::HTTPSuccess
         Rails.logger.debug("Application submitted successfully: #{response.body}")

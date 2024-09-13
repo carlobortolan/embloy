@@ -93,6 +93,7 @@ ActiveRecord::Schema[7.0].define(version: 20_240_904_144_926) do
     t.bigint 'user_id', null: false
     t.bigint 'application_option_id', null: false
     t.text 'answer'
+    t.integer 'version', default: 1, null: false
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
     t.datetime 'deleted_at'
@@ -134,6 +135,7 @@ ActiveRecord::Schema[7.0].define(version: 20_240_904_144_926) do
     t.integer 'job_id', null: false
     t.integer 'user_id', null: false
     t.string 'ext_id', limit: 100
+    t.integer 'version', default: 1, null: false
     t.datetime 'updated_at', null: false
     t.datetime 'created_at', null: false
     t.enum 'status', default: '0', null: false, enum_type: 'application_status'

@@ -33,7 +33,7 @@ module Integrations
       # Called via 'localhost:3000/integrations/auth/lever' and redirects to Lever OAuth app (step 1)
       # Reference: https://hire.sandbox.lever.co/developer/documentation#scopes
       def authorize
-        client_id = ENV.fetch('LEVER_CLIENT_ID', nil)
+        client_id = ENV.fetch(Current.user.sandboxd? ? 'LEVER_SANDBOX_CLIENT_ID' : 'LEVER_CLIENT_ID', nil)
         state = Current.user.signed_id(purpose: 'lever_oauth_state', expires_in: 1.hour)
         audience = Current.user.sandboxd? ? 'https://api.sandbox.lever.co/v1/' : 'https://api.lever.co/v1/'
         scope = 'offline_access postings:write:admin uploads:write:admin webhooks:write:admin stages:read:admin archive_reasons:read:admin opportunities:read:admin' # TODO: Add scopes required by webhooks # rubocop:disable Layout/LineLength
@@ -72,8 +72,8 @@ module Integrations
         request = Net::HTTP::Post.new(url)
         request.content_type = 'application/x-www-form-urlencoded'
         request.body = URI.encode_www_form({
-                                             'client_id' => ENV.fetch('LEVER_CLIENT_ID', nil),
-                                             'client_secret' => ENV.fetch('LEVER_CLIENT_SECRET', nil),
+                                             'client_id' => ENV.fetch(client.sandboxd? ? 'LEVER_SANDBOX_CLIENT_ID' : 'LEVER_CLIENT_ID', nil),
+                                             'client_secret' => ENV.fetch(client.sandboxd? ? 'LEVER_SANDBOX_CLIENT_SECRET' : 'LEVER_CLIENT_SECRET', nil),
                                              'grant_type' => 'authorization_code',
                                              'code' => code,
                                              'scope' => 'offline_access postings:write:admin uploads:write:admin webhooks:read:admin webhooks:write:admin stages:read:admin interviews:read:admin offers:read:admin opportunities:read:admin archive_reasons:read:admin', # rubocop:disable Layout/LineLength

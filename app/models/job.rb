@@ -74,6 +74,18 @@ class Job < ApplicationRecord
     self.job_type_value = job_types[job_type]
   end
 
+  def from_lever?
+    job_slug&.start_with?('lever__') || referrer_url&.include?('jobs.lever.co') || referrer_url&.include?('jobs.sandbox.lever.co')
+  end
+
+  def from_ashby?
+    job_slug&.start_with?('ashby__') || referrer_url&.include?('app.ashbyhq.com')
+  end
+
+  def duplicate_application_allowed?
+    from_lever? || from_ashby? || Current.user.sandboxd? || Current.user.admin?
+  end
+
   private
 
   def calculate_time_left(diff_seconds)

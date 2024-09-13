@@ -34,6 +34,8 @@ module Integrations
         request['authorization'] = "Bearer #{validate_token(client)}"
         request.body = build_request_body(application)
 
+        Rails.logger.debug("Sending application to URL #{url}: #{request.body}")
+
         response = http.request(request)
 
         # Set external ID to save the application ID for webhook events
@@ -90,9 +92,9 @@ module Integrations
         URI((client.sandboxd? ? SANDBOX_API_URL : API_URL) + path)
       end
 
-      # Builds the request body from the application answers and additional data
+      # Builds the request body for the newest application version from the application answers and additional data
       def self.build_request_body(application)
-        body = application.application_answers.map do |answer|
+        body = application.application_answers.select { |answer| answer.version == application.version }.map do |answer|
           # Check if answer.answer is a string that looks like an array
           answer_value = if answer.answer.is_a?(String) && answer.answer.start_with?('[') && answer.answer.end_with?(']')
                            # Parse the string as JSON to transform it into an array
@@ -113,7 +115,7 @@ module Integrations
           'diversitySurvey' => { 'surveyId' => '', 'candidateSelectedLocation' => '', 'responses' => [] },
           'personalInformation' => [],
           'urls' => [],
-          'source' => 'embloy'
+          'source' => 'Embloy'
         }
 
         Parser.parse(body, output)
@@ -202,27 +204,29 @@ module Integrations
         access_token = fetch_token(client, 'lever', 'access_token')
         return access_token unless access_token.nil?
 
-        response_body = JSON.parse(lever_access_token(fetch_token!(client, 'lever', 'refresh_token')))
+        response_body = JSON.parse(lever_access_token(fetch_token!(client, 'lever', 'refresh_token'), client))
         IntegrationsController.save_token(client, 'OAuth Access Token', 'lever', 'access_token', response_body['access_token'], Time.now.utc + response_body['expires_in'].to_i, Time.now.utc)
         IntegrationsController.save_token(client, 'OAuth Refresh Token', 'lever', 'refresh_token', response_body['refresh_token'], Time.now.utc + 1.year, Time.now.utc)
         response_body['access_token']
       end
 
       # Retrieve a new access token using the refresh token (step 5)
-      def self.lever_access_token(refresh_token)
+      def self.lever_access_token(refresh_token, client)
+        Rails.logger.debug("Refreshing Lever access token for client: #{client.id}")
         uri = OauthController.oauth_url(client, OauthController::ACCESS_TOKEN_PATH)
         http = Net::HTTP.new(uri.host, uri.port)
         http.use_ssl = true
         request = Net::HTTP::Post.new(uri)
         request.content_type = 'application/x-www-form-urlencoded'
         request.body = URI.encode_www_form({
-                                             'client_id' => ENV.fetch('LEVER_CLIENT_ID', nil),
-                                             'client_secret' => ENV.fetch('LEVER_CLIENT_SECRET', nil),
+                                             'client_id' => ENV.fetch(client.sandboxd? ? 'LEVER_SANDBOX_CLIENT_ID' : 'LEVER_CLIENT_ID', nil),
+                                             'client_secret' => ENV.fetch(client.sandboxd? ? 'LEVER_SANDBOX_CLIENT_SECRET' : 'LEVER_CLIENT_SECRET', nil),
                                              'grant_type' => 'refresh_token',
                                              'refresh_token' => refresh_token
                                            })
         response = http.request(request)
 
+        Rails.logger.debug("Received response: #{response.body}")
         case response
         when Net::HTTPSuccess
           response.body

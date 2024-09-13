@@ -7,9 +7,6 @@ module ApplicationBuilder
   # The apply_for_job method is responsible for creating a new application for a job.
   # Requires @job and application_params
   def apply_for_job
-    retry_count = 0
-    max_retries = 1
-
     ActiveRecord::Base.transaction do
       create_application!
     end
@@ -18,15 +15,8 @@ module ApplicationBuilder
     render status: 400, json: { errors: e.record.errors.details }
   rescue ActiveSupport::MessageVerifier::InvalidSignature
     malformed_error('image_url')
-  rescue ActiveRecord::RecordNotUnique => e
-    if Current.user.admin? && retry_count < max_retries
-      retry_count += 1
-      existing_application = Application.find_by(job_id: @job.id, user_id: Current.user.id)
-      existing_application&.destroy!
-      retry
-    else
-      unnecessary_error('application', 'You have already applied for this job. Please note that you can only apply once.')
-    end
+  rescue ActiveRecord::RecordNotUnique
+    unnecessary_error('application', 'You have already applied for this job. Please note that you can only apply once.')
   rescue StandardError => e
     render status: 500, json: { errors: e.message }
   end
@@ -38,15 +28,25 @@ module ApplicationBuilder
     tmp = application_params.except(:id, :application_answers)
     tmp[:job_id] = @job.id
     tmp[:user_id] = Current.user.id
-    @application = Application.new(tmp)
+    tmp[:version] = 1
+
+    @application = if @job.duplicate_application_allowed?
+                     existing_application = Application.find_by(job_id: @job.id, user_id: Current.user.id)
+                     Rails.logger.debug "Found existing application: #{existing_application.inspect}"
+                     tmp[:version] = existing_application.version + 1 if existing_application
+                     existing_application || Application.new(tmp)
+                   else
+                     Application.new(tmp)
+                   end
+
+    @application.assign_attributes(tmp)
     @application.save!
 
     create_application_answers! if @job.application_options.any?
     Integrations::IntegrationsController.submit_form(@job.job_slug, @application, application_params, @client)
   end
 
-  # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
-  def create_application_answers!
+  def create_application_answers! # rubocop:disable Metrics/AbcSize,Metrics/PerceivedComplexity,Metrics/CyclomaticComplexity
     @job.application_options.each do |option|
       answer_params = find_answer_params(option.id)
 
@@ -86,8 +86,15 @@ module ApplicationBuilder
                      answer_params.last[:answer]
                    end
 
-    application_answer = ApplicationAnswer.create!(job_id: @job.id.to_i, user_id: Current.user.id.to_i, application_option: option, answer: answer_array)
+    application_answer = ApplicationAnswer.create!(job_id: @job.id.to_i, user_id: Current.user.id.to_i, application_option: option, answer: answer_array, version: @application.version)
+    Rails.logger.debug "application_answer: #{application_answer.inspect}"
     application_answer.attachment.attach(answer_params.last[:file]) if answer_params.last[:file]
   end
-  # rubocop:enable Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
 end
+
+# version = 1
+#
+# version = ApplicationAnswer.where(job_id: 47, user_id: 7, application_option_id: 541).maximum(:version)
+# version = version.nil? ? 1 : version + 1
+#
+# application_answer = ApplicationAnswer.create!(job_id: 47, user_id: 7, application_option_id: 541, answer: "hello world", version:)

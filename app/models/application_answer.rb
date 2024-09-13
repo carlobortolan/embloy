@@ -15,6 +15,7 @@ class ApplicationAnswer < ApplicationRecord
   validates :answer, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
                      length: { minimum: 0, maximum: 1000, error: 'ERR_LENGTH', description: 'Answer must be no more than 1000 characters' }, if: -> { application_option.question_type != 'file' }
   validate :validate_answer
+  validates :version, numericality: { only_integer: true, greater_than_or_equal_to: 1 }
 
   VALIDATORS = {
     'short_text' => :validate_text_or_link_answer,
