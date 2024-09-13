@@ -30,17 +30,14 @@ module ApplicationBuilder
     tmp[:user_id] = Current.user.id
     tmp[:version] = 1
 
-    @application = if @job.duplicate_application_allowed?
-                     existing_application = Application.find_by(job_id: @job.id, user_id: Current.user.id)
-                     Rails.logger.debug "Found existing application: #{existing_application.inspect}"
-                     tmp[:version] = existing_application.version + 1 if existing_application
-                     existing_application || Application.new(tmp)
-                   else
-                     Application.new(tmp)
-                   end
-
-    @application.assign_attributes(tmp)
-    @application.save!
+    if @job.duplicate_application_allowed? && (@application = Application.find_by(job_id: @job.id, user_id: Current.user.id)) && @application.present?
+      Rails.logger.debug "Found existing application: #{@application.inspect}"
+      @application.update!(version: @application.version + 1)
+    else
+      Rails.logger.debug 'Creating new application'
+      @application = Application.new(tmp)
+      @application.save!
+    end
 
     create_application_answers! if @job.application_options.any?
     Integrations::IntegrationsController.submit_form(@job.job_slug, @application, application_params, @client)
