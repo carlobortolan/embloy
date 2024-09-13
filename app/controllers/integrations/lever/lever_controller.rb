@@ -69,7 +69,7 @@ module Integrations
               data = JSON.parse(response.body)
               uri = data['data']['uri'] # Update the application_params with the file URI
 
-              answer = application.application_answers.find { |a| a.application_option_id == param[:application_option_id].to_i }
+              answer = application.application_answers.find { |a| a.application_option_id == param[:application_option_id].to_i && a.version == application.version }
               answer.update!(answer: uri)
             else
               Rails.logger.error("Error uploading file: #{response.body}")
