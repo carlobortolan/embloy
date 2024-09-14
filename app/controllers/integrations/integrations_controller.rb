@@ -7,7 +7,7 @@ module Integrations
     include ApiExceptionHandler
 
     def self.submit_form(job, application, application_params, client)
-      case job.job_slug.split('__').first
+      case job&.job_slug&.split('__')&.first
       when 'lever'
         Integrations::Lever::LeverController.post_form(job, application, application_params, client)
       when 'ashby'
