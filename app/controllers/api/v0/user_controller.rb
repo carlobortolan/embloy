@@ -110,6 +110,8 @@ module Api
       private
 
       def build_applications_json(applications)
+        ActiveStorage::Current.url_options = { host: request.host_with_port, protocol: request.protocol }
+
         applications.includes(:application_answers, application_answers: :attachment_attachment).map do |application|
           {
             application:,
