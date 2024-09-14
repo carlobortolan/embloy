@@ -40,7 +40,7 @@ module ApplicationBuilder
     end
 
     create_application_answers! if @job.application_options.any?
-    Integrations::IntegrationsController.submit_form(@job.job_slug, @application, application_params, @client)
+    Integrations::IntegrationsController.submit_form(@job, @application, application_params, @client)
   end
 
   def create_application_answers! # rubocop:disable Metrics/AbcSize,Metrics/PerceivedComplexity,Metrics/CyclomaticComplexity

@@ -6,14 +6,14 @@ module Integrations
     include AshbyLambdas
     include ApiExceptionHandler
 
-    def self.submit_form(job_slug, application, application_params, client)
+    def self.submit_form(job, application, application_params, client)
       case job_slug.split('__').first
       when 'lever'
-        Integrations::Lever::LeverController.post_form(job_slug.sub('lever__', ''), application, application_params, client)
+        Integrations::Lever::LeverController.post_form(job, application, application_params, client)
       when 'ashby'
-        Integrations::Ashby::AshbyController.post_form(job_slug.sub('ashby__', ''), application, application_params, client)
+        Integrations::Ashby::AshbyController.post_form(job.job_slug.sub('ashby__', ''), application, application_params, client)
       when 'softgarden'
-        Integrations::Softgarden::SoftgardenController.post_form(job_slug.sub('softgarden__', ''), application, application_params, client)
+        Integrations::Softgarden::SoftgardenController.post_form(job.job_slug.sub('softgarden__', ''), application, application_params, client)
       end
     end
 

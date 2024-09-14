@@ -21,18 +21,18 @@ module Integrations
 
       # Posts application form to Lever API
       # Reference: https://hire.sandbox.lever.co/developer/documentation#apply-to-a-posting
-      def self.post_form(posting_id, application, application_params, client)
+      def self.post_form(job, application, application_params, client)
         handle_lever_file_uploads(application, application_params, client)
 
         # Build and send request
-        url = api_url(client, POST_FORM_PATH.gsub('postingId', posting_id))
+        url = api_url(client, POST_FORM_PATH.gsub('postingId', job.job_slug.sub('lever__', '')))
         http = Net::HTTP.new(url.host, url.port)
         http.use_ssl = true
         request = Net::HTTP::Post.new(url)
         request['accept'] = 'application/json'
         request['content-type'] = 'application/json'
         request['authorization'] = "Bearer #{validate_token(client)}"
-        request.body = build_request_body(application)
+        request.body = build_request_body(application, job)
 
         Rails.logger.debug("Sending application to URL #{url}: #{request.body}")
 
@@ -93,7 +93,7 @@ module Integrations
       end
 
       # Builds the request body for the newest application version from the application answers and additional data
-      def self.build_request_body(application)
+      def self.build_request_body(application, _job)
         body = application.application_answers.select { |answer| answer.version == application.version }.map do |answer|
           # Check if answer.answer is a string that looks like an array
           answer_value = if answer.answer.is_a?(String) && answer.answer.start_with?('[') && answer.answer.end_with?(']')
@@ -115,10 +115,19 @@ module Integrations
           'diversitySurvey' => { 'surveyId' => '', 'candidateSelectedLocation' => '', 'responses' => [] },
           'personalInformation' => [],
           'urls' => [],
-          'source' => 'Embloy'
+          'source' => extract_source_from_url(@job.referrer_url)
+          # , 'origin' => 'applied'
         }
 
         Parser.parse(body, output)
+      end
+
+      # Extract the source from the referrer URL
+      def self.extract_source_from_url(url)
+        query_params = CGI.parse(URI.parse(url).query || '')
+        query_params['lever-source[]'].first || 'Embloy'
+      rescue URI::InvalidURIError
+        'Embloy'
       end
 
       # NOTE: FETCH_POSTING_PATH only returns the job; for the job options, use GET_QUESTIONS_PATH (see get_questions)
