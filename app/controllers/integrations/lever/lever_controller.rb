@@ -34,10 +34,9 @@ module Integrations
         request['authorization'] = "Bearer #{validate_token(client)}"
         request.body = build_request_body(application, session)
 
-        Rails.logger.debug("Sending application to URL #{url}: #{request.body}")
-
         response = http.request(request)
 
+        Rails.logger.debug("Sending application to URL #{url}: #{request.body}, with response: #{response.body}")
         # Set external ID to save the application ID for webhook events
         if response.is_a?(Net::HTTPSuccess)
           response_data = JSON.parse(response.body)
@@ -119,6 +118,8 @@ module Integrations
           'origin' => extract_origin_from_url(session['origin'])
         }
 
+        Rails.logger.debug("source: #{output['source']}, origin: #{output['origin']}")
+
         Parser.parse(body, output)
       end
 
@@ -126,14 +127,14 @@ module Integrations
       def self.extract_source_from_url(url)
         query_params = CGI.parse(URI.parse(url).query || '')
         source = query_params['lever-source[]'].first
-        source ? [source, 'Embloy'] : ['Embloy']
+        source ? "Embloy, #{source}" : 'Embloy'
       rescue URI::InvalidURIError
-        ['Embloy']
+        'Embloy'
       end
 
       def self.extract_origin_from_url(url)
         query_params = CGI.parse(URI.parse(url).query || '')
-        query_params['lever-origin'] || 'applied'
+        query_params['lever-origin'].first || 'applied'
       rescue URI::InvalidURIError
         'applied'
       end
