@@ -7,6 +7,7 @@ module ApplicationBuilder
   # The apply_for_job method is responsible for creating a new application for a job.
   # Requires @job and application_params
   def apply_for_job
+    Rails.logger.debug "Session: #{@session}"
     ActiveRecord::Base.transaction do
       create_application!
     end
@@ -40,7 +41,7 @@ module ApplicationBuilder
     end
 
     create_application_answers! if @job.application_options.any?
-    Integrations::IntegrationsController.submit_form(@job, @application, application_params, @client)
+    Integrations::IntegrationsController.submit_form(@job, @application, application_params, @client, @session)
   end
 
   def create_application_answers! # rubocop:disable Metrics/AbcSize,Metrics/PerceivedComplexity,Metrics/CyclomaticComplexity

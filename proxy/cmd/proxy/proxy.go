@@ -40,7 +40,7 @@ func handleRedirect(c *gin.Context) {
 
 	origin := c.Request.Header.Get("Origin")
 	referrer := c.Request.Header.Get("Referer")
-	path := c.Param("path")
+	path := c.Param("path") + "?" + c.Request.URL.RawQuery
 
 	supportedModes := []string{"ashby", "lever", "job", "default"}
 	if contains(supportedModes, mode) {
@@ -151,7 +151,7 @@ func extractParams(c *gin.Context) (string, string, string, string) {
 	// If no mode is provided, try to infer it from the referrer URL
 	if mode == "" || mode == "null" || mode == "job" || mode == "default" {
 		switch refURL.Host {
-		case "jobs.sandbox.lever.co", "hire.sandbox.lever.co":
+		case "jobs.sandbox.lever.co", "hire.sandbox.lever.co", "jobs.lever.co", "hire.lever.co":
 			mode = "lever"
 		case "app.ashbyhq.com":
 			mode = "ashby"

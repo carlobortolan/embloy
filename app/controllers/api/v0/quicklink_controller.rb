@@ -25,7 +25,9 @@ module Api
           return not_found_error('client')
         end
 
-        if update_or_create_job(validate_session)
+        validate_session
+
+        if update_or_create_job
           apply_for_job
         else
           render status: 400, json: @job.errors.details
@@ -41,9 +43,10 @@ module Api
           return not_found_error('client')
         end
 
-        session = validate_session
-        if update_or_create_job(session)
-          render status: 200, json: { session:, job: Job.json_for(@job) }
+        validate_session
+
+        if update_or_create_job
+          render status: 200, json: { session: @session, job: Job.json_for(@job) }
         else
           render status: 400, json: @job.errors.details
         end
@@ -88,34 +91,34 @@ module Api
 
       private
 
+      # Responsible for verifying request token and setting @session when handling application request and submission
       def validate_session
         raise CustomExceptions::Subscription::ExpiredOrMissing unless @client&.active_subscription?
 
-        session = @decoded_request_token['session']
-        if session.nil? || session['job_slug'].nil? || session['user_id'].nil? || session['subscription_type'].nil? || session['mode'].nil?
+        @session = @decoded_request_token['session']
+        if @session.nil? || @session['job_slug'].nil? || @session['user_id'].nil? || @session['subscription_type'].nil? || @session['mode'].nil?
           raise CustomExceptions::InvalidInput::Quicklink::Request::Malformed
         end
 
-        session['referrer_url'] = request.referrer
-        session
+        @session['referrer_url'] = request.referrer
       end
 
       # The update_or_create_job method is responsible for updating an existing job or creating a new one.
       # It takes a `job_slug` as a parameter, which is used to find or create the job.
       # If the job does not exist, it is created with the `job_slug` and `client.id`.
       # The job is then added to the client's jobs.
-      def update_or_create_job(session)
+      def update_or_create_job
         # Retrieve existing job if it exists
         @client.jobs ||= []
-        @job = @client.jobs.find_by(job_slug: session['job_slug'])
+        @job = @client.jobs.find_by(job_slug: @session['job_slug'])
 
         # Return job from external API if integration mode enabled
         # TODO: Uncomment in case of ATS that need sync on every application
-        # @job = Integrations::IntegrationsController.get_posting(session['mode'], session['job_slug'], @client, @job) if session['mode'] != 'job'
+        # @job = Integrations::IntegrationsController.get_posting(@session['mode'], @session['job_slug'], @client, @job) if @session['mode'] != 'job'
         return handle_existing_job if @job
 
         # Create new job if it does not exist
-        create_new_job(session)
+        create_new_job
       end
 
       def handle_existing_job
@@ -127,10 +130,10 @@ module Api
         end
       end
 
-      def create_new_job(session)
+      def create_new_job
         allowed_params = %w[user_id job_type job_slug referrer_url duration code_lang title position description key_skills salary currency start_slot longitude latitude country_code postal_code
                             city address job_notifications]
-        @job = Job.new(session.slice(*allowed_params).merge(job_status: 'unlisted'))
+        @job = Job.new(@session.slice(*allowed_params).merge(job_status: 'unlisted'))
 
         if @job.save
           @job.user = @client
@@ -167,6 +170,7 @@ module Api
         session['user_id'] = user_id
         session['subscription_type'] = SubscriptionHelper.subscription_type(check_subscription(user))
         session['job_slug'] = "#{proxy_params[:mode]}__#{proxy_params[:job_slug]}"
+        session['origin'] = proxy_params[:origin]
         session
       end
 
