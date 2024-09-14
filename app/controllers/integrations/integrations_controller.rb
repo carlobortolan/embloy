@@ -17,6 +17,7 @@ module Integrations
       end
     end
 
+    # Deprecated method used for fetching job postings on every application - now handled by the sync_postings method
     def self.get_posting(mode, job_slug, client, job)
       case mode
       when 'lever'

@@ -21,7 +21,7 @@ module Integrations
         http = Net::HTTP.new(url.host, url.port)
         http.use_ssl = true
         api_key = fetch_token(client, 'ashby', 'api_key')
-        field_submissions = application.application_answers.map do |answer|
+        field_submissions = application.application_answers.select { |answer| answer.version == application.version }.map do |answer|
           if answer.application_option.question_type == 'file'
             file_key = "file_#{answer.application_option_id}"
             { path: answer.application_option.ext_id.split('__').last, value: file_key }
@@ -35,7 +35,7 @@ module Integrations
         form_data = { 'jobPostingId' => posting_id, 'applicationForm' => { fieldSubmissions: field_submissions }.to_json }
 
         # Add files to form_data
-        application.application_answers.each do |answer|
+        application.application_answers.select { |answer| answer.version == application.version }.map do |answer|
           next unless answer.application_option.question_type == 'file'
 
           application_answer_params = application_params[:application_answers].permit!.to_h.find do |_, a|
@@ -50,16 +50,17 @@ module Integrations
         end
 
         request = Net::HTTP::Post::Multipart.new(url.path, form_data)
-
         request['Accept'] = 'application/json'
         request['Authorization'] = "Basic #{Base64.strict_encode64("#{api_key}:")}"
+        Rails.logger.debug("Posting Ashby application: #{request.body}")
 
         response = http.request(request)
+        Rails.logger.debug("Ashby application submitted: #{response.code}:\n#{response.body}")
 
         body = JSON.parse(response.body)
-        response = Net::HTTPBadRequest.new('1.1', '400', 'Bad Request', body['errors']) if response == Net::HTTPSuccess && body['success'] == false
-
+        response = Net::HTTPBadRequest.new('400', 'Bad Request', body['errors']) if body['success'] == false
         application.update!(ext_id: "ashby__#{body['results']['submittedFormInstance']['id']}") if response.is_a?(Net::HTTPSuccess) && body['success'] == true
+        Rails.logger.debug("Ashby application response: #{response} - #{body['success'] == false} with ext_id: #{application.ext_id}")
 
         handle_application_response(response)
       end
@@ -67,6 +68,9 @@ module Integrations
       # Reference: https://developers.ashbyhq.com/reference/jobpostinginfo
       def self.fetch_posting(posting_id, client, job)
         response = make_request(ASHBY_FETCH_POSTING_URL, client, 'post', { jobPostingId: posting_id })
+
+        Rails.logger.debug("Ashby job fetched: #{posting_id} - #{response.code}:\n#{response.body}")
+
         case response
         when Net::HTTPSuccess
           body = JSON.parse(response.body)
@@ -95,15 +99,11 @@ module Integrations
           body = JSON.parse(response.body)
           raise CustomExceptions::InvalidInput::Quicklink::Request::Malformed unless body['success'] == true
 
+          Rails.logger.debug("Ashby jobs fetched: #{body['results'].length}")
+
           data = JSON.parse(response.body)['results']
           data.each do |job|
-            config = JSON.parse(File.read('app/controllers/integrations/ashby/ashby_config.json'))
-            config['city'].gsub!('ASHBY_SECRET', fetch_token(client, 'ashby', 'api_key').to_s)
-            parsed_job = Mawsitsit.parse({ results: job }, config, true)
-            parsed_job['job_slug'] = "ashby__#{parsed_job['job_slug']}"
-            parsed_job['user_id'] = client.id.to_i
-            parsed_job['application_options_attributes'] = []
-            handle_internal_job(client, parsed_job)
+            fetch_posting(job['id'], client, job)
           end
         when Net::HTTPBadRequest
           raise CustomExceptions::InvalidInput::Quicklink::Request::Malformed and return
