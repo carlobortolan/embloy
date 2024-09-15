@@ -2,14 +2,14 @@ source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '3.2.2'
-gem 'mawsitsit', '~> 0.1.17'
+gem 'mawsitsit', '~> 0.1.18'
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem 'rails', '~> 7.0.4', '>= 7.0.4.1'
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem 'sprockets-rails'
 # gem "tzinfo-data"
-gem 'rack-cors'
+gem 'rack-cors', '~> 2.0', '>= 2.0.2'
 # Use mysql as the database for Active Record
 # gem "mysql2", "~> 0.5.4"
 
