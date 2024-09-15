@@ -80,6 +80,7 @@ func handleAutoRequest(c *gin.Context) {
 	}
 
 	if errorDescription != "" {
+		log.Error(errorDescription)
 		c.Redirect(http.StatusFound, cfg.MainInstance+"?eType=auto&id="+uID+"&url="+url.QueryEscape(referrer)+"&mode="+mode+"&error=invalid_request&error_description="+url.QueryEscape(errorDescription))
 		return
 	}
@@ -108,11 +109,12 @@ func handleAutoRequest(c *gin.Context) {
 		"mode":    mode,
 		"uID":     uID,
 		"proxy":   proxy,
-	}).Info("Requesting Embloy URL")
+	}).Debug("Requesting Embloy URL")
 
 	response, err := client.MakeRequest()
 	if err != nil {
 		errorDescription := "An error occurred while processing your request. This may be due to the job being unavailable or a misconfiguration in the application form by the job owner. If the problem persists, please contact the job owner directly or try again later."
+		log.Error("Error processing request: ", err)
 		c.Redirect(http.StatusFound, cfg.MainInstance+"?eType=auto&id="+uID+"&url="+url.QueryEscape(referrer)+"&mode="+mode+"&error=internal_error&error_description="+url.QueryEscape(errorDescription))
 		return
 	}
@@ -131,11 +133,11 @@ func extractParams(c *gin.Context) (string, string, string, string) {
 	if referrer == "" {
 		referrer = c.Request.Referer()
 		if referrer == "" {
-			log.Println("No Referrer URL provided")
+			log.Error("No Referrer URL provided")
 			return "", "", "", ""
 		}
 	}
-	log.Println("Referrer URL:", referrer)
+	log.Debug("Referrer URL: ", referrer)
 
 	// Ensure the referrer URL includes a scheme
 	if !strings.HasPrefix(referrer, "http://") && !strings.HasPrefix(referrer, "https://") {
@@ -144,7 +146,7 @@ func extractParams(c *gin.Context) (string, string, string, string) {
 
 	refURL, err := url.Parse(referrer)
 	if err != nil {
-		log.Println("Error parsing referrer URL:", err)
+		log.Error("Error parsing referrer URL:", err)
 		return "", "", "", ""
 	}
 
@@ -153,12 +155,13 @@ func extractParams(c *gin.Context) (string, string, string, string) {
 		switch refURL.Host {
 		case "jobs.sandbox.lever.co", "hire.sandbox.lever.co", "jobs.lever.co", "hire.lever.co":
 			mode = "lever"
-		case "app.ashbyhq.com":
+		case "app.ashbyhq.com", "jobs.ashbyhq.com":
 			mode = "ashby"
 		default:
 			mode = "job"
 		}
 	}
+	log.Debug("Mode: ", mode)
 
 	var jobSlug string
 
@@ -175,23 +178,27 @@ func extractParams(c *gin.Context) (string, string, string, string) {
 			return "", "", "", ""
 		}
 	}
+	log.Debug("eType: ", eType)
 
 	// Extract job slug based on the mode
 	switch mode {
 	case "lever":
 		pathSegments := strings.Split(refURL.Path, "/")
+		log.Debug("Path segments: ", pathSegments)
 		if len(pathSegments) < 3 {
 			return "", "", "", ""
 		}
 		jobSlug = pathSegments[len(pathSegments)-1]
 	case "ashby":
 		pathSegments := strings.Split(refURL.Path, "/")
-		if len(pathSegments) < 5 {
+		log.Debug("Path segments: ", pathSegments)
+		if len(pathSegments) < 2 {
 			return "", "", "", ""
 		}
-		jobSlug = pathSegments[4]
+		jobSlug = pathSegments[len(pathSegments)-1]
 	default:
 		pathSegments := strings.Split(refURL.Path, "/")
+		log.Debug("Path segments: ", pathSegments)
 		if len(pathSegments) < 2 {
 			return "", "", "", ""
 		}

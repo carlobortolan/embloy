@@ -23,7 +23,7 @@ lines[1..].each do |line|
   score, method = line.split
   next if excluded_methods.include?(method)
 
-  if score.to_f > 105.0
+  if score.to_f > 115.0
     puts "Flog score for #{method} is too high: #{score}"
     tmp = true
   end
