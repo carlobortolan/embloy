@@ -59,5 +59,9 @@ RSpec.describe 'JobsController', type: :routing do
     it 'routes to #reject' do
       expect(patch: '/api/v0/jobs/1/applications/1/reject').to route_to('api/v0/applications#reject', format: 'json', id: '1', application_id: '1')
     end
+
+    it 'routes to #synchronize' do
+      expect(post: '/api/v0/jobs/sync/lever').to route_to('api/v0/jobs#synchronize', format: 'json', source: 'lever')
+    end
   end
 end

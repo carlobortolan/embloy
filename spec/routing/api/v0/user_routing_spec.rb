@@ -40,6 +40,10 @@ RSpec.describe 'UserController', type: :routing do
       expect(post: '/api/v0/user/image').to route_to('api/v0/user#upload_image', format: 'json')
     end
 
+    it 'routes to #events' do
+      expect(get: '/api/v0/user/events').to route_to('api/v0/user#events', format: 'json')
+    end
+
     it 'routes to #preferences' do
       expect(get: '/api/v0/user/preferences').to route_to('api/v0/user#preferences', format: 'json')
     end
