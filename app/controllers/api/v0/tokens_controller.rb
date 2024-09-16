@@ -48,7 +48,7 @@ module Api
 
       def determine_expiration(token_type, issuer)
         expiration_times = {
-          'embloy' => { 'refresh_token' => 2.weeks, 'access_token' => 2.weeks },
+          'embloy' => { 'refresh_token' => 2.weeks, 'access_token' => 20.minutes, 'request_token' => 30.minutes, 'client_token' => 3.months },
           'lever' => { 'refresh_token' => 1.hour, 'access_token' => 1.year },
           'ashby' => { 'api_key' => 1.year }
         }

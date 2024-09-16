@@ -1,87 +1,96 @@
 # frozen_string_literal: true
 
-# Reference: https://developers.ashbyhq.com/docs/setting-up-webhooks
 module Integrations
   module Ashby
-    # WebhooksController handles all webhook-related actions for Ashby
+    # WebhooksController is responsible for handling Ashby webhooks
     class WebhooksController < IntegrationsController
       ASHBY_WEBHOOK_URL = 'https://api.ashbyhq.com/webhook'
 
-      # def self.refresh_webhooks(client)
-      #   response = Integrations::Ashby::AshbyController.make_request("#{ASHBY_WEBHOOK_URL}.get", client)
-      #   Rails.logger.debug("Response from Ashby API: #{response.body}")
-      #   case response
-      #   when Net::HTTPSuccess
-      #     if JSON.parse(response.body)['success'] == true
-      #       JSON.parse(response.body)['results']
-      #     else
-      #       Rails.logger.error("Failed to fetch webhooks: #{response.body}")
-      #       []
-      #     end
-      #     manage_webhooks([], client)
-      #   when Net::HTTPBadRequest
-      #     raise CustomExceptions::InvalidInput::Quicklink::Request::Malformed
-      #   when Net::HTTPUnauthorized
-      #     raise CustomExceptions::InvalidInput::Quicklink::ApiKey::Unauthorized
-      #   when Net::HTTPForbidden
-      #     raise CustomExceptions::InvalidInput::Quicklink::ApiKey::Forbidden
-      #   when Net::HTTPNotFound
-      #     raise CustomExceptions::InvalidInput::Quicklink::Request::NotFound
-      #   end
-      # end
-
       def self.refresh_webhooks(client) # rubocop:disable Metrics/AbcSize
-        existing_webhooks = client.webhooks.where(source: 'ashby') || []
-        existing_webhook_events = existing_webhooks.map(&:event)
+        existing_webhooks = client.webhooks.where(source: 'ashby').to_a || []
 
         message = "Found #{existing_webhooks.length} existing webhooks...\n"
 
-        # Delete webhooks that are not in the desired list
-        existing_webhooks.each do |webhook|
-          message += delete_webhook(webhook.ext_id.split('__').last, client) unless ASHBY_WEBHOOKS.any? do |dw|
-            dw[:webhookType] == webhook.event && "#{dw[:requestUrl]}/#{SimpleCrypt.encrypt(client.id.to_i)}" == webhook.url
+        # Prepare webhooks for deletion (those that are not in the desired list)
+        webhooks_to_delete = existing_webhooks
+
+        # Call Ashby API to delete webhooks remotely
+        if webhooks_to_delete.any?
+          webhooks_to_delete.each do |webhook|
+            message += delete_webhook(webhook.ext_id.split('__').last, client) # Remote API delete
           end
+
+          # Batch delete webhooks locally
+          client.webhooks.where(ext_id: webhooks_to_delete.map(&:ext_id)).delete_all
+          message += "Deleted #{webhooks_to_delete.size} webhooks successfully 🚀\n"
         end
 
-        # Create or update webhooks
-        ASHBY_WEBHOOKS.each do |desired_webhook|
-          desired_webhook[:requestUrl] += "/#{SimpleCrypt.encrypt(client.id.to_i)}"
-          if existing_webhook_events.include?(desired_webhook[:webhookType])
-            message += update_webhook(desired_webhook, client)
-          else
-            message += "Missing webhook for event '#{desired_webhook[:webhookType]}':\n"
-            message += create_webhook(desired_webhook, client)
-          end
+        # Prepare webhooks for upsert (create or update)
+        webhooks_to_upsert = ASHBY_WEBHOOKS.map do |desired_webhook|
+          webhook_copy = desired_webhook.dup
+          webhook_copy[:requestUrl] += "/#{SimpleCrypt.encrypt(client.id.to_i)}"
+
+          {
+            ext_id: nil, # Placeholder for ext_id to be filled after API response
+            url: webhook_copy[:requestUrl],
+            event: webhook_copy[:webhookType],
+            source: 'ashby',
+            signatureToken: desired_webhook[:secretToken],
+            created_at: Time.now,
+            updated_at: Time.now
+          }
+        end
+
+        # Call Ashby API to create/update webhooks remotely and collect ext_ids
+        webhooks_to_upsert.each do |webhook_data|
+          response_message, ext_id = create_webhook(webhook_data, client) # Remote API call to create webhooks
+          webhook_data[:ext_id] = ext_id if ext_id
+          message += response_message
+        end
+
+        # Batch upsert webhooks locally (insert or update)
+        if webhooks_to_upsert.any?
+          client.webhooks.upsert_all(webhooks_to_upsert, unique_by: [:ext_id])
+          message += "Upserted #{webhooks_to_upsert.size} webhooks successfully 🚀\n"
         end
 
         message
       end
 
       # Reference: https://developers.ashbyhq.com/reference/webhookcreate
-      def self.create_webhook(webhook, client)
-        message = "\tCreating webhook for event '#{webhook[:webhookType]}..."
-        response = AshbyController.make_request("#{ASHBY_WEBHOOK_URL}.create", client, 'post', webhook)
-        data = JSON.parse(response.body)
+      def self.create_webhook(webhook, client) # rubocop:disable Metrics/AbcSize
+        message = "\tCreating webhook for event '#{webhook[:event]}'..."
 
-        if response.code.to_i == 200 && data['success'] == true
-          client.webhooks.create!(ext_id: "ashby__#{data['results']['id']}", url: data['results']['requestUrl'], event: data['results']['webhookType'], source: 'ashby',
-                                  signatureToken: data['results']['secretToken'])
-          Rails.logger.debug("Webhook for event '#{webhook[:webhookType]}' created successfully.")
-          message += "webhook created successfully 🚀\n"
+        # Map Rails Webhook model to Remote API Webhook model
+        remote_webhook = {
+          webhookType: webhook[:event],
+          requestUrl: webhook[:url],
+          secretToken: webhook[:signatureToken]
+        }
+
+        response = AshbyController.make_request("#{ASHBY_WEBHOOK_URL}.create", client, 'post', remote_webhook)
+        ext_id = nil
+        if response.code.to_i == 200
+          begin
+            data = JSON.parse(response.body)
+            if data['success'] == true
+              ext_id = "ashby__#{data['results']['id']}"
+              Rails.logger.debug("Webhook for event '#{webhook[:event]}' created successfully.")
+              message += "webhook created successfully 🚀\n"
+            else
+              Rails.logger.error("Failed to create webhook for event '#{webhook[:event]}': #{response.body}")
+              message += "failed to create webhook for event '#{webhook[:event]}' 💥\n"
+            end
+          rescue JSON::ParserError => e
+            Rails.logger.error("Failed to parse JSON response for event '#{webhook[:event]}': #{e.message}")
+            message += "failed to create webhook for event '#{webhook[:event]}' due to JSON parsing error 💥\n"
+          end
         else
-          Rails.logger.error("Failed to create webhook for event '#{webhook[:webhookType]}': #{response.body}")
-          message += "failed to create webhook for event '#{webhook[:webhookType]}' 💥\n"
+          Rails.logger.error("Failed to create webhook for event '#{webhook[:event]}': #{response.body}")
+          message += "failed to create webhook for event '#{webhook[:event]}' 💥\n"
         end
 
-        message
-      end
-
-      def self.update_webhook(webhook, client)
-        message = "Updating webhook for event '#{webhook[:webhookType]}':\n"
-        existing_webhook = client.webhooks.find_by(event: webhook[:webhookType], url: webhook[:requestUrl], source: 'ashby')
-        message += delete_webhook(existing_webhook.ext_id.split('__').last, client) if existing_webhook
-        message += create_webhook(webhook, client)
-        message
+        [message, ext_id]
       end
 
       # Reference: https://developers.ashbyhq.com/reference/webhookdelete
@@ -90,7 +99,6 @@ module Integrations
         response = AshbyController.make_request("#{ASHBY_WEBHOOK_URL}.delete", client, 'post', { 'webhookId' => webhook_id })
 
         if (response.code.to_i == 200 && JSON.parse(response.body)['success'] == true) || JSON.parse(response.body)['errors'] == ['webhook_not_found']
-          client.webhooks.find_by(ext_id: "ashby__#{webhook_id}")&.destroy
           Rails.logger.debug("Webhook with ID '#{webhook_id}' deleted successfully.")
           message += "webhook deleted successfully 🚀\n"
         else

@@ -5,7 +5,7 @@ module Api
     # ApplicationsController handles application-related actions
     class ApplicationsController < ApiController
       include ApplicationBuilder
-      before_action :verify_path_job_id, except: %i[show_all create accept reject]
+      before_action :verify_path_job_id, except: %i[show_all create accept reject pipeline]
       before_action :verify_path_active_job_id, only: %i[accept reject]
       before_action :verify_path_listed_job_id, only: %i[create]
       before_action :must_be_verified!
@@ -14,7 +14,7 @@ module Api
       # Returns all applications for a given job
       def show
         must_be_owner!(application_show_params[:id], Current.user.id)
-        applications = @job.applications.find_by_sql("SELECT * FROM applications a WHERE a.job_id = #{@job.job_id}")
+        applications = @job.applications
         render_applications(applications || [])
       end
 
@@ -27,10 +27,8 @@ module Api
 
       # Returns a single application including details
       def show_single
-        set_at_job(application_show_params[:id])
         must_be_owner!(application_show_params[:id], Current.user.id) if application_show_params[:application_id]
-        application = @job.applications.includes(:application_answers).find_by_sql(['SELECT * FROM applications a WHERE a.job_id = ? AND a.user_id = ?', @job.job_id,
-                                                                                    application_show_params[:application_id] || Current.user.id]).first
+        application = @job.applications.includes(application_answers: { attachment_attachment: :blob }).where(user_id: application_show_params[:application_id] || Current.user.id).first
 
         render_application(application)
       end
@@ -41,7 +39,6 @@ module Api
 
       def accept
         must_be_owner!(application_modify_params[:id], Current.user.id)
-        set_at_job(application_modify_params[:id])
         application = @job.applications.where(user_id: application_modify_params[:application_id]).first
         handle_accept(application)
       rescue ActiveRecord::RecordNotFound
@@ -50,7 +47,6 @@ module Api
 
       def reject
         must_be_owner!(application_modify_params[:id], Current.user.id)
-        set_at_job(application_modify_params[:id])
         application = @job.applications.where(user_id: application_modify_params[:application_id]).first
         handle_reject(application)
       rescue ActiveRecord::RecordNotFound
@@ -58,10 +54,7 @@ module Api
       end
 
       def pipeline
-        set_at_job(application_show_params[:id])
-        must_be_owner!(application_show_params[:id], Current.user.id) if application_show_params[:application_id]
-
-        pipeline = ApplicationEvent.all.where(job_id: @job.job_id, user_id: application_show_params[:application_id] || Current.user.id).order('created_at DESC')
+        pipeline = ApplicationEvent.all.where(job_id: application_show_params[:id], user_id: application_show_params[:application_id] || Current.user.id).order('created_at DESC')
 
         pipeline.empty? ? render(status: 204, json: { pipeline: [] }) : render(status: 200, json: { pipeline: })
       end

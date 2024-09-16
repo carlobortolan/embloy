@@ -58,9 +58,9 @@ module Hooks
       when 'candidateStageChange', 'candidateArchiveChange', 'interviewCreated', 'interviewUpdated', 'interviewDeleted'
         application = Application.find_by(ext_id:)
 
-        application.update!(status: :pending, response: 'No response yet ...') if lever_event['data']['toArchived'].nil?
-        application.accept 'Accepted' if lever_event['data']['toStageId'] == 'offer'
-        application.reject 'Rejected' if lever_event['data']['toArchived'].present? && !application.accepted?
+        application.update!(status: :pending, response: 'No response yet ...') and return if lever_event['data']['toArchived'].nil?
+        application.accept 'Accepted' and return if lever_event['data']['toStageId'] == 'offer'
+        application.reject 'Rejected' and return if lever_event['data']['toArchived'].present? && !application.accepted?
         render json: { error: 'Application not found' }, status: :not_found and return if application.nil?
       else
         render json: { error: 'Unknown event type' }, status: :unprocessable_entity and return

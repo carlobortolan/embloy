@@ -25,18 +25,17 @@ module Integrations
         end
       end
 
-      def self.manage_webhooks(existing_webhooks, client) # rubocop:disable Metrics/PerceivedComplexity,Metrics/AbcSize
+      def self.manage_webhooks(existing_webhooks, client) # rubocop:disable Metrics/AbcSize
         message = "Found #{existing_webhooks.length} existing webhooks...\n"
-        if existing_webhooks.nil? || existing_webhooks.empty?
-          Rails.logger.debug('No existing webhooks found.')
-          existing_webhooks = []
-        end
+        existing_webhooks ||= []
 
         existing_webhook_events = existing_webhooks.map { |wh| wh['event'] }
 
         # Delete webhooks that are not in the desired list
         existing_webhooks.each do |webhook|
-          delete_webhook(webhook['id'], webhook['event'], client) unless LEVER_WEBHOOKS.any? do |dw|
+          message += delete_webhook(webhook['id'], webhook['event'], client) if LEVER_WEBHOOKS.any? do |dw|
+            Rails.logger.debug("Comparing webhook event: #{dw[:event]} with #{webhook['event']}")
+            Rails.logger.debug("Comparing webhook url: #{dw[:url]}/#{SimpleCrypt.encrypt(client.id.to_i)} with #{webhook['url']}")
             dw[:event] == webhook['event'] && "#{dw[:url]}/#{SimpleCrypt.encrypt(client.id.to_i)}" == webhook['url']
           end
         end
@@ -80,7 +79,7 @@ module Integrations
           message += "webhook created successfully 🚀\n"
         else
           message += "failed to create webhook for event '#{webhook[:event]}' 💥\n"
-          Rails.logger.error("Failed to create webhook for event '#{webhook[:event]}': #{response.body}")
+          Rails.logger.error("Failed to create webhook for event '#{webhook[:event]}']: #{response.body}")
         end
 
         message
@@ -109,7 +108,7 @@ module Integrations
           Rails.logger.debug("Webhook with ID '#{webhook_id}' deleted successfully.")
           message += "webhook deleted successfully 🚀\n"
         else
-          Rails.logger.error("Failed to delete webhook with ID '#{webhook_id}': #{response.body}")
+          Rails.logger.error("Failed to delete webhook with ID '#{webhook_id}']: #{response.body}")
           message += "failed to delete webhook with ID '#{webhook_id}' 💥\n"
         end
 

@@ -16,7 +16,7 @@ module Api
       end
 
       def own_jobs
-        jobs = Current.user.jobs.includes([:rich_text_description]).order(created_at: :desc)
+        jobs = Current.user.jobs.includes(%i[rich_text_description image_url_attachment application_options]).order(created_at: :desc)
         if jobs.empty?
           render(status: 204,
                  json: { jobs: })
@@ -27,10 +27,9 @@ module Api
       end
 
       def own_applications
-        applications = Application.where(user_id: Current.user.id)
-                                  .includes(job: %i[rich_text_description
-                                                    application_options
-                                                    user]).includes([:application_answers])
+        applications = Application.includes(application_answers: { attachment_attachment: :blob }, job: [:rich_text_description,
+                                                                                                         :application_options,
+                                                                                                         { user: :image_url_attachment }]).where(user_id: Current.user.id)
         return render(status: 204, json: { applications: {} }) if applications.empty?
 
         render status: 200, json: build_applications_json(applications)
@@ -94,6 +93,8 @@ module Api
       end
 
       def upload_image
+        ActiveStorage::Current.url_options = { host: request.host_with_port, protocol: request.protocol }
+
         attach_image if params[:image_url].present?
         render status: 200, json: { image_url: Current.user.image_url.url.to_s }
       rescue Excon::Error::Socket, ActiveStorage::IntegrityError => e
@@ -112,7 +113,7 @@ module Api
       def build_applications_json(applications)
         ActiveStorage::Current.url_options = { host: request.host_with_port, protocol: request.protocol }
 
-        applications.includes(:application_answers, application_answers: :attachment_attachment).map do |application|
+        applications.map do |application|
           {
             application:,
             job: Job.get_json_include_user_exclude_image(application.job),
@@ -122,10 +123,10 @@ module Api
       end
 
       def fetch_upcoming_jobs
-        applications = Application.all.where(user_id: Current.user.id, status: '1')
+        applications = Application.all.includes(:job).where(user_id: Current.user.id, status: '1')
         return [] if applications.empty?
 
-        applications.map { |i| Job.find(i.job_id) }
+        applications.map(&:job)
       end
 
       def attach_image

@@ -22,7 +22,7 @@ default: &default
 development:
   primary:
     <<: *default
-    database: prod_core_primary
+    database: dev_core
   # primary_replica:
   #   <<: *default
   #   database: dev_core

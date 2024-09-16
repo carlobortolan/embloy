@@ -182,7 +182,7 @@ class ApplicationController < ActionController::API
     if id.nil?
       raise CustomExceptions::InvalidUser::LoggedOut if Current.user.nil?
     else
-      Current.user = User.find_by(id:)
+      Current.user ||= User.find_by(id:)
       raise CustomExceptions::InvalidUser::Unknown if Current.user.nil?
     end
   end
@@ -408,7 +408,7 @@ class ApplicationController < ActionController::API
   # ======= that set "@job" to job for id  ========
 
   def set_at_job(job_id = nil)
-    @job = Job.find_by(job_id:) unless job_id.nil?
+    @job ||= Job.find_by(job_id:) unless job_id.nil?
 
     raise CustomExceptions::InvalidJob::Unknown if @job.nil?
     raise CustomExceptions::InvalidJob::Inactive if @job.activity_status.zero?
@@ -424,19 +424,19 @@ class ApplicationController < ActionController::API
   # ======== that model the role hierarchy ========
 
   def owner
-    !(Current.user.nil? || @job.nil? || @job.user_id != Current.user.id)
+    !Current.user.nil? && !@job.nil? && (@job.user_id == Current.user.id || Current.user.admin?)
   end
 
   def self.owner
-    !(Current.user.nil? || @job.nil? || @job.user_id != Current.user.id)
+    !Current.user.nil? && !@job.nil? && (@job.user_id == Current.user.id || Current.user.admin?)
   end
 
   def owner!
-    Current.user.nil? || @job.nil? || @job.user_id != Current.user.id ? raise(CustomExceptions::Unauthorized::NotOwner) : true
+    !Current.user.nil? && !@job.nil? && (@job.user_id == Current.user.id || Current.user.admin?) ? true : raise(CustomExceptions::Unauthorized::NotOwner)
   end
 
   def self.owner!
-    Current.user.nil? || @job.nil? || @job.user_id != Current.user.id ? raise(CustomExceptions::Unauthorized::NotOwner) : true
+    !Current.user.nil? && !@job.nil? && (@job.user_id == Current.user.id || Current.user.admin?) ? true : raise(CustomExceptions::Unauthorized::NotOwner)
   end
 
   # This method only checks whether the currently signed in user is the owner of the job that is being requested

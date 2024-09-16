@@ -5,7 +5,7 @@
 # the inclusion of the required field, and the presence, length, and type of the options.
 # It also includes custom validations for the presence, count, length, and type of the options if the question_type is 'single_choice' or 'multiple_choice'.
 class ApplicationOption < ApplicationRecord
-  belongs_to :job
+  belongs_to :job, counter_cache: true
   acts_as_paranoid
   VALID_QUESTION_TYPES = %w[yes_no short_text long_text number link single_choice multiple_choice date location file].freeze
   ALLOWED_FILE_TYPES = %w[pdf doc docx txt rtf odt jpg jpeg png gif bmp tiff tif svg mp4 avi mov wmv flv mkv webm ogg mp3 wav wma aac m4a zip rar tar 7z gz bz2 xls xlsx ods ppt pptx xml].freeze
@@ -26,13 +26,25 @@ class ApplicationOption < ApplicationRecord
   validate :options_type_validation
   validate :options_presence_validation, if: :options_required?
   validates :options, length: { minimum: 0, maximum: 100, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
-  validates :ext_id, uniqueness: { scope: :job_id, error: 'ERR_UNIQUE', description: 'Should be unique per job' }, on: %i[create update], if: -> { deleted_at.nil? }
   validate :file_type_validation, if: -> { question_type == 'file' }
-
-  validates :ext_id, uniqueness: { scope: :job_id, message: 'Should be unique per job' }, on: %i[create update], if: -> { deleted_at.nil? }
 
   enum question_type: { yes_no: 'yes_no', short_text: 'short_text', long_text: 'long_text', number: 'number', date: 'date', location: 'location', link: 'link', single_choice: 'single_choice',
                         multiple_choice: 'multiple_choice', file: 'file' }
+
+  with_options unless: :custom_validation_context? do
+    validates :ext_id, uniqueness: { scope: :job_id, error: 'ERR_UNIQUE', description: 'Should be unique per job' }, on: %i[create update], if: -> { deleted_at.nil? }
+  end
+
+  def custom_validation_context?
+    @custom_validation_context
+  end
+
+  def self.validate(attributes)
+    option = new(attributes)
+    option.instance_variable_set(:@custom_validation_context, true)
+    option.valid?
+    option.errors
+  end
 
   def options_required?
     %w[single_choice multiple_choice].include?(question_type)

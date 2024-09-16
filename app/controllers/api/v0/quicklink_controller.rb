@@ -110,7 +110,7 @@ module Api
       def update_or_create_job
         # Retrieve existing job if it exists
         @client.jobs ||= []
-        @job = @client.jobs.find_by(job_slug: @session['job_slug'])
+        @job = @client.jobs.includes(:application_options).find_by(job_slug: @session['job_slug'])
 
         # Return job from external API if integration mode enabled
         # TODO: Uncomment in case of ATS that need sync on every application
@@ -164,11 +164,9 @@ module Api
       end
 
       def create_proxy_session(user_id)
-        user = User.find(user_id)
-
-        session = portal_params.to_unsafe_h.transform_keys(&:to_s)
+        session = proxy_params.to_unsafe_h.transform_keys(&:to_s)
         session['user_id'] = user_id
-        session['subscription_type'] = SubscriptionHelper.subscription_type(check_subscription(user))
+        session['subscription_type'] = SubscriptionHelper.subscription_type(check_subscription(Current.user))
         session['job_slug'] = "#{proxy_params[:mode]}__#{proxy_params[:job_slug]}"
         session['origin'] = proxy_params[:origin]
         session
@@ -193,11 +191,12 @@ module Api
 
       def portal_params
         params.except(:format).permit(:mode, :success_url, :cancel_url, :job_slug, :title, :description, :start_slot, :longitude, :latitude, :job_type, :job_status, :image_url, :position, :currency,
-                                      :salary, :key_skills, :duration, :job_notifications)
+                                      :salary, :key_skills, :duration, :job_notifications, quicklink: %i[mode job_slug success_url cancel_url])
       end
 
       def proxy_params
-        params.permit(:mode, :success_url, :cancel_url, :job_slug, :origin, :admin_token, :user_id)
+        params.except(:format).permit(:mode, :success_url, :cancel_url, :job_slug, :origin, :admin_token, :user_id,
+                                      quicklink: %i[mode job_slug success_url cancel_url admin_token origin])
       end
     end
   end

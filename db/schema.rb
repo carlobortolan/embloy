@@ -129,6 +129,7 @@ ActiveRecord::Schema[7.0].define(version: 20_240_904_144_926) do
     t.datetime 'deleted_at'
     t.index ['deleted_at'], name: 'index_application_options_on_deleted_at'
     t.index ['job_id'], name: 'application_options_job_id_index'
+    t.index ['job_id', 'ext_id'], name: 'index_application_options_on_job_id_and_ext_id', unique: true
   end
 
   create_table 'applications', primary_key: %w[job_id user_id], force: :cascade do |t|
@@ -196,6 +197,7 @@ ActiveRecord::Schema[7.0].define(version: 20_240_904_144_926) do
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
     t.integer 'applications_count', default: 0, null: false
+    t.integer 'application_options_count', default: 0, null: false
     t.integer 'employer_rating', default: 0, null: false
     t.text 'job_notifications', default: '1', null: false
     t.integer 'boost', default: 0, null: false

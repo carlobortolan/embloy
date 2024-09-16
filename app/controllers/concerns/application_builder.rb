@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # The ApplicationBuilder is responsible for handling the application creation process.
-module ApplicationBuilder
+module ApplicationBuilder # rubocop:disable Metrics/ModuleLength
   extend ActiveSupport::Concern
 
   # The apply_for_job method is responsible for creating a new application for a job.
@@ -31,7 +31,7 @@ module ApplicationBuilder
     tmp[:user_id] = Current.user.id
     tmp[:version] = 1
 
-    if @job.duplicate_application_allowed? && (@application = Application.find_by(job_id: @job.id, user_id: Current.user.id)) && @application.present?
+    if @job.duplicate_application_allowed? && (@application = Application.includes(:user, :job).find_by(job_id: @job.id, user_id: Current.user.id)) && @application.present?
       Rails.logger.debug "Found existing application: #{@application.inspect}"
       @application.update!(version: @application.version + 1)
     else
@@ -44,27 +44,85 @@ module ApplicationBuilder
     Integrations::IntegrationsController.submit_form(@job, @application, application_params, @client, @session)
   end
 
-  def create_application_answers! # rubocop:disable Metrics/AbcSize,Metrics/PerceivedComplexity,Metrics/CyclomaticComplexity
-    @job.application_options.each do |option|
+  def validate_and_build_answers(job, application)
+    answers_to_create = []
+    attachments_to_attach = []
+
+    job.application_options.each do |option|
       answer_params = find_answer_params(option.id)
+      validate_required_option(option, answer_params, application)
+      next unless valid_answer?(option, answer_params)
 
-      if option.required && (answer_params.nil? || (answer_params.last[:answer].blank? && option.question_type != 'file'))
-        @application.errors.add(:application_answers, "Answer for required option #{option.id} is missing")
-        raise ActiveRecord::RecordInvalid, @application
-      end
+      answer_array = build_answer_array(option, answer_params)
+      answer = build_application_answer(job, option, answer_array, application)
 
-      if !answer_params&.last&.[](:answer).blank? || (option.question_type == 'file' && !answer_params&.last&.[](:file).blank?)
+      validate_answer(answer, option, application)
 
-        if option.question_type != 'multiple_choice' && option.question_type != 'file' && !answer_params.last[:answer].is_a?(String)
-          @application.errors.add(:base, 'Invalid answer type')
-          raise ActiveRecord::RecordInvalid, @application
-        end
+      answers_to_create << answer.attributes.except('id')
+      attachments_to_attach << { file: answer_params.last[:file], option_id: option.id } if answer_params.last[:file]
+    end
 
-        process_answer(option, answer_params)
+    [answers_to_create, attachments_to_attach]
+  end
 
-      elsif option.required
-        @application.errors.add(:base, "Invalid application answer parameters for option #{option.id}")
-        raise ActiveRecord::RecordInvalid, @application
+  def create_application_answers!
+    answers_to_create, attachments_to_attach = validate_and_build_answers(@job, @application)
+    insert_answers_and_attach_files(answers_to_create, attachments_to_attach, @job)
+  end
+
+  def validate_required_option(option, answer_params, application)
+    unless option.required && (answer_params.nil? || (answer_params.last[:answer].blank? && option.question_type != 'file') || (answer_params.last[:file].blank? && option.question_type == 'file'))
+      return
+    end
+
+    application.errors.add(:application_answers, "Answer for required option #{option.id} is missing")
+    raise ActiveRecord::RecordInvalid, application
+  end
+
+  def valid_answer?(option, answer_params)
+    !answer_params&.last&.[](:answer).blank? || (option.question_type == 'file' && !answer_params&.last&.[](:file).blank?)
+  end
+
+  def build_answer_array(option, answer_params)
+    if option.question_type == 'multiple_choice' && answer_params.last[:answer]
+      answer_params.last[:answer].strip.split('||| ').reject(&:empty?).map(&:strip).to_json
+    else
+      answer_params.last[:answer]
+    end
+  end
+
+  def build_application_answer(job, option, answer_array, application)
+    ApplicationAnswer.new(
+      job_id: job.id.to_i,
+      user_id: Current.user.id.to_i,
+      application_option_id: option.id,
+      answer: answer_array,
+      version: application.version,
+      created_at: Time.current,
+      updated_at: Time.current
+    )
+  end
+
+  def validate_answer(answer, option, application)
+    return if answer.valid?
+
+    application.errors.add(:base, "Invalid application answer for option #{option.id}: #{answer.errors.full_messages.join(', ')}")
+    raise ActiveRecord::RecordInvalid, application
+  end
+
+  def insert_answers_and_attach_files(answers_to_create, attachments_to_attach, job)
+    ApplicationAnswer.insert_all(answers_to_create) if answers_to_create.any?
+
+    attachments_to_attach.each do |attachment|
+      Rails.logger.debug "Attaching file to application answer for option #{attachment[:option_id]} and file: #{attachment[:file].inspect}"
+      application_answer = ApplicationAnswer.find_by(application_option_id: attachment[:option_id], user_id: Current.user.id, job_id: job.id, version: @application.version)
+
+      if application_answer
+        file = attachment[:file]
+        application_answer.attachment.attach(io: file, filename: file.original_filename, content_type: file.content_type)
+        # application_answer.save!
+      else
+        Rails.logger.error "ApplicationAnswer not found for option #{attachment[:option_id]}"
       end
     end
   end
@@ -76,23 +134,4 @@ module ApplicationBuilder
       application_params[:application_answers]&.to_unsafe_h&.find { |_, v| v[:application_option_id] == option_id.to_s }
     end
   end
-
-  def process_answer(option, answer_params)
-    answer_array = if option.question_type == 'multiple_choice' && answer_params.last[:answer]
-                     answer_params.last[:answer].strip.split('||| ').reject(&:empty?).map(&:strip)
-                   else
-                     answer_params.last[:answer]
-                   end
-
-    application_answer = ApplicationAnswer.create!(job_id: @job.id.to_i, user_id: Current.user.id.to_i, application_option: option, answer: answer_array, version: @application.version)
-    Rails.logger.debug "application_answer: #{application_answer.inspect}"
-    application_answer.attachment.attach(answer_params.last[:file]) if answer_params.last[:file]
-  end
 end
-
-# version = 1
-#
-# version = ApplicationAnswer.where(job_id: 47, user_id: 7, application_option_id: 541).maximum(:version)
-# version = version.nil? ? 1 : version + 1
-#
-# application_answer = ApplicationAnswer.create!(job_id: 47, user_id: 7, application_option_id: 541, answer: "hello world", version:)

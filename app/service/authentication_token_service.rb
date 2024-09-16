@@ -40,20 +40,6 @@ class AuthenticationTokenService
       decoded_token
     end
 
-    def self.forbidden?(token)
-      # if exists and is explicitly blacklisted .forbidden? is true if token is allowed .forbidden? is false
-      jti = content(token)
-      # if .content returns { "status": status, "token": errors } == nil, because {...}[0] == nil
-      unless jti[0].nil?
-        return !jti?(jti[0]['jti'],
-                     token['sub'].to_i)
-      end
-
-      # if .jti? finds token identifier blacklisted, it returns true. .forbidden? returns false in this case
-
-      jti # error message from content
-    end
-
     def self.jti(iat)
       # creates a unique token identifier (made for application in refresh tokens)
       Digest::MD5.hexdigest([iat.to_s, ISSUER,
@@ -62,7 +48,7 @@ class AuthenticationTokenService
 
     def self.jti?(jti, sub = nil)
       # checks whether a specifc (refresh) token is blacklisted (via its identifier "jti")
-      !(AuthBlacklist.find_by(token: jti).present? || User.find_by(id: sub).present?)
+      !(AuthBlacklist.find_by(token: jti).present? || (sub && User.find_by(id: sub).present?))
     end
 
     def self.must_be_verified_id!(user_id)
