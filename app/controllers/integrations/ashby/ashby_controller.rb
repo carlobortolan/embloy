@@ -21,13 +21,14 @@ module Integrations
         http = Net::HTTP.new(url.host, url.port)
         http.use_ssl = true
         api_key = fetch_token(client, 'ashby', 'api_key')
-        field_submissions = application.application_answers.select { |answer| answer.version == application.version }.map do |answer|
+        application_answers = application.application_answers.includes(:application, :application_option, :user, :job, :attachment_attachment).where(version: application.version)
+
+        field_submissions = application_answers.map do |answer|
           if answer.application_option.question_type == 'file'
             file_key = "file_#{answer.application_option_id}"
             { path: answer.application_option.ext_id.split('__').last, value: file_key }
           else
             formatted_answer = format_answer(answer)
-
             { path: answer.application_option.ext_id.split('__').last, value: formatted_answer }
           end
         end
@@ -35,7 +36,7 @@ module Integrations
         form_data = { 'jobPostingId' => posting_id, 'applicationForm' => { fieldSubmissions: field_submissions }.to_json }
 
         # Add files to form_data
-        application.application_answers.select { |answer| answer.version == application.version }.map do |answer|
+        application_answers.each do |answer|
           next unless answer.application_option.question_type == 'file'
 
           application_answer_params = application_params[:application_answers].permit!.to_h.find do |_, a|
@@ -44,9 +45,13 @@ module Integrations
 
           next unless application_answer_params
 
-          file = application_answer_params[:file]
+          file_param = application_answer_params[:file]
           file_key = "file_#{answer.application_option_id}" # Match the key used in field_submissions
-          form_data[file_key] = UploadIO.new(file.tempfile, file.content_type, file.original_filename)
+
+          File.open(file_param.tempfile.path) do |file|
+            file_content = file.read
+            form_data[file_key] = UploadIO.new(StringIO.new(file_content), file_param.content_type, file_param.original_filename)
+          end
         end
 
         request = Net::HTTP::Post::Multipart.new(url.path, form_data)
@@ -60,7 +65,7 @@ module Integrations
         body = JSON.parse(response.body)
         response = Net::HTTPBadRequest.new('400', 'Bad Request', body['errors']) if body['success'] == false
         application.update!(ext_id: "ashby__#{body['results']['submittedFormInstance']['id']}") if response.is_a?(Net::HTTPSuccess) && body['success'] == true
-        Rails.logger.debug("Ashby application response: #{response} - #{body['success'] == false} with ext_id: #{application.ext_id}")
+        Rails.logger.debug("Ashby application response: #{response} - #{body['success'] == true} with ext_id: #{application.ext_id}")
 
         handle_application_response(response)
       end

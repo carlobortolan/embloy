@@ -118,7 +118,7 @@ module Integrations
       job
     end
 
-    def self.upsert_application_options(job, application_options_attributes)
+    def self.upsert_application_options(job, application_options_attributes) # rubocop:disable Metrics/PerceivedComplexity,Metrics/CyclomaticComplexity
       return if application_options_attributes.nil? || application_options_attributes.empty?
 
       # Collect ext_ids from application_options_attributes
@@ -138,7 +138,7 @@ module Integrations
           'question' => option['question'],
           'question_type' => option['question_type'] || 'yes_no',
           'required' => option['required'] ? 'true' : 'false',
-          'options' => option['options'],
+          'options' => option['options'].blank? && option['question_type'] == 'file' ? ['pdf'] : option['options'],
           'created_at' => Time.current,
           'updated_at' => Time.current
         }
