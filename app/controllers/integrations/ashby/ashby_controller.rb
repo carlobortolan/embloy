@@ -12,6 +12,7 @@ module Integrations
     # AshbyController handles Ashby-related actions
     class AshbyController < IntegrationsController
       ASHBY_POST_FORM_URL = 'https://api.ashbyhq.com/applicationForm.submit'
+      ASHBY_FETCH_APPLICATION_URL = 'https://api.ashbyhq.com/application.info'
       ASHBY_FETCH_POSTING_URL = 'https://api.ashbyhq.com/jobPosting.info'
       ASHBY_FETCH_POSTINGS_URL = 'https://api.ashbyhq.com/jobPosting.list'
 
@@ -58,15 +59,29 @@ module Integrations
         request['Accept'] = 'application/json'
         request['Authorization'] = "Basic #{Base64.strict_encode64("#{api_key}:")}"
         Rails.logger.debug("Posting Ashby application: #{request.body}")
-
+        
         response = http.request(request)
         Rails.logger.debug("Ashby application submitted: #{response.code}:\n#{response.body}")
-
+        
         body = JSON.parse(response.body)
-        response = Net::HTTPBadRequest.new('400', 'Bad Request', body['errors']) if body['success'] == false
-        application.update!(ext_id: "ashby__#{body['results']['submittedFormInstance']['id']}") if response.is_a?(Net::HTTPSuccess) && body['success'] == true
-        Rails.logger.debug("Ashby application response: #{response} - #{body['success'] == true} with ext_id: #{application.ext_id}")
-
+        unless response.is_a?(Net::HTTPSuccess) && body['success'] == true
+          Rails.logger.error("Error submitting Ashby application: #{body['errors']}")
+          return Net::HTTPBadRequest.new('400', 'Bad Request', body['errors'])
+        end
+        
+        instance_id = body['results']['submittedFormInstance']['id']
+        response = make_request(ASHBY_FETCH_APPLICATION_URL, client, 'post', { submittedFormInstanceId: instance_id })
+        Rails.logger.debug("Ashby application fetched: #{instance_id} - #{response.code}:\n#{response.body}")
+        
+        body = JSON.parse(response.body)
+        unless response.is_a?(Net::HTTPSuccess) && body['success'] == true
+          Rails.logger.error("Error fetching Ashby application: #{body['errors']}")
+          return Net::HTTPBadRequest.new('400', 'Bad Request', body['errors'])
+        end
+        
+        application.update!(ext_id: "ashby__#{body['results']['id']}")
+        Rails.logger.debug("Ashby application updated with ext_id: #{application.ext_id}")
+        
         handle_application_response(response)
       end
 
