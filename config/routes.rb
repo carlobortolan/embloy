@@ -89,6 +89,9 @@ Rails.application.routes.draw do
       patch 'jobs/(/:id)/applications/(/:application_id)/reject', to: 'applications#reject'
       post 'jobs/sync/:source', to: 'jobs#synchronize'
 
+      # -----> COMPANIES <-----
+      get 'company/(/:id)/feed', to: 'company#feed'
+
       # -----> QUICKLINK <-----
       post 'sdk/request/auth/token', to: 'quicklink#create_request'
       post 'sdk/request/auth/proxy', to: 'quicklink#create_request_proxy'

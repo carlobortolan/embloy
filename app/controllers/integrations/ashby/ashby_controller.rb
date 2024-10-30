@@ -17,7 +17,7 @@ module Integrations
       ASHBY_FETCH_POSTINGS_URL = 'https://api.ashbyhq.com/jobPosting.list'
 
       # Reference: https://developers.ashbyhq.com/reference/applicationformsubmit
-      def self.post_form(posting_id, application, application_params, client) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+      def self.post_form(posting_id, application, application_params, client) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity,Metrics/MethodLength
         url = URI(ASHBY_POST_FORM_URL)
         http = Net::HTTP.new(url.host, url.port)
         http.use_ssl = true
@@ -59,29 +59,29 @@ module Integrations
         request['Accept'] = 'application/json'
         request['Authorization'] = "Basic #{Base64.strict_encode64("#{api_key}:")}"
         Rails.logger.debug("Posting Ashby application: #{request.body}")
-        
+
         response = http.request(request)
         Rails.logger.debug("Ashby application submitted: #{response.code}:\n#{response.body}")
-        
+
         body = JSON.parse(response.body)
         unless response.is_a?(Net::HTTPSuccess) && body['success'] == true
           Rails.logger.error("Error submitting Ashby application: #{body['errors']}")
           return Net::HTTPBadRequest.new('400', 'Bad Request', body['errors'])
         end
-        
+
         instance_id = body['results']['submittedFormInstance']['id']
         response = make_request(ASHBY_FETCH_APPLICATION_URL, client, 'post', { submittedFormInstanceId: instance_id })
         Rails.logger.debug("Ashby application fetched: #{instance_id} - #{response.code}:\n#{response.body}")
-        
+
         body = JSON.parse(response.body)
         unless response.is_a?(Net::HTTPSuccess) && body['success'] == true
           Rails.logger.error("Error fetching Ashby application: #{body['errors']}")
           return Net::HTTPBadRequest.new('400', 'Bad Request', body['errors'])
         end
-        
+
         application.update!(ext_id: "ashby__#{body['results']['id']}")
         Rails.logger.debug("Ashby application updated with ext_id: #{application.ext_id}")
-        
+
         handle_application_response(response)
       end
 
