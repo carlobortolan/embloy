@@ -52,3 +52,5 @@ newrelic.yml
 
 # Admin assets
 /node_modules
+/app/assets/builds/*
+!/app/assets/builds/.keep

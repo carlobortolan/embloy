@@ -157,6 +157,7 @@ gem 'rails-healthcheck', '~> 1.4'
 # enable precommit
 gem 'attr_encrypted', '~> 4.0'
 
+gem 'cssbundling-rails'
 gem 'sentry-rails'
 gem 'sentry-ruby'
 gem 'stackprof'

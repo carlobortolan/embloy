@@ -14,6 +14,7 @@ module RailsAdmin
 end
 
 RailsAdmin.config do |config|
+  config.asset_source = :importmap
   config.asset_source = :sprockets
   config.main_app_name = %w[Embloy Core-API]
   ### Popular gems integration
