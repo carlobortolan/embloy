@@ -16,7 +16,7 @@ module Api
                               :applications_count, :created_at, :updated_at)
                       .where(job_status: :listed)
                       .order(created_at: :desc)
-        render(status: jobs.nil? || jobs.empty? ? 204 : 200, json: { jobs: , company: Current.user})
+        render(status: jobs.nil? || jobs.empty? ? 204 : 200, json: { jobs:, company: Current.user})
       end
     end
   end
