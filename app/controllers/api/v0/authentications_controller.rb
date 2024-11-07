@@ -55,10 +55,42 @@ module Api
         end
       end
 
+      def create_otp
+        email = otp_params[:email]
+        unless email.present?           
+          endblank_error('email') and return
+        end
+        @user = User.find_by(email:)
+      
+        if !@user.present?
+          if otp_params[:request_token].present? && AuthenticationTokenService::Access::Decoder.call(otp_params[:request_token]).present?
+            tmp = SecureRandom.hex(32)
+            @user = User.create!(email:, first_name: otp_params[:first_name] || "New", last_name: otp_params[:last_name] || "User", password: tmp, password_confirmation: tmp, activity_status: 1) # Create new user (-> onboarding as part of application)
+          else 
+            not_found_error('user') and return
+          end
+        end
+
+        otp_token = Token.generate_otp(@user)
+        SecurityMailer.with(user: @user, otp_token: otp_token).otp.deliver_now # Send OTP code to the user
+        render status: 200, json: { message: 'OTP sent successfully. Please check your emails.' }
+      end
+
+      def verify_otp
+        email = otp_params[:email]
+        otp_code = otp_params[:otp_code]
+        @user = User.find_by(email:)
+
+        if @user.present? && Token.valid_otp?(@user, otp_code)
+          render status: 200, json: { 'refresh_token' => AuthenticationTokenService::Refresh::Encoder.call(@user) }
+        else
+          render status: 401, json: { error: 'Invalid OTP' }
+        end
+      end
+
       private
 
       def refresh_token_params
-        # params.fetch(:refresh_token).permit(:validity)
         if params.key?(:refresh_token)
           params.require(:refresh_token).permit(:validity)
         else
@@ -68,6 +100,10 @@ module Api
 
       def access_token_params
         params.permit(:grant_type, :refresh_token)
+      end
+
+      def otp_params
+        params.permit(:email, :first_name, :last_name, :request_token, :otp_code)
       end
     end
   end
