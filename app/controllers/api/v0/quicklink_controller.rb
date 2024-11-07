@@ -165,9 +165,13 @@ module Api
 
       def create_proxy_session(user_id)
         session = proxy_params.to_unsafe_h.transform_keys(&:to_s)
+        # Remove admin_token from session
+        session.delete('admin_token')
+        # Remove quicklink from session
+        session.delete('quicklink')
         session['user_id'] = user_id
         session['subscription_type'] = SubscriptionHelper.subscription_type(check_subscription(Current.user))
-        session['job_slug'] = "#{proxy_params[:mode]}__#{proxy_params[:job_slug]}"
+        session['job_slug'] = "#{proxy_params[:mode]}__#{proxy_params[:job_slug]}" unless proxy_params[:mode] == 'job'
         session['origin'] = proxy_params[:origin]
         session
       end
@@ -191,7 +195,7 @@ module Api
 
       def portal_params
         params.except(:format).permit(:mode, :success_url, :cancel_url, :job_slug, :title, :description, :start_slot, :longitude, :latitude, :job_type, :job_status, :image_url, :position, :currency,
-                                      :salary, :key_skills, :duration, :job_notifications, quicklink: %i[mode job_slug success_url cancel_url])
+                                      :salary, :key_skills, :duration, :job_notifications)
       end
 
       def proxy_params
