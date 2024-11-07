@@ -21,7 +21,7 @@ module Integrations
         url = URI(ASHBY_POST_FORM_URL)
         http = Net::HTTP.new(url.host, url.port)
         http.use_ssl = true
-        api_key = fetch_token(client, 'ashby', 'api_key')
+        api_key = Token.fetch_token(client, 'ashby', 'api_key')
         application_answers = application.application_answers.includes(:application, :application_option, :user, :job, :attachment_attachment).where(version: application.version)
 
         field_submissions = application_answers.map do |answer|
@@ -97,7 +97,7 @@ module Integrations
           raise CustomExceptions::InvalidInput::Quicklink::Request::Malformed unless body['success'] == true
 
           config = JSON.parse(File.read('app/controllers/integrations/ashby/ashby_config.json'))
-          config['city'].gsub!('ASHBY_SECRET', fetch_token(client, 'ashby', 'api_key').to_s)
+          config['city'].gsub!('ASHBY_SECRET', Token.fetch_token(client, 'ashby', 'api_key').to_s)
           job = Mawsitsit.parse(body, config, true)
           job['job_slug'] = "ashby__#{job['job_slug']}"
           job['user_id'] = client.id.to_i
@@ -137,7 +137,7 @@ module Integrations
       def self.make_request(url, client, method = 'post', body = nil)
         uri = URI.parse(url)
         request = Net::HTTP.const_get(method.capitalize).new(uri)
-        api_key = fetch_token(client, 'ashby', 'api_key')
+        api_key = Token.fetch_token(client, 'ashby', 'api_key')
         request['Authorization'] = "Basic #{Base64.strict_encode64("#{api_key}:")}"
         request['Content-Type'] = 'application/json'
         request.body = body.to_json if body

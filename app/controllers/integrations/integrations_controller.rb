@@ -40,31 +40,6 @@ module Integrations
       end
     end
 
-    def self.fetch_token(client, issuer, token_type)
-      # Find API Key for current client
-      current_keys = client.tokens.where(token_type:, issuer:).where('expires_at > ?', Time.now.utc)
-      return if current_keys.empty?
-
-      current_keys.detect(&:active?)&.token
-    end
-
-    def self.fetch_token!(client, issuer, token_type)
-      # Find API Key for current client and throw errors if missing or inactive
-      current_keys = client.tokens.where(token_type:, issuer:).where('expires_at > ?', Time.now.utc)
-      raise CustomExceptions::InvalidInput::Quicklink::ApiKey::Missing and return if current_keys.empty?
-
-      api_key = current_keys.detect(&:active?)&.token
-      raise CustomExceptions::InvalidInput::Quicklink::ApiKey::Inactive and return if api_key.nil?
-
-      api_key
-    end
-
-    def self.save_token(client, name, issuer, token_type, token, expires_at, issued_at) # rubocop:disable Metrics/ParameterLists
-      # Find API Key for current client
-      client.tokens.where(token_type:, issuer:).where('expires_at > ?', Time.now.utc).each(&:deactivate!)
-      client.tokens.create!(token_type:, name:, issuer:, token:, expires_at:, issued_at:)
-    end
-
     # Deprecated method used for fetching job postings on every application - now handled by the sync_postings method
     def self.handle_internal_job(client, parsed_job)
       return unless parsed_job.is_a?(Hash)
