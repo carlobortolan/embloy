@@ -21,8 +21,6 @@ module Api
                                              :user_role, :user_type)
         user_attributes[:image_url] = Current.user.image_url.attached? ? url_for(Current.user.image_url) : nil
 
-        puts "user_attributes: #{user_attributes}"
-
         render(status: jobs.nil? || jobs.empty? ? 204 : 200, json: { company: user_attributes, jobs: })
       end
     end
