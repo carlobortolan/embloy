@@ -165,21 +165,6 @@ func extractParams(c *gin.Context) (string, string, string, string) {
 
 	var jobSlug string
 
-	switch eType {
-	case "manual":
-		// Request is coming from Embloy URL form -> Continue
-	case "external":
-		// Request is coming from external form -> Continue
-	case "auto":
-		// Request is coming from the proxy service -> Continue
-	default:
-		// Request is coming from a different source -> Requires uID
-		if uID == "" {
-			return "", "", "", ""
-		}
-	}
-	log.Debug("eType: ", eType)
-
 	// Extract job slug based on the mode
 	switch mode {
 	case "lever":
@@ -204,6 +189,28 @@ func extractParams(c *gin.Context) (string, string, string, string) {
 		}
 		jobSlug = pathSegments[len(pathSegments)-1]
 	}
+
+	switch eType {
+	case "manual":
+		// Request is coming from Embloy URL form -> if eType=job, remove the 3rd party prefix from the received job_slug and change the mode to the prefix before __
+		if mode == "job" {
+			parts := strings.SplitN(jobSlug, "__", 2)
+			if len(parts) == 2 {
+				mode = parts[0]    // e.g., lever
+				jobSlug = parts[1] // the lever posting id
+			}
+		}
+	case "external":
+		// Request is coming from external form -> Continue
+	case "auto":
+		// Request is coming from the proxy service -> Continue
+	default:
+		// Request is coming from a different source -> Requires uID
+		if uID == "" {
+			return "", "", "", ""
+		}
+	}
+	log.Debug("eType: ", eType)
 
 	return uID, referrer, jobSlug, mode
 }
