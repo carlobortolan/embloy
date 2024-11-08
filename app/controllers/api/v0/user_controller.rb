@@ -27,9 +27,9 @@ module Api
       end
 
       def own_applications
-        applications = Application.includes(application_answers: { attachment_attachment: :blob }, job: [:rich_text_description,
-                                                                                                         :application_options,
-                                                                                                         { user: :image_url_attachment }]).where(user_id: Current.user.id)
+        applications = Application.includes(application_answers: { attachment_attachment: :blob }, application_events: [], job: [:rich_text_description,
+                                                                                                                                 :application_options,
+                                                                                                                                 { user: :image_url_attachment }]).where(user_id: Current.user.id)
         return render(status: 204, json: { applications: {} }) if applications.empty?
 
         render status: 200, json: build_applications_json(applications)
@@ -117,7 +117,8 @@ module Api
           {
             application:,
             job: Job.get_json_include_user_exclude_image(application.job),
-            application_answers: application.application_answers.as_json(include: { attachment: { methods: :url } })
+            application_answers: application.application_answers.as_json(include: { attachment: { methods: :url } }),
+            application_events: application.application_events
           }
         end
       end

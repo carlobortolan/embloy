@@ -16,7 +16,12 @@ module Api
                               :applications_count, :created_at, :updated_at)
                       .where(job_status: :listed)
                       .order(created_at: :desc)
-        render(status: jobs.nil? || jobs.empty? ? 204 : 200, json: { jobs: })
+
+        user_attributes = Current.user.slice(:id, :first_name, :last_name, :email, :phone, :linkedin_url, :instagram_url, :twitter_url, :facebook_url, :github_url, :portfolio_url,
+                                             :user_role, :user_type)
+        user_attributes[:image_url] = Current.user.image_url.attached? ? url_for(Current.user.image_url) : nil
+
+        render(status: jobs.nil? || jobs.empty? ? 204 : 200, json: { company: user_attributes, jobs: })
       end
     end
   end
