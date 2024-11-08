@@ -36,6 +36,8 @@ Rails.application.routes.draw do
       post 'auth/token/refresh', to: 'authentications#create_refresh'
       post 'auth/token/access', to: 'authentications#create_access'
       post 'auth/token/client', to: 'quicklink#create_client'
+      post 'auth/token/otp', to: 'authentications#create_otp'
+      patch 'auth/token/otp', to: 'authentications#verify_otp'
 
       # -----> TOKENS <-----
       get 'tokens', to: 'tokens#index'

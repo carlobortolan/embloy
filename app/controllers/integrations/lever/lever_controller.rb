@@ -232,15 +232,15 @@ module Integrations
 
       # Check if the Lever access token is valid, otherwise use Lever refresh token to get a new one
       def self.validate_token(client) # rubocop:disable Metrics/AbcSize
-        access_token = fetch_token(client, 'lever', 'access_token')
+        access_token = Token.fetch_token(client, 'lever', 'access_token')
         return access_token unless access_token.nil?
 
-        response_body = JSON.parse(lever_access_token(fetch_token!(client, 'lever', 'refresh_token'), client))
+        response_body = JSON.parse(lever_access_token(Token.fetch_token!(client, 'lever', 'refresh_token'), client))
         Rails.logger.debug("Received new access token: #{response_body['access_token']}")
         Rails.logger.debug("Token expires in: #{response_body['expires_in']} seconds")
         Rails.logger.debug("With refresh token: #{response_body['refresh_token']}")
-        IntegrationsController.save_token(client, 'OAuth Access Token', 'lever', 'access_token', response_body['access_token'], Time.now.utc + response_body['expires_in'].to_i, Time.now.utc)
-        IntegrationsController.save_token(client, 'OAuth Refresh Token', 'lever', 'refresh_token', response_body['refresh_token'], Time.now.utc + 1.year, Time.now.utc)
+        Token.save_token(client, 'OAuth Access Token', 'lever', 'access_token', response_body['access_token'], Time.now.utc + response_body['expires_in'].to_i, Time.now.utc)
+        Token.save_token(client, 'OAuth Refresh Token', 'lever', 'refresh_token', response_body['refresh_token'], Time.now.utc + 1.year, Time.now.utc)
         response_body['access_token']
       end
 

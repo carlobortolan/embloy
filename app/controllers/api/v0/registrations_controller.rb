@@ -169,7 +169,7 @@ module Api
         return unless @user.activity_status.zero?
 
         # TODO: Exception handling
-        @user.update_column('user_role', 'verified')
+        @user.update(user_role: :verified)
       end
 
       def send_activation_mail

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>OTP Confirmation</title>
+  </head>
+  <body>
+    <p>Hi <%= @user.first_name %>,</p>
+
+    <p>Thank you for applying using Embloy! Just one more step before you get started!</p>
+
+    <p>Please confirm your identity using the one-time passcode: <strong><%= @otp_token %></strong></p>
+
+    <p>This code will expire in 10 minutes.</p>
+
+    <p>Best,<br>
+    The Embloy Team</p>
+
+    <br>
+    <p><em>This is an automated message, please do not reply to this email.</em></p>
+  </body>
+</html>
