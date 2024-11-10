@@ -46,8 +46,8 @@ class GeniusQueryService < AuthenticationTokenService
 
   # The Encoder class is responsible for encoding tokens.
   class Encoder
-    MAX_INTERVAL = 31_557_600 # == 12 months == 1 year
-    MIN_INTERVAL = 60 # == 1 min
+    MAX_INTERVAL = 1.year.to_i
+    MIN_INTERVAL = 1.minute.to_i
 
     # Encodes a token for a given user ID and arguments.
     def self.call(user_id, args)
@@ -60,7 +60,7 @@ class GeniusQueryService < AuthenticationTokenService
       iat = Time.now.to_i
       sub = user_id
       bin_exp = if args.include?('exp') && !args['exp'].nil?
-                  args['exp'] = AuthenticationTokenService::Refresh.verify_expiration!(args['exp'] - iat, MAX_INTERVAL, MIN_INTERVAL)
+                  args['exp'] = AuthenticationTokenService::Refresh.verify_expiration!(args['exp'] - iat, MAX_INTERVAL, MIN_INTERVAL) + iat
                 else
                   iat + 1.month.to_i # standard validity interval (1 month)
                 end
