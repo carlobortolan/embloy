@@ -56,11 +56,11 @@ module Api
         end
       end
 
-      def verify_path_listed_job_id
+      def verify_path_listed_job_id(include_application_options)
         if id_blank_or_invalid?
           blank_error('job')
         else
-          validate_listed_job_id
+          validate_listed_job_id(include_application_options)
         end
       end
 
@@ -172,8 +172,12 @@ module Api
         not_found_error('job')
       end
 
-      def validate_listed_job_id
-        @job = Job.find(params[:id])
+      def validate_listed_job_id(include_application_options)
+        @job = if include_application_options
+                 Job.includes(:application_options).find(params[:id])
+               else
+                 Job.find(params[:id])
+               end
         removed_error('job') unless @job.job_status == 'listed' && @job.activity_status == 1
       rescue ActiveRecord::RecordNotFound
         not_found_error('job')
