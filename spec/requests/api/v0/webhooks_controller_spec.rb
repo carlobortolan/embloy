@@ -62,7 +62,8 @@ RSpec.describe 'WebhooksController', type: :request do
       end
 
       it 'returns [200 OK] with webhooks' do
-        Webhook.create!(user: @valid_user, url: 'https://api.embloy.com/api/v0/webhooks/ashby/e25ad8fdab066c4df683348872c08ec5', source: 'ashby', ext_id: 'ashby__5dfc1294-2890-4678-bd8a-3180cf235005', event: 'job.create')
+        Webhook.create!(user: @valid_user, url: 'https://api.embloy.com/api/v0/webhooks/ashby/e25ad8fdab066c4df683348872c08ec5', source: 'ashby',
+                        ext_id: 'ashby__5dfc1294-2890-4678-bd8a-3180cf235005', event: 'job.create')
         headers = { 'Authorization' => "Bearer #{@valid_access_token}" }
         get('/api/v0/user/webhooks', headers:)
         expect(response).to have_http_status(200)

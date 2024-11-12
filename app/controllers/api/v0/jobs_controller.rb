@@ -258,7 +258,7 @@ module Api
       end
 
       def fetch_user_coordinates
-        if Current.user&.longitude && Current.user&.latitude
+        if Current.user&.longitude && Current.user.latitude
           [Current.user.latitude, Current.user.longitude]
         else
           [nil, nil]
