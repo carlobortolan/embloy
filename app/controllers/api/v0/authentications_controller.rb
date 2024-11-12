@@ -57,16 +57,15 @@ module Api
 
       def create_otp
         email = otp_params[:email]
-        unless email.present?           
-          endblank_error('email') and return
-        end
+        endblank_error('email') and return unless email.present?
+
         @user = User.find_by(email:)
-      
-        if !@user.present?
+
+        unless @user.present?
           if otp_params[:request_token].present? && AuthenticationTokenService::Access::Decoder.call(otp_params[:request_token]).present?
             tmp = SecureRandom.hex(32)
-            @user = User.create!(email:, first_name: otp_params[:first_name] || "New", last_name: otp_params[:last_name] || "User", password: tmp, password_confirmation: tmp, activity_status: 1) # Create new user (-> onboarding as part of application)
-          else 
+            @user = User.create!(email:, first_name: otp_params[:first_name] || 'New', last_name: otp_params[:last_name] || 'User', password: tmp, password_confirmation: tmp, activity_status: 1) # Create new user (-> onboarding as part of application)
+          else
             not_found_error('user') and return
           end
         end
