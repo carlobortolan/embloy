@@ -63,13 +63,18 @@ module ApiExceptionHandler
 
     #--------------------------------------
 
-    rescue_from CustomExceptions::InvalidUser::Inactive,
-                with: :user_inactive_error
+    rescue_from CustomExceptions::InvalidUser::CredentialsWrong,
+                with: :user_unknown_error
 
     #--------------------------------------
 
-    rescue_from CustomExceptions::InvalidUser::Unknown,
+    rescue_from CustomExceptions::InvalidUser::LoggedOut,
                 with: :user_unknown_error
+
+    #--------------------------------------
+
+    rescue_from CustomExceptions::InvalidUser::Inactive,
+                with: :user_inactive_error
 
     #--------------------------------------
 
