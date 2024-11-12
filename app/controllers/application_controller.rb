@@ -455,7 +455,7 @@ class ApplicationController < ActionController::API
   # rescue_from ::AbstractController::DoubleRenderError, with: :err_server
   # rescue_from ::CustomExceptions::Unauthorized::Blocked, with: :err_blocked
   # rescue_from ::ActiveRecord::RecordNotUnique, with: :err_not_allowed
-
+  
   def err_server
     render(
       file: File.join(Rails.root,

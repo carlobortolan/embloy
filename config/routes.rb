@@ -92,7 +92,8 @@ Rails.application.routes.draw do
       post 'jobs/sync/:source', to: 'jobs#synchronize'
 
       # -----> COMPANIES <-----
-      get 'company/(/:id)/feed', to: 'company#feed'
+      get 'company/(/:id)/board', to: 'company#board'
+      get 'company/(/:id)/board/(/:job_slug)', to: 'company#job'
 
       # -----> QUICKLINK <-----
       post 'sdk/request/auth/token', to: 'quicklink#create_request'
