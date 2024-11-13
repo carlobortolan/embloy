@@ -40,10 +40,7 @@ Rails.application.routes.draw do
       patch 'auth/token/otp', to: 'authentications#verify_otp'
 
       # -----> TOKENS <-----
-      get 'tokens', to: 'tokens#index'
-      post 'tokens', to: 'tokens#create'
-      patch 'tokens/:id', to: 'tokens#update'
-      delete 'tokens/:id', to: 'tokens#destroy'
+      resources :tokens, only: %i[index create update destroy]
 
       # -----> USER <-----
       get 'user', to: 'user#show'
@@ -71,6 +68,11 @@ Rails.application.routes.draw do
       post 'user/(/:id)/reviews', to: 'reviews#create'
       delete 'user/(/:id)/reviews', to: 'reviews#destroy'
       patch 'user/(/:id)/reviews', to: 'reviews#update'
+
+      # -----> JOB-LISTS <-----
+      resources :job_lists, only: %i[index create show update destroy] do
+        resources :job_list_items, path: 'items', only: %i[create destroy]
+      end
 
       # -----> JOBS <-----
       get 'jobs', to: 'jobs#feed'

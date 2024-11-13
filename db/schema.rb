@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 20_240_904_144_926) do
+ActiveRecord::Schema[7.0].define(version: 20_241_113_125_804) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_trgm'
   enable_extension 'plpgsql'
@@ -108,7 +108,7 @@ ActiveRecord::Schema[7.0].define(version: 20_240_904_144_926) do
     t.bigint 'job_id', null: false
     t.bigint 'user_id', null: false
     t.string 'event_type', limit: 50
-    t.text 'event_details', limit: 500
+    t.text 'event_details'
     t.bigint 'previous_event_id'
     t.bigint 'next_event_id'
     t.datetime 'created_at', null: false
@@ -128,8 +128,8 @@ ActiveRecord::Schema[7.0].define(version: 20_240_904_144_926) do
     t.datetime 'updated_at', null: false
     t.datetime 'deleted_at'
     t.index ['deleted_at'], name: 'index_application_options_on_deleted_at'
-    t.index ['job_id'], name: 'application_options_job_id_index'
     t.index %w[job_id ext_id], name: 'index_application_options_on_job_id_and_ext_id', unique: true
+    t.index ['job_id'], name: 'application_options_job_id_index'
   end
 
   create_table 'applications', primary_key: %w[job_id user_id], force: :cascade do |t|
@@ -165,6 +165,25 @@ ActiveRecord::Schema[7.0].define(version: 20_240_904_144_926) do
   create_table 'currents', force: :cascade do |t|
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
+  end
+
+  create_table 'job_list_items', force: :cascade do |t|
+    t.bigint 'job_id', null: false
+    t.bigint 'job_list_id', null: false
+    t.text 'notes'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index %w[job_id job_list_id], name: 'index_job_list_items_on_job_id_and_job_list_id', unique: true
+    t.index ['job_id'], name: 'index_job_list_items_on_job_id'
+    t.index ['job_list_id'], name: 'index_job_list_items_on_job_list_id'
+  end
+
+  create_table 'job_lists', force: :cascade do |t|
+    t.string 'name'
+    t.bigint 'user_id', null: false
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['user_id'], name: 'index_job_lists_on_user_id'
   end
 
   create_table 'jobs', primary_key: 'job_id', id: :serial, force: :cascade do |t|
@@ -468,7 +487,7 @@ ActiveRecord::Schema[7.0].define(version: 20_240_904_144_926) do
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
     t.index ['ext_id'], name: 'index_webhooks_on_ext_id', unique: true
-    t.index ['user_id'], name: 'index_webhooks_on_user_id', unique: false
+    t.index ['user_id'], name: 'index_webhooks_on_user_id'
   end
 
   add_foreign_key 'active_storage_attachments', 'active_storage_blobs', column: 'blob_id'
@@ -479,6 +498,9 @@ ActiveRecord::Schema[7.0].define(version: 20_240_904_144_926) do
   add_foreign_key 'applications', 'jobs', primary_key: 'job_id', on_delete: :cascade
   add_foreign_key 'applications', 'users', on_delete: :cascade
   add_foreign_key 'company_users', 'users', column: 'id', on_delete: :cascade
+  add_foreign_key 'job_list_items', 'job_lists'
+  add_foreign_key 'job_list_items', 'jobs', primary_key: 'job_id'
+  add_foreign_key 'job_lists', 'users'
   add_foreign_key 'jobs', 'users', on_delete: :cascade
   add_foreign_key 'pay_charges', 'pay_customers', column: 'customer_id'
   add_foreign_key 'pay_charges', 'pay_subscriptions', column: 'subscription_id'
