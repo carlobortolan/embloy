@@ -16,6 +16,7 @@ class User < ApplicationRecord
                            dependent: :destroy
   has_many :applications
   has_many :webhooks, dependent: :delete_all
+  has_many :job_lists, dependent: :destroy
 
   pay_customer default_payment_processor: :stripe
   pay_customer stripe_attributes: :stripe_attributes
