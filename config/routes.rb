@@ -94,6 +94,9 @@ Rails.application.routes.draw do
       post 'jobs/sync/:source', to: 'jobs#synchronize'
 
       # -----> COMPANIES <-----
+      resources :companies, only: %i[show create update destroy] do
+        resources :teams, only: %i[index create show update destroy]
+      end
       get 'company/(/:id)/board', to: 'company#board'
       get 'company/(/:id)/board/(/:job_slug)', to: 'company#job'
 

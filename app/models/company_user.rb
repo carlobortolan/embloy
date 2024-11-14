@@ -4,7 +4,6 @@
 class CompanyUser < User
   validates :company_slug, uniqueness: { error: 'ERR_UNIQUE', description: 'Should be unique' }, on: %i[create update]
   validates :company_name, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
-                           uniqueness: true,
                            length: { maximum: 128, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
 
   validates :company_phone, presence: true, length: { maximum: 20, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }

@@ -40,6 +40,14 @@ module Api
       end
 
       # ============== API PATH VERIFICATIOn ================
+      def verify_path_company_id
+        if id_blank_or_invalid?
+          blank_error('company')
+        else
+          validate_company_id
+        end
+      end
+
       def verify_path_job_id
         if id_blank_or_invalid?
           blank_error('job')
@@ -90,7 +98,7 @@ module Api
 
       # ============== API SANDBOX BLACKLIST ================
       def block_sandbox_user
-        raise CustomExceptions::Unauthorized::Sandbox if Current.user.user_type == 'sandbox'
+        raise CustomExceptions::Unauthorized::Sandbox if Current.user.sandboxd?
       end
 
       private
@@ -187,6 +195,12 @@ module Api
         @job = Job.find(params[:id])
       rescue ActiveRecord::RecordNotFound
         not_found_error('job')
+      end
+
+      def validate_company_id
+        @company = CompanyUser.find_by!(company_slug: params[:id])
+      rescue ActiveRecord::RecordNotFound
+        not_found_error('company')
       end
 
       def validate_user_id
