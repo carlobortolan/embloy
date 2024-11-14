@@ -2,10 +2,12 @@
 
 # The User class represents a user in the application.
 class User < ApplicationRecord
+  # STI
+  self.inheritance_column = :type
   include SubscriptionStatus
 
   has_secure_password
-  enum :user_type, { company: 'company', user_private: 'private', sandbox: 'sandbox' }, default: 'private'
+  enum :type, { CompanyUser: 'CompanyUser', PrivateUser: 'PrivateUser', SandboxUser: 'SandboxUser' }, default: 'PrivateUser'
   enum :user_role, { admin: 'admin', editor: 'editor', developer: 'developer', moderator: 'moderator', verified: 'verified', spectator: 'spectator' }, default: :spectator
   has_one :preferences, dependent: :delete
   has_one_attached :image_url
@@ -54,7 +56,6 @@ class User < ApplicationRecord
   validates :github_url, presence: false, length: { maximum: 150, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
   validates :portfolio_url, presence: false, length: { maximum: 150, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
   validates :phone, presence: false, length: { maximum: 100, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
-  # validates :user_type, inclusion: { in: %w[company private sandbox], message: 'ERR_INVALID', description: 'Attribute is invalid' }, presence: false
   validates :user_role, inclusion: { in: %w[admin editor developer moderator verified spectator], error: 'ERR_INVALID', description: 'Attribute is invalid' }, presence: false
   validates :image_url, presence: false
   validate :validate_image_size
@@ -94,12 +95,47 @@ class User < ApplicationRecord
     'https://avatars.githubusercontent.com/u/132399266'
   end
 
-  def sandboxd?
-    user_type == 'sandbox'
-  end
-
   def admin?
     user_role == 'admin'
+  end
+
+  def switch_to_sandbox
+    return if sandboxd?
+
+    update!(type: 'SandboxUser')
+  end
+
+  def switch_to_company(company_attributes)
+    return if company?
+
+    return unless company_attributes
+
+    update!(type: 'CompanyUser',
+            company_name: company_attributes[:company_name],
+            company_slug: company_attributes[:company_slug],
+            company_phone: company_attributes[:company_phone],
+            company_email: company_attributes[:company_email],
+            company_url: company_attributes[:company_url],
+            company_industry: company_attributes[:company_industry],
+            company_description: company_attributes[:company_description])
+  end
+
+  def switch_to_private
+    return if private?
+
+    update!(type: 'PrivateUser')
+  end
+
+  def sandboxd?
+    type == 'SandboxUser'
+  end
+
+  def company?
+    type == 'CompanyUser'
+  end
+
+  def private?
+    type == 'PrivateUser'
   end
 
   private
