@@ -91,11 +91,9 @@ module Api
       end
 
       def upload_image
-        ActiveStorage::Current.url_options = { host: request.host_with_port, protocol: request.protocol }
-
-        attach_image if params[:image_url].present?
+        Current.user.update(image_url: params[:image_url]) if params[:image_url].present?
         render status: 200, json: { image_url: Current.user.image_url.url.to_s }
-      rescue Excon::Error::Socket, ActiveStorage::IntegrityError => e
+      rescue StandardError => e
         Rails.logger.error("Failed to upload image: #{e.message}")
         render status: 500, json: { error: 'Failed to upload image:' }
       end
@@ -109,8 +107,6 @@ module Api
       private
 
       def build_applications_json(applications)
-        ActiveStorage::Current.url_options = { host: request.host_with_port, protocol: request.protocol }
-
         applications.map do |application|
           {
             application:,
@@ -126,16 +122,6 @@ module Api
         return [] if applications.empty?
 
         applications.map(&:job)
-      end
-
-      def attach_image
-        image = params[:image_url]
-        if image.is_a?(ActionDispatch::Http::UploadedFile)
-          Current.user.image_url.attach(io: image.open, filename: image.original_filename, content_type: image.content_type)
-        else
-          default_image = Rails.root.join('app/assets/images/logo-light.svg')
-          Current.user.image_url.attach(io: File.open(default_image), filename: 'default.svg', content_type: 'image/svg')
-        end
       end
 
       def user_params

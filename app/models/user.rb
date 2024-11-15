@@ -73,15 +73,12 @@ class User < ApplicationRecord
     years_since_birth - (birthday_has_passed? ? 0 : 1)
   end
 
-  def to_hash_except_image_url
-    JSON.parse(to_json(except: [:image_url]))
-  end
-
   def image_url_or_default
     return image_url.url if image_url.url
 
     'https://avatars.githubusercontent.com/u/132399266' if !image_url.url.nil? && image_url.attached?
-  rescue Fog::Errors::Error
+  rescue StandardError => e
+    Rails.logger.error("Failed to get user image: #{e.message}")
     'https://avatars.githubusercontent.com/u/132399266'
   end
 
@@ -224,8 +221,7 @@ class User < ApplicationRecord
   def image_format_validation
     return unless !image_url.nil? && image_url.attached?
 
-    allowed_formats = %w[image/png image/jpeg
-                         image/jpg]
+    allowed_formats = %w[image/png image/jpeg image/jpg]
     return if allowed_formats.include?(image_url.blob.content_type)
 
     errors.add(:image_url, { error: 'ERR_INVALID', description: 'must be a PNG, JPG, or JPEG image' })

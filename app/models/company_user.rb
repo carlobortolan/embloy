@@ -35,10 +35,19 @@ class CompanyUser < User
       company_urls: company_urls,
       company_industry: company_industry,
       company_description: company_description,
-      company_logo: company_logo.attached? ? rails_blob_url(company_logo, only_path: false) : nil,
+      company_logo: company_logo_or_default,
       company_slug: company_slug
     }
     company
+  end
+
+  def company_logo_or_default
+    return company_logo.url if company_logo.url
+
+    'https://avatars.githubusercontent.com/u/132399266' if company_logo.url.nil? && company_logo.attached?
+  rescue StandardError => e
+    Rails.logger.error("Failed to get company logo: #{e.message}")
+    'https://avatars.githubusercontent.com/u/132399266'
   end
 
   def self.check_attributes(company_attributes, check_missing: true)
