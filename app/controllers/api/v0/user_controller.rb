@@ -68,8 +68,7 @@ module Api
         if Current.user.nil?
           render(status: 204)
         else
-          render(status: 200,
-                 json: "{\"user\": #{User.json_for(Current.user)}}")
+          render(status: 200, json: Current.user.dao(include_user: true))
         end
       end
 
@@ -88,8 +87,7 @@ module Api
 
       def destroy
         Current.user.destroy!
-        render status: 200,
-               json: { message: 'User deleted!' }
+        render status: 200, json: { message: 'User deleted!' }
       end
 
       def upload_image

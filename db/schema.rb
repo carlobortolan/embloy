@@ -203,7 +203,6 @@ ActiveRecord::Schema[7.0].define(version: 20_241_114_005_852) do
     t.integer 'euro_salary'
     t.float 'relevance_score'
     t.string 'currency'
-    t.string 'image_url', limit: 500
     t.datetime 'start_slot', precision: nil
     t.float 'longitude', null: false
     t.float 'latitude', null: false
@@ -441,7 +440,6 @@ ActiveRecord::Schema[7.0].define(version: 20_241_114_005_852) do
     t.string 'email', limit: 150, null: false
     t.string 'password_digest'
     t.integer 'activity_status', limit: 2, default: 0, null: false
-    t.string 'image_url', limit: 500
     t.string 'first_name', limit: 128, null: false
     t.string 'last_name', limit: 128, null: false
     t.float 'longitude'
@@ -474,7 +472,7 @@ ActiveRecord::Schema[7.0].define(version: 20_241_114_005_852) do
     t.string 'company_slug', limit: 100
     t.string 'company_phone', limit: 20
     t.string 'company_email', limit: 150
-    t.string 'company_url', limit: 150
+    t.jsonb 'company_urls'
     t.string 'company_industry', limit: 150
     t.text 'company_description'
     t.index ['email'], name: 'user_email_index', unique: true

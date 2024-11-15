@@ -5,13 +5,51 @@ module Api
     # CompanyController handles job-related actions
     class CompanyController < ApiController
       skip_before_action :set_current_user, only: %i[board job]
-      before_action :verify_path_company_id
+      before_action :verify_path_company_id, except: %i[create]
+
+      def show
+        if show_params[:include_user] == '1' && @company == Current.user
+          render(status: 200, json: Current.user.dao(include_user: true))
+        else
+          render(status: 200, json: @company.dao)
+        end
+      end
+
+      def create
+        must_be_subscribed!
+        return conflict_error('company', 'You already have a company account') if Current.user.company?
+
+        company, errors = Current.user.switch_to_company(company_params)
+
+        if errors
+          render status: 400, json: { error: 'Bad request', details: errors }
+        else
+          render(status: 201, json: company.dao)
+        end
+      end
+
+      def update
+        return access_denied_error('company') unless @company == Current.user
+
+        err = CompanyUser.check_attributes(company_params, check_missing: false)
+        return render(status: 400, json: { error: 'Bad request', details: err }) if err
+
+        if @company.update(company_params)
+          render(status: 200, json: @company.dao)
+        else
+          render status: 400, json: { error: 'Bad request', details: @company.errors.details }
+        end
+      end
+
+      def destroy
+        return access_denied_error('company') unless @company == Current.user
+
+        @company.switch_to_private!
+        render status: 200, json: { message: 'Company account deleted!' }
+      end
 
       # Returns all public jobs (without attachments and options) of a company user
       def board
-        must_be_subscribed!(@company.id, @company)
-        raise CustomExceptions::Subscription::ExpiredOrMissing if @company.type != 'CompanyUser'
-
         jobs = @company.jobs.except(:includes)
                        .select(:job_id, :title, :job_type, :job_slug, :job_status, :referrer_url, :salary, :currency,
                                :start_slot, :duration, :code_lang, :longitude, :latitude,
@@ -19,23 +57,15 @@ module Api
                                :applications_count, :created_at, :updated_at)
                        .where(job_status: :listed, activity_status: 1)
                        .order(created_at: :desc)
-
-        user_attributes = @company.slice(:id, :first_name, :last_name, :email, :phone, :linkedin_url, :instagram_url, :twitter_url, :facebook_url, :github_url, :portfolio_url,
-                                         :user_role, :type, :company_name, :company_slug, :company_phone, :company_email, :company_url, :company_industry, :company_description)
-        user_attributes[:image_url] = @company.image_url.attached? ? url_for(@company.image_url) : nil
-
-        render(status: jobs.nil? || jobs.empty? ? 204 : 200, json: { company: user_attributes, jobs: })
+        render(status: jobs.nil? || jobs.empty? ? 204 : 200, json: @company.dao.merge(jobs: jobs))
       end
 
       # Returns a single **listed** job (without options) of a company user
       def job
-        must_be_subscribed!(@company.id, @company)
-        raise CustomExceptions::Subscription::ExpiredOrMissing if @company.type != 'CompanyUser'
-
         job = @company.jobs.find_by(job_slug: params[:job_slug])
 
         return not_found_error('job') if job.nil?
-        return removed_error('job') unless job.job_status == 'listed' && job.activity_status == 1
+        return conflict_error('job', 'Job is not listed or active') unless job.job_status == 'listed' && job.activity_status == 1
 
         job_attributes = job.slice(:job_id, :title, :job_type, :job_slug, :job_status, :referrer_url, :salary, :currency,
                                    :start_slot, :duration, :code_lang, :longitude, :latitude,
@@ -43,9 +73,17 @@ module Api
                                    :applications_count, :description, :created_at, :updated_at)
         job_attributes[:image_url] = job.image_url.attached? ? url_for(job.image_url) : nil
 
-        user_attributes = @company.slice(:id, :first_name, :last_name, :email, :phone, :linkedin_url, :instagram_url, :twitter_url, :facebook_url, :github_url, :portfolio_url,
-                                         :user_role, :type, :company_name, :company_slug, :company_phone, :company_email, :company_url, :company_industry, :company_description)
-        render(status: 200, json: { company: user_attributes, job: job_attributes })
+        render(status: 200, json: @company.dao.merge(job: job_attributes))
+      end
+
+      private
+
+      def company_params
+        params.permit(:company_name, :company_slug, :company_phone, :company_email, :company_industry, :company_description, :company_logo, company_urls: [])
+      end
+
+      def show_params
+        params.permit(:include_user)
       end
     end
   end

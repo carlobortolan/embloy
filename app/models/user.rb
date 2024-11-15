@@ -5,6 +5,7 @@ class User < ApplicationRecord
   # STI
   self.inheritance_column = :type
   include SubscriptionStatus
+  include Rails.application.routes.url_helpers
 
   has_secure_password
   enum :type, { CompanyUser: 'CompanyUser', PrivateUser: 'PrivateUser', SandboxUser: 'SandboxUser' }, default: 'PrivateUser'
@@ -57,7 +58,6 @@ class User < ApplicationRecord
   validates :portfolio_url, presence: false, length: { maximum: 150, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
   validates :phone, presence: false, length: { maximum: 100, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
   validates :user_role, inclusion: { in: %w[admin editor developer moderator verified spectator], error: 'ERR_INVALID', description: 'Attribute is invalid' }, presence: false
-  validates :image_url, presence: false
   validate :validate_image_size
   validate :country_code_validation
   validate :image_format_validation
@@ -71,16 +71,6 @@ class User < ApplicationRecord
     return unless date_of_birth
 
     years_since_birth - (birthday_has_passed? ? 0 : 1)
-  end
-
-  # Current approach; - TODO: @cb find easier way to serialize job JSONs & remove commented code when switching to S3
-  # Returns a JSON representation of the user.
-  def self.json_for(user)
-    return unless user
-
-    user_hash = user.to_hash_except_image_url
-    user_hash['image_url'] = user.image_url_or_default
-    user_hash.to_json
   end
 
   def to_hash_except_image_url
@@ -99,31 +89,49 @@ class User < ApplicationRecord
     user_role == 'admin'
   end
 
-  def switch_to_sandbox
+  def switch_to_sandbox!
     return if sandboxd?
 
     update!(type: 'SandboxUser')
   end
 
   def switch_to_company(company_attributes)
-    return if company?
+    return [nil, { type: 'You already have a company account' }] if company?
 
-    return unless company_attributes
+    err = CompanyUser.check_attributes(company_attributes)
+    return [nil, err] if err
 
-    update!(type: 'CompanyUser',
-            company_name: company_attributes[:company_name],
-            company_slug: company_attributes[:company_slug],
-            company_phone: company_attributes[:company_phone],
-            company_email: company_attributes[:company_email],
-            company_url: company_attributes[:company_url],
-            company_industry: company_attributes[:company_industry],
-            company_description: company_attributes[:company_description])
+    puts 'Company attributes are valid'
+
+    transaction do
+      update!(type: 'CompanyUser')
+
+      company_user = CompanyUser.find(id)
+      if company_user.update(company_attributes)
+        [company_user, nil]
+      else
+        update!(type: 'PrivateUser') # Rollback type change if update fails
+        [nil, company_user.errors]
+      end
+    end
+  rescue ActiveRecord::RecordInvalid => e
+    [nil, e.record.errors]
   end
 
-  def switch_to_private
+  def switch_to_private!
     return if private?
 
-    update!(type: 'PrivateUser')
+    update!(
+      type: 'PrivateUser',
+      company_name: nil,
+      company_slug: nil,
+      company_phone: nil,
+      company_email: nil,
+      company_urls: nil,
+      company_industry: nil,
+      company_description: nil,
+      company_logo: nil
+    )
   end
 
   def sandboxd?
@@ -136,6 +144,44 @@ class User < ApplicationRecord
 
   def private?
     type == 'PrivateUser'
+  end
+
+  def dao(*) # rubocop:disable Metrics/AbcSize
+    user = {
+      id: id,
+      email: email,
+      first_name: first_name,
+      last_name: last_name,
+      date_of_birth: date_of_birth,
+      longitude: longitude,
+      latitude: latitude,
+      country_code: country_code,
+      postal_code: postal_code,
+      city: city,
+      address: address,
+      activity_status: activity_status,
+      user_role: user_role,
+      type: type,
+      view_count: view_count,
+      applications_count: applications_count,
+      jobs_count: jobs_count,
+      linkedin_url: linkedin_url,
+      instagram_url: instagram_url,
+      twitter_url: twitter_url,
+      facebook_url: facebook_url,
+      github_url: github_url,
+      portfolio_url: portfolio_url,
+      phone: phone,
+      application_notifications: application_notifications,
+      communication_notifications: communication_notifications,
+      marketing_notifications: marketing_notifications,
+      security_notifications: security_notifications,
+      image_url: image_url_or_default,
+      created_at: created_at,
+      updated_at: updated_at
+    }
+    user[:preferences] = preferences if preferences
+    user
   end
 
   private
@@ -171,8 +217,7 @@ class User < ApplicationRecord
   def country_code_validation
     return if country_code.nil? || country_code.empty? || IsoCountryCodes.find(country_code)
 
-    errors.add(:country_code,
-               'is not a valid ISO country code')
+    errors.add(:country_code, 'is not a valid ISO country code')
   end
 
   def image_format_validation
@@ -182,9 +227,7 @@ class User < ApplicationRecord
                          image/jpg]
     return if allowed_formats.include?(image_url.blob.content_type)
 
-    errors.add(:image_url,
-               { error: 'ERR_INVALID',
-                 description: 'must be a PNG, JPG, or JPEG image' })
+    errors.add(:image_url, { error: 'ERR_INVALID', description: 'must be a PNG, JPG, or JPEG image' })
   end
 
   def password_validation
