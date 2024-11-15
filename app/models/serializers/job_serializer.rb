@@ -80,10 +80,19 @@ module Serializers
 
     def self.add_employer_details(job, res_hash)
       user = job.user
-      res_hash['employer_email'] = user.email
-      res_hash['employer_name'] = "#{user.first_name} #{user.last_name}"
-      res_hash['employer_phone'] = user.phone
-      res_hash['employer_image_url'] = user.image_url&.url || ''
+      if user.company?
+        res_hash['employer_email'] = user.company_email
+        res_hash['employer_name'] = user.company_name
+        res_hash['employer_phone'] = user.company_phone
+        res_hash['employer_image_url'] = user.company_logo&.url || ''
+      else
+        res_hash['employer_email'] = user.email
+        res_hash['employer_name'] = "#{user.first_name} #{user.last_name}"
+        res_hash['employer_phone'] = user.phone
+        res_hash['employer_image_url'] = user.image_url&.url || ''
+      end
+
+      res_hash
     end
   end
 end

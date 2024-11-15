@@ -73,15 +73,6 @@ class User < ApplicationRecord
     years_since_birth - (birthday_has_passed? ? 0 : 1)
   end
 
-  def image_url_or_default
-    return image_url.url if image_url.url
-
-    'https://avatars.githubusercontent.com/u/132399266' if !image_url.url.nil? && image_url.attached?
-  rescue StandardError => e
-    Rails.logger.error("Failed to get user image: #{e.message}")
-    'https://avatars.githubusercontent.com/u/132399266'
-  end
-
   def admin?
     user_role == 'admin'
   end
@@ -97,8 +88,6 @@ class User < ApplicationRecord
 
     err = CompanyUser.check_attributes(company_attributes)
     return [nil, err] if err
-
-    puts 'Company attributes are valid'
 
     transaction do
       update!(type: 'CompanyUser')
@@ -174,7 +163,7 @@ class User < ApplicationRecord
       communication_notifications: communication_notifications,
       marketing_notifications: marketing_notifications,
       security_notifications: security_notifications,
-      image_url: image_url_or_default,
+      image_url: image_url&.url || '',
       created_at: created_at,
       updated_at: updated_at
     }
