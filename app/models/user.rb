@@ -147,7 +147,8 @@ class User < ApplicationRecord
   end
 
   def dao(*) # rubocop:disable Metrics/AbcSize
-    user = {
+    user = {}
+    user[:user] = {
       id: id,
       email: email,
       first_name: first_name,
