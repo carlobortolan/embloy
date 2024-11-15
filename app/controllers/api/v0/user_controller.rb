@@ -91,11 +91,16 @@ module Api
       end
 
       def upload_image
-        Current.user.update(image_url: params[:image_url]) if params[:image_url].present?
-        render status: 200, json: { image_url: Current.user.image_url.url.to_s }
+        render status: 400, json: { error: 'No image provided' } unless params[:image_url]&.present?
+
+        if Current.user.update(image_url: params[:image_url])
+          render status: 200, json: { image_url: Current.user.image_url.url.to_s }
+        else
+          render status: 400, json: { error: 'Bad request', details: Current.user.errors.details }
+        end
       rescue StandardError => e
         Rails.logger.error("Failed to upload image: #{e.message}")
-        render status: 500, json: { error: 'Failed to upload image:' }
+        render status: 500, json: { error: 'Failed to upload image' }
       end
 
       def events
