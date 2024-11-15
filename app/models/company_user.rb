@@ -26,7 +26,7 @@ class CompanyUser < User
 
   def dao(include_user: false)
     company = {}
-    company[:user] = super() if include_user
+    company.merge!(super()) if include_user
     company[:company] = {
       id: id,
       company_name: company_name,
