@@ -160,10 +160,14 @@ class ApplicationController < ActionController::API
     Current.user.active_subscription?
   end
 
-  def must_be_subscribed!(id = nil)
-    set_current_id(id)
-    return if Current.user.active_subscription?
+  def must_be_subscribed!(id = nil, user = nil)
+    set_current_id(id) if user.nil?
 
+    if user.nil?
+      return if Current.user.active_subscription?
+    elsif user.active_subscription?
+      return
+    end
     raise CustomExceptions::Subscription::ExpiredOrMissing
   end
 

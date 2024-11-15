@@ -186,7 +186,7 @@ class AuthenticationTokenService
         AuthenticationTokenService::Refresh::Decoder.call(refresh_token)[0]
         sub = Current.user.id # who "owns" the token
         typ = Current.user.user_role
-        mod = Current.user.user_type
+        mod = Current.user.type
         exp = Time.now.to_i + 20.minutes.to_i # standard validity interval: 1200 sec == 20 min
         AuthenticationTokenService::Access.encode(sub, exp, typ, mod, scope)
       end

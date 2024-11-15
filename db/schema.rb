@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 20_241_113_125_804) do
+ActiveRecord::Schema[7.0].define(version: 20_241_114_005_852) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_trgm'
   enable_extension 'plpgsql'
@@ -27,7 +27,6 @@ ActiveRecord::Schema[7.0].define(version: 20_241_113_125_804) do
   create_enum 'question_type', %w[yes_no short_text long_text number link single_choice multiple_choice location file date]
   create_enum 'rating_type', %w[1 2 3 4 5]
   create_enum 'user_role', %w[admin editor developer moderator verified spectator]
-  create_enum 'user_type', %w[company private sandbox]
 
   create_table 'action_text_rich_texts', force: :cascade do |t|
     t.string 'name', null: false
@@ -93,10 +92,10 @@ ActiveRecord::Schema[7.0].define(version: 20_241_113_125_804) do
     t.bigint 'user_id', null: false
     t.bigint 'application_option_id', null: false
     t.text 'answer'
-    t.integer 'version', default: 1, null: false
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
     t.datetime 'deleted_at'
+    t.integer 'version', default: 1, null: false
     t.index ['application_option_id'], name: 'application_answers_on_application_option_id_index'
     t.index ['deleted_at'], name: 'index_application_answers_on_deleted_at'
     t.index ['job_id'], name: 'application_answers_job_id_index'
@@ -136,12 +135,12 @@ ActiveRecord::Schema[7.0].define(version: 20_241_113_125_804) do
     t.integer 'job_id', null: false
     t.integer 'user_id', null: false
     t.string 'ext_id', limit: 100
-    t.integer 'version', default: 1, null: false
     t.datetime 'updated_at', null: false
     t.datetime 'created_at', null: false
     t.enum 'status', default: '0', null: false, enum_type: 'application_status'
     t.string 'response', limit: 500
     t.datetime 'deleted_at'
+    t.integer 'version', default: 1, null: false
     t.index ['deleted_at'], name: 'index_applications_on_deleted_at'
     t.index %w[job_id user_id], name: 'application_job_id_user_id_index', unique: true
     t.index ['job_id'], name: 'application_job_id_index'
@@ -204,7 +203,6 @@ ActiveRecord::Schema[7.0].define(version: 20_241_113_125_804) do
     t.integer 'euro_salary'
     t.float 'relevance_score'
     t.string 'currency'
-    t.string 'image_url', limit: 500
     t.datetime 'start_slot', precision: nil
     t.float 'longitude', null: false
     t.float 'latitude', null: false
@@ -216,12 +214,12 @@ ActiveRecord::Schema[7.0].define(version: 20_241_113_125_804) do
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
     t.integer 'applications_count', default: 0, null: false
-    t.integer 'application_options_count', default: 0, null: false
     t.integer 'employer_rating', default: 0, null: false
     t.text 'job_notifications', default: '1', null: false
     t.integer 'boost', default: 0, null: false
     t.datetime 'deleted_at'
     t.geography 'job_value', limit: { srid: 4326, type: 'st_point', has_z: true, geographic: true }
+    t.integer 'application_options_count', default: 0
     t.index "to_tsvector('simple'::regconfig, (((((((((((((((((COALESCE(title, ''::character varying))::text || ' '::text) || (COALESCE(job_type, ''::character varying))::text) || ' '::text) || (COALESCE(\"position\", ''::character varying))::text) || ' '::text) || (COALESCE(key_skills, ''::character varying))::text) || ' '::text) || COALESCE(description, ''::text)) || ' '::text) || (COALESCE(country_code, ''::character varying))::text) || ' '::text) || (COALESCE(city, ''::character varying))::text) || ' '::text) || (COALESCE(postal_code, ''::character varying))::text) || ' '::text) || (COALESCE(address, ''::character varying))::text))",
             name: 'jobs_tsvector_idx', using: :gin
     t.index ['country_code'], name: ' job_country_code_index '
@@ -442,7 +440,6 @@ ActiveRecord::Schema[7.0].define(version: 20_241_113_125_804) do
     t.string 'email', limit: 150, null: false
     t.string 'password_digest'
     t.integer 'activity_status', limit: 2, default: 0, null: false
-    t.string 'image_url', limit: 500
     t.string 'first_name', limit: 128, null: false
     t.string 'last_name', limit: 128, null: false
     t.float 'longitude'
@@ -452,7 +449,7 @@ ActiveRecord::Schema[7.0].define(version: 20_241_113_125_804) do
     t.string 'city', limit: 45
     t.string 'address', limit: 150
     t.datetime 'date_of_birth'
-    t.enum 'user_type', default: 'private', null: false, enum_type: 'user_type'
+    t.string 'type', default: 'PrivateUser', null: false
     t.integer 'view_count', default: 0, null: false
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
@@ -467,13 +464,20 @@ ActiveRecord::Schema[7.0].define(version: 20_241_113_125_804) do
     t.string 'facebook_url', limit: 150
     t.string 'instagram_url', limit: 150
     t.string 'linkedin_url', limit: 150
-    t.string 'github_url', limit: 150
-    t.string 'portfolio_url', limit: 150
     t.decimal 'phone'
     t.string 'degree', limit: 50
+    t.string 'github_url', limit: 150
+    t.string 'portfolio_url', limit: 150
+    t.string 'company_name', limit: 128
+    t.string 'company_slug', limit: 100
+    t.string 'company_phone', limit: 20
+    t.string 'company_email', limit: 150
+    t.jsonb 'company_urls'
+    t.string 'company_industry', limit: 150
+    t.text 'company_description'
     t.index ['email'], name: 'user_email_index', unique: true
     t.index %w[first_name last_name], name: 'user_name_index'
-    t.index ['user_type'], name: 'user_user_type_index'
+    t.index ['type'], name: 'user_user_type_index'
   end
 
   create_table 'webhooks', force: :cascade do |t|

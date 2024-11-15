@@ -297,7 +297,7 @@ module ApiExceptionHandler
   end
 
   def genius_query_removed_error
-    removed_error('genius_query')
+    conflict_error('genius_query', 'The query was removed and cannot be accessed anymore')
   end
 
   def custom_validity_invalid_input_error
@@ -434,8 +434,8 @@ module ApiExceptionHandler
 
   #--------------------------------------
 
-  def removed_error(attribute)
-    render_error(attribute, 'ERR_REMOVED', 'Attribute was removed and cannot be accessed anymore', 409)
+  def conflict_error(attribute, description = 'Attribute is already submitted')
+    render_error(attribute, 'ERR_REMOVED', description, 409)
   end
 
   #--------------------------------------
