@@ -7,10 +7,16 @@ class ApplicationController < ActionController::API
   include SpatialJobValue
   include Integrations
 
-  # ============ WEB-APP BEFORE ACTIONS ==============
+  # ============== API BEFORE ACTIONS ================
   before_action :set_notifications, unless: -> { Current.user.nil? }
   before_action :require_user_not_blacklisted!, unless: -> { Current.user.nil? }
+  before_action :set_default_url_options
 
+  def set_default_url_options
+    ActiveStorage::Current.url_options = { host: request.host_with_port, protocol: request.protocol }
+  end
+
+  
   # =============== Blacklisted User Check ===============
   # ================ WITH DATABASE LOOKUP ================
   def require_user_not_blacklisted(id = nil)
