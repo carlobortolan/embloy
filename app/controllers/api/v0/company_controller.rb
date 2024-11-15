@@ -57,7 +57,7 @@ module Api
                                :applications_count, :created_at, :updated_at)
                        .where(job_status: :listed, activity_status: 1)
                        .order(created_at: :desc)
-        render(status: jobs.nil? || jobs.empty? ? 204 : 200, json: @company.dao.merge(jobs: jobs))
+        render(status: jobs.nil? || jobs.empty? ? 204 : 200, json: @company.dao.merge(jobs: jobs.map { |job| job.dao[:job] }))
       end
 
       # Returns a single **listed** job (without options) of a company user
@@ -67,13 +67,7 @@ module Api
         return not_found_error('job') if job.nil?
         return conflict_error('job', 'Job is not listed or active') unless job.job_status == 'listed' && job.activity_status == 1
 
-        job_attributes = job.slice(:job_id, :title, :job_type, :job_slug, :job_status, :referrer_url, :salary, :currency,
-                                   :start_slot, :duration, :code_lang, :longitude, :latitude,
-                                   :country_code, :postal_code, :city, :address, :view_count,
-                                   :applications_count, :description, :created_at, :updated_at)
-        job_attributes[:image_url] = job.image_url.attached? ? url_for(job.image_url) : nil
-
-        render(status: 200, json: @company.dao.merge(job: job_attributes))
+        render(status: 200, json: @company.dao.merge(job.dao(include_image: true, include_description: true)))
       end
 
       private

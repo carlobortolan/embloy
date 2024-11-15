@@ -11,6 +11,7 @@ module Dao
       job[:job] = {
         id: id,
         title: title,
+        position: position,
         job_type: job_type,
         job_slug: job_slug,
         job_status: job_status,

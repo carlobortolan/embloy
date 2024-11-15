@@ -16,7 +16,7 @@ module Api
 
         if job.save
           process_after_save(job)
-          render status: 201, json: { message: 'Job created!' }
+          render status: 201, json: job.dao(include_image: true, include_employer: true, include_application_options: true)
         else
           render status: 400, json: { error: 'Bad request', details: job.errors.details }
         end
@@ -33,7 +33,7 @@ module Api
 
         if @job.update(job_params)
           process_after_save(@job)
-          render status: 200, json: { message: 'Job updated!' }
+          render status: 200, json: @job.dao(include_image: true, include_employer: true, include_application_options: true)
         else
           render status: 400, json: { error: 'Bad request', details: @job.errors.details }
         end
@@ -59,6 +59,7 @@ module Api
       # Creates feed based on current user's preferences (if available); if the current user is not verified yet or
       # isn't logged in, his feed consists of random jobs (limit 100)
       def feed
+        render status: 410, json: { message: 'This endpoint is deprecated.' } and return
         redirect = validate_coordinates
         return redirect if redirect.is_a?(String)
 
@@ -80,7 +81,7 @@ module Api
         if jobs.empty?
           render(status: 204, json: { jobs: })
         else
-          render(status: 200, json: "{\"jobs\": [#{Job.get_jsons_include_user(jobs)}]}")
+          render(status: 200, json: { jobs: jobs.map { |job| job.dao[:job]} })
         end
       end
 
@@ -94,11 +95,11 @@ module Api
         return access_denied_error('job') if (job.user_id != Current.user.id && job.job_status != 'listed') || job.nil?
 
         mark_notifications_as_read
-        render(status: 200, json: "{\"job\": #{Job.json_for(job)}}")
+        render(status: 200, json: job.dao(include_image: true, include_employer: true, include_description: true, include_application_options: true))
       end
 
       def find
-        jobs = job_params[:query].presence ? search_jobs : Job.includes(image_url_attachment: :blob).includes([:rich_text_description]).all
+        jobs = job_params[:query].presence ? search_jobs : Job.includes(image_url_attachment: :blob).includes([:rich_text_description, :user]).all
 
         render status: 204, json: { message: 'No jobs found!' } and return if jobs.blank?
 
@@ -193,9 +194,9 @@ module Api
 
       def create_feed_request(jobs, url)
         body = if Current.user&.preferences
-                 "{\"pref\": #{Current.user.preferences.to_json}, \"slice\": [#{Job.jsons_for(jobs)}]}"
+                  {pref: Current.user.preferences.to_json, slice: jobs.to_json}
                else
-                 "{\"slice\": [#{Job.jsons_for(jobs)}]}"
+                  {slice: jobs.to_json}
                end
 
         Net::HTTP::Post.new(url).tap do |request|
@@ -251,7 +252,7 @@ module Api
 
       def render_jobs(tag, jobs)
         if jobs.present?
-          render status: 200, json: "{\"#{tag}\": [#{Job.jsons_for(jobs.page(find_job_params[:page]).per(24))}]}"
+          render status: 200, json: {"#{tag}": jobs.page(find_job_params[:page]).per(24).map { |job| job.dao(include_image: true, include_description: true, include_employer: true)[:job]}}
         else
           render status: 204, json: { message: 'No jobs found!' }
         end
