@@ -45,9 +45,13 @@ class CompanyUser < User
     errors = []
     required_keys = %w[company_name company_phone company_email company_slug company_logo]
     required_keys.each do |key|
-      errors << { error: 'ERR_MISSING', description: "The key '#{key}' is missing" } and next unless company_attributes.key?(key) || !check_missing
+      if check_missing
+        errors << { error: 'ERR_MISSING', description: "The key '#{key}' is missing" } and next unless company_attributes.key?(key)
 
-      errors << { error: 'ERR_BLANK', description: "The key '#{key}' can't be blank" } if company_attributes[key].blank?
+        errors << { error: 'ERR_BLANK', description: "The key '#{key}' can't be blank" } if company_attributes[key].blank?
+      elsif company_attributes.key?(key) && company_attributes[key].blank?
+        errors << { error: 'ERR_BLANK', description: "The key '#{key}' can't be blank" }
+      end
     end
     errors.empty? ? nil : errors
   end
