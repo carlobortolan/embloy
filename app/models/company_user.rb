@@ -3,6 +3,7 @@
 # Represents a special User class used for company users
 class CompanyUser < User
   include Rails.application.routes.url_helpers
+  include Dao::CompanyUserDao
 
   has_rich_text :company_description
   has_one_attached :company_logo
@@ -23,23 +24,6 @@ class CompanyUser < User
   validate :validate_company_urls
   before_save :set_default_company_slug, if: -> { company_slug.nil? }
   before_save :parse_company_urls
-
-  def dao(include_user: false)
-    company = {}
-    company.merge!(super()) if include_user
-    company[:company] = {
-      id: id,
-      company_name: company_name,
-      company_phone: company_phone,
-      company_email: company_email,
-      company_urls: company_urls,
-      company_industry: company_industry,
-      company_description: company_description,
-      company_logo: company_logo&.url || '',
-      company_slug: company_slug
-    }
-    company
-  end
 
   def self.check_attributes(company_attributes, check_missing: true)
     errors = []
