@@ -6,6 +6,7 @@ class User < ApplicationRecord
   self.inheritance_column = :type
   include SubscriptionStatus
   include Rails.application.routes.url_helpers
+  include Dao::UserDao
 
   has_secure_password
   enum :type, { CompanyUser: 'CompanyUser', PrivateUser: 'PrivateUser', SandboxUser: 'SandboxUser' }, default: 'PrivateUser'
@@ -73,15 +74,6 @@ class User < ApplicationRecord
     years_since_birth - (birthday_has_passed? ? 0 : 1)
   end
 
-  def image_url_or_default
-    return image_url.url if image_url.url
-
-    'https://avatars.githubusercontent.com/u/132399266' if !image_url.url.nil? && image_url.attached?
-  rescue StandardError => e
-    Rails.logger.error("Failed to get user image: #{e.message}")
-    'https://avatars.githubusercontent.com/u/132399266'
-  end
-
   def admin?
     user_role == 'admin'
   end
@@ -97,8 +89,6 @@ class User < ApplicationRecord
 
     err = CompanyUser.check_attributes(company_attributes)
     return [nil, err] if err
-
-    puts 'Company attributes are valid'
 
     transaction do
       update!(type: 'CompanyUser')
@@ -141,45 +131,6 @@ class User < ApplicationRecord
 
   def private?
     type == 'PrivateUser'
-  end
-
-  def dao(*) # rubocop:disable Metrics/AbcSize
-    user = {}
-    user[:user] = {
-      id: id,
-      email: email,
-      first_name: first_name,
-      last_name: last_name,
-      date_of_birth: date_of_birth,
-      longitude: longitude,
-      latitude: latitude,
-      country_code: country_code,
-      postal_code: postal_code,
-      city: city,
-      address: address,
-      activity_status: activity_status,
-      user_role: user_role,
-      type: type,
-      view_count: view_count,
-      applications_count: applications_count,
-      jobs_count: jobs_count,
-      linkedin_url: linkedin_url,
-      instagram_url: instagram_url,
-      twitter_url: twitter_url,
-      facebook_url: facebook_url,
-      github_url: github_url,
-      portfolio_url: portfolio_url,
-      phone: phone,
-      application_notifications: application_notifications,
-      communication_notifications: communication_notifications,
-      marketing_notifications: marketing_notifications,
-      security_notifications: security_notifications,
-      image_url: image_url_or_default,
-      created_at: created_at,
-      updated_at: updated_at
-    }
-    user[:preferences] = preferences if preferences
-    user
   end
 
   private

@@ -6,6 +6,7 @@ module Validators
   # These rules are included in the Job model and run when a Job object is saved.
   module JobValidator
     extend ActiveSupport::Concern
+
     # rubocop:disable Metrics/BlockLength
     included do
       geocoded_by :latitude_longitude

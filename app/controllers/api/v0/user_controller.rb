@@ -11,18 +11,16 @@ module Api
         if upcoming_jobs.empty?
           render(status: 204, json: { jobs: upcoming_jobs })
         else
-          render(status: 200, json: "{\"jobs\": [#{Job.get_jsons_include_user(upcoming_jobs)}]}")
+          render(status: 200, json: { jobs: upcoming_jobs.map { |job| job.dao(include_employer: true)[:job] } })
         end
       end
 
       def own_jobs
-        jobs = Current.user.jobs.includes(%i[rich_text_description image_url_attachment application_options]).order(created_at: :desc)
+        jobs = Current.user.jobs.order(created_at: :desc)
         if jobs.empty?
-          render(status: 204,
-                 json: { jobs: })
+          render(status: 204, json: { jobs: })
         else
-          render(status: 200,
-                 json: "{\"jobs\": [#{Job.jsons_for(jobs)}]}")
+          render(status: 200, json: { jobs: jobs.map { |job| job.dao[:job] } })
         end
       end
 
@@ -115,7 +113,7 @@ module Api
         applications.map do |application|
           {
             application:,
-            job: Job.get_json_include_user_exclude_image(application.job),
+            job: application.job.dao(include_employer: true, include_application_options: true)[:job],
             application_answers: application.application_answers.as_json(include: { attachment: { methods: :url } }),
             application_events: application.application_events
           }

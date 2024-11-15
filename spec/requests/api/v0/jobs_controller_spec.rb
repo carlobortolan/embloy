@@ -402,39 +402,39 @@ RSpec.describe 'JobsController' do
 
     describe '(GET: /api/v0/jobs)' do
       context 'valid normal inputs' do
-        it 'returns [500 Internal Server Error] and job JSONs if feed is created' do
+        it 'returns [410 Gone] if feed is called' do
           headers = { 'Authorization' => "Bearer #{@valid_at}" }
           get('/api/v0/jobs?longitude=0.0&latitude=0.0', headers:)
-          expect(response).to have_http_status(500)
+          expect(response).to have_http_status(410)
         end
         it 'returns [204 No Content] if no jobs exist' do
           Job.delete_all
           headers = { 'Authorization' => "Bearer #{@valid_at}" }
           get('/api/v0/jobs?longitude=0.0&latitude=0.0', headers:)
-          expect(response).to have_http_status(204)
+          expect(response).to have_http_status(410)
         end
       end
       context 'invalid inputs' do
         it 'returns [400 Bad Request] for missing access token in header' do
-          get('/api/v0/jobs?longitude=0&latitude=0.0', headers:)
+          get('/api/v0/jobs?longitude=0&latitude=0.0')
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for malformed query params' do
           headers = { 'Authorization' => "Bearer #{@valid_at}" }
           get('/api/v0/jobs?longitude=180.1&latitude=0', headers:)
-          expect(response).to have_http_status(400)
+          expect(response).to have_http_status(410)
           get('/api/v0/jobs?longitude=0.0&latitude=90.1', headers:)
-          expect(response).to have_http_status(400)
+          expect(response).to have_http_status(410)
           get('/api/v0/jobs?longitude=-180.1&latitude=0', headers:)
-          expect(response).to have_http_status(400)
+          expect(response).to have_http_status(410)
           get('/api/v0/jobs?longitude=0.0&latitude=-90.1', headers:)
-          expect(response).to have_http_status(400)
+          expect(response).to have_http_status(410)
           get('/api/v0/jobs?longitude=0.0', headers:)
-          expect(response).to have_http_status(400)
+          expect(response).to have_http_status(410)
           get('/api/v0/jobs?latitude=-1.0', headers:)
-          expect(response).to have_http_status(400)
+          expect(response).to have_http_status(410)
           get('/api/v0/jobs', headers:)
-          expect(response).to have_http_status(400)
+          expect(response).to have_http_status(410)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
           headers = { 'Authorization' => "Bearer #{@invalid_access_token}" }

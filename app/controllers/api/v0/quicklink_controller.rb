@@ -46,7 +46,7 @@ module Api
         validate_session
 
         if update_or_create_job
-          render status: 200, json: { session: @session, job: Job.json_for(@job) }
+          render status: 200, json: { session: @session }.merge(@job.dao(include_image: true, include_employer: true, include_description: true, include_application_options: true))
         else
           render status: 400, json: @job.errors.details
         end
