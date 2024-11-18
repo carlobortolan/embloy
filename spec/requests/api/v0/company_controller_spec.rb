@@ -232,13 +232,13 @@ RSpec.describe 'CompanyController' do
 
   describe '(GET: /api/v0/company/:id/board)' do
     context 'valid normal inputs' do
-      it 'returns [200 Ok] and job JSONs if company has own jobs' do
+      it 'returns [200 Ok] and company and job JSONs if company has own jobs' do
         get("/api/v0/company/#{@valid_company_has_own_jobs.company_slug}/board")
         expect(response).to have_http_status(200)
       end
-      it 'returns [200 Ok] and job JSONs if company has no jobs' do
+      it 'returns [200 Ok] and company JSONs if company has no jobs' do
         get("/api/v0/company/#{@valid_company.company_slug}/board")
-        expect(response).to have_http_status(204)
+        expect(response).to have_http_status(200)
       end
     end
     context 'invalid inputs' do
