@@ -51,7 +51,7 @@ module Api
       # Returns all public jobs (without attachments and options) of a company user
       def board
         jobs = @company.jobs.where(job_status: :listed, activity_status: 1).order(created_at: :desc)
-        render(status: jobs.nil? || jobs.empty? ? 204 : 200, json: @company.dao.merge(jobs: jobs.map { |job| job.dao[:job] }))
+        render(status: 200, json: @company.dao.merge(jobs: jobs.map { |job| job.dao(include_employer: true, include_application_options: true)[:job] }))
       end
 
       # Returns a single **listed** job (without options) of a company user
