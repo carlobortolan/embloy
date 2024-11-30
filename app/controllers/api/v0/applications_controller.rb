@@ -74,7 +74,9 @@ module Api
           render status: 204, json: { application: {} }
         else
           render status: 200, json: {
-            application:,
+            application: application.as_json.merge(
+              applicant: application.user.public_dao[:user]
+            ),
             application_answers: application.application_answers.as_json(include: { attachment: { methods: :url } })
           }
         end

@@ -44,5 +44,27 @@ module Dao
       user[:preferences] = preferences if preferences
       user
     end
+
+    def public_dao
+      user = {}
+      user[:user] = {
+        id: id,
+        first_name: first_name,
+        last_name: last_name,
+        activity_status: activity_status,
+        user_role: user_role,
+        date_of_birth: date_of_birth,
+        linkedin_url: linkedin_url,
+        instagram_url: instagram_url,
+        twitter_url: twitter_url,
+        facebook_url: facebook_url,
+        github_url: github_url,
+        portfolio_url: portfolio_url,
+        image_url: image_url&.url || '',
+        created_at: created_at
+      }
+
+      user
+    end
   end
 end
