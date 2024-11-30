@@ -5,8 +5,8 @@ module Api
   module V0
     # JobsController handles job-related actions
     class JobsController < ApiController
-      before_action :verify_path_job_id, only: %i[destroy show]
-      before_action :verify_path_active_job_id, only: %i[update]
+      before_action :verify_path_job_id, only: %i[show destroy]
+      before_action :verify_path_active_job_id, only: %i[update destroy_options]
       before_action :must_be_subscribed!, only: %i[create update]
 
       def create
@@ -54,6 +54,21 @@ module Api
         render status: 200, json: { message: 'Job deleted!' }
       rescue ActiveRecord::RecordNotFound
         not_found_error('job') # ok to be this specific because only editors can delete jobs
+      end
+
+      def destroy_options
+        must_be_owner!(params[:id], Current.user.id)
+        
+        if params[:option_id].nil?
+          @job.application_options.destroy_all
+          render status: 200, json: { message: 'All options deleted!' }
+        else
+          option = @job.application_options.find(params[:option_id])
+          option.destroy!
+          render status: 200, json: { message: 'Option deleted!' }
+        end
+      rescue ActiveRecord::RecordNotFound
+        not_found_error('option')
       end
 
       # Creates feed based on current user's preferences (if available); if the current user is not verified yet or
