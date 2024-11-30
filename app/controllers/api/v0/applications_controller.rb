@@ -15,14 +15,14 @@ module Api
       def show
         must_be_owner!(application_show_params[:id], Current.user.id)
         applications = @job.applications
-        render_applications(applications || [])
+        render_applications(include_applicant: true, applications: applications)
       end
 
       # Returns all applications submitted to an employer
       def show_all
         jobs = Current.user.jobs
         applications = Application.where(job_id: jobs.pluck(:job_id))
-        render_applications(applications || [])
+        render_applications(applications: applications)
       end
 
       # Returns a single application including details
@@ -61,11 +61,16 @@ module Api
 
       private
 
-      def render_applications(applications)
+      def render_applications(include_applicant: false, applications: [])
         if applications.empty?
-          render status: 204, json: { applications: }
+          render status: 204, json: { applications: [] }
         else
-          render status: 200, json: { applications: }
+          if include_applicant
+            applications = applications.map do |application|
+              application.as_json.merge(applicant: application.user.public_dao[:user])
+            end
+          end
+          render status: 200, json: { applications: applications }
         end
       end
 
