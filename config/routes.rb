@@ -59,6 +59,7 @@ Rails.application.routes.draw do
       get 'user/events', to: 'user#events'
       get 'user/preferences', to: 'user#preferences'
       patch 'user/preferences', to: 'user#update_preferences'
+      delete 'user/integrations/:source', to: 'user#deactivate_integration'
       get 'user/notifications', to: 'notifications#show'
       get 'user/notifications/unread', to: 'notifications#unread_applications'
       patch 'user/notifications/(/:id)', to: 'notifications#mark_as_read'
