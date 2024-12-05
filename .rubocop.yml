@@ -36,3 +36,6 @@ Metrics/ClassLength:
 
 Lint/SuppressedException:
   Enabled: true
+
+Style/SafeNavigationChainLength:
+  Enabled: false
