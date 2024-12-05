@@ -51,7 +51,7 @@ module Integrations
       end
 
       Token.deactivate_all(client, mode)
-      client.jobs.where('job_slug LIKE ?', "#{mode}%").each(&:archive) if archive_jobs
+      client.jobs.includes(%i[application_options rich_text_description image_url_attachment pg_search_document]).where('job_slug LIKE ?', "#{mode}%").each(&:archive) if archive_jobs
     end
 
     # Deprecated method used for fetching job postings on every application - now handled by the sync_postings method
