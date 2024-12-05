@@ -68,6 +68,10 @@ class Job < ApplicationRecord
     from_lever? || from_ashby? || Current.user.sandboxd? || Current.user.admin?
   end
 
+  def archive
+    update!(job_status: :archived)
+  end
+
   private
 
   def calculate_time_left(diff_seconds)
