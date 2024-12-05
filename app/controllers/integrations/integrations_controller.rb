@@ -40,6 +40,20 @@ module Integrations
       end
     end
 
+    def self.deactivate(client, mode, archive_jobs)
+      case mode
+      when 'lever'
+        Integrations::Lever::WebhooksController.refresh_webhooks(client, delete_all: true)
+      when 'ashby'
+        Integrations::Ashby::WebhooksController.refresh_webhooks(client, delete_all: true)
+      when 'softgarden'
+        Integrations::Softgarden::WebhooksController.refresh_webhooks(client, delete_all: true)
+      end
+
+      Token.deactivate_all(client, mode)
+      client.jobs.includes(%i[application_options rich_text_description image_url_attachment pg_search_document]).where('job_slug LIKE ?', "#{mode}%").each(&:archive) if archive_jobs
+    end
+
     # Deprecated method used for fetching job postings on every application - now handled by the sync_postings method
     def self.handle_internal_job(client, parsed_job)
       return unless parsed_job.is_a?(Hash)

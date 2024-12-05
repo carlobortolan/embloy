@@ -7,13 +7,13 @@ module Integrations
     class WebhooksController < IntegrationsController
       WEBHOOK_PATH = '/webhooks'
 
-      def self.refresh_webhooks(client)
+      def self.refresh_webhooks(client, delete_all: false)
         response = LeverController.fetch_from_lever(WEBHOOK_PATH, client)
         Rails.logger.debug("Response from Lever API: #{response.body}")
         case response
         when Net::HTTPSuccess || Net::HTTPNoContent
           existing_webhooks = JSON.parse(response.body)['data']
-          manage_webhooks(existing_webhooks, client)
+          delete_all ? delete_all_webhooks(existing_webhooks, client) : manage_webhooks(existing_webhooks, client)
         when Net::HTTPBadRequest
           raise CustomExceptions::InvalidInput::Quicklink::Request::Malformed
         when Net::HTTPUnauthorized
@@ -55,6 +55,16 @@ module Integrations
         end
 
         message
+      end
+
+      def self.delete_all_webhooks(existing_webhooks, client)
+        existing_webhooks.each do |webhook|
+          delete_webhook(webhook['id'], webhook['event'], client) if LEVER_WEBHOOKS.any? do |dw|
+            Rails.logger.debug("Comparing webhook event: #{dw[:event]} with #{webhook['event']}")
+            Rails.logger.debug("Comparing webhook url: #{dw[:url]}/#{SimpleCrypt.encrypt(client.id.to_i)} with #{webhook['url']}")
+            dw[:event] == webhook['event'] && "#{dw[:url]}/#{SimpleCrypt.encrypt(client.id.to_i)}" == webhook['url']
+          end
+        end
       end
 
       def self.create_webhook(webhook, client) # rubocop:disable Metrics/AbcSize

@@ -58,4 +58,8 @@ class Token < ApplicationRecord
     client.tokens.where(token_type:, issuer:).where('expires_at > ?', Time.now.utc).each(&:deactivate!)
     client.tokens.create!(token_type:, name:, issuer:, token:, expires_at:, issued_at:)
   end
+
+  def self.deactivate_all(client, issuer)
+    client.tokens.where(issuer: issuer).each(&:deactivate!)
+  end
 end

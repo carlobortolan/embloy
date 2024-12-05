@@ -6,7 +6,7 @@ module Integrations
     class WebhooksController < IntegrationsController
       ASHBY_WEBHOOK_URL = 'https://api.ashbyhq.com/webhook'
 
-      def self.refresh_webhooks(client) # rubocop:disable Metrics/AbcSize
+      def self.refresh_webhooks(client, delete_all: false) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
         existing_webhooks = client.webhooks.where(source: 'ashby').to_a || []
 
         message = "Found #{existing_webhooks.length} existing webhooks...\n"
@@ -17,13 +17,15 @@ module Integrations
         # Call Ashby API to delete webhooks remotely
         if webhooks_to_delete.any?
           webhooks_to_delete.each do |webhook|
-            message += delete_webhook(webhook.ext_id.split('__').last, client) # Remote API delete
+            message += delete_webhook(webhook.ext_id&.split('__')&.last, client) # Remote API delete
           end
 
           # Batch delete webhooks locally
           client.webhooks.where(ext_id: webhooks_to_delete.map(&:ext_id)).delete_all
           message += "Deleted #{webhooks_to_delete.size} webhooks successfully 🚀\n"
         end
+
+        return if delete_all
 
         # Prepare webhooks for upsert (create or update)
         webhooks_to_upsert = ASHBY_WEBHOOKS.map do |desired_webhook|

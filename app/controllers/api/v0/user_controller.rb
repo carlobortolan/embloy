@@ -107,6 +107,11 @@ module Api
         pipeline.empty? ? render(status: 204, json: { pipeline: [] }) : render(status: 200, json: { pipeline: })
       end
 
+      def deactivate_integration
+        Integrations::IntegrationsController.deactivate(Current.user, deactivate_integration_params[:source], deactivate_integration_params[:archive_jobs] == '1')
+        render status: 200, json: { message: 'Integration deactivated successfully.' }
+      end
+
       private
 
       def build_applications_json(applications)
@@ -131,6 +136,10 @@ module Api
         params.require(:user).permit(:first_name, :last_name, :email, :phone, :degree, :date_of_birth, :country_code, :city,
                                      :postal_code, :address, :twitter_url, :facebook_url, :linkedin_url, :instagram_url, :github_url, :portfolio_url,
                                      :application_notifications, :communication_notifications, :marketing_notifications, :security_notifications)
+      end
+
+      def deactivate_integration_params
+        params.permit(:source, :archive_jobs)
       end
     end
   end
