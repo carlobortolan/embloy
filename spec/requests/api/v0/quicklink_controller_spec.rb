@@ -296,7 +296,7 @@ RSpec.describe 'QuicklinkController' do
         activity_status: 1,
         job_status: 'listed',
         currency: 'CHF',
-        job_type: 'Retail',
+        job_type: 'Miscellaneous',
       )
       application = Application.create!(
         user_id: @valid_user_has_applied.id,

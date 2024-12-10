@@ -103,7 +103,7 @@ RSpec.describe 'JobsController' do
       @job = Job.create!(
         user_id: @valid_user.id,
         title: 'TestJob',
-        job_type: 'Retail',
+        job_type: 'Miscellaneous',
         job_status: 'listed',
         activity_status: 1
       )
@@ -294,12 +294,12 @@ RSpec.describe 'JobsController' do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and job JSONs if job exists' do
           headers = { 'Authorization' => "Bearer #{@valid_at}" }
-          get('/api/v0/find?query=TestJob&job_type=Retail&sort_by=date_desc', headers:)
+          get('/api/v0/find?query=TestJob&job_type=Miscellaneous&sort_by=date_desc', headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [200 Ok] and job JSONs if query blank' do
           headers = { 'Authorization' => "Bearer #{@valid_at}" }
-          get('/api/v0/find?job_type=Retail&sort_by=date_desc', headers:)
+          get('/api/v0/find?job_type=Miscellaneous&sort_by=date_desc', headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [200 Ok] and job JSONs if job_type blank' do
@@ -309,7 +309,7 @@ RSpec.describe 'JobsController' do
         end
         it 'returns [200 Ok] and job JSONs if sort_by blank' do
           headers = { 'Authorization' => "Bearer #{@valid_at}" }
-          get('/api/v0/find?query=TestJob&job_type=Retail', headers:)
+          get('/api/v0/find?query=TestJob&job_type=Miscellaneous', headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [200 Ok] and job JSONs if params blank' do
@@ -453,7 +453,7 @@ RSpec.describe 'JobsController' do
       let(:form_data) do
         {
           title: 'TestTitle',
-          job_type: 'Retail',
+          job_type: 'Miscellaneous',
           start_slot: Time.now + 1.year,
           position: 'CEO',
           key_skills: 'Entrepreneurship',
@@ -799,7 +799,7 @@ RSpec.describe 'JobsController' do
       let(:form_data) do
         {
           title: 'TestTitle',
-          job_type: 'Retail',
+          job_type: 'Miscellaneous',
           start_slot: Time.now + 1.year,
           position: 'CEO',
           key_skills: 'Entrepreneurship',
