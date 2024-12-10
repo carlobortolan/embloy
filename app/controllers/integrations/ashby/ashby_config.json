@@ -2,7 +2,6 @@
   "job_id": null,
   "job_type": null,
   "job_slug": "results.id",
-  "job_type_value": null,
   "activity_status": null,
   "job_status": "results.isListed-<enum|true:listed,false:unlisted>",
   "user_id": null,

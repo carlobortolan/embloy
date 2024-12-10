@@ -7,7 +7,7 @@ class Job < ApplicationRecord
   include Validators::JobValidator
   include Dao::JobDao
 
-  VALID_JOB_TYPES = %w[listed unlisted archived].freeze
+  VALID_JOB_STATUS = %w[listed unlisted archived].freeze
 
   before_save :set_default_job_slug, if: -> { job_slug.nil? }
   before_validation :set_default_values
@@ -49,11 +49,6 @@ class Job < ApplicationRecord
     else
       "#{address}, #{city}, #{postal_code}, #{country_code}"
     end
-  end
-
-  def assign_job_type_value
-    job_types = JSON.parse(File.read(Rails.root.join('app/helpers', 'job_types.json')))
-    self.job_type_value = job_types[job_type]
   end
 
   def from_lever?
