@@ -2,7 +2,6 @@
     "job_id": null,
     "job_type": null,
     "job_slug": "data.id",
-    "job_type_value": null,
     "activity_status": null,
     "job_status": "data.state-<enum|published:listed,else:unlisted>",
     "user_id": null,

@@ -188,7 +188,6 @@ ActiveRecord::Schema[7.0].define(version: 20_241_114_005_852) do
   create_table 'jobs', primary_key: 'job_id', id: :serial, force: :cascade do |t|
     t.string 'job_type'
     t.string 'job_slug', limit: 100, null: false
-    t.integer 'job_type_value'
     t.integer 'activity_status', limit: 2, default: 1, null: false
     t.enum 'job_status', default: 'listed', null: false, enum_type: 'job_status'
     t.integer 'user_id', default: 0

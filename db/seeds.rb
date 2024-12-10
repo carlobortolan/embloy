@@ -54,7 +54,6 @@ require 'benchmark'
 #       random_time = now + rand(7) # add a random number of days (0-6) to the current datetime
 #       job = Job.new(
 #         job_type: Faker::Job.field,
-#         job_type_value: rand(29),
 #         activity_status: 0,
 #         status: 'listed',
 #         user_id: (Faker::Number.number % 619) + 4,

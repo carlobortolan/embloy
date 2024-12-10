@@ -11,9 +11,6 @@ module Api
 
       def create
         job = build_job
-        job.assign_job_type_value
-        # job.activity_status = 1
-
         if job.save
           process_after_save(job)
           render status: 201, json: job.dao(include_image: true, include_employer: true, include_application_options: true)
@@ -303,7 +300,7 @@ module Api
           application_options_attributes: [:id, :question, :question_type, :required, { options: [] }]
         )
         check_question_types(permitted_params)
-        raise ActionController::BadRequest, 'Invalid job_status' if permitted_params[:job_status].present? && !Job::VALID_JOB_TYPES.include?(permitted_params[:job_status])
+        raise ActionController::BadRequest, 'Invalid job_status' if permitted_params[:job_status].present? && !Job::VALID_JOB_STATUS.include?(permitted_params[:job_status])
 
         permitted_params
       end
