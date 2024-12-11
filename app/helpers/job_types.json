@@ -29,5 +29,10 @@
   "Miscellaneous": 28,
   "Mobile_and_IoT_Solutions": 29,
   "Product_Development": 30,
-  "Manufacturing": 31
+  "Manufacturing": 31,
+  "Administration": 32,
+  "Management": 33,
+  "Back_Office": 34,
+  "Front_Office": 35,
+  "Executive": 36
 }

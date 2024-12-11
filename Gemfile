@@ -128,7 +128,7 @@ gem 'pg_search'
 gem 'trix'
 
 # Rich-Text Support
-gem 'actionpack', '>= 7.0.5.1'
+gem 'actionpack', '~> 7.0.8.7'
 gem 'activesupport', '>= 7.0.7.1'
 gem 'nokogiri', '>= 1.16.2'
 
