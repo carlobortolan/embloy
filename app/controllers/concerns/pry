@@ -1,0 +1,3 @@
+require 'json';require 'yaml';require 'active_support';require 'pry-reload';require './app/controllers/concerns/job_parser.rb';include JobParser;config = JSON.parse(File.read("app/controllers/integrations/ashby/ashby_config.json"));input = JSON.parse(File.read('test.json'));binding.pry;
+load './app/controllers/concerns/job_parser.rb'
+JobParser.parse(config, input)
