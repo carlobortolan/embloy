@@ -40,6 +40,17 @@ module Api
       end
 
       # ============== API PATH VERIFICATIOn ================
+      def verify_path_company_id
+        if id_blank_or_invalid?
+          blank_error('company')
+        else
+          validate_company_id!
+          must_be_subscribed!(@company.id, @company)
+        end
+      rescue ActiveRecord::RecordNotFound
+        not_found_error('company')
+      end
+
       def verify_path_job_id
         if id_blank_or_invalid?
           blank_error('job')
@@ -56,11 +67,11 @@ module Api
         end
       end
 
-      def verify_path_listed_job_id
+      def verify_path_listed_job_id(include_application_options)
         if id_blank_or_invalid?
           blank_error('job')
         else
-          validate_listed_job_id
+          validate_listed_job_id(include_application_options)
         end
       end
 
@@ -86,6 +97,11 @@ module Api
         else
           set_token
         end
+      end
+
+      # ============== API SANDBOX BLACKLIST ================
+      def block_sandbox_user
+        raise CustomExceptions::Unauthorized::Sandbox if Current.user.sandboxd?
       end
 
       private
@@ -162,14 +178,18 @@ module Api
 
       def validate_active_job_id
         @job = Job.find(params[:id])
-        removed_error('job') unless %w[listed unlisted].include?(@job.job_status) && @job.activity_status == 1
+        conflict_error('job', 'Job is not listed or active and cannot be accessed anymore') unless %w[listed unlisted].include?(@job.job_status) && @job.activity_status == 1
       rescue ActiveRecord::RecordNotFound
         not_found_error('job')
       end
 
-      def validate_listed_job_id
-        @job = Job.find(params[:id])
-        removed_error('job') unless @job.job_status == 'listed' && @job.activity_status == 1
+      def validate_listed_job_id(include_application_options)
+        @job = if include_application_options
+                 Job.includes(:application_options).find(params[:id])
+               else
+                 Job.find(params[:id])
+               end
+        conflict_error('job', 'Job is not listed or active and cannot be accessed anymore') unless @job.job_status == 'listed' && @job.activity_status == 1
       rescue ActiveRecord::RecordNotFound
         not_found_error('job')
       end
@@ -178,6 +198,14 @@ module Api
         @job = Job.find(params[:id])
       rescue ActiveRecord::RecordNotFound
         not_found_error('job')
+      end
+
+      def validate_company_id!
+        @company = if params[:id] =~ /^\d+$/
+                     CompanyUser.find(params[:id])
+                   else
+                     CompanyUser.find_by!(company_slug: params[:id])
+                   end
       end
 
       def validate_user_id

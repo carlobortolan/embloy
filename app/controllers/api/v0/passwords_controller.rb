@@ -19,6 +19,7 @@ module Api
       private
 
       def update_password
+        SecurityMailer.with(user: Current.user).changed.deliver_later
         Current.user.update!(password_params)
         render status: 200, json: { message: 'Password updated' }
       end

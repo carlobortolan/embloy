@@ -5,32 +5,30 @@ module Api
     # ApplicationsController handles application-related actions
     class ApplicationsController < ApiController
       include ApplicationBuilder
-      before_action :verify_path_job_id, except: %i[show_all create accept reject]
+      before_action :verify_path_job_id, except: %i[show_all create accept reject pipeline]
       before_action :verify_path_active_job_id, only: %i[accept reject]
-      before_action :verify_path_listed_job_id, only: %i[create]
+      before_action -> { verify_path_listed_job_id(true) }, only: %i[create]
       before_action :must_be_verified!
       before_action :must_be_subscribed!, only: %i[accept reject]
 
       # Returns all applications for a given job
       def show
         must_be_owner!(application_show_params[:id], Current.user.id)
-        applications = @job.applications.find_by_sql("SELECT * FROM applications a WHERE a.job_id = #{@job.job_id}")
-        render_applications(applications || [])
+        applications = @job.applications
+        render_applications(include_applicant: true, applications: applications)
       end
 
       # Returns all applications submitted to an employer
       def show_all
         jobs = Current.user.jobs
         applications = Application.where(job_id: jobs.pluck(:job_id))
-        render_applications(applications || [])
+        render_applications(applications: applications)
       end
 
       # Returns a single application including details
       def show_single
-        set_at_job(application_show_params[:id])
         must_be_owner!(application_show_params[:id], Current.user.id) if application_show_params[:application_id]
-        application = @job.applications.includes(:application_answers).find_by_sql(['SELECT * FROM applications a WHERE a.job_id = ? AND a.user_id = ?', @job.job_id,
-                                                                                    application_show_params[:application_id] || Current.user.id]).first
+        application = @job.applications.includes(application_answers: { attachment_attachment: :blob }).where(user_id: application_show_params[:application_id] || Current.user.id).first
 
         render_application(application)
       end
@@ -41,7 +39,6 @@ module Api
 
       def accept
         must_be_owner!(application_modify_params[:id], Current.user.id)
-        set_at_job(application_modify_params[:id])
         application = @job.applications.where(user_id: application_modify_params[:application_id]).first
         handle_accept(application)
       rescue ActiveRecord::RecordNotFound
@@ -50,7 +47,6 @@ module Api
 
       def reject
         must_be_owner!(application_modify_params[:id], Current.user.id)
-        set_at_job(application_modify_params[:id])
         application = @job.applications.where(user_id: application_modify_params[:application_id]).first
         handle_reject(application)
       rescue ActiveRecord::RecordNotFound
@@ -58,21 +54,23 @@ module Api
       end
 
       def pipeline
-        set_at_job(application_show_params[:id])
-        must_be_owner!(application_show_params[:id], Current.user.id) if application_show_params[:application_id]
-
-        pipeline = ApplicationEvent.all.where(job_id: @job.job_id, user_id: application_show_params[:application_id] || Current.user.id).order('created_at DESC')
+        pipeline = ApplicationEvent.all.where(job_id: application_show_params[:id], user_id: application_show_params[:application_id] || Current.user.id).order('created_at DESC')
 
         pipeline.empty? ? render(status: 204, json: { pipeline: [] }) : render(status: 200, json: { pipeline: })
       end
 
       private
 
-      def render_applications(applications)
+      def render_applications(include_applicant: false, applications: [])
         if applications.empty?
-          render status: 204, json: { applications: }
+          render status: 204, json: { applications: [] }
         else
-          render status: 200, json: { applications: }
+          if include_applicant
+            applications = applications.map do |application|
+              application.as_json.merge(applicant: application.user.public_dao[:user])
+            end
+          end
+          render status: 200, json: { applications: applications }
         end
       end
 
@@ -81,7 +79,9 @@ module Api
           render status: 204, json: { application: {} }
         else
           render status: 200, json: {
-            application:,
+            application: application.as_json.merge(
+              applicant: application.user.public_dao[:user]
+            ),
             application_answers: application.application_answers.as_json(include: { attachment: { methods: :url } })
           }
         end

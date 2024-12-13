@@ -40,12 +40,20 @@ RSpec.describe 'UserController', type: :routing do
       expect(post: '/api/v0/user/image').to route_to('api/v0/user#upload_image', format: 'json')
     end
 
+    it 'routes to #events' do
+      expect(get: '/api/v0/user/events').to route_to('api/v0/user#events', format: 'json')
+    end
+
     it 'routes to #preferences' do
       expect(get: '/api/v0/user/preferences').to route_to('api/v0/user#preferences', format: 'json')
     end
 
     it 'routes to #update_preferences' do
       expect(patch: '/api/v0/user/preferences').to route_to('api/v0/user#update_preferences', format: 'json')
+    end
+
+    it 'routes to #deactivate_integrations' do
+      expect(delete: '/api/v0/user/integrations/lever?archive_jobs=1').to route_to('api/v0/user#deactivate_integration', format: 'json', source: 'lever', archive_jobs: '1')
     end
   end
 end

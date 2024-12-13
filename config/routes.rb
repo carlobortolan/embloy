@@ -13,10 +13,11 @@ Rails.application.routes.draw do
   get 'auth/google_oauth2/callback', to: 'oauth_callbacks#google', as: :auth_google_callback
   get 'auth/azure_activedirectory_v2/callback', to: 'oauth_callbacks#azure', as: :auth_azure_callback
   get 'auth/linkedin/callback', to: 'oauth_callbacks#linkedin', as: :auth_linkedin_callback
-  get 'auth/callback', to: 'integrations/lever_oauth#callback', as: :auth_lever_callback # <= TODO: Temporary route - move to integrations namespace
+  # get 'auth/callback', to: 'integrations/lever/oauth#callback', as: :auth_lever_callback # <= TODO: Temporary route - move to integrations namespace
+  get 'auth/lever/callback', to: 'integrations/lever/oauth#callback', as: :auth_lever_callback
 
   #= <<<<< *INTEGRATIONS* >>>>>>
-  get 'api/v0/integrations/lever/auth', to: 'integrations/lever_oauth#authorize', as: :auth_lever
+  get 'api/v0/integrations/lever/auth', to: 'integrations/lever/oauth#authorize', as: :auth_lever
   # get 'api/v0/integrations/lever/callback', to: 'lever_oauth#callback', as: :auth_lever_callback # <= TODO: Update Lever OAuth app callback URI
   post 'api/v0/webhooks/:source/:id', to: 'hooks/webhooks#handle_event', as: :webhook_handler
 
@@ -35,12 +36,11 @@ Rails.application.routes.draw do
       post 'auth/token/refresh', to: 'authentications#create_refresh'
       post 'auth/token/access', to: 'authentications#create_access'
       post 'auth/token/client', to: 'quicklink#create_client'
+      post 'auth/token/otp', to: 'authentications#create_otp'
+      patch 'auth/token/otp', to: 'authentications#verify_otp'
 
       # -----> TOKENS <-----
-      get 'tokens', to: 'tokens#index'
-      post 'tokens', to: 'tokens#create'
-      patch 'tokens/:id', to: 'tokens#update'
-      delete 'tokens/:id', to: 'tokens#destroy'
+      resources :tokens, only: %i[index create update destroy]
 
       # -----> USER <-----
       get 'user', to: 'user#show'
@@ -56,8 +56,10 @@ Rails.application.routes.draw do
       get 'user/upcoming', to: 'user#upcoming'
       delete 'user/image', to: 'user#remove_image'
       post 'user/image', to: 'user#upload_image'
+      get 'user/events', to: 'user#events'
       get 'user/preferences', to: 'user#preferences'
       patch 'user/preferences', to: 'user#update_preferences'
+      delete 'user/integrations/:source', to: 'user#deactivate_integration'
       get 'user/notifications', to: 'notifications#show'
       get 'user/notifications/unread', to: 'notifications#unread_applications'
       patch 'user/notifications/(/:id)', to: 'notifications#mark_as_read'
@@ -68,14 +70,20 @@ Rails.application.routes.draw do
       delete 'user/(/:id)/reviews', to: 'reviews#destroy'
       patch 'user/(/:id)/reviews', to: 'reviews#update'
 
+      # -----> JOB-LISTS <-----
+      resources :job_lists, only: %i[index create show update destroy] do
+        resources :job_list_items, path: 'items', only: %i[create destroy]
+      end
+
       # -----> JOBS <-----
       get 'jobs', to: 'jobs#feed'
       get 'jobs/(/:id)', to: 'jobs#show'
       get 'maps', to: 'jobs#map'
       get 'find', to: 'jobs#find'
       post 'jobs', to: 'jobs#create'
-      patch 'jobs', to: 'jobs#update'
+      patch 'jobs/(/:id)', to: 'jobs#update'
       delete 'jobs/(/:id)', to: 'jobs#destroy'
+      delete 'jobs/(/:id)/options/(/:option_id)', to: 'jobs#destroy_options'
       get 'applications', to: 'applications#show_all'
       get 'jobs/(/:id)/applications', to: 'applications#show'
       get 'jobs/(/:id)/application', to: 'applications#show_single'
@@ -86,6 +94,13 @@ Rails.application.routes.draw do
       patch 'jobs/(/:id)/applications/(/:application_id)/accept', to: 'applications#accept'
       patch 'jobs/(/:id)/applications/(/:application_id)/reject', to: 'applications#reject'
       post 'jobs/sync/:source', to: 'jobs#synchronize'
+
+      # -----> COMPANIES <-----
+      resources :company, only: %i[show create update destroy] do
+        resources :teams, only: %i[index create show update destroy]
+      end
+      get 'company/(/:id)/board', to: 'company#board'
+      get 'company/(/:id)/board/(/:job_slug)', to: 'company#job'
 
       # -----> QUICKLINK <-----
       post 'sdk/request/auth/token', to: 'quicklink#create_request'

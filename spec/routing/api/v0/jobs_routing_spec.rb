@@ -32,6 +32,10 @@ RSpec.describe 'JobsController', type: :routing do
       expect(delete: '/api/v0/jobs/1').to route_to('api/v0/jobs#destroy', format: 'json', id: '1')
     end
 
+    it 'routes to #destroy_options' do
+      expect(delete: '/api/v0/jobs/1/options/2').to route_to('api/v0/jobs#destroy_options', format: 'json', id: '1', option_id: '2')
+    end
+
     it 'routes to #show_all' do
       expect(get: '/api/v0/applications').to route_to('api/v0/applications#show_all', format: 'json')
     end
@@ -58,6 +62,10 @@ RSpec.describe 'JobsController', type: :routing do
 
     it 'routes to #reject' do
       expect(patch: '/api/v0/jobs/1/applications/1/reject').to route_to('api/v0/applications#reject', format: 'json', id: '1', application_id: '1')
+    end
+
+    it 'routes to #synchronize' do
+      expect(post: '/api/v0/jobs/sync/lever').to route_to('api/v0/jobs#synchronize', format: 'json', source: 'lever')
     end
   end
 end

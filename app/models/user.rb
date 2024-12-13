@@ -2,10 +2,14 @@
 
 # The User class represents a user in the application.
 class User < ApplicationRecord
+  # STI
+  self.inheritance_column = :type
   include SubscriptionStatus
+  include Rails.application.routes.url_helpers
+  include Dao::UserDao
 
   has_secure_password
-  enum :user_type, { company: 'company', user_private: 'private' }, default: 'private'
+  enum :type, { CompanyUser: 'CompanyUser', PrivateUser: 'PrivateUser', SandboxUser: 'SandboxUser' }, default: 'PrivateUser'
   enum :user_role, { admin: 'admin', editor: 'editor', developer: 'developer', moderator: 'moderator', verified: 'verified', spectator: 'spectator' }, default: :spectator
   has_one :preferences, dependent: :delete
   has_one_attached :image_url
@@ -16,6 +20,7 @@ class User < ApplicationRecord
                            dependent: :destroy
   has_many :applications
   has_many :webhooks, dependent: :delete_all
+  has_many :job_lists, dependent: :destroy
 
   pay_customer default_payment_processor: :stripe
   pay_customer stripe_attributes: :stripe_attributes
@@ -50,10 +55,10 @@ class User < ApplicationRecord
   validates :instagram_url, presence: false, length: { maximum: 150, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
   validates :twitter_url, presence: false, length: { maximum: 150, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
   validates :facebook_url, presence: false, length: { maximum: 150, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
+  validates :github_url, presence: false, length: { maximum: 150, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
+  validates :portfolio_url, presence: false, length: { maximum: 150, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
   validates :phone, presence: false, length: { maximum: 100, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
-  # validates :user_type, inclusion: { in: %w[company private], message: 'ERR_INVALID', description: 'Attribute is invalid' }, presence: false
   validates :user_role, inclusion: { in: %w[admin editor developer moderator verified spectator], error: 'ERR_INVALID', description: 'Attribute is invalid' }, presence: false
-  validates :image_url, presence: false
   validate :validate_image_size
   validate :country_code_validation
   validate :image_format_validation
@@ -69,26 +74,63 @@ class User < ApplicationRecord
     years_since_birth - (birthday_has_passed? ? 0 : 1)
   end
 
-  # Current approach; - TODO: @cb find easier way to serialize job JSONs & remove commented code when switching to S3
-  # Returns a JSON representation of the user.
-  def self.json_for(user)
-    return unless user
-
-    user_hash = user.to_hash_except_image_url
-    user_hash['image_url'] = user.image_url_or_default
-    user_hash.to_json
+  def admin?
+    user_role == 'admin'
   end
 
-  def to_hash_except_image_url
-    JSON.parse(to_json(except: [:image_url]))
+  def switch_to_sandbox!
+    return if sandboxd?
+
+    update!(type: 'SandboxUser')
   end
 
-  def image_url_or_default
-    return image_url.url if image_url.url
+  def switch_to_company(company_attributes)
+    return [nil, { type: 'You already have a company account' }] if company?
 
-    'https://avatars.githubusercontent.com/u/132399266' if !image_url.url.nil? && image_url.attached?
-  rescue Fog::Errors::Error
-    'https://avatars.githubusercontent.com/u/132399266'
+    err = CompanyUser.check_attributes(company_attributes)
+    return [nil, err] if err
+
+    transaction do
+      update!(type: 'CompanyUser')
+
+      company_user = CompanyUser.find(id)
+      if company_user.update(company_attributes)
+        [company_user, nil]
+      else
+        update!(type: 'PrivateUser') # Rollback type change if update fails
+        [nil, company_user.errors]
+      end
+    end
+  rescue ActiveRecord::RecordInvalid => e
+    [nil, e.record.errors]
+  end
+
+  def switch_to_private!
+    return if private?
+
+    update!(
+      type: 'PrivateUser',
+      company_name: nil,
+      company_slug: nil,
+      company_phone: nil,
+      company_email: nil,
+      company_urls: nil,
+      company_industry: nil,
+      company_description: nil,
+      company_logo: nil
+    )
+  end
+
+  def sandboxd?
+    type == 'SandboxUser'
+  end
+
+  def company?
+    type == 'CompanyUser'
+  end
+
+  def private?
+    type == 'PrivateUser'
   end
 
   private
@@ -124,20 +166,16 @@ class User < ApplicationRecord
   def country_code_validation
     return if country_code.nil? || country_code.empty? || IsoCountryCodes.find(country_code)
 
-    errors.add(:country_code,
-               'is not a valid ISO country code')
+    errors.add(:country_code, 'is not a valid ISO country code')
   end
 
   def image_format_validation
     return unless !image_url.nil? && image_url.attached?
 
-    allowed_formats = %w[image/png image/jpeg
-                         image/jpg]
+    allowed_formats = %w[image/png image/jpeg image/jpg]
     return if allowed_formats.include?(image_url.blob.content_type)
 
-    errors.add(:image_url,
-               { error: 'ERR_INVALID',
-                 description: 'must be a PNG, JPG, or JPEG image' })
+    errors.add(:image_url, { error: 'ERR_INVALID', description: 'must be a PNG, JPG, or JPEG image' })
   end
 
   def password_validation

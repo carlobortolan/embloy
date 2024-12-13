@@ -14,6 +14,7 @@ class Application < ApplicationRecord
   has_noticed_notifications model_name: 'Notification'
   has_many :application_answers, foreign_key: %i[user_id job_id], primary_key: %i[user_id job_id], dependent: :destroy
   has_many :application_events, foreign_key: %i[user_id job_id], primary_key: %i[user_id job_id], dependent: :destroy
+  validates :version, numericality: { only_integer: true, greater_than_or_equal_to: 1 }
 
   accepts_nested_attributes_for :application_answers
 

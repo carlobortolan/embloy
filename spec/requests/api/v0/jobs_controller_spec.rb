@@ -103,7 +103,7 @@ RSpec.describe 'JobsController' do
       @job = Job.create!(
         user_id: @valid_user.id,
         title: 'TestJob',
-        job_type: 'Retail',
+        job_type: 'Miscellaneous',
         job_status: 'listed',
         activity_status: 1
       )
@@ -294,12 +294,12 @@ RSpec.describe 'JobsController' do
       context 'valid normal inputs' do
         it 'returns [200 Ok] and job JSONs if job exists' do
           headers = { 'Authorization' => "Bearer #{@valid_at}" }
-          get('/api/v0/find?query=TestJob&job_type=Retail&sort_by=date_desc', headers:)
+          get('/api/v0/find?query=TestJob&job_type=Miscellaneous&sort_by=date_desc', headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [200 Ok] and job JSONs if query blank' do
           headers = { 'Authorization' => "Bearer #{@valid_at}" }
-          get('/api/v0/find?job_type=Retail&sort_by=date_desc', headers:)
+          get('/api/v0/find?job_type=Miscellaneous&sort_by=date_desc', headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [200 Ok] and job JSONs if job_type blank' do
@@ -309,7 +309,7 @@ RSpec.describe 'JobsController' do
         end
         it 'returns [200 Ok] and job JSONs if sort_by blank' do
           headers = { 'Authorization' => "Bearer #{@valid_at}" }
-          get('/api/v0/find?query=TestJob&job_type=Retail', headers:)
+          get('/api/v0/find?query=TestJob&job_type=Miscellaneous', headers:)
           expect(response).to have_http_status(200)
         end
         it 'returns [200 Ok] and job JSONs if params blank' do
@@ -402,39 +402,39 @@ RSpec.describe 'JobsController' do
 
     describe '(GET: /api/v0/jobs)' do
       context 'valid normal inputs' do
-        it 'returns [500 Internal Server Error] and job JSONs if feed is created' do
+        it 'returns [410 Gone] if feed is called' do
           headers = { 'Authorization' => "Bearer #{@valid_at}" }
           get('/api/v0/jobs?longitude=0.0&latitude=0.0', headers:)
-          expect(response).to have_http_status(500)
+          expect(response).to have_http_status(410)
         end
         it 'returns [204 No Content] if no jobs exist' do
           Job.delete_all
           headers = { 'Authorization' => "Bearer #{@valid_at}" }
           get('/api/v0/jobs?longitude=0.0&latitude=0.0', headers:)
-          expect(response).to have_http_status(204)
+          expect(response).to have_http_status(410)
         end
       end
       context 'invalid inputs' do
         it 'returns [400 Bad Request] for missing access token in header' do
-          get('/api/v0/jobs?longitude=0&latitude=0.0', headers:)
+          get('/api/v0/jobs?longitude=0&latitude=0.0')
           expect(response).to have_http_status(400)
         end
         it 'returns [400 Bad Request] for malformed query params' do
           headers = { 'Authorization' => "Bearer #{@valid_at}" }
           get('/api/v0/jobs?longitude=180.1&latitude=0', headers:)
-          expect(response).to have_http_status(400)
+          expect(response).to have_http_status(410)
           get('/api/v0/jobs?longitude=0.0&latitude=90.1', headers:)
-          expect(response).to have_http_status(400)
+          expect(response).to have_http_status(410)
           get('/api/v0/jobs?longitude=-180.1&latitude=0', headers:)
-          expect(response).to have_http_status(400)
+          expect(response).to have_http_status(410)
           get('/api/v0/jobs?longitude=0.0&latitude=-90.1', headers:)
-          expect(response).to have_http_status(400)
+          expect(response).to have_http_status(410)
           get('/api/v0/jobs?longitude=0.0', headers:)
-          expect(response).to have_http_status(400)
+          expect(response).to have_http_status(410)
           get('/api/v0/jobs?latitude=-1.0', headers:)
-          expect(response).to have_http_status(400)
+          expect(response).to have_http_status(410)
           get('/api/v0/jobs', headers:)
-          expect(response).to have_http_status(400)
+          expect(response).to have_http_status(410)
         end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
           headers = { 'Authorization' => "Bearer #{@invalid_access_token}" }
@@ -453,7 +453,7 @@ RSpec.describe 'JobsController' do
       let(:form_data) do
         {
           title: 'TestTitle',
-          job_type: 'Retail',
+          job_type: 'Miscellaneous',
           start_slot: Time.now + 1.year,
           position: 'CEO',
           key_skills: 'Entrepreneurship',
@@ -799,7 +799,7 @@ RSpec.describe 'JobsController' do
       let(:form_data) do
         {
           title: 'TestTitle',
-          job_type: 'Retail',
+          job_type: 'Miscellaneous',
           start_slot: Time.now + 1.year,
           position: 'CEO',
           key_skills: 'Entrepreneurship',

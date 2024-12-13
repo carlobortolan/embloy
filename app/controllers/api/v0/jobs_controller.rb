@@ -5,18 +5,15 @@ module Api
   module V0
     # JobsController handles job-related actions
     class JobsController < ApiController
-      before_action :verify_path_job_id, only: %i[destroy show]
-      before_action :verify_path_active_job_id, only: %i[update]
+      before_action :verify_path_job_id, only: %i[show destroy]
+      before_action :verify_path_active_job_id, only: %i[update destroy_options]
       before_action :must_be_subscribed!, only: %i[create update]
 
       def create
         job = build_job
-        job.assign_job_type_value
-        # job.activity_status = 1
-
         if job.save
           process_after_save(job)
-          render status: 201, json: { message: 'Job created!' }
+          render status: 201, json: job.dao(include_image: true, include_employer: true, include_application_options: true)
         else
           render status: 400, json: { error: 'Bad request', details: job.errors.details }
         end
@@ -33,7 +30,7 @@ module Api
 
         if @job.update(job_params)
           process_after_save(@job)
-          render status: 200, json: { message: 'Job updated!' }
+          render status: 200, json: @job.dao(include_image: true, include_employer: true, include_application_options: true)
         else
           render status: 400, json: { error: 'Bad request', details: @job.errors.details }
         end
@@ -56,9 +53,25 @@ module Api
         not_found_error('job') # ok to be this specific because only editors can delete jobs
       end
 
+      def destroy_options
+        must_be_owner!(params[:id], Current.user.id)
+        
+        if params[:option_id].nil?
+          @job.application_options.destroy_all
+          render status: 200, json: { message: 'All options deleted!' }
+        else
+          option = @job.application_options.find(params[:option_id])
+          option.destroy!
+          render status: 200, json: { message: 'Option deleted!' }
+        end
+      rescue ActiveRecord::RecordNotFound
+        not_found_error('option')
+      end
+
       # Creates feed based on current user's preferences (if available); if the current user is not verified yet or
       # isn't logged in, his feed consists of random jobs (limit 100)
       def feed
+        render status: 410, json: { message: 'This endpoint is deprecated.' } and return
         redirect = validate_coordinates
         return redirect if redirect.is_a?(String)
 
@@ -80,7 +93,7 @@ module Api
         if jobs.empty?
           render(status: 204, json: { jobs: })
         else
-          render(status: 200, json: "{\"jobs\": [#{Job.get_jsons_include_user(jobs)}]}")
+          render(status: 200, json: { jobs: jobs.map { |job| job.dao[:job]} })
         end
       end
 
@@ -94,11 +107,11 @@ module Api
         return access_denied_error('job') if (job.user_id != Current.user.id && job.job_status != 'listed') || job.nil?
 
         mark_notifications_as_read
-        render(status: 200, json: "{\"job\": #{Job.json_for(job)}}")
+        render(status: 200, json: job.dao(include_image: true, include_employer: true, include_description: true, include_application_options: true))
       end
 
       def find
-        jobs = job_params[:query].presence ? search_jobs : Job.includes(image_url_attachment: :blob).includes([:rich_text_description]).all
+        jobs = job_params[:query].presence ? search_jobs : Job.includes(image_url_attachment: :blob).includes([:rich_text_description, :user]).all
 
         render status: 204, json: { message: 'No jobs found!' } and return if jobs.blank?
 
@@ -110,9 +123,9 @@ module Api
       def synchronize
         case synchronize_params[:source]
         when 'lever'
-          Integrations::LeverController.synchronize(Current.user)
+          Integrations::Lever::LeverController.synchronize(Current.user)
         when 'ashby'
-          Integrations::AshbyController.synchronize(Current.user)
+          Integrations::Ashby::AshbyController.synchronize(Current.user)
         else
           render status: 400, json: { message: 'Invalid source' }
         end
@@ -193,9 +206,9 @@ module Api
 
       def create_feed_request(jobs, url)
         body = if Current.user&.preferences
-                 "{\"pref\": #{Current.user.preferences.to_json}, \"slice\": [#{Job.jsons_for(jobs)}]}"
+                  {pref: Current.user.preferences.to_json, slice: jobs.to_json}
                else
-                 "{\"slice\": [#{Job.jsons_for(jobs)}]}"
+                  {slice: jobs.to_json}
                end
 
         Net::HTTP::Post.new(url).tap do |request|
@@ -251,14 +264,14 @@ module Api
 
       def render_jobs(tag, jobs)
         if jobs.present?
-          render status: 200, json: "{\"#{tag}\": [#{Job.jsons_for(jobs.page(find_job_params[:page]).per(24))}]}"
+          render status: 200, json: {"#{tag}": jobs.page(find_job_params[:page]).per(24).map { |job| job.dao(include_image: true, include_description: true, include_employer: true)[:job]}}
         else
           render status: 204, json: { message: 'No jobs found!' }
         end
       end
 
       def fetch_user_coordinates
-        if Current.user&.longitude && Current.user&.latitude
+        if Current.user&.longitude && Current.user.latitude
           [Current.user.latitude, Current.user.longitude]
         else
           [nil, nil]
@@ -283,11 +296,11 @@ module Api
       def job_params
         permitted_params = params.except(:format, :_json, :job).permit(
           :id, :job_slug, :title, :description, :start_slot, :referrer_url, :longitude, :latitude, :job_type,
-          :job_status, :image_url, :position, :currency, :salary, :key_skills, :duration, :job_notifications,
-          application_options_attributes: [:id, :question, :question_type, :required, { options: [] }]
+          :job_status, :image_url, :position, :currency, :salary, :key_skills, :duration, :job_notifications, 
+          :city, :address, :postal_code, :country_code, application_options_attributes: [:id, :question, :question_type, :required, { options: [] }]
         )
         check_question_types(permitted_params)
-        raise ActionController::BadRequest, 'Invalid job_status' if permitted_params[:job_status].present? && !Job::VALID_JOB_TYPES.include?(permitted_params[:job_status])
+        raise ActionController::BadRequest, 'Invalid job_status' if permitted_params[:job_status].present? && !Job::VALID_JOB_STATUS.include?(permitted_params[:job_status])
 
         permitted_params
       end

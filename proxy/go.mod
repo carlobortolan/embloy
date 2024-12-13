@@ -6,6 +6,7 @@ require github.com/sirupsen/logrus v1.9.3
 
 require (
 	github.com/embloy/embloy-go v0.1.15
+	github.com/getsentry/sentry-go v0.28.1
 	github.com/gin-gonic/gin v1.10.0
 	github.com/joho/godotenv v1.5.1
 )

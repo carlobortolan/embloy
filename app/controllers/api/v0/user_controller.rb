@@ -11,26 +11,23 @@ module Api
         if upcoming_jobs.empty?
           render(status: 204, json: { jobs: upcoming_jobs })
         else
-          render(status: 200, json: "{\"jobs\": [#{Job.get_jsons_include_user(upcoming_jobs)}]}")
+          render(status: 200, json: { jobs: upcoming_jobs.map { |job| job.dao(include_employer: true)[:job] } })
         end
       end
 
       def own_jobs
-        jobs = Current.user.jobs.includes([:rich_text_description]).order(created_at: :desc)
+        jobs = Current.user.jobs.order(created_at: :desc)
         if jobs.empty?
-          render(status: 204,
-                 json: { jobs: })
+          render(status: 204, json: { jobs: })
         else
-          render(status: 200,
-                 json: "{\"jobs\": [#{Job.jsons_for(jobs)}]}")
+          render(status: 200, json: { jobs: jobs.map { |job| job.dao[:job] } })
         end
       end
 
       def own_applications
-        applications = Application.where(user_id: Current.user.id)
-                                  .includes(job: %i[rich_text_description
-                                                    application_options
-                                                    user]).includes([:application_answers])
+        applications = Application.includes(application_answers: { attachment_attachment: :blob }, application_events: [], job: [:rich_text_description,
+                                                                                                                                 :application_options,
+                                                                                                                                 { user: :image_url_attachment }]).where(user_id: Current.user.id)
         return render(status: 204, json: { applications: {} }) if applications.empty?
 
         render status: 200, json: build_applications_json(applications)
@@ -69,8 +66,7 @@ module Api
         if Current.user.nil?
           render(status: 204)
         else
-          render(status: 200,
-                 json: "{\"user\": #{User.json_for(Current.user)}}")
+          render(status: 200, json: Current.user.dao(include_user: true))
         end
       end
 
@@ -89,51 +85,61 @@ module Api
 
       def destroy
         Current.user.destroy!
-        render status: 200,
-               json: { message: 'User deleted!' }
+        render status: 200, json: { message: 'User deleted!' }
       end
 
       def upload_image
-        attach_image if params[:image_url].present?
-        render status: 200, json: { image_url: Current.user.image_url.url.to_s }
-      rescue Excon::Error::Socket, ActiveStorage::IntegrityError => e
+        render status: 400, json: { error: 'No image provided' } unless params[:image_url]&.present?
+
+        if Current.user.update(image_url: params[:image_url])
+          render status: 200, json: { image_url: Current.user.image_url.url.to_s }
+        else
+          render status: 400, json: { error: 'Bad request', details: Current.user.errors.details }
+        end
+      rescue StandardError => e
         Rails.logger.error("Failed to upload image: #{e.message}")
-        render status: 500, json: { error: 'Failed to upload image:' }
+        render status: 500, json: { error: 'Failed to upload image' }
+      end
+
+      def events
+        pipeline = ApplicationEvent.all.where(user_id: Current.user.id).order('created_at DESC').group_by(&:job_id)
+
+        pipeline.empty? ? render(status: 204, json: { pipeline: [] }) : render(status: 200, json: { pipeline: })
+      end
+
+      def deactivate_integration
+        Integrations::IntegrationsController.deactivate(Current.user, deactivate_integration_params[:source], deactivate_integration_params[:archive_jobs] == '1')
+        render status: 200, json: { message: 'Integration deactivated successfully.' }
       end
 
       private
 
       def build_applications_json(applications)
-        applications.includes(:application_answers, application_answers: :attachment_attachment).map do |application|
+        applications.map do |application|
           {
             application:,
-            job: Job.get_json_include_user_exclude_image(application.job),
-            application_answers: application.application_answers.as_json(include: { attachment: { methods: :url } })
+            job: application.job.dao(include_employer: true, include_application_options: true)[:job],
+            application_answers: application.application_answers.as_json(include: { attachment: { methods: :url } }),
+            application_events: application.application_events
           }
         end
       end
 
       def fetch_upcoming_jobs
-        applications = Application.all.where(user_id: Current.user.id, status: '1')
+        applications = Application.all.includes(:job).where(user_id: Current.user.id, status: '1')
         return [] if applications.empty?
 
-        applications.map { |i| Job.find(i.job_id) }
-      end
-
-      def attach_image
-        image = params[:image_url]
-        if image.is_a?(ActionDispatch::Http::UploadedFile)
-          Current.user.image_url.attach(io: image.open, filename: image.original_filename, content_type: image.content_type)
-        else
-          default_image = Rails.root.join('app/assets/images/logo-light.svg')
-          Current.user.image_url.attach(io: File.open(default_image), filename: 'default.svg', content_type: 'image/svg')
-        end
+        applications.map(&:job)
       end
 
       def user_params
         params.require(:user).permit(:first_name, :last_name, :email, :phone, :degree, :date_of_birth, :country_code, :city,
-                                     :postal_code, :address, :twitter_url, :facebook_url, :linkedin_url, :instagram_url,
+                                     :postal_code, :address, :twitter_url, :facebook_url, :linkedin_url, :instagram_url, :github_url, :portfolio_url,
                                      :application_notifications, :communication_notifications, :marketing_notifications, :security_notifications)
+      end
+
+      def deactivate_integration_params
+        params.permit(:source, :archive_jobs)
       end
     end
   end

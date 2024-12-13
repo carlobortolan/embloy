@@ -38,6 +38,9 @@ RUN apt-get update -qq && \
                        nodejs \
                        npm
 
+# Install yarn
+RUN npm install -g yarn
+
 # Copy the Gemfile and Gemfile.lock into the container
 COPY Gemfile Gemfile.lock ./
 
@@ -54,6 +57,7 @@ ENV RAILS_SERVE_STATIC_FILES=true
 ENV RAILS_LOG_TO_STDOUT=true
 
 # Precompile assets
+RUN yarn install
 RUN bundle exec rake assets:precompile
 
 # Expose port 3000

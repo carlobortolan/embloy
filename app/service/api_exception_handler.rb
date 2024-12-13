@@ -63,13 +63,18 @@ module ApiExceptionHandler
 
     #--------------------------------------
 
-    rescue_from CustomExceptions::InvalidUser::Inactive,
-                with: :user_inactive_error
+    rescue_from CustomExceptions::InvalidUser::CredentialsWrong,
+                with: :user_unknown_error
 
     #--------------------------------------
 
-    rescue_from CustomExceptions::InvalidUser::Unknown,
+    rescue_from CustomExceptions::InvalidUser::LoggedOut,
                 with: :user_unknown_error
+
+    #--------------------------------------
+
+    rescue_from CustomExceptions::InvalidUser::Inactive,
+                with: :user_inactive_error
 
     #--------------------------------------
 
@@ -89,6 +94,9 @@ module ApiExceptionHandler
     #--------------------------------------
 
     rescue_from CustomExceptions::Unauthorized::Blocked,
+                with: :user_blocked_error
+
+    rescue_from CustomExceptions::Unauthorized::SandBox,
                 with: :user_blocked_error
 
     #--------------------------------------
@@ -289,7 +297,7 @@ module ApiExceptionHandler
   end
 
   def genius_query_removed_error
-    removed_error('genius_query')
+    conflict_error('genius_query', 'The query was removed and cannot be accessed anymore')
   end
 
   def custom_validity_invalid_input_error
@@ -402,8 +410,8 @@ module ApiExceptionHandler
 
   #--------------------------------------
 
-  def malformed_error(attribute)
-    render_error(attribute, 'ERR_INVALID', 'Attribute is malformed or unknown', 400)
+  def malformed_error(attribute, description = 'Attribute is malformed or unknown')
+    render_error(attribute, 'ERR_INVALID', description, 400)
   end
 
   #--------------------------------------
@@ -426,14 +434,14 @@ module ApiExceptionHandler
 
   #--------------------------------------
 
-  def removed_error(attribute)
-    render_error(attribute, 'ERR_REMOVED', 'Attribute was removed and cannot be accessed anymore', 409)
+  def conflict_error(attribute, description = 'Attribute is already submitted')
+    render_error(attribute, 'ERR_REMOVED', description, 409)
   end
 
   #--------------------------------------
 
-  def unnecessary_error(attribute)
-    render_error(attribute, 'ERR_UNNECESSARY', 'Attribute is already submitted', 422)
+  def unnecessary_error(attribute, description = 'Attribute is already submitted')
+    render_error(attribute, 'ERR_UNNECESSARY', description, 422)
   end
 
   #--------------------------------------
@@ -451,7 +459,7 @@ module ApiExceptionHandler
   #--------------------------------------
 
   def too_many_requests_error(attribute, message = nil)
-    render_error(attribute, 'ERR_LIMIT', message || 'Too many request', 429)
+    render_error(attribute, 'ERR_LIMIT', message || 'Too many requests', 429)
   end
 
   #--------------------------------------

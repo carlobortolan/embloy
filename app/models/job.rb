@@ -5,7 +5,9 @@
 # as well as other helper methods related to jobs.
 class Job < ApplicationRecord
   include Validators::JobValidator
-  VALID_JOB_TYPES = %w[listed unlisted archived].freeze
+  include Dao::JobDao
+
+  VALID_JOB_STATUS = %w[listed unlisted archived].freeze
 
   before_save :set_default_job_slug, if: -> { job_slug.nil? }
   before_validation :set_default_values
@@ -49,29 +51,20 @@ class Job < ApplicationRecord
     end
   end
 
-  def self.json_for(job)
-    Serializers::JobSerializer.json_for(job)
+  def from_lever?
+    job_slug&.start_with?('lever__') || referrer_url&.include?('jobs.lever.co') || referrer_url&.include?('jobs.sandbox.lever.co')
   end
 
-  def self.get_json_include_user(job)
-    Serializers::JobSerializer.get_json_include_user(job)
+  def from_ashby?
+    job_slug&.start_with?('ashby__') || referrer_url&.include?('app.ashbyhq.com')
   end
 
-  def self.get_json_include_user_exclude_image(job)
-    Serializers::JobSerializer.get_json_include_user_exclude_image(job)
+  def duplicate_application_allowed?
+    from_lever? || from_ashby? || Current.user.sandboxd? || Current.user.admin?
   end
 
-  def self.jsons_for(jobs)
-    Serializers::JobSerializer.jsons_for(jobs)
-  end
-
-  def self.get_jsons_include_user(jobs)
-    Serializers::JobSerializer.get_jsons_include_user(jobs)
-  end
-
-  def assign_job_type_value
-    job_types = JSON.parse(File.read(Rails.root.join('app/helpers', 'job_types.json')))
-    self.job_type_value = job_types[job_type]
+  def archive
+    update!(job_status: :archived)
   end
 
   private

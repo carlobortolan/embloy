@@ -25,7 +25,9 @@ module Api
           return not_found_error('client')
         end
 
-        if update_or_create_job(validate_session)
+        validate_session
+
+        if update_or_create_job
           apply_for_job
         else
           render status: 400, json: @job.errors.details
@@ -41,9 +43,10 @@ module Api
           return not_found_error('client')
         end
 
-        session = validate_session
-        if update_or_create_job(session)
-          render status: 200, json: { session:, job: Job.json_for(@job) }
+        validate_session
+
+        if update_or_create_job
+          render status: 200, json: { session: @session }.merge(@job.dao(include_image: true, include_employer: true, include_description: true, include_application_options: true))
         else
           render status: 400, json: @job.errors.details
         end
@@ -65,13 +68,13 @@ module Api
       # It calls the Encoder class of the `QuicklinkService::Request` module to create the token.
       # It then returns the token in the response.
       def create_request_proxy
-        return malformed_error('proxy') unless proxy_params[:admin_token] == ENV.fetch('PROXY_ADMIN_TOKEN', nil)
+        return malformed_error('proxy', 'Invalid or missing admin token') unless proxy_params[:admin_token] == ENV.fetch('PROXY_ADMIN_TOKEN', nil)
         return malformed_error('job_slug') if proxy_params[:job_slug].nil?
         return malformed_error('mode') if proxy_params[:mode].nil?
 
         user_id = proxy_params[:user_id] || Job.find_by(job_slug: "#{proxy_params[:mode]}__#{proxy_params[:job_slug]}")&.user_id
 
-        return malformed_error('proxy') if user_id.nil?
+        return malformed_error('proxy', 'Could not find user for this job') if user_id.nil?
         return user_role_to_low_error unless must_be_verified(user_id)
         return user_blocked_error unless user_not_blacklisted(user_id)
 
@@ -82,39 +85,40 @@ module Api
       # It calls the Encoder class of the `QuicklinkService::Client` module to create the token.
       # It then returns the token in the response.
       def create_client
-        token = QuicklinkService::Client::Encoder.call(check_subscription, parse_expiration_date)
+        token = QuicklinkService::Client::Encoder.call(check_subscription(Current.user), parse_expiration_date)
         render status: 200, json: { 'client_token' => token }
       end
 
       private
 
+      # Responsible for verifying request token and setting @session when handling application request and submission
       def validate_session
         raise CustomExceptions::Subscription::ExpiredOrMissing unless @client&.active_subscription?
 
-        session = @decoded_request_token['session']
-        if session.nil? || session['job_slug'].nil? || session['user_id'].nil? || session['subscription_type'].nil? || session['mode'].nil?
+        @session = @decoded_request_token['session']
+        if @session.nil? || @session['job_slug'].nil? || @session['user_id'].nil? || @session['subscription_type'].nil? || @session['mode'].nil?
           raise CustomExceptions::InvalidInput::Quicklink::Request::Malformed
         end
 
-        session['referrer_url'] = request.referrer
-        session
+        @session['referrer_url'] = request.referrer
       end
 
       # The update_or_create_job method is responsible for updating an existing job or creating a new one.
       # It takes a `job_slug` as a parameter, which is used to find or create the job.
       # If the job does not exist, it is created with the `job_slug` and `client.id`.
       # The job is then added to the client's jobs.
-      def update_or_create_job(session)
+      def update_or_create_job
         # Retrieve existing job if it exists
         @client.jobs ||= []
-        @job = @client.jobs.find_by(job_slug: session['job_slug'])
+        @job = @client.jobs.includes(:application_options).find_by(job_slug: @session['job_slug'])
 
         # Return job from external API if integration mode enabled
-        @job = Integrations::IntegrationsController.get_posting(session['mode'], session['job_slug'], @client, @job) if session['mode'] != 'job'
+        # TODO: Uncomment in case of ATS that need sync on every application
+        # @job = Integrations::IntegrationsController.get_posting(@session['mode'], @session['job_slug'], @client, @job) if @session['mode'] != 'job'
         return handle_existing_job if @job
 
         # Create new job if it does not exist
-        create_new_job(session)
+        create_new_job
       end
 
       def handle_existing_job
@@ -126,10 +130,10 @@ module Api
         end
       end
 
-      def create_new_job(session)
+      def create_new_job
         allowed_params = %w[user_id job_type job_slug referrer_url duration code_lang title position description key_skills salary currency start_slot longitude latitude country_code postal_code
                             city address job_notifications]
-        @job = Job.new(session.slice(*allowed_params).merge(job_status: 'unlisted'))
+        @job = Job.new(@session.slice(*allowed_params).merge(job_status: 'unlisted'))
 
         if @job.save
           @job.user = @client
@@ -160,22 +164,25 @@ module Api
       end
 
       def create_proxy_session(user_id)
-        user = User.find(user_id)
-        subscription = user.current_subscription
-        raise CustomExceptions::Subscription::ExpiredOrMissing if subscription.nil?
-
-        session = portal_params.to_unsafe_h.transform_keys(&:to_s)
+        session = proxy_params.to_unsafe_h.transform_keys(&:to_s)
+        # Remove admin_token from session
+        session.delete('admin_token')
+        # Remove quicklink from session
+        session.delete('quicklink')
         session['user_id'] = user_id
-        session['subscription_type'] = SubscriptionHelper.subscription_type(subscription.processor_plan)
-        session['job_slug'] = "#{proxy_params[:mode]}__#{proxy_params[:job_slug]}"
+        session['subscription_type'] = SubscriptionHelper.subscription_type(check_subscription(Current.user))
+        session['job_slug'] = "#{proxy_params[:mode]}__#{proxy_params[:job_slug]}" unless proxy_params[:mode] == 'job'
+        session['origin'] = proxy_params[:origin]
         session
       end
 
-      def check_subscription
-        subscription = Current.user.current_subscription # Check for active subscription
+      def check_subscription(user = nil)
+        return SubscriptionHelper.stripe_price_id('enterprise_3') if user.sandboxd? || user.admin?
+
+        subscription = user.current_subscription # Check for active subscription
         raise CustomExceptions::Subscription::ExpiredOrMissing if subscription.nil?
 
-        subscription
+        subscription.processor_plan
       end
 
       def create_client_params
@@ -192,7 +199,8 @@ module Api
       end
 
       def proxy_params
-        params.permit(:mode, :success_url, :cancel_url, :job_slug, :origin, :admin_token, :user_id)
+        params.except(:format).permit(:mode, :success_url, :cancel_url, :job_slug, :origin, :admin_token, :user_id,
+                                      quicklink: %i[mode job_slug success_url cancel_url admin_token origin])
       end
     end
   end

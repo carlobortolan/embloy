@@ -6,6 +6,7 @@ module Validators
   # These rules are included in the Job model and run when a Job object is saved.
   module JobValidator
     extend ActiveSupport::Concern
+
     # rubocop:disable Metrics/BlockLength
     included do
       geocoded_by :latitude_longitude
@@ -56,10 +57,10 @@ module Validators
                             numericality: { greater_than_or_equal_to: -180, less_than_or_equal_to: 180, error: 'ERR_INVALID', description: 'Attribute is malformed or unknown' }
       validates :latitude, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
                            numericality: { greater_than_or_equal_to: -90, less_than_or_equal_to: 90, error: 'ERR_INVALID', description: 'Attribute is malformed or unknown' }
-      # validates :postal_code, length: { minimum: 0, maximum: 45, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
-      # validates :country_code, length: { minimum: 0, maximum: 45, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
-      # validates :city, length: { minimum: 0, maximum: 45, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
-      # validates :address, length: { minimum: 0, maximum: 150, "error": "ERR_LENGTH", "description": "Attribute length is invalid" }
+      validates :postal_code, length: { minimum: 0, maximum: 45, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }, allow_blank: true
+      validates :country_code, length: { minimum: 0, maximum: 45, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }, allow_blank: true
+      validates :city, length: { minimum: 0, maximum: 45, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }, allow_blank: true
+      validates :address, length: { minimum: 0, maximum: 150, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }, allow_blank: true
       validate :employer_rating
       validate :boost
       validate :start_slot_validation
@@ -76,6 +77,7 @@ module Validators
 
     def check_subscription_limit_create
       return unless user
+      return if user.sandboxd? || user.admin?
       return unless user.jobs.where(job_status: %w[listed unlisted], activity_status: 1).count >= max_jobs_allowed
 
       raise CustomExceptions::Subscription::LimitReached
@@ -83,6 +85,7 @@ module Validators
 
     def check_subscription_limit_update
       return unless user
+      return if user.sandboxd? || user.admin?
       return unless user.jobs.where(job_status: %w[listed unlisted], activity_status: 1).count > max_jobs_allowed
 
       raise CustomExceptions::Subscription::LimitReached

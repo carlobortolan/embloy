@@ -2,14 +2,14 @@ source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '3.2.2'
-gem 'mawsitsit', '~> 0.1.17'
+gem 'mawsitsit', '~> 0.1.18'
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem 'rails', '~> 7.0.4', '>= 7.0.4.1'
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem 'sprockets-rails'
 # gem "tzinfo-data"
-gem 'rack-cors'
+gem 'rack-cors', '~> 2.0', '>= 2.0.2'
 # Use mysql as the database for Active Record
 # gem "mysql2", "~> 0.5.4"
 
@@ -66,8 +66,12 @@ group :development, :test do
   gem 'debug', platforms: %i[mri mingw x64_mingw]
   gem 'faker'
   gem 'httparty'
+  gem 'panolint', require: false
   gem 'rspec-rails', '~> 6.0.0'
   gem 'rubocop', require: false
+  gem 'rubocop-performance', require: false
+  gem 'rubocop-rails_config', require: false
+  gem 'rubocop-rake', require: false
 end
 
 group :development do
@@ -84,6 +88,7 @@ group :development do
 end
 
 group :production do
+  gem 'aws-sdk-s3', '~> 1.159'
   gem 'azure-storage-blob', '~> 2.0', require: false
 end
 
@@ -123,7 +128,7 @@ gem 'pg_search'
 gem 'trix'
 
 # Rich-Text Support
-gem 'actionpack', '>= 7.0.5.1'
+gem 'actionpack', '~> 7.0.8.7'
 gem 'activesupport', '>= 7.0.7.1'
 gem 'nokogiri', '>= 1.16.2'
 
@@ -152,4 +157,7 @@ gem 'rails-healthcheck', '~> 1.4'
 # enable precommit
 gem 'attr_encrypted', '~> 4.0'
 
-gem "aws-sdk-s3", "~> 1.159"
+gem 'cssbundling-rails'
+gem 'sentry-rails'
+gem 'sentry-ruby'
+gem 'stackprof'

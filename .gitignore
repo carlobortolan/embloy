@@ -33,6 +33,8 @@
 # Ignore environment variables to access db remotly and allow oauth2.
 /config/env_var.rb
 .env
+production.env
+development.env
 /config/puma.rb
 /config/database.yml
 Gemfile
@@ -50,3 +52,5 @@ newrelic.yml
 
 # Admin assets
 /node_modules
+/app/assets/builds/*
+!/app/assets/builds/.keep

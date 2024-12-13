@@ -7,10 +7,16 @@ class ApplicationController < ActionController::API
   include SpatialJobValue
   include Integrations
 
-  # ============ WEB-APP BEFORE ACTIONS ==============
+  # ============== API BEFORE ACTIONS ================
   before_action :set_notifications, unless: -> { Current.user.nil? }
   before_action :require_user_not_blacklisted!, unless: -> { Current.user.nil? }
+  before_action :set_default_url_options
 
+  def set_default_url_options
+    ActiveStorage::Current.url_options = { host: request.host_with_port, protocol: request.protocol }
+  end
+
+  
   # =============== Blacklisted User Check ===============
   # ================ WITH DATABASE LOOKUP ================
   def require_user_not_blacklisted(id = nil)
@@ -160,10 +166,14 @@ class ApplicationController < ActionController::API
     Current.user.active_subscription?
   end
 
-  def must_be_subscribed!(id = nil)
-    set_current_id(id)
-    return if Current.user.active_subscription?
+  def must_be_subscribed!(id = nil, user = nil)
+    set_current_id(id) if user.nil?
 
+    if user.nil?
+      return if Current.user.active_subscription?
+    elsif user.active_subscription?
+      return
+    end
     raise CustomExceptions::Subscription::ExpiredOrMissing
   end
 
@@ -182,7 +192,7 @@ class ApplicationController < ActionController::API
     if id.nil?
       raise CustomExceptions::InvalidUser::LoggedOut if Current.user.nil?
     else
-      Current.user = User.find_by(id:)
+      Current.user ||= User.find_by(id:)
       raise CustomExceptions::InvalidUser::Unknown if Current.user.nil?
     end
   end
@@ -408,7 +418,7 @@ class ApplicationController < ActionController::API
   # ======= that set "@job" to job for id  ========
 
   def set_at_job(job_id = nil)
-    @job = Job.find_by(job_id:) unless job_id.nil?
+    @job ||= Job.find_by(job_id:) unless job_id.nil?
 
     raise CustomExceptions::InvalidJob::Unknown if @job.nil?
     raise CustomExceptions::InvalidJob::Inactive if @job.activity_status.zero?
@@ -424,19 +434,19 @@ class ApplicationController < ActionController::API
   # ======== that model the role hierarchy ========
 
   def owner
-    !(Current.user.nil? || @job.nil? || @job.user_id != Current.user.id)
+    !Current.user.nil? && !@job.nil? && (@job.user_id == Current.user.id || Current.user.admin?)
   end
 
   def self.owner
-    !(Current.user.nil? || @job.nil? || @job.user_id != Current.user.id)
+    !Current.user.nil? && !@job.nil? && (@job.user_id == Current.user.id || Current.user.admin?)
   end
 
   def owner!
-    Current.user.nil? || @job.nil? || @job.user_id != Current.user.id ? raise(CustomExceptions::Unauthorized::NotOwner) : true
+    !Current.user.nil? && !@job.nil? && (@job.user_id == Current.user.id || Current.user.admin?) ? true : raise(CustomExceptions::Unauthorized::NotOwner)
   end
 
   def self.owner!
-    Current.user.nil? || @job.nil? || @job.user_id != Current.user.id ? raise(CustomExceptions::Unauthorized::NotOwner) : true
+    !Current.user.nil? && !@job.nil? && (@job.user_id == Current.user.id || Current.user.admin?) ? true : raise(CustomExceptions::Unauthorized::NotOwner)
   end
 
   # This method only checks whether the currently signed in user is the owner of the job that is being requested

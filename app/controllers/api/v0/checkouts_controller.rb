@@ -5,9 +5,13 @@ module Api
     # CheckoutsController handles checkout-related actions
     class CheckoutsController < ApiController
       # skip_before_action :set_current_user, only: %i[paymentsuccess subscriptionsuccess failure] # TODO: Maybe change in the future, if neccessary
+      before_action :block_sandbox_user, except: %i[show]
 
       def show
         setup_payment_processor
+
+        render json: { error: 'Sandbox mode not supported' }, status: 400 and return if Current.user.sandboxd?
+
         stripe_price_id = SubscriptionHelper.stripe_price_id(checkout_params[:tier])
         render json: { error: 'Invalid tier: must be one of basic, premium, enterprise_1, enterprise_2 or enterprise_3' }, status: 400 and return if stripe_price_id.nil?
 

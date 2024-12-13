@@ -10,16 +10,18 @@ module Api
       end
 
       def refresh
+        message = 'Webhooks refreshed successfully'
+
         case refresh_params[:source]
         when 'lever'
-          Integrations::LeverWebhooksController.refresh_webhooks(Current.user)
+          message = Integrations::Lever::WebhooksController.refresh_webhooks(Current.user)
         when 'ashby'
-          Integrations::AshbyWebhooksController.refresh_webhooks(Current.user)
+          message = Integrations::Ashby::WebhooksController.refresh_webhooks(Current.user)
         else
           render(status: 422, json: { error: 'Unknown source' }) and return
         end
 
-        render(status: 200, json: { message: 'Webhooks refreshed successfully' })
+        render(status: 200, json: { message: })
       end
 
       private
