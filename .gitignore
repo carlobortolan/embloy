@@ -54,3 +54,5 @@ newrelic.yml
 /node_modules
 /app/assets/builds/*
 !/app/assets/builds/.keep
+
+/genius/target
