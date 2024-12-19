@@ -5,7 +5,7 @@ module Api
     # SubscriptionsController handles subscription-related actions
     class SubscriptionsController < ApiController
       def all_subscriptions
-        if valid_payment_processor?
+        if Current.user.valid_payment_processor?
           subscriptions = Current.user.payment_processor.sync_subscriptions(status: 'all')
           if subscriptions.empty?
             render(status: 204, json: { subscriptions: [] })
@@ -18,7 +18,7 @@ module Api
       end
 
       def active_subscription
-        if valid_payment_processor?
+        if Current.user.valid_payment_processor?
           subscription = fetch_subscription
           if subscription.nil?
             render(status: 404, json: { message: 'No active subscription found.' })
@@ -47,10 +47,6 @@ module Api
         else
           Current.user.current_subscription
         end
-      end
-
-      def valid_payment_processor?
-        Current.user.payment_processor && !Current.user.payment_processor.deleted? && Current.user.payment_processor.processor == 'stripe'
       end
     end
   end
