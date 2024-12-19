@@ -42,6 +42,7 @@ module Dao
         updated_at: updated_at
       }
       user[:preferences] = preferences if preferences
+      user[:subscription] = current_subscription if valid_payment_processor?
       user
     end
 

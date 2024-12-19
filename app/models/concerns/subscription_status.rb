@@ -5,7 +5,7 @@
 module SubscriptionStatus
   extend ActiveSupport::Concern
 
-  included do
+  included do # rubocop:disable Metrics/BlockLength
     def current_subscription_info
       sync_subscriptions
       subscription = payment_processor&.subscription
@@ -23,6 +23,10 @@ module SubscriptionStatus
 
       sync_subscriptions
       payment_processor.present? && payment_processor.subscribed?
+    end
+
+    def valid_payment_processor?
+      payment_processor && !payment_processor.deleted? && payment_processor.processor == 'stripe'
     end
 
     private
