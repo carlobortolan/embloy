@@ -25,14 +25,14 @@ module ApplicationBuilder # rubocop:disable Metrics/ModuleLength
   private
 
   # Creates @application
-  def create_application! # rubocop:disable Metrics/AbcSize,Metrics/PerceivedComplexity
+  def create_application! # rubocop:disable Metrics/AbcSize
     tmp = application_params.except(:id, :application_answers, :save_as_draft)
     tmp[:job_id] = @job.id
     tmp[:user_id] = Current.user.id
     tmp[:version] = 1
-    save_as_draft = application_params[:save_as_draft] == '1' || false
+    save_as_draft = application_params[:save_as_draft] == '1'
 
-    @application = Application.includes(:user, :job).find_by(job_id: @job.id, user_id: Current.user.id).order(version: :desc).first
+    @application = Application.includes(:user, :job).find_by(job_id: @job.id, user_id: Current.user.id)
     Rails.logger.debug "Fetched existing application: #{@application.inspect}"
 
     if @job.duplicate_application_allowed? && @application.present? && !@application.draft?
@@ -60,7 +60,7 @@ module ApplicationBuilder # rubocop:disable Metrics/ModuleLength
     Integrations::IntegrationsController.submit_form(@job, @application, application_params, @client, @session)
   end
 
-  def validate_and_build_answers(save_as_draft: false)
+  def validate_and_build_answers(save_as_draft)
     answers_to_create = []
     attachments_to_attach = []
 
@@ -81,12 +81,12 @@ module ApplicationBuilder # rubocop:disable Metrics/ModuleLength
     [answers_to_create, attachments_to_attach]
   end
 
-  def create_application_answers!(save_as_draft: false)
+  def create_application_answers!(save_as_draft)
     answers_to_create, attachments_to_attach = validate_and_build_answers(save_as_draft)
     insert_answers_and_attach_files(answers_to_create, attachments_to_attach, @job)
   end
 
-  def validate_required_option(option, answer_params, save_as_draft: false)
+  def validate_required_option(option, answer_params, save_as_draft)
     return if !option.required || save_as_draft
     return unless answer_params.nil? || (answer_params.last[:answer].blank? && option.question_type != 'file') || (answer_params.last[:file].blank? && option.question_type == 'file')
 
