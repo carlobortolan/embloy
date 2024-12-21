@@ -25,38 +25,54 @@ module ApplicationBuilder # rubocop:disable Metrics/ModuleLength
   private
 
   # Creates @application
-  def create_application!
-    tmp = application_params.except(:id, :application_answers)
+  def create_application! # rubocop:disable Metrics/AbcSize,Metrics/PerceivedComplexity
+    tmp = application_params.except(:id, :application_answers, :save_as_draft)
     tmp[:job_id] = @job.id
     tmp[:user_id] = Current.user.id
     tmp[:version] = 1
+    save_as_draft = application_params[:save_as_draft] == '1' || false
 
-    if @job.duplicate_application_allowed? && (@application = Application.includes(:user, :job).find_by(job_id: @job.id, user_id: Current.user.id)) && @application.present?
-      Rails.logger.debug "Found existing application: #{@application.inspect}"
+    @application = Application.includes(:user, :job).find_by(job_id: @job.id, user_id: Current.user.id).order(version: :desc).first
+    Rails.logger.debug "Fetched existing application: #{@application.inspect}"
+
+    if @job.duplicate_application_allowed? && @application.present? && !@application.draft?
+      # Save new application with incremented version
+      Rails.logger.debug 'Saving new application version as draft'
       @application.update!(version: @application.version + 1)
+      create_application_answers!(save_as_draft) if @job.application_options.any?
+    elsif @application.present? && @application.draft?
+      # Update existing draft application
+      Rails.logger.debug 'Updating draft application'
+      @application.update!(updated_at: Time.current)
+      # TODO: update_application_answers!(save_as_draft) if @job.application_options.any?
     else
-      Rails.logger.debug 'Creating new application'
+      # Create new draft application
+      Rails.logger.debug 'Creating new draft application'
       @application = Application.new(tmp)
       @application.save!
+      create_application_answers!(save_as_draft) if @job.application_options.any?
     end
 
-    create_application_answers! if @job.application_options.any?
+    return if save_as_draft
+
+    Rails.logger.debug 'Submitting draft application'
+    @application.update!(submitted_at: Time.current)
     Integrations::IntegrationsController.submit_form(@job, @application, application_params, @client, @session)
   end
 
-  def validate_and_build_answers(job, application)
+  def validate_and_build_answers(save_as_draft: false)
     answers_to_create = []
     attachments_to_attach = []
 
-    job.application_options.each do |option|
+    @job.application_options.each do |option|
       answer_params = find_answer_params(option.id)
-      validate_required_option(option, answer_params, application)
+      validate_required_option(option, answer_params, save_as_draft)
       next unless valid_answer?(option, answer_params)
 
       answer_array = build_answer_array(option, answer_params)
-      answer = build_application_answer(job, option, answer_array, application)
+      answer = build_application_answer(option, answer_array)
 
-      validate_answer(answer, option, application)
+      validate_answer(answer, option, @application)
 
       answers_to_create << answer.attributes.except('id')
       attachments_to_attach << { file: answer_params.last[:file], option_id: option.id } if answer_params.last[:file]
@@ -65,15 +81,14 @@ module ApplicationBuilder # rubocop:disable Metrics/ModuleLength
     [answers_to_create, attachments_to_attach]
   end
 
-  def create_application_answers!
-    answers_to_create, attachments_to_attach = validate_and_build_answers(@job, @application)
+  def create_application_answers!(save_as_draft: false)
+    answers_to_create, attachments_to_attach = validate_and_build_answers(save_as_draft)
     insert_answers_and_attach_files(answers_to_create, attachments_to_attach, @job)
   end
 
-  def validate_required_option(option, answer_params, application)
-    unless option.required && (answer_params.nil? || (answer_params.last[:answer].blank? && option.question_type != 'file') || (answer_params.last[:file].blank? && option.question_type == 'file'))
-      return
-    end
+  def validate_required_option(option, answer_params, save_as_draft: false)
+    return if !option.required || save_as_draft
+    return unless answer_params.nil? || (answer_params.last[:answer].blank? && option.question_type != 'file') || (answer_params.last[:file].blank? && option.question_type == 'file')
 
     application.errors.add(:application_answers, "Answer for required option #{option.id} is missing")
     raise ActiveRecord::RecordInvalid, application
@@ -91,13 +106,13 @@ module ApplicationBuilder # rubocop:disable Metrics/ModuleLength
     end
   end
 
-  def build_application_answer(job, option, answer_array, application)
+  def build_application_answer(option, answer_array)
     ApplicationAnswer.new(
-      job_id: job.id.to_i,
+      job_id: @job.id.to_i,
       user_id: Current.user.id.to_i,
       application_option_id: option.id,
       answer: answer_array,
-      version: application.version,
+      version: @application.version,
       created_at: Time.current,
       updated_at: Time.current
     )

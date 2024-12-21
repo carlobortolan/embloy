@@ -190,7 +190,7 @@ module Api
       end
 
       def application_params
-        params.except(:format).permit(:id, application_answers: %i[application_option_id answer file])
+        params.except(:format).permit(:id, :save_as_draft, application_answers: %i[application_option_id answer file])
       end
 
       def portal_params
