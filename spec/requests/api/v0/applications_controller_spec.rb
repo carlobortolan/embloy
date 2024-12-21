@@ -877,7 +877,7 @@ RSpec.describe 'ApplicationsController' do
         it 'returns [422 Unprocessable Entity] if application already submitted' do
           headers = { 'Authorization' => "Bearer #{@valid_at_has_applications}" }
           post("/api/v0/jobs/#{@jobs[0].id}/applications", params: valid_attributes_basic, headers:)
-          expect(response).to have_http_status(400)
+          expect(response).to have_http_status(422)
         end
       end
 
