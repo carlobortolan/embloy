@@ -25,7 +25,7 @@ module ApplicationBuilder # rubocop:disable Metrics/ModuleLength
   private
 
   # Creates @application
-  def create_application! # rubocop:disable Metrics/AbcSize
+  def create_application! # rubocop:disable Metrics/AbcSize,Metrics/PerceivedComplexity
     tmp = application_params.except(:id, :application_answers, :save_as_draft)
     tmp[:job_id] = @job.id
     tmp[:user_id] = Current.user.id
@@ -44,6 +44,7 @@ module ApplicationBuilder # rubocop:disable Metrics/ModuleLength
       # Update existing draft application
       Rails.logger.debug 'Updating draft application'
       @application.update!(updated_at: Time.current)
+      create_application_answers!(save_as_draft, replace_existing: true) if @job.application_options.any?
       # TODO: update_application_answers!(save_as_draft) if @job.application_options.any?
     else
       # Create new draft application
@@ -72,7 +73,7 @@ module ApplicationBuilder # rubocop:disable Metrics/ModuleLength
       answer_array = build_answer_array(option, answer_params)
       answer = build_application_answer(option, answer_array)
 
-      validate_answer(answer, option)
+      option.question_type == 'file' ? validate_attachment(option, answer_params.last[:file]) : validate_answer(answer, option)
 
       answers_to_create << answer.attributes.except('id')
       attachments_to_attach << { file: answer_params.last[:file], option_id: option.id } if answer_params.last[:file]
@@ -81,7 +82,12 @@ module ApplicationBuilder # rubocop:disable Metrics/ModuleLength
     [answers_to_create, attachments_to_attach]
   end
 
-  def create_application_answers!(save_as_draft)
+  def create_application_answers!(save_as_draft, replace_existing: false)
+    answers_to_create, attachments_to_attach = validate_and_build_answers(save_as_draft)
+    insert_answers_and_attach_files(answers_to_create, attachments_to_attach, @job, replace_existing)
+  end
+
+  def create_or_update_application_answers!(save_as_draft)
     answers_to_create, attachments_to_attach = validate_and_build_answers(save_as_draft)
     insert_answers_and_attach_files(answers_to_create, attachments_to_attach, @job)
   end
@@ -121,11 +127,35 @@ module ApplicationBuilder # rubocop:disable Metrics/ModuleLength
   def validate_answer(answer, option)
     return if answer.valid?
 
-    @application.errors.add(:base, "Invalid application answer for option #{option.id}: #{answer.errors.full_messages.join(', ')}")
+    @application.errors.add(:application, "Invalid application answer for option #{option.id}: #{answer.errors.full_messages.join(', ')}")
     raise ActiveRecord::RecordInvalid, @application
   end
 
-  def insert_answers_and_attach_files(answers_to_create, attachments_to_attach, job)
+  def validate_attachment(option, file)
+    Rails.logger.debug "Validating attachment for option #{option.id}"
+    return unless file
+
+    # Check file size
+    if file.size > 2.megabytes
+      @application.errors.add(:application, "Invalid application answer for option #{option.id}: Attachment is too large (max is 2 MB)")
+      raise ActiveRecord::RecordInvalid, @application
+    end
+
+    # Check allowed file types
+    allowed_file_types = (option.options.presence & ApplicationOption::ALLOWED_FILE_TYPES) || ['pdf']
+    file_extension = ApplicationOption::MIME_TYPE_MAPPING[file.content_type]
+    return if allowed_file_types.include?(file_extension)
+
+    @application.errors.add(:application, "Invalid application answer for option #{option.id}: File type is not allowed. Allowed types: #{allowed_file_types.join(', ')}")
+    raise ActiveRecord::RecordInvalid, @application
+  end
+
+  def insert_answers_and_attach_files(answers_to_create, attachments_to_attach, job, replace_existing)
+    if replace_existing
+      option_ids_to_replace = answers_to_create.map { |answer| answer['application_option_id'] }
+      ApplicationAnswer.where(job_id: job.id, user_id: Current.user.id, version: @application.version, application_option_id: option_ids_to_replace).delete_all
+    end
+
     ApplicationAnswer.insert_all(answers_to_create) if answers_to_create.any?
 
     attachments_to_attach.each do |attachment|
