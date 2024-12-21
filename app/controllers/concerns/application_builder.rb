@@ -38,7 +38,7 @@ module ApplicationBuilder # rubocop:disable Metrics/ModuleLength
     if @job.duplicate_application_allowed? && @application.present? && !@application.draft?
       # Save new application with incremented version
       Rails.logger.debug 'Saving new application version as draft'
-      @application.update!(version: @application.version + 1)
+      @application.update!(version: @application.version + 1, submitted_at: nil)
       create_application_answers!(save_as_draft) if @job.application_options.any?
     elsif @application.present? && @application.draft?
       # Update existing draft application
@@ -72,7 +72,7 @@ module ApplicationBuilder # rubocop:disable Metrics/ModuleLength
       answer_array = build_answer_array(option, answer_params)
       answer = build_application_answer(option, answer_array)
 
-      validate_answer(answer, option, @application)
+      validate_answer(answer, option)
 
       answers_to_create << answer.attributes.except('id')
       attachments_to_attach << { file: answer_params.last[:file], option_id: option.id } if answer_params.last[:file]
@@ -90,8 +90,8 @@ module ApplicationBuilder # rubocop:disable Metrics/ModuleLength
     return if !option.required || save_as_draft
     return unless answer_params.nil? || (answer_params.last[:answer].blank? && option.question_type != 'file') || (answer_params.last[:file].blank? && option.question_type == 'file')
 
-    application.errors.add(:application_answers, "Answer for required option #{option.id} is missing")
-    raise ActiveRecord::RecordInvalid, application
+    @application.errors.add(:application_answers, "Answer for required option #{option.id} is missing")
+    raise ActiveRecord::RecordInvalid, @application
   end
 
   def valid_answer?(option, answer_params)
@@ -118,11 +118,11 @@ module ApplicationBuilder # rubocop:disable Metrics/ModuleLength
     )
   end
 
-  def validate_answer(answer, option, application)
+  def validate_answer(answer, option)
     return if answer.valid?
 
-    application.errors.add(:base, "Invalid application answer for option #{option.id}: #{answer.errors.full_messages.join(', ')}")
-    raise ActiveRecord::RecordInvalid, application
+    @application.errors.add(:base, "Invalid application answer for option #{option.id}: #{answer.errors.full_messages.join(', ')}")
+    raise ActiveRecord::RecordInvalid, @application
   end
 
   def insert_answers_and_attach_files(answers_to_create, attachments_to_attach, job)
