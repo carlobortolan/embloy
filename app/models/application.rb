@@ -49,6 +49,10 @@ class Application < ApplicationRecord
     Application.where(user_id:, job_id:).update_all(status: :rejected, response:)
   end
 
+  def draft?
+    submitted_at.nil?
+  end
+
   private
 
   def cleanup_notifications
