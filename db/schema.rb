@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 20_241_114_005_852) do
+ActiveRecord::Schema[7.0].define(version: 20_241_220_233_324) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_trgm'
   enable_extension 'plpgsql'
@@ -141,6 +141,7 @@ ActiveRecord::Schema[7.0].define(version: 20_241_114_005_852) do
     t.string 'response', limit: 500
     t.datetime 'deleted_at'
     t.integer 'version', default: 1, null: false
+    t.datetime 'submitted_at'
     t.index ['deleted_at'], name: 'index_applications_on_deleted_at'
     t.index %w[job_id user_id], name: 'application_job_id_user_id_index', unique: true
     t.index ['job_id'], name: 'application_job_id_index'

@@ -16,7 +16,6 @@ class ApplicationController < ActionController::API
     ActiveStorage::Current.url_options = { host: request.host_with_port, protocol: request.protocol }
   end
 
-  
   # =============== Blacklisted User Check ===============
   # ================ WITH DATABASE LOOKUP ================
   def require_user_not_blacklisted(id = nil)

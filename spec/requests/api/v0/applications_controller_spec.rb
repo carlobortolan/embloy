@@ -207,7 +207,8 @@ RSpec.describe 'ApplicationsController' do
         user_id: @valid_user_has_applications.id,
         job_id: @jobs[i].id,
         response: 'No response yet ...',
-        status: '0'
+        status: '0',
+        submitted_at: Time.now
       )
     end
 
@@ -215,7 +216,8 @@ RSpec.describe 'ApplicationsController' do
       user_id: @valid_user_has_applications.id,
       job_id: @jobs[9].id,
       response: 'No response yet ...',
-      status: '0'
+      status: '0',
+      submitted_at: Time.now
     )
 
     activity_status = [1, 1, 1, 1, 1, 0]
@@ -739,7 +741,7 @@ RSpec.describe 'ApplicationsController' do
           application_answers: {
             '0' => {
               application_option_id: 1,
-              file: Rack::Test::UploadedFile.new(Rails.root.join('spec/assets', 'test_file.xml'), 'text/xml')
+              file: Rack::Test::UploadedFile.new(Rails.root.join('spec/assets', 'test_file.xml'), 'application/xml')
             }
           }
         }
@@ -798,6 +800,50 @@ RSpec.describe 'ApplicationsController' do
           post "/api/v0/jobs/#{@jobs[0].id}/applications"
           expect(response).to have_http_status(400)
         end
+        it 'returns [400 Bad Request] for applying with wrong cv format (\'pdf\' required)' do
+          post("/api/v0/jobs/#{@jobs[5].id}/applications",
+               params: { application_answers: { '0' => valid_attributes_xml[:application_answers]['0'].merge(application_option_id: @jobs[5].application_options.first.id) } }, headers:)
+          expect(response).to have_http_status(400)
+          post("/api/v0/jobs/#{@jobs[5].id}/applications",
+               params: { application_answers: { '0' => valid_attributes_docx[:application_answers]['0'].merge(application_option_id: @jobs[5].application_options.first.id) } }, headers:)
+          expect(response).to have_http_status(400)
+          post("/api/v0/jobs/#{@jobs[5].id}/applications",
+               params: { application_answers: { '0' => valid_attributes_txt[:application_answers]['0'].merge(application_option_id: @jobs[5].application_options.first.id) } }, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for applying with wrong cv format (\'docx\' required)' do
+          post("/api/v0/jobs/#{@jobs[6].id}/applications",
+               params: { application_answers: { '0' => valid_attributes_xml[:application_answers]['0'].merge(application_option_id: @jobs[6].application_options.first.id) } }, headers:)
+          expect(response).to have_http_status(400)
+          post("/api/v0/jobs/#{@jobs[6].id}/applications",
+               params: { application_answers: { '0' => valid_attributes_txt[:application_answers]['0'].merge(application_option_id: @jobs[6].application_options.first.id) } }, headers:)
+          expect(response).to have_http_status(400)
+          post("/api/v0/jobs/#{@jobs[6].id}/applications",
+               params: { application_answers: { '0' => valid_attributes_pdf[:application_answers]['0'].merge(application_option_id: @jobs[6].application_options.first.id) } }, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for applying with wrong cv format (\'txt\' required)' do
+          post("/api/v0/jobs/#{@jobs[7].id}/applications",
+               params: { application_answers: { '0' => valid_attributes_xml[:application_answers]['0'].merge(application_option_id: @jobs[7].application_options.first.id) } }, headers:)
+          expect(response).to have_http_status(400)
+          post("/api/v0/jobs/#{@jobs[7].id}/applications",
+               params: { application_answers: { '0' => valid_attributes_docx[:application_answers]['0'].merge(application_option_id: @jobs[7].application_options.first.id) } }, headers:)
+          expect(response).to have_http_status(400)
+          post("/api/v0/jobs/#{@jobs[7].id}/applications",
+               params: { application_answers: { '0' => valid_attributes_pdf[:application_answers]['0'].merge(application_option_id: @jobs[7].application_options.first.id) } }, headers:)
+          expect(response).to have_http_status(400)
+        end
+        it 'returns [400 Bad Request] for applying with wrong cv format (\'xml\' required)' do
+          post("/api/v0/jobs/#{@jobs[8].id}/applications",
+               params: { application_answers: { '0' => valid_attributes_docx[:application_answers]['0'].merge(application_option_id: @jobs[8].application_options.first.id) } }, headers:)
+          expect(response).to have_http_status(400)
+          post("/api/v0/jobs/#{@jobs[8].id}/applications",
+               params: { application_answers: { '0' => valid_attributes_txt[:application_answers]['0'].merge(application_option_id: @jobs[8].application_options.first.id) } }, headers:)
+          expect(response).to have_http_status(400)
+          post("/api/v0/jobs/#{@jobs[8].id}/applications",
+               params: { application_answers: { '0' => valid_attributes_pdf[:application_answers]['0'].merge(application_option_id: @jobs[8].application_options.first.id) } }, headers:)
+          expect(response).to have_http_status(400)
+        end
         it 'returns [401 Unauthorized] for expired/invalid access token' do
           headers = { 'Authorization' => "Bearer #{@invalid_access_token}" }
           params = { application_answers: { '0' => valid_attributes_docx[:application_answers]['0'].merge(application_option_id: @jobs[0].application_options.first.id) } }
@@ -828,51 +874,7 @@ RSpec.describe 'ApplicationsController' do
           post("/api/v0/jobs/#{@jobs[11].id}/applications", params: valid_attributes_basic, headers:)
           expect(response).to have_http_status(409)
         end
-        it 'returns [422 Unprocessable Content] for applying with wrong cv format (\'pdf\' required)' do
-          post("/api/v0/jobs/#{@jobs[5].id}/applications",
-               params: { application_answers: { '0' => valid_attributes_xml[:application_answers]['0'].merge(application_option_id: @jobs[5].application_options.first.id) } }, headers:)
-          expect(response).to have_http_status(422)
-          post("/api/v0/jobs/#{@jobs[5].id}/applications",
-               params: { application_answers: { '0' => valid_attributes_docx[:application_answers]['0'].merge(application_option_id: @jobs[5].application_options.first.id) } }, headers:)
-          expect(response).to have_http_status(422)
-          post("/api/v0/jobs/#{@jobs[5].id}/applications",
-               params: { application_answers: { '0' => valid_attributes_txt[:application_answers]['0'].merge(application_option_id: @jobs[5].application_options.first.id) } }, headers:)
-          expect(response).to have_http_status(422)
-        end
-        it 'returns [422 Unprocessable Content] for applying with wrong cv format (\'docx\' required)' do
-          post("/api/v0/jobs/#{@jobs[6].id}/applications",
-               params: { application_answers: { '0' => valid_attributes_xml[:application_answers]['0'].merge(application_option_id: @jobs[6].application_options.first.id) } }, headers:)
-          expect(response).to have_http_status(422)
-          post("/api/v0/jobs/#{@jobs[6].id}/applications",
-               params: { application_answers: { '0' => valid_attributes_txt[:application_answers]['0'].merge(application_option_id: @jobs[6].application_options.first.id) } }, headers:)
-          expect(response).to have_http_status(422)
-          post("/api/v0/jobs/#{@jobs[6].id}/applications",
-               params: { application_answers: { '0' => valid_attributes_pdf[:application_answers]['0'].merge(application_option_id: @jobs[6].application_options.first.id) } }, headers:)
-          expect(response).to have_http_status(422)
-        end
-        it 'returns [422 Unprocessable Content] for applying with wrong cv format (\'txt\' required)' do
-          post("/api/v0/jobs/#{@jobs[7].id}/applications",
-               params: { application_answers: { '0' => valid_attributes_xml[:application_answers]['0'].merge(application_option_id: @jobs[7].application_options.first.id) } }, headers:)
-          expect(response).to have_http_status(422)
-          post("/api/v0/jobs/#{@jobs[7].id}/applications",
-               params: { application_answers: { '0' => valid_attributes_docx[:application_answers]['0'].merge(application_option_id: @jobs[7].application_options.first.id) } }, headers:)
-          expect(response).to have_http_status(422)
-          post("/api/v0/jobs/#{@jobs[7].id}/applications",
-               params: { application_answers: { '0' => valid_attributes_pdf[:application_answers]['0'].merge(application_option_id: @jobs[7].application_options.first.id) } }, headers:)
-          expect(response).to have_http_status(422)
-        end
-        it 'returns [422 Unprocessable Content] for applying with wrong cv format (\'xml\' required)' do
-          post("/api/v0/jobs/#{@jobs[8].id}/applications",
-               params: { application_answers: { '0' => valid_attributes_docx[:application_answers]['0'].merge(application_option_id: @jobs[8].application_options.first.id) } }, headers:)
-          expect(response).to have_http_status(422)
-          post("/api/v0/jobs/#{@jobs[8].id}/applications",
-               params: { application_answers: { '0' => valid_attributes_txt[:application_answers]['0'].merge(application_option_id: @jobs[8].application_options.first.id) } }, headers:)
-          expect(response).to have_http_status(422)
-          post("/api/v0/jobs/#{@jobs[8].id}/applications",
-               params: { application_answers: { '0' => valid_attributes_pdf[:application_answers]['0'].merge(application_option_id: @jobs[8].application_options.first.id) } }, headers:)
-          expect(response).to have_http_status(422)
-        end
-        it 'returns [422 Unprocessable Content] if application already submitted' do
+        it 'returns [422 Unprocessable Entity] if application already submitted' do
           headers = { 'Authorization' => "Bearer #{@valid_at_has_applications}" }
           post("/api/v0/jobs/#{@jobs[0].id}/applications", params: valid_attributes_basic, headers:)
           expect(response).to have_http_status(422)

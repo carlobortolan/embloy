@@ -55,7 +55,7 @@ module Api
 
       def destroy_options
         must_be_owner!(params[:id], Current.user.id)
-        
+
         if params[:option_id].nil?
           @job.application_options.destroy_all
           render status: 200, json: { message: 'All options deleted!' }
@@ -93,7 +93,7 @@ module Api
         if jobs.empty?
           render(status: 204, json: { jobs: })
         else
-          render(status: 200, json: { jobs: jobs.map { |job| job.dao[:job]} })
+          render(status: 200, json: { jobs: jobs.map { |job| job.dao[:job] } })
         end
       end
 
@@ -111,7 +111,7 @@ module Api
       end
 
       def find
-        jobs = job_params[:query].presence ? search_jobs : Job.includes(image_url_attachment: :blob).includes([:rich_text_description, :user]).all
+        jobs = job_params[:query].presence ? search_jobs : Job.includes(image_url_attachment: :blob).includes(%i[rich_text_description user]).all
 
         render status: 204, json: { message: 'No jobs found!' } and return if jobs.blank?
 
@@ -206,9 +206,9 @@ module Api
 
       def create_feed_request(jobs, url)
         body = if Current.user&.preferences
-                  {pref: Current.user.preferences.to_json, slice: jobs.to_json}
+                 { pref: Current.user.preferences.to_json, slice: jobs.to_json }
                else
-                  {slice: jobs.to_json}
+                 { slice: jobs.to_json }
                end
 
         Net::HTTP::Post.new(url).tap do |request|
@@ -264,7 +264,7 @@ module Api
 
       def render_jobs(tag, jobs)
         if jobs.present?
-          render status: 200, json: {"#{tag}": jobs.page(find_job_params[:page]).per(24).map { |job| job.dao(include_image: true, include_description: true, include_employer: true)[:job]}}
+          render status: 200, json: { "#{tag}": jobs.page(find_job_params[:page]).per(24).map { |job| job.dao(include_image: true, include_description: true, include_employer: true)[:job] } }
         else
           render status: 204, json: { message: 'No jobs found!' }
         end
@@ -296,7 +296,7 @@ module Api
       def job_params
         permitted_params = params.except(:format, :_json, :job).permit(
           :id, :job_slug, :title, :description, :start_slot, :referrer_url, :longitude, :latitude, :job_type,
-          :job_status, :image_url, :position, :currency, :salary, :key_skills, :duration, :job_notifications, 
+          :job_status, :image_url, :position, :currency, :salary, :key_skills, :duration, :job_notifications,
           :city, :address, :postal_code, :country_code, application_options_attributes: [:id, :question, :question_type, :required, { options: [] }]
         )
         check_question_types(permitted_params)
