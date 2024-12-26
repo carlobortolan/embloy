@@ -11,7 +11,7 @@ class CompanyUser < User
   validates :company_slug, uniqueness: { error: 'ERR_UNIQUE', description: 'Should be unique' }, on: %i[create update],
                            length: { maximum: 128, error: 'ERR_LENGTH', description: 'Attribute length is invalid' },
                            allow_blank: true
-  validates :company_phone, length: { maximum: 20, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }
+  validates :company_phone, length: { maximum: 20, error: 'ERR_LENGTH', description: 'Attribute length is invalid' }, allow_blank: true
   validates :company_email, uniqueness: { error: 'ERR_TAKEN', description: 'Attribute exists' },
                             format: { with: /\A[^@\s]+@[^@\s]+\z/, error: 'ERR_INVALID', description: 'Attribute is malformed or unknown' },
                             length: { maximum: 150, error: 'ERR_LENGTH', description: 'Attribute length is invalid' },
