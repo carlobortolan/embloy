@@ -159,7 +159,7 @@ module Api
         session = portal_params.to_unsafe_h.transform_keys(&:to_s)
         session['user_id'] = @decoded_client_token['sub'].to_i
         session['subscription_type'] = @decoded_client_token['typ']
-        session['job_slug'] = "#{portal_params[:mode]}__#{portal_params[:job_slug]}"
+        session['job_slug'] = "#{portal_params[:mode]}__#{portal_params[:job_slug]}" unless portal_params[:mode] == 'job'
         session
       end
 

@@ -21,9 +21,12 @@ module Api
         if bearer_token_blank?
           blank_error('token')
         else
-          set_user_from_token
+          @decoded_bearer_token = AuthenticationTokenService::Access::Decoder.call(bearer_token)[0]
           begin
+            Current.user = (@decoded_bearer_token['sub'].to_i.zero? ? nil : User.find(@decoded_bearer_token['sub'].to_i))
             check_scope(@decoded_bearer_token['scope'], request.path, request.method_symbol.to_s.upcase)
+          rescue ActiveRecord::RecordNotFound
+            not_found_error('user')
           rescue StandardError => e
             access_denied_error('token', e.message)
           end
@@ -120,15 +123,6 @@ module Api
 
       def id_blank_or_invalid?
         params[:id].nil? || params[:id].empty? || params[:id].blank? || params[:id] == ':id'
-      end
-
-      def set_user_from_token
-        @decoded_bearer_token = AuthenticationTokenService::Access::Decoder.call(bearer_token)[0]
-        begin
-          Current.user = (@decoded_bearer_token['sub'].to_i.zero? ? nil : User.find(@decoded_bearer_token['sub'].to_i))
-        rescue ActiveRecord::RecordNotFound
-          not_found_error('user')
-        end
       end
 
       def check_scope(scope, path, method) # rubocop:disable Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
