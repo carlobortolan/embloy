@@ -11,7 +11,10 @@ class ApplicationAnswer < ApplicationRecord
 
   has_one_attached :attachment, dependent: :destroy
 
+  before_validation :set_default_question
+
   validates :application_option, presence: true
+  validates :question, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" }
   validates :answer, presence: { error: 'ERR_BLANK', description: "Attribute can't be blank" },
                      length: { minimum: 0, maximum: 1000, error: 'ERR_LENGTH', description: 'Answer must be no more than 1000 characters' }, if: -> { application_option.question_type != 'file' }
   validate :validate_answer
@@ -37,6 +40,10 @@ class ApplicationAnswer < ApplicationRecord
 
     method = VALIDATORS[application_option.question_type]
     send(method) if method
+  end
+
+  def set_default_question
+    self.question ||= application_option&.question
   end
 
   def validate_text_or_link_answer
