@@ -45,7 +45,6 @@ module ApplicationBuilder # rubocop:disable Metrics/ModuleLength
       Rails.logger.debug 'Updating draft application'
       @application.update!(updated_at: Time.current)
       create_application_answers!(save_as_draft, replace_existing: true) if @job.application_options.any?
-      # TODO: update_application_answers!(save_as_draft) if @job.application_options.any?
     else
       # Create new draft application
       Rails.logger.debug 'Creating new draft application'
@@ -151,10 +150,7 @@ module ApplicationBuilder # rubocop:disable Metrics/ModuleLength
   end
 
   def insert_answers_and_attach_files(answers_to_create, attachments_to_attach, job, replace_existing)
-    if replace_existing
-      option_ids_to_replace = answers_to_create.map { |answer| answer['application_option_id'] }
-      ApplicationAnswer.where(job_id: job.id, user_id: Current.user.id, version: @application.version, application_option_id: option_ids_to_replace).delete_all
-    end
+    ApplicationAnswer.where(job_id: job.id, user_id: Current.user.id, version: @application.version).delete_all if replace_existing
 
     ApplicationAnswer.insert_all(answers_to_create) if answers_to_create.any?
 

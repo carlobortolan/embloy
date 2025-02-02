@@ -23,7 +23,7 @@ func main() {
 
 	app.GET("/health", healthCheck)
 	app.GET("/:mode", handleRedirect)       // e.g., https://apply.embloy.com/<ats>
-	app.GET("/:mode/*path", handleRedirect) // e.g., https://apply.embloy.com/<job-ppsting-url>
+	app.GET("/:mode/*path", handleRedirect) // e.g., https://apply.embloy.com/<job-posting-url>
 	app.GET("/", handleAutoRequest)         // e.g., https://apply.embloy.com/?eType=auto&id=123&url=<job-posting-url>&mode=lever
 	app.Run(":8081")
 }
