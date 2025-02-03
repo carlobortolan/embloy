@@ -118,7 +118,7 @@ module Api
         applications.map do |application|
           {
             application:,
-            job: application.job.dao(include_employer: true, include_application_options: true)[:job],
+            job: application.job.dao(include_employer: true)[:job],
             application_answers: application.application_answers.as_json(include: { attachment: { methods: :url } }),
             application_events: application.application_events
           }

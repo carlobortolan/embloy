@@ -24,7 +24,7 @@ class ApplicationOption < ApplicationRecord
     'image/tiff' => 'tiff',
     'image/svg+xml' => 'svg',
     'video/mp4' => 'mp4',
-    'video/x-msvideo' => 'avi',
+    'video/vnd.avi' => 'avi',
     'video/quicktime' => 'mov',
     'video/x-ms-wmv' => 'wmv',
     'video/x-flv' => 'flv',

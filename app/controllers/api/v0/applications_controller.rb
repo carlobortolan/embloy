@@ -30,7 +30,11 @@ module Api
         must_be_owner!(application_show_params[:id], Current.user.id) if application_show_params[:application_id]
         application = @job.applications.includes(application_answers: { attachment_attachment: :blob }).where(user_id: application_show_params[:application_id] || Current.user.id).first
 
-        render_application(application)
+        if application_show_params[:draft_only] == '1' && !application&.draft?
+          render status: 400, json: { message: 'No draft found for this job.' }
+        else
+          render_application(application)
+        end
       end
 
       def create
@@ -126,7 +130,7 @@ module Api
       end
 
       def application_show_params
-        params.except(:format).permit(:application_id, :id)
+        params.except(:format).permit(:application_id, :id, :draft_only)
       end
     end
   end

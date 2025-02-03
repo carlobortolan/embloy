@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 20_241_220_233_324) do
+ActiveRecord::Schema[7.0].define(version: 20_250_102_003_447) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'pg_trgm'
   enable_extension 'plpgsql'
@@ -96,6 +96,7 @@ ActiveRecord::Schema[7.0].define(version: 20_241_220_233_324) do
     t.datetime 'updated_at', null: false
     t.datetime 'deleted_at'
     t.integer 'version', default: 1, null: false
+    t.string 'question', limit: 500
     t.index ['application_option_id'], name: 'application_answers_on_application_option_id_index'
     t.index ['deleted_at'], name: 'index_application_answers_on_deleted_at'
     t.index ['job_id'], name: 'application_answers_job_id_index'

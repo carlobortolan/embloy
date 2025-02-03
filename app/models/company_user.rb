@@ -27,7 +27,7 @@ class CompanyUser < User
 
   def self.check_attributes(company_attributes, check_missing: true)
     errors = []
-    required_keys = %w[company_name company_phone company_email company_slug company_logo]
+    required_keys = %w[company_name company_email company_slug company_logo]
     required_keys.each do |key|
       if check_missing
         errors << { error: 'ERR_MISSING', description: "The key '#{key}' is missing" } and next unless company_attributes.key?(key)
