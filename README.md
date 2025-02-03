@@ -1,43 +1,67 @@
 [![Ruby on Rails CI](https://github.com/Embloy/Embloy-Core-Server/actions/workflows/rubyonrails.yml/badge.svg)](https://github.com/Embloy/Embloy-Core-Server/actions/workflows/rubyonrails.yml) ![Codecov](https://img.shields.io/codecov/c/github/embloy/embloy-core-server)
- 
+
 <h1><a href="https://embloy.com">Embloy</a></h1>
 
-> __NOTE__: _The current prototype deployed at ***[beta.embloy.com](beta.embloy.com)*** can take up to 60
-seconds to load due to render's server instance having to boot up after being inactive for a while._
+> [!information]
+> If you're interested in finding out more or if you want to integrate Embloy into your system, check out the
+> developer documentation at **_[developers.embloy.com](developers.embloy.com)_** and API documentation at **_[docs.embloy.com](docs.embloy.com)_**.
 
-> __NOTE__: _If you're interested in finding out more or if you want to integrate Embloy into your system,
-check out the developer documentation at ***[developers.embloy.com](developers.embloy.com)***._
+This repository contains the source code for our server-side applications and API.
 
-This repository contains the backend code for our application and API, excluding the web-application client. We
-have recently deployed an initial prototype at ***[beta.embloy.com](beta.embloy.com)***, although it is not yet 
-publicly accessible (you can already create an account, but to proceed we, need to authorize you first). If
-you are interested and would like to take a look, please reach out to us at
-___[info@embloy.com](mailto:info@embloy.com?subject=I%20want%20to%20have%20a%20look%20at%20your%20prototype!)___
+## Services
 
-## License
+| Service                  | Description                                         | Link                                                   | GitHub Repository                                                                                                            | Language                                                                                                                   |
+| ------------------------ | --------------------------------------------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| **Embloy-Core-Server**   | The main server application and API.                | [api.embloy.com](https://api.embloy.com)               | [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/embloy/embloy-core-server)   | ![Ruby](https://img.shields.io/badge/Ruby-CC342D?logo=ruby&logoColor=white)                                               |
+| **Embloy-Proxy-Server**  | A simple proxy server for Embloy Quicklink.         | [apply.embloy.com](https://apply.embloy.com)           | [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/embloy/embloy-proxy-server)  | ![Go](https://img.shields.io/badge/Go-00add8?logo=go&logoColor=white)                                                     |
+| **Embloy-Core-Client**   | The client application for our user interface.      | [www.embloy.com](https://www.embloy.com)               | [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/embloy/embloy-core-client)   | ![TypeScript](https://img.shields.io/badge/TypeScript-3178c6?logo=typescript&logoColor=white)                              |
+| **Embloy-Genius-Client** | The client application for our recruiter dashboard. | [genius.embloy.com](https://genius.embloy.com)         | [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/embloy/embloy-genius-client) | ![JavaScript](https://img.shields.io/badge/TypeScript-3178c6?logo=typescript&logoColor=white)                              |
+| **Embloy-Developers**    | The developer documentation.                        | [developers.embloy.com](https://developers.embloy.com) | [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/embloy/embloy-developers)    | ![JavaScript](https://img.shields.io/badge/JavaScript-f1e05a?logo=javascript&logoColor=black)                              |
+| **Embloy-Docs**          | The API documentation.                              | [docs.embloy.com](https://docs.embloy.com)             | [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/embloy/embloy-docs)          | ![Postman](https://img.shields.io/badge/Postman-FF6C37?logo=postman&logoColor=white)                                       |
+| **Embloy-Examples**      | Example applications for Embloy integrations.       | [examples.embloy.com](https://examples.embloy.com)     | [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/embloy/embloy-examples)      | ![Various](https://img.shields.io/badge/Various-000000?logo=github&logoColor=white)                                        |
+| **Embloy-About**         | The about page for Embloy.                          | [about.embloy.com](https://about.embloy.com)           | [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/embloy/embloy-about)         | ![Imba](https://img.shields.io/badge/Imba-14c1ba?logo=imba&logoColor=white) |
 
-### Licensed under
+## SDKs
 
-> GNU AFFERO GENERAL PUBLIC LICENSE v3.0 ([gpl-3](https://www.gnu.org/licenses/gpl-3.0.en.html))
+| SDK                   | Link                                                                                                                                       | GitHub Repository                                                                                                     | Total Downloads                                                                                                                                  |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Embloy-SDK-Node**   | [![npm version](https://img.shields.io/npm/v/embloy.svg?style=flat)](https://www.npmjs.com/package/embloy-node)                            | [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/embloy/embloy-node)   | [![npm downloads](https://img.shields.io/npm/dt/embloy.svg?style=flat)](https://www.npmjs.com/package/embloy-node)                               |
+| **Embloy-SDK-Python** | [![PyPI version](https://img.shields.io/pypi/v/embloy-sdk.svg?style=flat)](https://pypi.org/project/embloy-python)                         | [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/embloy/embloy-python) | [![PyPI downloads](https://img.shields.io/pypi/dm/embloy-sdk.svg?style=flat)](https://pypi.org/project/embloy-python)                            |
+| **Embloy-SDK-Go**     | [![Go Reference](https://pkg.go.dev/badge/github.com/embloy/embloy-go.svg)](https://pkg.go.dev/github.com/embloy/embloy-go)                | [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/embloy/embloy-go)     | _unavailable_                                                                                                                                    |
+| **Embloy-SDK-Ruby**   | [![gem version](https://img.shields.io/gem/v/embloy.svg?style=flat)](https://rubygems.org/gems/embloy)                                     | [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/embloy/embloy-ruby)   | [![Gem downloads](https://img.shields.io/gem/dt/embloy.svg?style=flat)](https://rubygems.org/gems/embloy)                                        |
+| **Embloy-SDK-Java**   | [![Maven Central](https://img.shields.io/maven-central/v/com.embloy/sdk.svg?style=flat)](https://search.maven.org/artifact/com.embloy/sdk) | [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/embloy/embloy-java)   | _unavailable_                                                                                                                                    |
+| **Embloy-SDK-PHP**    | [![Packagist Version](https://img.shields.io/packagist/v/embloy/embloy-php.svg)](https://packagist.org/packages/embloy/embloy-php)         | [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/embloy/embloy-php)    | [![Packagist downloads](https://img.shields.io/packagist/dt/embloy/embloy-php.svg?style=flat)](https://packagist.org/packages/embloy/embloy-php) |
 
-## Contribution
+## Functionality Overview
 
-Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by anyone, as
-defined in the GNU AFFERO GENERAL PUBLIC LICENSE v3.0 license, shall be licensed as above, without any additional terms
-or conditions.
+### Quicklink
 
-## Functionality
+With Quicklink you can integrate Embloy into your web service. What PayPal is for transactions, Embloy-Quicklink is for applications. We designed Quicklink to be as easy to use as possible, requiring minimal effort to be integrated on your job posting site. All you have to do is add the "Apply with EMBLOY" button to your client and add one Endpoint to your server and the rest is managed by Embloy.
+For more information, see the [Quicklink documentation](https://developers.embloy.com/docs/category/quicklink).
 
-> __NOTE__: _This file covers the general functionality of the Embloy-Core-Server. If you are looking for the API documentation instead, go to_
-___[our Postman collection](https://postman.com/embloy)___
+### Genius-Queries
+
+Embedding Embloy content on external platforms made ease. Create a new Genius-Query and upload it to your social media platform to direct new applicants directly to your Embloy job application. For more information, see the [Genius-Queries documentation](https://developers.embloy.com/docs/category/genius).
+
+### Application Proxy
+
+The Application Proxy (see [./proxy](./proxy/)) is designed as a simple proxy and cache node for Embloy Quicklink. It can be used to integrate Embloy without using a Server-SDK or embedding any code on a third party site, allowing the third party to direct to a generic URL (apply.embloy.com) which then proxies the Quicklink request by fetching a request and client token remotely. For more information, see the [Application Proxy documentation](https://developers.embloy.com/docs/application-proxy).
+
+### Third-Party Integrations
+
+For ATS-Providers that want to provide an Embloy integration, see: https://developers.embloy.com/docs/guides/get-started-partners/
+
+For companies that want to integrate Embloy into their system, see: https://developers.embloy.com/docs/guides/get-started-integrations/
 
 ### User Authentication
 
 Users can set up an account with their email address and password, or choose to log in using the OAuth2.0 services
-provided by Google and GitHub. Once an account is created, it needs to be verified by clicking on the email.
+provided by Google, GitHub, Microsoft and LinkedIn. Once an account is created, it needs to be verified by clicking on the email.
 
 Passwords are instantly hashed using [bcryt](https://en.wikipedia.org/wiki/Bcrypt) and stored in the database as a
 hash. In case a user forgets their password, it can be reset via standard email authentication.
+
+To skip the verification process during applications new users can also verify their account by requesting a OTP via email.
 
 For an optimal user experience, it is recommended to fill out the 'Preferences' field under 'My Profile'.
 To log into the application, users can use the aforementioned OAuth2.0 services or enter their password.
@@ -46,49 +70,30 @@ procedure in the email.
 
 ### Subscriptions
 
-Embloy partners with Stripe for simplified billing. Most Embloy services can be used for free, but for verification, the user needs to be subscribed to one of the following:
+Embloy partners with Stripe for simplified billing. Most Embloy services can be used for free, but for verification, the user needs to be subscribed to one of three subscription plans:
 
-- Embloy-Basic: 0 EUR
-- Embloy-Smart: xx EUR
-- Embloy-Genius xx EUR
+- Embloy-Free
+- Embloy-Smart
+- Embloy-Genius
 
-Subscriptions are per default on a monthly basis, but can be customized to be dependent on API use. For more information, see the [subscription documentation](https://developers.embloy.com/docs/category/subscriptions). 
+To create a company account and access all features, a user must be subscribed either to Embloy-Smart or Embloy-Genius.
+Subscriptions are per default on a monthly basis, but can be customized to be dependent on API use. For more information, see the [subscription documentation](https://developers.embloy.com/docs/category/subscriptions).
 
-### Quicklink
+### Job Postings and Company Boards
 
-With Quicklink you can integrate Embloy into your web service. What PayPal is for transactions, Embloy-Quicklink is for applications. We designed Quicklink to be as easy to use as possible, requiring minimal effort to be integrated on your job posting site. All you have to do is add the "Apply with EMBLOY" button to your client and add one Endpoint to your server and the rest is managed by Embloy.
-For more information, see the [Quicklink documentation](https://developers.embloy.com/docs/category/quicklink). 
+Subscribed company users can create new job postings and, depending on the employer's liking, also define up to 50 customized questions as well as file and filetype requirements.
+This customization includes specifying whether an application option is required for the application, and if required, employers can also indicate their preferred file formats, and answers to ensure that the applications meet the employer's expectations.
 
-### Genius-Queries
-
-Embedding Embloy content on external platforms made ease. Create a new Genius-Query and upload it to your social media platform to direct new applicants directly to your Embloy job application. For more information, see the [Genius-Queries documentation](https://developers.embloy.com/docs/category/genius). 
-
-### Job Posting
-
-Authenticated users can create new job listings/postings (including a fitting title, a short description, a high-resolution cover image and more) and, depending on the employer's liking, also define customized CV and motivation
-letter requirements.
-This customization includes specifying whether a CV or a motivation letter is required for the application, and if
-required, employers can also indicate their preferred file formats to ensure that the applications meet the employer's
-expectations.
-
-Other users can then view these job listings and apply for the positions.
+A company can then publish a job board (e.g., [embloy.com/en-US/board/embloy](https://www.embloy.com/en-US/board/embloy)) allowing other users to view the job listings and apply for the positions.
 
 ### Managing Applications for Available Jobs
 
-The system is capable of managing jobs and applications, supporting
-basic [CRUD operations](https://www.javatpoint.com/crud-operations-in-sql), and notifying the employer when a new
-application is submitted, as well as notifying the applicant when their application is accepted or rejected.
+The system is capable of managing jobs and applications, and notifying the employer when a new application is submitted via direct push notifications, as well as notifying the applicant when their application is accepted or rejected.
 
 All notifications are sent via [SMTP](https://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol).
-Uploaded images are stored and encrypted on a Backblaze B2 Bucket (soon to be migrated to AWS S3).
+Uploaded images and files are encrypted and stored GDPR compliant on Amazon S3 servers in Frankfurt, Germany.
 
 ### Filtering of Available Jobs and Creating an "Intelligent" Feed
-
-***The FeedGenerator has been migrated to an external system after mutual agreement among the developers. Although the
-details of the project are confidential, a basic understanding of its functionality is necessary to work on the Rails
-backend. The enhanced FeedGenerator features a single REST API endpoint, which can only be accessed by the Rails server
-via an authentication barrier. Credentials are provided on a need-to-know basis. The FeedGenerator ranks each element of
-a set of jobs (or "slice") that are provided by the Rails backend. The resulting feed is then displayed to the user.***
 
 The job feed delivers personalized job recommendations based on the user's preferences and behavior.
 The user can also utilize our advanced search functionality, which includes comprehensive filtering and sorting options
@@ -99,7 +104,7 @@ a visual overview of job opportunities.
 
 ## How it Works
 
-To get started, simply visit [our website](http://embloy.com/) and create a new account or log in with an existing
+To get started, simply visit [www.embloy.com](http://embloy.com/) and create a new account or log in with an existing
 account. It's that easy!
 
 ## Running on Docker
@@ -114,7 +119,7 @@ To deploy to docker-hub: \
 
 ## Config
 
-> __NOTE__: _You only need to follow these steps if you wish to contribute and need to test your changes locally_
+> **NOTE**: _You only need to follow these steps if you wish to contribute and need to test your changes locally_
 
 <details>
   <summary> 1. Prerequisites </summary>
@@ -131,20 +136,7 @@ To deploy to docker-hub: \
 
 </details>
 
-<details>
-  <summary> 2. Connect to our remote database </summary>
-
--     hostname/address: <>
-
--     maintanence database: <>
-
--     username: <>
-
--     password: <>
-
--     port: 5432
-
-</details>
+2. Create a `.env` file with the content of `.example.env`
 
 <details>
   <summary> 3. Start the server </summary>
@@ -152,24 +144,13 @@ To deploy to docker-hub: \
 If you wish to experiment on our backend or contribute to our front end, you can test your changes by starting a local
 server.
 
-1. Create a `.env` file with the content of `.example.env`.
-2. Run ``$ rails db:create`` to create all necessary tables in your development database.
-3. Run ``$ rails db:migrate`` to migrate your changes to the database.
-4. Run ``$ rails server`` to start the server.
-5. Add the following lines manually when resetting the current database or creating a new database:
-
-   ```SQL
-   CREATE EXTENSION postgis;
-   ALTER TABLE jobs ADD COLUMN job_value public.geography(PointZ,4326);
-   CREATE INDEX IF NOT EXISTS job_job_value_index
-   ON public.jobs USING gist
-   (job_value)
-   TABLESPACE pg_default;
-   ```
+1. Run `$ rails db:create` to create all necessary tables in your development database.
+2. Run `$ rails db:migrate` to migrate your changes to the database.
+3. Run `$ rails server` to start the server.
 
 </details>
 
-6. Go to http://localhost:3000
+3. Go to http://localhost:3000
 
 <details>
   <summary> 4. Setup Stripe webhook </summary>
@@ -178,11 +159,24 @@ To enable subscriptions and Embloy Quicklink, make sure to have StripeCLI instal
 ```Bash
 ./stripe listen --forward-to localhost:3000/pay/webhooks/stripe
 ```
+
 </details>
+
+## License
+
+### Licensed under
+
+> GNU AFFERO GENERAL PUBLIC LICENSE v3.0 ([agpl-3.0](https://www.gnu.org/licenses/agpl-3.0.en.html)).
+
+## Contribution
+
+Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by anyone, as
+defined in the GNU AFFERO GENERAL PUBLIC LICENSE v3.0 license, shall be licensed as above, without any additional terms
+or conditions.
 
 ## What's next
 
-> __NOTE__: _See [GitHub issues](https://github.com/embloy/embloy-backend/issues) for more information_
+See [our GitHub issues](https://github.com/embloy/embloy-core-server/issues) for a list of known issues and planned features.
 
 ---
 
