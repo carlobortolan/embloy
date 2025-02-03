@@ -141,24 +141,24 @@ To deploy to docker-hub: \
 <details>
   <summary> 3. Start the server </summary>
 
-If you wish to experiment on our backend or contribute to our front end, you can test your changes by starting a local
-server.
+  If you wish to experiment on our backend or contribute to our front end, you can test your changes by starting a local
+  server.
 
-1. Run `$ rails db:create` to create all necessary tables in your development database.
-2. Run `$ rails db:migrate` to migrate your changes to the database.
-3. Run `$ rails server` to start the server.
+  1. Run `$ rails db:create` to create all necessary tables in your development database.
+  2. Run `$ rails db:migrate` to migrate your changes to the database.
+  3. Run `$ rails server` to start the server.
+  4. Open your browser and navigate to `localhost:3000` to view the application.
 
 </details>
 
-3. Go to http://localhost:3000
 
 <details>
   <summary> 4. Setup Stripe webhook </summary>
-To enable subscriptions and Embloy Quicklink, make sure to have StripeCLI installed and have an active webhook:
+  To enable subscriptions and Embloy Quicklink, make sure to have StripeCLI installed and have an active webhook:
 
-```Bash
-./stripe listen --forward-to localhost:3000/pay/webhooks/stripe
-```
+  ```Bash
+  ./stripe listen --forward-to localhost:3000/pay/webhooks/stripe
+  ```
 
 </details>
 
