@@ -1,12 +1,12 @@
 [![Ruby on Rails CI](https://github.com/Embloy/Embloy-Core-Server/actions/workflows/rubyonrails.yml/badge.svg)](https://github.com/Embloy/Embloy-Core-Server/actions/workflows/rubyonrails.yml) ![Codecov](https://img.shields.io/codecov/c/github/embloy/embloy-core-server)
 
-<h1><a href="https://embloy.com">Embloy</a></h1>
-
-> [!information]
-> If you're interested in finding out more or if you want to integrate Embloy into your system, check out the
-> developer documentation at **_[developers.embloy.com](developers.embloy.com)_** and API documentation at **_[docs.embloy.com](docs.embloy.com)_**.
+<h1><a href="https://embloy.com">Embloy Core Server</a></h1>
 
 This repository contains the source code for our server-side applications and API.
+
+> [!note]
+> If you're interested in finding out more or if you want to integrate Embloy into your system, check out the
+> developer documentation at **_[developers.embloy.com](developers.embloy.com)_** and API documentation at **_[docs.embloy.com](docs.embloy.com)_**.
 
 ## Services
 
@@ -154,8 +154,8 @@ To deploy to docker-hub: \
 
 <details>
   <summary> 4. Setup Stripe webhook </summary>
-  To enable subscriptions and Embloy Quicklink, make sure to have StripeCLI installed and have an active webhook:
-
+    To enable subscriptions and Embloy Quicklink, make sure to have StripeCLI installed and have an active webhook:
+  
   ```Bash
   ./stripe listen --forward-to localhost:3000/pay/webhooks/stripe
   ```
