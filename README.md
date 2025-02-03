@@ -154,7 +154,7 @@ To deploy to docker-hub: \
 
 <details>
   <summary> 4. Setup Stripe webhook </summary>
-    To enable subscriptions and Embloy Quicklink, make sure to have StripeCLI installed and have an active webhook:
+  To enable subscriptions and Embloy Quicklink, make sure to have StripeCLI installed and have an active webhook:
   
   ```Bash
   ./stripe listen --forward-to localhost:3000/pay/webhooks/stripe
